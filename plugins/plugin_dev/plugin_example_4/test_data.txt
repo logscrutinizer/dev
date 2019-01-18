@@ -1,0 +1,15 @@
+
+Test data
+Log for Example 4
+
+lifeline 1
+lifeline 2
+lifeline 3
+
+
+time:1 op:event          id:100           dest:1
+time:2 op:msg            id:200     src:1 dest:2
+time:3 op:msg            id:300     src:2 dest:3
+time:4 op:exec_msg       id:1000    src:1 dest:2 exec_id:read   exec_duration:2
+time:7 op:msg            id:400     src:3 dest:1
+time:8 op:sync_exec_msg  id:1003    src:1 dest:2 exec_id:reload exec_duration:2

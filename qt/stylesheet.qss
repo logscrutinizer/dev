@@ -1,0 +1,4 @@
+
+QTreeView {
+    background: white
+}

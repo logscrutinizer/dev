@@ -1,0 +1,65 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="main_icon">../media/icons/Logo_icon_26_26_2.png</file>
+        <file alias="logo.png">../media/icons/logo2.png</file>
+        <file alias="hdd_64.bmp">../media/icons/hdd_64.bmp</file>
+        <file alias="ok_64.bmp">../media/icons/ok_64.bmp</file>
+        <file alias="fail_64.bmp">../media/icons/fail_64.bmp</file>
+        <file alias="filterItem.bmp">../media/icons/filter_16_18.bmp</file>
+        <file alias="text.png">../media/icons/Text.png</file>
+        <file alias="open-16.png">../media/icons/standardbutton-open-16.png</file>
+        <file alias="open-32.png">../media/icons/standardbutton-open-32.png</file>
+        <file alias="open-128.png">../media/icons/standardbutton-open-128.png</file>
+
+        <file alias="save-as-32">../media/icons/SaveAs.png</file>
+        <file alias="save-32">../media/icons/Save.png</file>
+              
+        <file alias="css.png">../media/icons/css32x32.png</file>
+        <file alias="blue_bookmark.ico">../media/icons/blue_bookmark.ico</file>
+        <file alias="plugin_32x32.png">../media/icons/plugin_32x32.png</file>
+        <file alias="filter_12_14.bmp">../media/icons/filter_12_14.bmp</file>
+        <file alias="IDB_BRUSH_TOP_BMP">../media/icons/bg_brush_top.bmp</file>
+        <file alias="IDB_BRUSH_BOTTOM_BMP">../media/icons/bg_brush_bottom.bmp</file>
+        <file alias="IDB_BRUSH_LEFT_BMP">../media/icons/bg_brush_left.bmp</file>
+        <file alias="IDB_BRUSH_RIGHT_BMP">../media/icons/bg_brush_right.bmp</file>
+        <file alias="IDB_BRUSH_RIGHT_TOP_BMP">../media/icons/bg_brush_right_top.bmp</file>
+        <file alias="IDB_BRUSH_RIGHT_BOTTOM_BMP">../media/icons/bg_brush_right_bottom.bmp</file>
+        <file alias="IDB_BRUSH_LEFT_TOP_BMP">../media/icons/bg_brush_left_top.bmp</file>
+        <file alias="IDB_BRUSH_LEFT_BOTTOM_BMP">../media/icons/bg_brush_left_bottom.bmp</file>
+        <file alias="IDB_BUG_BITMAP">../media/icons/chinchbug2.bmp</file>
+        <file alias="IDB_BUG_BITMAP_24">../media/icons/chinchbug3.bmp</file>
+        <file alias="IDB_BUG_BITMAP_HORIZ_24">../media/icons/chinchbug4_upright.bmp</file>
+        <file alias="IDB_RIGHT_ARROW">../media/icons/right-arrow-icon.png</file>
+         
+        <file alias="IDB_FILTER_16_18">../media/icons/filter_16_18.bmp</file>
+        <file alias="IDB_FILTER_12_14">../media/icons/filter_12_14.bmp</file>
+        <file alias="IDB_FILTER_9_11">../media/icons/filter_9_11.bmp</file>
+        <file alias="IDB_ENABLED_12_11">../media/icons/enabled_12_11.bmp</file>
+        <file alias="IDB_ENABLED_8_7">../media/icons/enabled_8_7.bmp</file>
+        <file alias="IDB_ENABLED_16_14">../media/icons/enabled_16_14.bmp</file>
+        <file alias="IDB_FILTER_7_9">../media/icons/filter_7_9.bmp</file>
+        <file alias="IDB_DECODER">../media/icons/decoder_small.png</file>
+        <file alias="IDB_PLOT">../media/icons/plot.png</file>
+        <file alias="IDB_BOOKMARK_48_36">../media/icons/bookmark_48_36.bmp</file>
+        <file alias="IDB_CLIP_START">../media/icons/ClipStart.bmp</file>
+        <file alias="IDB_CLIP_END">../media/icons/ClipEnd.bmp</file>
+        <file alias="SND_FAILURE">../media/sounds/failure.wav</file>
+        <file alias="SND_PING">../media/sounds/ping.wav</file>
+        <file alias="SND_QUESTION_QUACK">../media/sounds/question.wav</file>
+
+        <file alias="cn_bi_font">../media/fonts/Courier_New_Bold_Italic.ttf</file>
+        <file alias="cn_b_font">../media/fonts/Courier_New_Bold.ttf</file>
+        <file alias="cn_i_font">../media/fonts/Courier_New_Italic.ttf</file>
+        <file alias="cn_font">../media/fonts/Courier_New.ttf</file>
+        <file alias="dvsm_bi_font">../media/fonts/DejaVuSansMono-BoldOblique.ttf</file>
+        <file alias="dvsm_b_font">../media/fonts/DejaVuSansMono-Bold.ttf</file>
+        <file alias="dvsm_i_font">../media/fonts/DejaVuSansMono-Oblique.ttf</file>
+        <file alias="dvsm_font">../media/fonts/DejaVuSansMono.ttf</file>
+        <file alias="um_bi_font">../media/fonts/UbuntuMono-BI.ttf</file>
+        <file alias="um_b_font">../media/fonts/UbuntuMono-B.ttf</file>
+        <file alias="um_i_font">../media/fonts/UbuntuMono-RI.ttf</file>
+        <file alias="um_font">../media/fonts/UbuntuMono-R.ttf</file>
+
+        <file>stylesheet.qss</file>
+    </qresource>
+</RCC>

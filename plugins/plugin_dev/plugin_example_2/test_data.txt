@@ -1,0 +1,25 @@
+
+Test data
+
+Log for Example 2, demonstrating how to develop a plugin with decode function
+
+The values below are Q87 encoded, that is a fixed number representation for float number. So if you have a float
+number you multiply it with 2^7  (128) to get a fix number representation. When you want it back to float value you
+simply divide the number with 2^7. 
+
+Since it is very difficult to read Q87 number (and "see the float") it is easy to extend the LogScrutinizer with
+a plugin that "on-the-fly" decodes these numbers and have the more readable (float representation) shown
+
+The values "hidden" below where 1.1 2.2 3.3 4.4 5.5 and 6.6 before they where converted to Q87. You will see that when
+converting them back we have lost precision because of the limited Q87.
+
+Time:0 Value:140
+Time:1 Value:563
+Time:2 Value:704
+Time:3 Value:844
+Time:4 Value:704
+Time:5 Value:422
+Time:6 Value:140
+Time:7 Value:281
+Time:8 Value:140
+Time:9 Value:140

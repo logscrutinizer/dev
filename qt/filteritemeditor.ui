@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FilterItemEditor</class>
+ <widget class="QDialog" name="FilterItemEditor">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>253</width>
+    <height>373</height>
+   </rect>
+  </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Filter Item Dialog</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout1">
+
+   <item>
+   <layout class="QHBoxLayout" name="horizontalLayout2">
+    <item>
+    <layout class="QVBoxLayout" name="verticalLayout3">
+    <item>
+    <widget class="QLabel" name="label_textToFilter">
+     <property name="text">
+      <string>Text to filter</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLineEdit" name="lineEdit_filterItemEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="sizeIncrement">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Enter your text here</string>
+     </property>
+     </widget>
+    </item>
+    </layout>
+    </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_enable">
+       <property name="toolTip">
+        <string>Tick this if you want to enable the filter</string>
+       </property>
+       <property name="text">
+        <string>Enable</string>
+       </property>
+      </widget>
+    </item>
+   </layout>
+   </item>
+
+
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout4">
+     <property name="topMargin">
+      <number>2</number>
+     </property>
+     <property name="bottomMargin">
+      <number>2</number>
+     </property>
+     <item>
+      <widget class="QCheckBox" name="checkBox_matchCase">
+       <property name="toolTip">
+        <string>Tick this if you want the filter item matches to be case sensitive</string>
+       </property>
+       <property name="text">
+        <string>Match case</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_exclude">
+       <property name="toolTip">
+        <string>Tick this if matches to this filter item should be hidden/excluded when showing just fitered item (F4)</string>
+       </property>
+       <property name="text">
+        <string>Exclude</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox_regExpr">
+       <property name="toolTip">
+        <string>Tick this if you want the filter item text to be used as a regular expression.</string>
+       </property>
+       <property name="text">
+        <string>RegExpr</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_textColor">
+     <property name="toolTip">
+      <string>Choose the text color for the lines matching this filter item</string>
+     </property>
+     <property name="text">
+      <string>Text color...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkBox_enableBGColor">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string>Tick this to enable background color selection</string>
+     </property>
+     <property name="text">
+      <string>BG Color</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_BGTextColor">
+     <property name="toolTip">
+      <string>Choose the background color for the lines matching this filter item</string>
+     </property>
+     <property name="text">
+      <string>Text BG color...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_Example">
+     <property name="text">
+      <string>Example</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_textExampleFrame">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>0</width>
+       <height>10</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_add_to_filter">
+     <property name="text">
+      <string>Add to filter</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="comboBox_filter"/>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+  <zorder>label_add_to_filter</zorder>
+  <zorder>label_textToFilter</zorder>
+  <zorder>lineEdit_filterItemEdit</zorder>
+  <zorder>label_Example</zorder>
+  <zorder>buttonBox</zorder>
+  <zorder>label_textExampleFrame</zorder>
+  <zorder>pushButton_textColor</zorder>
+  <zorder>pushButton_BGTextColor</zorder>
+  <zorder>checkBox_enableBGColor</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>comboBox_filter</zorder>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>FilterItemEditor</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>FilterItemEditor</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
