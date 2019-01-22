@@ -85,19 +85,34 @@ There is no pre-built download for this component, hence you need to build it yo
   * set(CPACK_NSIS 1)
   * set(VC_REDIST "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012")
   * set(HS_PATH "C:/Program Files/hyperscan")</i>
-* Configure and Generate the <b>LogScrutinizer.sln</b> from cmake-gui
-  * Start cmake-gui
-  * In cmake-gui, set source path to the "dev" folder and the output/build directory inside dev, e.g. dev/build.
-  * Press <b>Configure</b> and select <b>Visual Studio 15 2017 Win64 </b> as Generator when the Generator selection pop-up shows.
-  * Press <b>Generate</b> to create the LogScrutinizer.sln file into the cmake-gui output/build directory
-* Build LogScrutinizer from Visual Studio 
-  * Start Visual Studio 2017
-  * Open the LogScrutinizer.sln solution file from the cmake-gui build directory
-  * Select the LogScrutinizer target as "Set as Startup project"
-  * Select <b>Release x64</b> build variant
-  * Build solution
-  * Press Ctrl-F5 to run (run Release version).
+#### Building using Visual Studio (Generate sln-file from cmake-gui)
+  * Configure and Generate the <b>LogScrutinizer.sln</b> from cmake-gui
+    * Start cmake-gui
+    * In cmake-gui, set source path to the "dev" folder and the output/build directory inside dev, e.g. dev/build.
+    * Press <b>Configure</b> and select <b>Visual Studio 15 2017 Win64 </b> as Generator when the Generator selection pop-up shows.
+    * Press <b>Generate</b> to create the LogScrutinizer.sln file into the cmake-gui output/build directory
+  * Build LogScrutinizer from Visual Studio 
+    * Start Visual Studio 2017
+    * Open the LogScrutinizer.sln solution file from the cmake-gui build directory
+    * Select the LogScrutinizer target as "Set as Startup project"
+    * Select <b>Release x64</b> build variant
+    * Build solution
+    * Press Ctrl-F5 to run (run Release version).
+    * 
+#### Building using QtCreator
+  * Start QtCreator
+  * Open the top-most CMakeLists.txt file (QtCreator reads the CMake-files natively)
+  * Configure you build platform, typically use the x64 variant.
+  * Build
+  * Note: You will need to install Debugger separately, instructions [here](http://doc.qt.io/qtcreator/creator-debugger-engines.html)
+
 
 ### Remarks
 * If you intend run LogScrutinizer in <b>Debug</b> mode then you need to build both HyperScan and LogScrutinizer for Debug x64 (instead of Release). You need to re-install the HyperScan library after building for Debug.
-
+* <b>Coding Style Guide</b>, use the supplied <b>uncrustify.cfg</b> and it will format the code for you.
+  * Download for Win32: https://sourceforge.net/projects/uncrustify
+  * In Visual Studio, add external command: 
+    * Command: "Path to uncrustify.exe"
+    * Arguments: -c  $(SolutionDir)..\uncrustify.cfg  --no-backup  $(ItemPath)
+    * Initial directory: $(ItemDir)
+* Visual Studio also support CMake natively, however currently the sub-targets are not shown preventing us from running these, e.g. packaging. As such, the best option if you want to use Visual Studio is to first generate the solution file with cmake-gui as described above.
