@@ -369,11 +369,12 @@ if (WIN32)
     set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt5::WinExtras)
 
     set (SPECIAL_LINK_DEP ${SPECIAL_LINK_DEP}
-        $<$<CONFIG:Debug>:c:/Users/rober/workspace/src/hs_win32/debug/hs.lib>
-        $<$<CONFIG:Release>:c:/Users/rober/workspace/src/hs_win32/release/hs.lib>)
+        $<$<CONFIG:Debug>:${HS_PATH}/lib/hs.lib>
+        $<$<CONFIG:Release>:${HS_PATH}/lib/hs.lib>)
+
     link_directories(
-        $<$<CONFIG:Debug>:c:/Users/rober/workspace/src/hs_win32/debug>
-        $<$<CONFIG:Release>:c:/Users/rober/workspace/src/hs_win32/release>)
+        $<$<CONFIG:Debug>:${HS_PATH}/lib>
+        $<$<CONFIG:Release>:${HS_PATH}/lib>)
 
 else (WIN32)
     set (SPECIAL_LINK_DEP ${SPECIAL_LINK_DEP} "hs")

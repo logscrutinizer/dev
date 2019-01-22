@@ -82,7 +82,7 @@ endif (USE_WEB_ENGINE)
 
 if(WIN32)
     find_package(Qt5WinExtras)
-    set (HS_INCLUDEDIR "c:/Users/rober/workspace/src/hs_win32")
+	set(HS_INCLUDEDIR ${HS_PATH}/include)
 else (WIN32)
     find_package(PkgConfig REQUIRED)
     find_package(Threads)
