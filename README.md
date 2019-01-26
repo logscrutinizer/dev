@@ -182,7 +182,6 @@ sudo make install
 * QtCreate will ask which platform kit you should use, and you must now select the kit you just created (with gcc/g++ 8.2 as compilers).
 * Press __F5__ to run and build
 
-</br>
 ## Build instructions - Windows <a name="build_instructions_windows">
 
 ### Prerequisites
@@ -271,7 +270,6 @@ There is no pre-built download for this component, hence you need to build it yo
 
 * Visual Studio also support CMake natively, however currently the sub-targets are not shown preventing us from running these, e.g. packaging. As such, the best option if you want to use Visual Studio is to first generate the solution file with cmake-gui as described above.
 
-</br>
 # Contribute <a name="contribute">
 
 ## Coding style guide <a name="coding_style_guide">
