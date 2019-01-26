@@ -73,7 +73,11 @@ set (PRODUCT_VERSION_CMAKE ${CMAKE_BINARY_DIR}/product_version.cmake)
 # input to the generate_product_config script
 set (CCONFIG_H ${CMAKE_SOURCE_DIR}/settings/CConfig.h)
 
-# Note, OS_VARIANT should be set outside, e.g. in local.cmake or as -DOS_VARIANT=Ubuntu16
+# Note, OS_VARIANT should be set outside, e.g. in local.cmake or as -DOS_VARIANT=Ubuntu16. If not set it is
+# platform name, e.g. Linux.
+if (OS_VARIANT STREQUAL "")
+    set (OS_VARIANT ${CMAKE_SYSTEM_NAME})
+endif (OS_VARIANT STREQUAL "")
 
 ADD_CUSTOM_COMMAND(OUTPUT ${PRODUCT_VERSION_CMAKE} non_existing_file1.txt
                    COMMAND python ${PRODUCT_VERSION_GEN_SCRIPT_PY} ${PRODUCT_VERSION_CMAKE} ${CCONFIG_H} ${OS_VARIANT}
