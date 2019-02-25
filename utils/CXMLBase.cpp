@@ -125,7 +125,7 @@ bool CXMLBase::ReadXMLHeader(void)
 {
     /*<?xml version="1.0" encoding="utf-8" standalone="yes"?> */
 
-    if (m_documentSize < strlen("<?xml version=\"1.0\"?>") + 1) {
+    if (m_documentSize < static_cast<int>(strlen("<?xml version=\"1.0\"?>")) + 1) {
         TRACEX_W("XML start marker <?xml not found");
         return false;
     }
@@ -227,9 +227,8 @@ bool CXMLBase::GetAttribute(void)
         if (*m_ref_p == '=') {
             m_tempString[index] = 0;
             stop = true;
-        }
-        else {
-            // trim away all trail and tail spaces
+        } else {
+            /* trim away all trail and tail spaces */
             if (*m_ref_p != ' ') {
                 m_tempString[index] = *m_ref_p;
                 ++index;
@@ -239,12 +238,13 @@ bool CXMLBase::GetAttribute(void)
         }
     }
 
-    // Loop until we reach the last space marker before the start ch of the attribute
-    while ((m_ref_end_p != m_ref_p) && (*m_ref_p++ != '"'));
+    /* Loop until we reach the last space marker before the start ch of the attribute */
+    while ((m_ref_end_p != m_ref_p) && (*m_ref_p++ != '"')) {}
 
-    // If the while loop ended because the there where no more letters we quit
-    if (*(m_ref_p - 1) != '"')
+    /* If the while loop ended because the there where no more letters we quit */
+    if (*(m_ref_p - 1) != '"') {
         return false;
+    }
 
 /* Loop through the text and extract the string of the attribute value
  * Get the following   '234"','234  "' */

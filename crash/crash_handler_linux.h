@@ -47,7 +47,7 @@ public:
     static void __cdecl InvalidParameterHandler(const wchar_t *expression,
                                                 const wchar_t *function,
                                                 const wchar_t *file,
-                                                unsigned int line,
+                                                int line,
                                                 uintptr_t pReserved);
     static int __cdecl NewHandler(size_t);
     static void SetWin32ExceptionHandler();
@@ -72,7 +72,7 @@ void CrtSetReportHook();
 int ReportingHookFunction(int reportType, char *userMessage, int *retVal);
 
 /* Exception translator function */
-void se_translator(unsigned int, EXCEPTION_POINTERS *);
+void se_translator(int, EXCEPTION_POINTERS *);
 #endif
 
 #endif /* _CRASH_HANDLER_H */

@@ -171,6 +171,8 @@ void CEditorWidget_SetCursor(QCursor *cursor_p)
 ***********************************************************************************************************************/
 void CEditorWidget_Initialize(bool reload)
 {
+    Q_UNUSED(reload);
+
 #ifdef ASSERT_ON_NULL
     Q_ASSERT(g_editorWidget_p != nullptr);
 #endif
@@ -178,7 +180,7 @@ void CEditorWidget_Initialize(bool reload)
         return;
     }
 
-    g_editorWidget_p->Initialize(reload);
+    g_editorWidget_p->Initialize();
 }
 
 /***********************************************************************************************************************
@@ -435,6 +437,8 @@ CEditorWidget::CEditorWidget(QWidget *parent) :
 ***********************************************************************************************************************/
 void CEditorWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     try {
         LS_Painter painter(this);
         m_painter_p = &painter; /* this will be switched in ceditorwidget_ext in-case double buffering is used. */

@@ -93,7 +93,7 @@ namespace FileMapping
         }
 
         if (!headerOK) {
-            TIA_File.unmap(reinterpret_cast<unsigned char *>(header_p));
+            TIA_File.unmap(reinterpret_cast<uint8_t *>(header_p));
             TIA_mem_p = nullptr;
 
             if (*rows_p != -1) {

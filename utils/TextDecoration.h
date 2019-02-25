@@ -76,18 +76,17 @@ private:
 
 /* FintExtElements is a utility function to search for text patterns in a string. This function is used from
  * AutoHighLight and FontModification. */
-int FindTextElements(QList<TextRectElement_t*>* elementRefs_p, const char* text_p, const int textSize,
-                     const char* textMatch_p, const int textMatchSize, bool caseSensitive, bool regExp,
-                     CTextRectElementFactory* elementFactory_p);
-
+int FindTextElements(QList<TextRectElement_t *> *elementRefs_p, const char *text_p, const int textSize,
+                     const char *textMatch_p, const int textMatchSize, bool caseSensitive, bool regExp,
+                     CTextRectElementFactory *elementFactory_p);
 
 /***********************************************************************************************************************
 *   CAutoHighLight
 ***********************************************************************************************************************/
-class CAutoHighLight {
+class CAutoHighLight
+{
 public:
-
-    explicit CAutoHighLight(CRowCache* rowCache_p) : m_rowCache_p(rowCache_p)
+    explicit CAutoHighLight(CRowCache *rowCache_p) : m_rowCache_p(rowCache_p)
     {
         m_autoHighligthMatchStamp = 0;
         m_autoHighLightEnabled = false;
@@ -99,7 +98,7 @@ public:
 
         /**< Add some autoHighLight elements to the pool */
         for (int index = 0; index < 100; ++index) {
-            TextRectElement_t* element_p = static_cast<TextRectElement_t*>(malloc(sizeof(TextRectElement_t)));
+            TextRectElement_t *element_p = static_cast<TextRectElement_t *>(malloc(sizeof(TextRectElement_t)));
             m_autoHighlight_Pool.append(element_p);
         }
     }
@@ -110,27 +109,33 @@ public:
         }
     }
 
+    /***********************************************************************************************************************
+    *   Clean
+    ***********************************************************************************************************************/
     void Clean() {
         m_autoHighligthMatchStamp = 0;
     }
 
-    CAutoHighLight(CAutoHighLight& copy) = delete; // remove the copy constructor
-    CAutoHighLight& operator=(CAutoHighLight& rhs) = delete; // remove the assignment operator
+    CAutoHighLight(CAutoHighLight& copy) = delete; /* remove the copy constructor */
 
-    void CleanAutoHighlight(TIA_Cache_MemMap_t* cacheRow_p);
-    TextRectElement_t* GetFreeAutoHighlightElement(void);
-    bool GetAutoHighlightRowInfo(unsigned int row, AutoHightlight_RowInfo_t** rowInfo_pp);
-    void UpdateAutoHighlightList(unsigned int row);
+    CAutoHighLight& operator=(CAutoHighLight& rhs) = delete; /* remove the assignment operator */
+
+    void CleanAutoHighlight(TIA_Cache_MemMap_t *cacheRow_p);
+
+    TextRectElement_t *GetFreeAutoHighlightElement(void);
+    bool GetAutoHighlightRowInfo(int row, AutoHightlight_RowInfo_t **rowInfo_pp);
+    void UpdateAutoHighlightList(int row);
 
     /* caseSensitive and regExp is not used when autoHightLight is configured from the log editor and a selection
      * has been made. However from e.g. a search both regExp and caseSens is set. */
-    void SetAutoHighlight(uint64_t matchStamp = 0, const char* autoHighlight_p = nullptr, bool caseSensitive = true,
+    void SetAutoHighlight(uint64_t matchStamp = 0, const char *autoHighlight_p = nullptr, bool caseSensitive = true,
                           bool regExp = false);
-    bool SearchAndUpdateNextAutoHighlight(const char* matchString_p, CSelection* startSelection_p, bool forward,
-                                          CSelection* nextSelection_p, bool caseSensitive, bool regExp = false);
-    bool GetFontModRowInfo(unsigned int row, CFilterItem* filterItem_p, FontModification_RowInfo_t** rowInfo_pp);
-    TextRectElement_t* GetFreeFontModificationElement(void);
-    void EnableAutoHighlightAutomaticUpdates(bool enable) { m_autoHighLight_AutomaticUpdate = enable; }
+    bool SearchAndUpdateNextAutoHighlight(const char *matchString_p, CSelection *startSelection_p, bool forward,
+                                          CSelection *nextSelection_p, bool caseSensitive, bool regExp = false);
+    bool GetFontModRowInfo(int row, CFilterItem *filterItem_p, FontModification_RowInfo_t **rowInfo_pp);
+
+    TextRectElement_t *GetFreeFontModificationElement(void);
+    void EnableAutoHighlightAutomaticUpdates(bool enable) {m_autoHighLight_AutomaticUpdate = enable;}
     void AutoHighlightTest(void);
 
     uint64_t m_autoHighligthMatchStamp;
@@ -143,31 +148,33 @@ public:
     bool m_autoHighLight_RegExp;
 
 private:
-    CRowCache* m_rowCache_p; /**< Access to the cache memmap */
-    QList<TextRectElement_t*> m_autoHighlight_Pool;
+    CRowCache *m_rowCache_p; /**< Access to the cache memmap */
+    QList<TextRectElement_t *> m_autoHighlight_Pool;
 };
 
-
-class CFontModification {
+/***********************************************************************************************************************
+*   CFontModification
+***********************************************************************************************************************/
+class CFontModification
+{
 public:
-    CFontModification(CRowCache* rowCache_p) : m_rowCache_p(rowCache_p) {
-        // Add some autoHighLight elements to the pool
+    CFontModification(CRowCache *rowCache_p) : m_rowCache_p(rowCache_p) {
+        /* Add some autoHighLight elements to the pool */
         for (int index = 0; index < 100; ++index) {
-            auto element_p = static_cast<FontModification_Element_t*>(malloc(sizeof(FontModification_Element_t)));
+            auto element_p = static_cast<FontModification_Element_t *>(malloc(sizeof(FontModification_Element_t)));
             m_fontModification_Pool.append(element_p);
         }
     }
-    ~CFontModification(){
-
+    ~CFontModification() {
         while (!m_fontModification_Pool.isEmpty()) {
             free(m_fontModification_Pool.takeFirst());
         }
     }
 
-    TextRectElement_t* GetFreeFontModificationElement(void);
-    bool GetFontModRowInfo(const int row, CFilterItem* filterItem_p, FontModification_RowInfo_t** rowInfo_pp);
+    TextRectElement_t *GetFreeFontModificationElement(void);
+    bool GetFontModRowInfo(const int row, CFilterItem *filterItem_p, FontModification_RowInfo_t **rowInfo_pp);
 
 private:
-    CRowCache* m_rowCache_p; /**< Access to the cache memmap */
-    QList<FontModification_Element_t*> m_fontModification_Pool;
+    CRowCache *m_rowCache_p; /**< Access to the cache memmap */
+    QList<FontModification_Element_t *> m_fontModification_Pool;
 };

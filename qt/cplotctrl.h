@@ -81,12 +81,12 @@ public:
     /* API */
     void Start_PlotProcessing(QFile *qFile_p,
                               char *workMem_p,
-                              unsigned int workMemSize,
+                              int workMemSize,
                               TIA_t *TIA_p,
                               int priority,
                               QList<CPlot *> *pendingPlot_execList_p,
-                              unsigned int startRow,
-                              unsigned int endRow,
+                              int startRow,
+                              int endRow,
                               bool backward = false);
 
 protected:

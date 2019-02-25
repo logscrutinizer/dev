@@ -1,14 +1,21 @@
+/***********************************************************************************************************************
+** Copyright (C) 2018 Robert Klang
+** Contact: https://www.logscrutinizer.com
+***********************************************************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "plugin_utils_internal.h"
 #include "plugin_utils.h"
 
-//----------------------------------------------------------------------------------------------------------------------
-// CLASS: CList_LSZ
-// Description: See plugin_utils.h file
-//----------------------------------------------------------------------------------------------------------------------
-void CList_LSZ::InsertAfter(CListObject* afterListObject_p, CListObject* listObject_p)
+/*
+ * ----------------------------------------------------------------------------------------------------------------------
+ * CLASS: CList_LSZ
+ * Description: See plugin_utils.h file
+ * ----------------------------------------------------------------------------------------------------------------------
+ * */
+void CList_LSZ::InsertAfter(CListObject *afterListObject_p, CListObject *listObject_p)
 {
     listObject_p->m_parentList_p = this;
 
@@ -29,8 +36,9 @@ void CList_LSZ::InsertAfter(CListObject* afterListObject_p, CListObject* listObj
     ++m_items;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void CList_LSZ::InsertBefore(CListObject* beforeListObject_p, CListObject* listObject_p)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+void CList_LSZ::InsertBefore(CListObject *beforeListObject_p, CListObject *listObject_p)
 {
     listObject_p->m_parentList_p = this;
 
@@ -44,7 +52,6 @@ void CList_LSZ::InsertBefore(CListObject* beforeListObject_p, CListObject* listO
     listObject_p->m_next_p = beforeListObject_p;
     beforeListObject_p->m_previous_p = listObject_p;
 
-
     if (beforeListObject_p == m_head_p) {
         m_head_p = listObject_p;
     }
@@ -52,8 +59,9 @@ void CList_LSZ::InsertBefore(CListObject* beforeListObject_p, CListObject* listO
     ++m_items;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void CList_LSZ::InsertHead(CListObject* listObject_p)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+void CList_LSZ::InsertHead(CListObject *listObject_p)
 {
     listObject_p->m_parentList_p = this;
     listObject_p->m_next_p = nullptr;
@@ -73,8 +81,9 @@ void CList_LSZ::InsertHead(CListObject* listObject_p)
     ++m_items;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void CList_LSZ::InsertTail(CListObject* listObject_p)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+void CList_LSZ::InsertTail(CListObject *listObject_p)
 {
     listObject_p->m_parentList_p = this;
     listObject_p->m_next_p = nullptr;
@@ -94,8 +103,9 @@ void CList_LSZ::InsertTail(CListObject* listObject_p)
     ++m_items;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-void CList_LSZ::TakeOut(CListObject* listObject_p)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+void CList_LSZ::TakeOut(CListObject *listObject_p)
 {
     listObject_p->m_parentList_p = nullptr;
 
@@ -120,11 +130,12 @@ void CList_LSZ::TakeOut(CListObject* listObject_p)
     --m_items;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
 void CList_LSZ::DeleteAll(void)
 {
-    CListObject* listObject_p = m_head_p;
-    CListObject* nextlistObject_p = nullptr;
+    CListObject *listObject_p = m_head_p;
+    CListObject *nextlistObject_p = nullptr;
 
     if (m_head_p == nullptr) {
         return;
@@ -141,16 +152,17 @@ void CList_LSZ::DeleteAll(void)
     m_items = 0;
 }
 
+/*
+ * ----------------------------------------------------------------------------------------------------------------------
+ * CLASS: CGraph
+ * Description: See plugin_utils.h file */
 
-//----------------------------------------------------------------------------------------------------------------------
-// CLASS: CGraph
-// Description: See plugin_utils.h file
-
-//----------------------------------------------------------------------------------------------------------------------
-bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row)
 {
-    GraphicalObject_Line_t* newLine_p =
-            (GraphicalObject_Line_t*)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_t));
+    GraphicalObject_Line_t *newLine_p =
+        (GraphicalObject_Line_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_t));
 
     if (newLine_p == nullptr) {
         ErrorHook("CGraph::AddLine failed, out of memory\n");
@@ -158,7 +170,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row)
     }
 
     const bool painting = (m_property & GRAPH_PROPERTY_PAINTING) ? true : false;
-    if (!painting && (x1 < 0.0 || x2 < 0.0)) {
+    if (!painting && ((x1 < 0.0) || (x2 < 0.0))) {
         ErrorHook("CGraph::AddLine failed, x1(%f) or x2(%f) less than 0\n", x1, x2);
         return false;
     }
@@ -175,7 +187,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row)
 
     memset(newLine_p, 0, sizeof(GraphicalObject_Line_t));
 
-    GraphicalObject_t* go_p = &newLine_p->go;
+    GraphicalObject_t *go_p = &newLine_p->go;
 
     go_p->x1 = x1;
     go_p->y1 = y1;
@@ -190,13 +202,14 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row)
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row, const char* label_p,
-                     unsigned char labelLength, int lineColorRGB, float relative_X, unsigned int lineEnds)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row, const char *label_p,
+                     int labelLength, int lineColorRGB, float relative_X, int lineEnds)
 {
-    unsigned int totalObjectSize = sizeof(GraphicalObject_Line_Ex_t) + labelLength + 1;  // +1 for EOL
-
-    GraphicalObject_Line_Ex_t* newLine_p = (GraphicalObject_Line_Ex_t*)m_byteStreamManager_p->AddBytes(totalObjectSize);
+    int totalObjectSize = sizeof(GraphicalObject_Line_Ex_t) + labelLength + 1;  /* +1 for EOL */
+    GraphicalObject_Line_Ex_t *newLine_p =
+        reinterpret_cast<GraphicalObject_Line_Ex_t *>(m_byteStreamManager_p->AddBytes(totalObjectSize));
 
     if (newLine_p == nullptr) {
         ErrorHook("CGraph::AddLine_Ex failed, out of memory\n");
@@ -204,7 +217,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row,
     }
 
     const bool painting = (m_property & GRAPH_PROPERTY_PAINTING) ? true : false;
-    if (!painting && (x1 < 0.0 || x2 < 0.0)) {
+    if (!painting && ((x1 < 0.0) || (x2 < 0.0))) {
         ErrorHook("CGraph::AddLine failed, x1(%f) or x2(%f) less than 0\n", x1, x2);
         return false;
     }
@@ -221,7 +234,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row,
 
     memset(newLine_p, 0, totalObjectSize);
 
-    GraphicalObject_t* go_p = &newLine_p->go;
+    GraphicalObject_t *go_p = &newLine_p->go;
 
     go_p->properties = GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_STR | lineEnds;
 
@@ -235,23 +248,24 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row,
     newLine_p->relative_X = relative_X;
     newLine_p->label.labelKind.textLabel.length = labelLength;
 
-    if (label_p != nullptr && labelLength > 0) {
+    if ((label_p != nullptr) && (labelLength > 0)) {
         memcpy(&newLine_p->label.labelKind.textLabel.label_a, label_p, labelLength);
     }
 
-    (&newLine_p->label.labelKind.textLabel.label_a)[labelLength] = 0;  // Add EOL
+    (&newLine_p->label.labelKind.textLabel.label_a)[labelLength] = 0;  /* Add EOL */
 
     UpdateExtents(go_p);
 
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row, unsigned int labelIndex,
-                     int lineColorRGB, float relative_X, unsigned int lineEnds)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row, int labelIndex,
+                     int lineColorRGB, float relative_X, int lineEnds)
 {
-    GraphicalObject_Line_Ex_t* newLine_p =
-            (GraphicalObject_Line_Ex_t*)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_Ex_t));
+    GraphicalObject_Line_Ex_t *newLine_p =
+        (GraphicalObject_Line_Ex_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_Ex_t));
 
     if (newLine_p == nullptr) {
         ErrorHook("CGraph::AddLine_Ex failed, out of memory\n");
@@ -259,7 +273,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row,
     }
 
     const bool painting = (m_property & GRAPH_PROPERTY_PAINTING) ? true : false;
-    if (!painting && (x1 < 0.0 || x2 < 0.0)) {
+    if (!painting && ((x1 < 0.0) || (x2 < 0.0))) {
         ErrorHook("CGraph::AddLine failed, x1(%f) or x2(%f) less than 0\n", x1, x2);
         return false;
     }
@@ -268,7 +282,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row,
 
     memset(newLine_p, 0, sizeof(GraphicalObject_Line_Ex_t));
 
-    GraphicalObject_t* go_p = &newLine_p->go;
+    GraphicalObject_t *go_p = &newLine_p->go;
 
     go_p->properties = GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_INDEX | lineEnds;
 
@@ -287,11 +301,12 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, unsigned int row,
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, unsigned int row2)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2)
 {
-    GraphicalObject_Box_t* newBox_p =
-            (GraphicalObject_Box_t*)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_t));
+    GraphicalObject_Box_t *newBox_p =
+        (GraphicalObject_Box_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_t));
 
     if (newBox_p == nullptr) {
         ErrorHook("CGraph::AddBox failed, out of memory\n");
@@ -299,7 +314,7 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
     }
 
     const bool painting = (m_property & GRAPH_PROPERTY_PAINTING) ? true : false;
-    if (!painting && (x1 < 0.0 || x2 < 0.0)) {
+    if (!painting && ((x1 < 0.0) || (x2 < 0.0))) {
         ErrorHook("CGraph::AddBox failed, x1(%f) or x2(%f) less than 0\n", x1, x2);
         return false;
     }
@@ -324,7 +339,7 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
 
     memset(newBox_p, 0, sizeof(GraphicalObject_Box_t));
 
-    GraphicalObject_t* go_p = &newBox_p->go;
+    GraphicalObject_t *go_p = &newBox_p->go;
 
     go_p->x1 = x1;
     go_p->y1 = y1;
@@ -340,13 +355,13 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, unsigned int row2, const char* label_p,
-                    unsigned char labelLength, int fillColorRGB)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2, const char *label_p,
+                    int labelLength, int fillColorRGB)
 {
-    unsigned int totalObjectSize = sizeof(GraphicalObject_Box_Ex_t) + labelLength + 1; // +1 for EOL
-
-    GraphicalObject_Box_Ex_t* newBox_p = (GraphicalObject_Box_Ex_t*)m_byteStreamManager_p->AddBytes(totalObjectSize);
+    int totalObjectSize = sizeof(GraphicalObject_Box_Ex_t) + labelLength + 1; /* +1 for EOL */
+    GraphicalObject_Box_Ex_t *newBox_p = (GraphicalObject_Box_Ex_t *)m_byteStreamManager_p->AddBytes(totalObjectSize);
 
     if (newBox_p == nullptr) {
         ErrorHook("CGraph::AddBox failed, out of memory\n");
@@ -354,7 +369,7 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
     }
 
     const bool painting = (m_property & GRAPH_PROPERTY_PAINTING) ? true : false;
-    if (!painting && (x1 < 0.0 || x2 < 0.0)) {
+    if (!painting && ((x1 < 0.0) || (x2 < 0.0))) {
         ErrorHook("CGraph::AddBox failed, x1(%f) or x2(%f) less than 0\n", x1, x2);
         return false;
     }
@@ -378,7 +393,7 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
 
     memset(newBox_p, 0, totalObjectSize);
 
-    GraphicalObject_t* go_p = &newBox_p->go;
+    GraphicalObject_t *go_p = &newBox_p->go;
 
     go_p->x1 = x1;
     go_p->y1 = y1;
@@ -394,19 +409,19 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
 
     memcpy(&newBox_p->label.labelKind.textLabel.label_a, label_p, labelLength);
 
-    (&newBox_p->label.labelKind.textLabel.label_a)[labelLength] = 0;  // Add EOL
+    (&newBox_p->label.labelKind.textLabel.label_a)[labelLength] = 0;  /* Add EOL */
 
     UpdateExtents(go_p);
 
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, unsigned int row2,
-                    unsigned int labelIndex, int fillColorRGB)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2, int labelIndex, int fillColorRGB)
 {
-    GraphicalObject_Box_Ex_t* newBox_p =
-            (GraphicalObject_Box_Ex_t*)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_Ex_t));
+    GraphicalObject_Box_Ex_t *newBox_p =
+        (GraphicalObject_Box_Ex_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_Ex_t));
 
     if (newBox_p == nullptr) {
         ErrorHook("CGraph::AddBox failed, out of memory\n");
@@ -414,7 +429,7 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
     }
 
     const bool painting = (m_property & GRAPH_PROPERTY_PAINTING) ? true : false;
-    if (!painting && (x1 < 0.0 || x2 < 0.0)) {
+    if (!painting && ((x1 < 0.0) || (x2 < 0.0))) {
         ErrorHook("CGraph::AddBox failed, x1(%f) or x2(%f) less than 0\n", x1, x2);
         return false;
     }
@@ -438,7 +453,7 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
 
     memset(newBox_p, 0, sizeof(GraphicalObject_Box_Ex_t));
 
-    GraphicalObject_t* go_p = &newBox_p->go;
+    GraphicalObject_t *go_p = &newBox_p->go;
 
     go_p->x1 = x1;
     go_p->y1 = y1;
@@ -457,31 +472,34 @@ bool CGraph::AddBox(double x1, float y1, unsigned int row, double x2, float y2, 
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
 void CGraph::SetGraphColor(int colorRGB)
 {
     m_isOverrideColorSet = true;
     m_overrideColor = colorRGB;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
 void CGraph::SetLinePattern(GraphLinePattern_e pattern)
 {
     m_overrideLinePattern = pattern;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char* label_p, unsigned char labelLength,
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char *label_p, int labelLength,
                                          int colorRGB)
 {
-    // 1. Add the life line box
-    // 2. Add the life line line
+    /* 1. Add the life line box
+     * 2. Add the life line line */
 
-    unsigned int totalObjectSize = sizeof(GraphicalObject_LifeLine_Box_t) + labelLength + 1; //+1 EOL
+    int totalObjectSize = sizeof(GraphicalObject_LifeLine_Box_t) + labelLength + 1; /*+1 EOL */
 
-    // Add the lifeline box in the m_decorator member
-    GraphicalObject_LifeLine_Box_t* newLifeLine_Box_p =
-            (GraphicalObject_LifeLine_Box_t*)m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize);
+    /* Add the lifeline box in the m_decorator member */
+    GraphicalObject_LifeLine_Box_t *newLifeLine_Box_p =
+        (GraphicalObject_LifeLine_Box_t *)m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize);
 
     if (newLifeLine_Box_p == nullptr) {
         ErrorHook("CSequenceDiagram::AddLifeLine Box failed, out of memory\n");
@@ -499,7 +517,8 @@ lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char* label_p
 #endif
 
     memset(newLifeLine_Box_p, 0, totalObjectSize);
-    GraphicalObject_t* go_p = &newLifeLine_Box_p->go;
+
+    GraphicalObject_t *go_p = &newLifeLine_Box_p->go;
 
     go_p->x1 = 0.0;
     go_p->y1 = y1;
@@ -522,13 +541,13 @@ lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char* label_p
 
     ++m_decorator_p->m_numOfObjects;
 
-    // 2. Add the life line line
+    /* 2. Add the life line line */
 
     totalObjectSize = sizeof(GraphicalObject_LifeLine_Line_t) + labelLength;
 
-    // Add the lifeline box in the m_decorator member
-    GraphicalObject_LifeLine_Line_t* newLifeLine_Line_p =
-            (GraphicalObject_LifeLine_Line_t*)m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize);
+    /* Add the lifeline box in the m_decorator member */
+    GraphicalObject_LifeLine_Line_t *newLifeLine_Line_p =
+        (GraphicalObject_LifeLine_Line_t *)m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize);
 
     if (newLifeLine_Line_p == nullptr) {
         ErrorHook("CSequenceDiagram::AddLifeLine Line failed, out of memory\n");
@@ -549,7 +568,7 @@ lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char* label_p
 
     newLifeLine_Line_p->lineColorRGB = colorRGB;
     newLifeLine_Line_p->label.labelKind.textLabel.length = labelLength;
-    newLifeLine_Line_p->relative_X = 0.2f;         // 20% in on the line
+    newLifeLine_Line_p->relative_X = 0.2f;         /* 20% in on the line */
 
     memcpy(&newLifeLine_Line_p->label.labelKind.textLabel.label_a, label_p, labelLength);
     (&newLifeLine_Line_p->label.labelKind.textLabel.label_a)[labelLength] = 0;
@@ -559,16 +578,16 @@ lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char* label_p
     return ((lifeLine_h)newLifeLine_Box_p);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, unsigned int row,
-                                  unsigned int labelIndex, int colorRGB, bool synched, bool startsExecution)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
+                                  int labelIndex, int colorRGB, bool synched, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine1_p =
-            (GraphicalObject_LifeLine_Box_t*)lifeLine1;
-    GraphicalObject_LifeLine_Box_t* lifeLine2_p =
-            (GraphicalObject_LifeLine_Box_t*)lifeLine2;
-
-    unsigned int lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
+    GraphicalObject_LifeLine_Box_t *lifeLine1_p =
+        (GraphicalObject_LifeLine_Box_t *)lifeLine1;
+    GraphicalObject_LifeLine_Box_t *lifeLine2_p =
+        (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
 
     if (synched) {
         lineEnds = PROPERTIES_BITMASK_LINE_ARROW_SOLID_END;
@@ -581,8 +600,8 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
     float y_dest = lifeLine2_p->y_center;
 
     if (startsExecution) {
-        // Check if the line goes up or down, in-case down then use the
-        // top y coord of lifeline2, otherwise the low
+        /* Check if the line goes up or down, in-case down then use the
+         * top y coord of lifeline2, otherwise the low */
 
         if (lifeLine1_p->go.y1 > lifeLine1_p->go.y2) {
             y_dest = lifeLine2_p->y_execTop;
@@ -597,15 +616,15 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, unsigned int row,
-                                  const char* label_p, unsigned char labelLength, int colorRGB, bool synched,
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
+                                  const char *label_p, int labelLength, int colorRGB, bool synched,
                                   bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine1_p = (GraphicalObject_LifeLine_Box_t*)lifeLine1;
-    GraphicalObject_LifeLine_Box_t* lifeLine2_p = (GraphicalObject_LifeLine_Box_t*)lifeLine2;
-
-    unsigned int lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
+    GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
+    GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
 
     if (synched) {
         lineEnds = PROPERTIES_BITMASK_LINE_ARROW_SOLID_END;
@@ -614,7 +633,7 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
     float y_dest = lifeLine2_p->y_center;
 
     if (startsExecution) {
-        // Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low
+        /* Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low */
 
         if (lifeLine1_p->go.y1 > lifeLine1_p->go.y2) {
             y_dest = lifeLine2_p->y_execTop;
@@ -628,20 +647,19 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, unsigned int row,
-                                        unsigned int labelIndex, int colorRGB, bool fromExecution, bool startsExecution)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
+                                        int labelIndex, int colorRGB, bool fromExecution, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine1_p = (GraphicalObject_LifeLine_Box_t*)lifeLine1;
-    GraphicalObject_LifeLine_Box_t* lifeLine2_p = (GraphicalObject_LifeLine_Box_t*)lifeLine2;
-
-    unsigned int lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-
+    GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
+    GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     float y_src = lifeLine1_p->y_center;
     float y_dest = lifeLine2_p->y_center;
 
     if (fromExecution) {
-        // Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low
+        /* Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low */
 
         if (lifeLine1_p->go.y1 > lifeLine2_p->go.y1) {
             y_src = lifeLine1_p->y_execBottom;
@@ -662,21 +680,20 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, unsigned int row,
-                                        const char* label_p, unsigned char labelLength, int colorRGB,
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
+                                        const char *label_p, int labelLength, int colorRGB,
                                         bool fromExecution, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine1_p = (GraphicalObject_LifeLine_Box_t*)lifeLine1;
-    GraphicalObject_LifeLine_Box_t* lifeLine2_p = (GraphicalObject_LifeLine_Box_t*)lifeLine2;
-
-    unsigned int lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-
+    GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
+    GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     float y_src = lifeLine1_p->y_center;
     float y_dest = lifeLine2_p->y_center;
 
     if (fromExecution) {
-        // Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low
+        /* Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low */
 
         if (lifeLine1_p->go.y1 > lifeLine2_p->go.y1) {
             y_src = lifeLine1_p->y_execBottom;
@@ -697,14 +714,13 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, unsigned int row, unsigned int labelIndex,
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, int labelIndex,
                                 int colorRGB, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine_p = (GraphicalObject_LifeLine_Box_t*)lifeLine;
-
-    unsigned int lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-
+    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
+    Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     const float start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
     AddLine(x, start, x, lifeLine_p->y_center, row, labelIndex, colorRGB, 0.5f, lineEnds);
@@ -712,14 +728,13 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, unsigned int row,
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, unsigned int row, const char* label_p,
-                                unsigned char labelLength, int colorRGB, bool startsExecution)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, const char *label_p,
+                                int labelLength, int colorRGB, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine_p = (GraphicalObject_LifeLine_Box_t*)lifeLine;
-
-    unsigned int lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-
+    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
+    Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     const float start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
     AddLine(x, start, x, lifeLine_p->y_center, row, label_p, labelLength, colorRGB, 0.5f, lineEnds);
@@ -727,26 +742,28 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, unsigned int row,
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, unsigned int row,
-                                    unsigned int labelIndex, int colorRGB)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, int labelIndex, int colorRGB)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine_p = (GraphicalObject_LifeLine_Box_t*)lifeLine;
+    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
 
     AddBox(x1, lifeLine_p->y_execBottom, row, x2, lifeLine_p->y_execTop, row, labelIndex, colorRGB);
 
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, unsigned int row, const char* label_p,
-                                    unsigned char labelLength, int colorRGB)
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, const char *label_p,
+                                    int labelLength, int colorRGB)
 {
-    GraphicalObject_LifeLine_Box_t* lifeLine_p = (GraphicalObject_LifeLine_Box_t*)lifeLine;
+    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
 
     AddBox(x1, lifeLine_p->y_execBottom, row, x2, lifeLine_p->y_execTop, row, label_p, labelLength, colorRGB);
 
     return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
+/*----------------------------------------------------------------------------------------------------------------------
+ * */

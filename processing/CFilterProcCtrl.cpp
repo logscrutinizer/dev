@@ -291,7 +291,7 @@ void CFilterProcCtrl::StartOneLine(TIA_t *TIA_p, FIR_t *FIRA_p, int row, char *t
 {
     bool match = false;
     Match_Description_t matchDescr;
-    unsigned char filterIndex = 0;
+    uint8_t filterIndex = 0;
 
     m_execTimes_p = nullptr;
     m_bookmarkList_p = bookmarkList_p;
@@ -674,7 +674,7 @@ int TestHS(void)
         global_match = 0;
 
         hs_error_t result =
-            hs_scan(database, test_vector[index].text, strlen(test_vector[index].text),
+            hs_scan(database, test_vector[index].text, (unsigned int)strlen(test_vector[index].text),
                     0 /*flags*/, scratch, eventHandler, nullptr);
 
         switch (result)

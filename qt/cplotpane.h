@@ -50,9 +50,9 @@ public:
     bool plotExists(void) {return (m_plotWnds.isEmpty() ? false : true);}
     bool isPlotsActive(void);
 
-    void setPlotCursor(unsigned int row, unsigned int *cursorRow_p); /* Called when time isn't known, search for best
-                                                                      * matching row, cursorRow_p contains the best
-                                                                      * match */
+    void setPlotCursor(int row, int *cursorRow_p); /* Called when time isn't known, search for best
+                                                    * matching row, cursorRow_p contains the best
+                                                    * match */
     void setPlotCursor(const double time); /* Called when time IS known, apply as is */
     void setSubPlotUpdated(CSubPlot *subPlot_p);
     void redrawPlot(CPlot *plot_p);

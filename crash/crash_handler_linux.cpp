@@ -197,7 +197,7 @@ void CCrashHandler::InvalidParameterHandler(
     const wchar_t *expression,
     const wchar_t *function,
     const wchar_t *file,
-    unsigned int line,
+    int line,
     uintptr_t pReserved)
 {
     pReserved;

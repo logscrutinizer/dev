@@ -96,10 +96,10 @@ namespace FilterMgr
     /* Go through the entire FIRA and move the items to the packed FIRA */
     packed_FIR_t *GeneratePackedFIRA(TIA_t& TIA, FIRA_t& FIRA, CFilterItem **filterItem_LUT_pp)
     {
-        unsigned int index;
+        int index;
         packed_FIR_t *packedFIR_base_p;
         packed_FIR_t *packedFIR_p;
-        const unsigned int numOfItems = TIA.rows;
+        const int numOfItems = TIA.rows;
 
         if (FIRA.filterMatches == 0) {
             return nullptr;
@@ -121,7 +121,7 @@ namespace FilterMgr
 
         int count = 0;
         for (index = 0; index < numOfItems; ++index) {
-            unsigned char LUT_Index = FIR_Array_p[index].LUT_index;
+            uint8_t LUT_Index = FIR_Array_p[index].LUT_index;
 
             if ((LUT_Index != 0) && !filterItem_LUT_pp[LUT_Index]->m_exclude) {
                 packedFIR_p->LUT_index = LUT_Index;
@@ -159,13 +159,13 @@ namespace FilterMgr
     /****/
     void ReNumerateFIRA(FIRA_t& FIRA, TIA_t& TIA, CFilterItem **filterItem_LUT_pp)
     {
-        unsigned int FIR_Count = 0;
-        unsigned int FIR_Exclude_Count = 0;
-        unsigned int index;
+        int FIR_Count = 0;
+        int FIR_Exclude_Count = 0;
+        int index;
         FIR_t *FIRA_p = FIRA.FIR_Array_p;
-        const unsigned int numOfTextItems = TIA.rows;
+        const int numOfTextItems = TIA.rows;
 
-        for (index = 0; index < (unsigned int)numOfTextItems; ++index) {
+        for (index = 0; index < numOfTextItems; ++index) {
             if (FIRA_p[index].LUT_index != 0) {
                 if (!filterItem_LUT_pp[FIRA_p[index].LUT_index]->m_exclude) {
                     FIRA_p[index].index = FIR_Count;

@@ -1708,8 +1708,8 @@ int CWorkspace::GetClosestBookmark(int row)
 {
     bool first = true;
     int diff = 0;
-    unsigned min_diff = 0;
-    unsigned int min_row = 0;
+    int min_diff = 0;
+    int min_row = 0;
 
     if (m_bookmarks_p->m_cfgChildItems.count() == 0) {
         return -1;
@@ -1718,7 +1718,7 @@ int CWorkspace::GetClosestBookmark(int row)
     for (auto cfgItem_p : m_bookmarks_p->m_cfgChildItems) {
         auto bookmark_p = static_cast<CCfgItem_Bookmark *>(cfgItem_p);
         diff = bookmark_p->m_row > row ? bookmark_p->m_row - row : row - bookmark_p->m_row;
-        if (first || (diff < (int)min_diff)) {
+        if (first || (diff < min_diff)) {
             min_diff = diff;
             min_row = bookmark_p->m_row;
             first = false;

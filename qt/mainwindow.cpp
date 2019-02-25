@@ -52,7 +52,6 @@ CTimeMeas g_system_tick;
 
 /* Style sheets for qtreeview
  * http://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtreeview */
-
 void MW_TV_Expand(QModelIndex& modelIndex)
 {
     if ((CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) && (g_mainWindow_p != nullptr)) {
@@ -491,7 +490,8 @@ void MW_updateLogFileTrackState(bool track)
 ***********************************************************************************************************************/
 void MW_updatePendingStateGeometry(void)
 {
-    /* must check firstStart, otherwise the dockwidgets will overwrite the saved settings when they are being created. */
+    /* must check firstStart, otherwise the dockwidgets will overwrite the saved settings when they are being created.
+     * */
     if (!firstStart) {
         g_mainWindow_p->updatePendingStateGeometry();
     }
@@ -520,7 +520,6 @@ void CLogWindow::message_receiver(const QString& text)
 void CLogWindow::storeSettings(void)
 {
 #ifdef LOCAL_GEOMETRY_SETTING
-
     QSettings settings;
     settings.setValue("logWindow", size());
 #endif
@@ -565,7 +564,6 @@ void MainWindow::addPlotPane(void)
 void MainWindow::startWebPage(const QString& url)
 {
 #ifdef _WEB_HELP
-
     QDockWidget *webPaneDock_p = new QDockWidget("Web", this);
     webPaneDock_p->setFeatures(QDockWidget::DockWidgetFloatable |
                                QDockWidget::DockWidgetMovable |
@@ -794,7 +792,6 @@ void MainWindow::showEvent(QShowEvent *e)
         TRACEX_I(QString("Ready"));
 
 #ifdef _WIN32
-
         QWinTaskbarButton *button = new QWinTaskbarButton(this);
         button->setWindow(this->windowHandle());
         button->setOverlayIcon(QIcon(":main_icon"));
@@ -1200,8 +1197,6 @@ void MainWindow::createActions(void)
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
     QMenu *toolsMenu = menuBar()->addMenu(tr("&Tools"));
-    QMenu *windowMenu = menuBar()->addMenu(tr("&Window"));
-    QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
     QToolBar *fileToolBar = addToolBar(tr("File"));
     fileToolBar->setObjectName("File");
 
@@ -1252,7 +1247,6 @@ void MainWindow::createActions(void)
     m_saveAsAct->setEnabled(false);
 
 #if CSS_SUPPORT == 1 || defined (_DEBUG)
-
     const QIcon cssIcon = QIcon(":css.png");
     QAction *reloadCSSAct = new QAction(cssIcon, tr("&ReloadCSS"), this);
     reloadCSSAct->setStatusTip(tr("Reload application CSS"));
@@ -1265,7 +1259,6 @@ void MainWindow::createActions(void)
      *    reloadCSSAct->setStatusTip(tr("Reload application CSS"));
      *   connect(reloadCSSAct, &QAction::triggered, this, &MainWindow::reloadCSS);
      *  devCmd->addAction(reloadCSSAct); */
-
     QWidget *empty = new QWidget();
     empty->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     trackingBar->addWidget(empty);
@@ -1286,7 +1279,6 @@ void MainWindow::createActions(void)
     connect(g_app, &QApplication::applicationStateChanged, this, &MainWindow::appStateChanged);
 
 #ifdef _DEBUG
-
     QPixmap pixmap(100, 100);
     pixmap.fill(QColor("red"));
 
@@ -1321,7 +1313,6 @@ void MainWindow::createActions(void)
 
     /*auto settingsMenu = toolsMenu->addMenu(tr("&Settings...")); */
 #if _DEBUG
-
     auto debugMenu = toolsMenu->addMenu(tr("&Settings..."));
     {
         /* Tools - clear QSetting */
@@ -1932,7 +1923,11 @@ bool MainWindow::event(QEvent *event)
                     return true;
                 }
             }
+            break;
         } /*KeyPress */
+
+        default:
+            break;
     }
     return QMainWindow::event(event);
 }
@@ -1961,7 +1956,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
 bool MainWindow::handleSearch(bool forward)
 {
     bool searchResult = false;
-    unsigned int searchRow = 0;
+    int searchRow = 0;
     QString searchText;
     CLogScrutinizerDoc *doc_p = GetTheDoc();
     CSelection cursorPosition = CEditorWidget_GetCursorPosition();
@@ -2026,7 +2021,7 @@ bool MainWindow::handleSearch(bool forward)
                         forward, &searchResultSelection, caseSensitive, regExp);
 
                 if (searchResult) {
-                    searchRow = static_cast<unsigned int>(tempCursorPos.row);
+                    searchRow = static_cast<int>(tempCursorPos.row);
                 } else {
                     /* When looping we start from the end, or beginning of a new line */
                     numOfFastSearchRows--;

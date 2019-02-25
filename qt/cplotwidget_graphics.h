@@ -69,9 +69,9 @@ private:
 
     /* members from subplotsurface */
     std::vector<CGO_Label *> m_label_refs_a;
-    unsigned int m_numOfLabelRefs;
+    int m_numOfLabelRefs;
     CDisplayGraph m_displayDecorator;   /* Possibly there is a decorator */
-    unsigned int m_subplot_properties;   /*updated each time when drawing axis   = m_subPlot_p->GetProperties(); */
+    int m_subplot_properties;   /*updated each time when drawing axis   = m_subPlot_p->GetProperties(); */
 };
 
 /* The CPlotWidgetGraphics has only one surface */
@@ -136,9 +136,9 @@ public:
     virtual void SurfaceToClipBoard(const ScreenPoint_t *screenPoint_p) override;
     virtual bool GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_pp,
                                  GraphicalObject_t **go_pp, CSubPlot **subPlot_pp) override;
-    virtual bool GetClosestGraph(unsigned int row, CGraph **graph_pp, GraphicalObject_t **go_pp,
+    virtual bool GetClosestGraph(int row, CGraph **graph_pp, GraphicalObject_t **go_pp,
                                  CSubPlot **subPlot_pp) override;
-    virtual bool GetClosest_GO(int row, GraphicalObject_t **go_pp, unsigned int *distance_p) override;
+    virtual bool GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p) override;
     virtual void SetFocusTime(const double time) override;
     virtual bool isInitialized(void) override {return m_surfacesInitialized;}
     virtual void SetUpdateSubplots(void) override {m_restoreSubPlotSize = true;}
@@ -276,6 +276,6 @@ private:
     bool m_inDestructor;
     bool m_inFocus;
     CDisplayGraph m_displayDecorator;   /* Possibly there is a decorator */
-    unsigned int m_subplot_properties;   /*updated each time when drawing axis            =
-                                          * m_subPlot_p->GetProperties(); */
+    int m_subplot_properties;   /*updated each time when drawing axis            =
+                                 * m_subPlot_p->GetProperties(); */
 };

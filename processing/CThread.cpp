@@ -75,7 +75,7 @@ CThreadManager::~CThreadManager()
 {
     Q_ASSERT(m_numOfThreads == 0);  /* KillThreads must be called before destructor */
 
-    for (unsigned int threadIndex = 0; threadIndex < (unsigned int)m_numOfThreads; ++threadIndex) {
+    for (int threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         DELETE_AND_CLEAR(m_threadInstanceArray[threadIndex].cmdSync_sem_p);
         DELETE_AND_CLEAR(m_threadInstanceArray[threadIndex].doneSync_sem_p);
         DELETE_AND_CLEAR(m_threadInstanceArray[threadIndex].killed_sem_p);
@@ -100,7 +100,7 @@ void CThreadManager::InitializeThreads(void)
 
     /* Initialize threads, start them, and let them wait for first cmd */
 
-    for (unsigned int threadIndex = 0; threadIndex < (unsigned int)m_numOfThreads; ++threadIndex) {
+    for (int threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         /* Initial count is 0, so it is not signalled, thread will wait */
         m_threadInstanceArray[threadIndex].doneSync_sem_p = new QSemaphore();
         m_threadInstanceArray[threadIndex].cmdSync_sem_p = new QSemaphore();
@@ -170,7 +170,7 @@ void CThreadManager::ConfigureThread(int index, ThreadAction_fptr_t action_p, vo
 ***********************************************************************************************************************/
 void CThreadManager::KillThreads(void)
 {
-    unsigned int threadIndex;
+    int threadIndex;
 
     if (m_numOfThreads == 0) {
         /*already called */
@@ -178,13 +178,13 @@ void CThreadManager::KillThreads(void)
     }
 
     /* Kill all threads */
-    for (threadIndex = 0; threadIndex < (unsigned int)m_numOfThreads; ++threadIndex) {
+    for (threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         m_threadInstanceArray[threadIndex].command = THREAD_CMD_STOP;
         TRACEX_DE(QString("%1 - Stopping %2").arg(__FUNCTION__).arg(threadIndex));
         m_threadInstanceArray[threadIndex].cmdSync_sem_p->release();
     }
 
-    for (threadIndex = 0; threadIndex < (unsigned int)m_numOfThreads; ++threadIndex) {
+    for (threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         TRACEX_DE(QString("%1 - Waiting for %2").arg(__FUNCTION__).arg(threadIndex));
         m_threadInstanceArray[threadIndex].killed_sem_p->acquire();
         TRACEX_DE(QString("%1 - Done wainting for %2").arg(__FUNCTION__).arg(threadIndex));

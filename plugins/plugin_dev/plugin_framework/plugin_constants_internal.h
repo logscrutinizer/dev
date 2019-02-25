@@ -1,18 +1,26 @@
+/***********************************************************************************************************************
+** Copyright (C) 2018 Robert Klang
+** Contact: https://www.logscrutinizer.com
+***********************************************************************************************************************/
+
+/*
+ * ----------------------------------------------------------------------------------------------------------------------
+ * File: plugin_constants_internal.h
+ *
+ * Description:
+ * This header file contains constants for the plugin framework
+ *
+ * IMPORTANT: DO NOT MODIFY THIS FILE
+ *
+ * ----------------------------------------------------------------------------------------------------------------------
+ * */
+
 #ifndef PLUGIN_CONSTANTS_INTERNAL_H
-#define PLUGIN_CONSTANTS_INTERNAL_H
+ #define PLUGIN_CONSTANTS_INTERNAL_H
 
+/*------ INTERNAL CONSTANTS ------ */
 
-//----------------------------------------------------------------------------------------------------------------------
-// File: plugin_constants_internal.h
-//
-// Description:
-// This header file contains constants for the plugin framework
-//
-// IMPORTANT: DO NOT MODIFY THIS FILE
-//
-//----------------------------------------------------------------------------------------------------------------------
-
-//------ INTERNAL CONSTANTS ------
+/* #CRUSTI-OFF# */
 
 #define LINE_START_BIT        (0)                                             //0
 #define LINE_SIZE_BIT         (3)
@@ -58,5 +66,7 @@
 #define PROPERTIES_BITMASK_KIND_DECORATOR_MASK          (static_cast<int16_t>(((1 << DECORATOR_SIZE_BIT) - 1) << DECORATOR_START_BIT))     //bit 6         0000000001000000
 #define PROPERTIES_BITMASK_VISIBILITY_MASK              (static_cast<int16_t>(((1 << VISIBILITY_SIZE_BIT) - 1) << VISIBILITY_START_BIT))   //bit 7 - 9     0000001110000000
 #define PROPERTIES_BITMASK_KIND_LINE_ARROW_MASK         (static_cast<int16_t>(((1 << PROPERTIES_BITMASK_LINE_ARROW_SIZE_BIT) - 1) << PROPERTIES_BITMASK_LINE_ARROW_START_BIT))      //bit 10 - 13   0011110000000000,
+
+/* #CRUSTI-OFF# */
 
 #endif

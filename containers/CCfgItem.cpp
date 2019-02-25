@@ -640,7 +640,7 @@ void CCfgItem_Plot::AddElements(void)
 
         CCfgItem *graphItem_p = nullptr;
         auto graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
-        const unsigned int subPlot_Properties = subplot_item_p->m_subPlot_ref_p->GetProperties();
+        SubPlot_Properties_t subPlot_Properties = subplot_item_p->m_subPlot_ref_p->GetProperties();
         while (graph_p != nullptr) {
             /* QT Note,  its not really necessary to call the InsertItem function, would
              * be sufficient to just add the list to the child items */
@@ -1430,7 +1430,7 @@ CCfgItem_Decoder::CCfgItem_Decoder(
     CCfgItem *itemParent_p) :
     CCfgItem(itemParent_p)
 {
-    unsigned int length = 0;
+    int length = 0;
     char *match_p = decoder_ref_p->GetMatchString(&length);
 
     m_enabled = true;

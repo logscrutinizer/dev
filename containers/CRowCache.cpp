@@ -143,7 +143,7 @@ void CRowCache::Get(const int rowIndex, char **text_p, int *size_p, int *propert
 
         m_cache_memMap[cacheIndex].properties = 0;
         m_cache_memMap[cacheIndex].FIR = m_FIRA_p->FIR_Array_p[rowIndex];   /* Copy the FIR content as well to cache */
-        m_cache_memMap[cacheIndex].size = (unsigned int)readBytes;
+        m_cache_memMap[cacheIndex].size = static_cast<int>(readBytes);
         m_cache_memMap[cacheIndex].row = rowIndex;
         dataRef_p[readBytes] = 0;  /* 0 terminated */
 
@@ -171,10 +171,7 @@ void CRowCache::RemoveBadChars(int cacheIndex)
     int properties;
 
     GetAtCacheIndex(cacheIndex, &string_p, &size, &properties);
-
-    const unsigned int newSize = static_cast<unsigned int>(size);
-
-    for (unsigned int i = 0; i < newSize; ++i) {
+    for (int i = 0; i < size; ++i) {
         if (*string_p < 0x08) {
             *string_p = '?';
         }
@@ -200,9 +197,9 @@ void CRowCache::Decode(int cacheIndex)
 
         GetAtCacheIndex(cacheIndex, &string_p, &size, &properties);
 
-        unsigned int newSize = static_cast<unsigned int>(size);
+        int newSize = size;
 
-        memcpy(g_largeTempString, string_p, size);
+        memcpy(g_largeTempString, string_p, static_cast<size_t>(size));
         g_largeTempString[size] = 0;
 
         if (decoder_p->m_decoder_ref_p->Decode(g_largeTempString, &newSize, CACHE_CMEM_POOL_SIZE_MAX)) {
@@ -210,7 +207,8 @@ void CRowCache::Decode(int cacheIndex)
             g_largeTempString[newSize] = 0;     /* secure string termination */
             newSize++;                          /* secure space for string termination */
 
-            UpdateAtCacheIndex(cacheIndex, g_largeTempString, newSize, properties | TIA_CACHE_MEMMAP_PROPERTY_DECODED);
+            UpdateAtCacheIndex(cacheIndex, g_largeTempString, static_cast<int>(newSize),
+                               properties | TIA_CACHE_MEMMAP_PROPERTY_DECODED);
             return; /* Exit when first decoder has made changes */
         }
     }
@@ -224,8 +222,8 @@ void CRowCache::GetAtCacheIndex(int cacheIndex, char **text_p, int *size_p, int 
     TIA_Cache_MemMap_t *cache_p = &m_cache_memMap[cacheIndex];
 
     if (cache_p->poolItem_p != nullptr) {
-        *text_p = (char *)cache_p->poolItem_p->GetDataRef();
-        *size_p = (int)cache_p->size;
+        *text_p = reinterpret_cast<char *>(cache_p->poolItem_p->GetDataRef());
+        *size_p = cache_p->size;
         return;
     }
 
@@ -277,7 +275,7 @@ void CRowCache::GetTextItemLength(const int rowIndex, int *size_p)
 ***********************************************************************************************************************/
 void CRowCache::Clean(void)
 {
-    for (unsigned int index = 0; index < CACHE_MEM_MAP_SIZE; ++index) {
+    for (int index = 0; index < CACHE_MEM_MAP_SIZE; ++index) {
         /* Return memory if usage of larger than CACHE_CMEM_POOL_SIZE_SMALLEST */
         if (m_cache_memMap[index].poolItem_p->GetDataSize() > CACHE_CMEM_POOL_SIZE_SMALLEST) {
             m_memPool.ReturnMem(&m_cache_memMap[index].poolItem_p);

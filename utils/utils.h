@@ -11,7 +11,7 @@
 
 #include "CConfig.h"
 
-extern unsigned char g_upperChar_LUT[256];
+extern uint8_t g_upperChar_LUT[256];
 extern bool g_upperChar_LUT_init;
 
 typedef struct {

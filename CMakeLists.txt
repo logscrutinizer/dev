@@ -82,7 +82,7 @@ endif (USE_WEB_ENGINE)
 
 if(WIN32)
     find_package(Qt5WinExtras)
-	set(HS_INCLUDEDIR ${HS_PATH}/include)
+    set(HS_INCLUDEDIR ${HS_PATH}/include)
 else (WIN32)
     find_package(PkgConfig REQUIRED)
     find_package(Threads)
@@ -235,6 +235,7 @@ else(WIN32)    #---- Linux
             -Wall # Warning level
             -D_M_AMD64 # Target processor architecture. _M_AMD64 and _M_X64 are equivalent
             -m64
+            -Wno-error=date-time # Disable the warning that using __DATE__ will modify the binary
             )
 #        link_directories(directory1 directory2 ...)
     endif(USE_CLANG)

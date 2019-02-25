@@ -694,7 +694,7 @@ void CLogScrutinizerDoc::CreateFiltersFromContainer(CFilterContainer& container)
 
     InitializeFilterItem_LUT();
 
-    unsigned int index = 0;
+    int index = 0;
     m_database.filterItem_LUT[index++] = nullptr; /*No match filter item */
 
     QList<CFilter *>::iterator iter;
@@ -1271,8 +1271,8 @@ void CLogScrutinizerDoc::StartOneLineFiltering(int row, bool isBookmarkRemove)
 /***********************************************************************************************************************
 *   StartSearch
 ***********************************************************************************************************************/
-bool CLogScrutinizerDoc::StartSearch(const QString& searchText, unsigned int startRow, unsigned int endRow,
-                                     unsigned int *row_p, bool backward, bool onlyFiltered, bool regExp,
+bool CLogScrutinizerDoc::StartSearch(const QString& searchText, int startRow, int endRow,
+                                     int *row_p, bool backward, bool onlyFiltered, bool regExp,
                                      bool caseSensitive)
 {
     *row_p = 0;
@@ -1332,7 +1332,7 @@ bool CLogScrutinizerDoc::StartSearch(const QString& searchText, unsigned int sta
 bool CLogScrutinizerDoc::ExecuteSearch(void)
 {
     bool result = false;
-    unsigned int savedSize = g_cfg_p->m_workMemSize;
+    int savedSize = g_cfg_p->m_workMemSize;
 
     if ((g_cfg_p->m_workMemSize == 0) || (g_cfg_p->m_workMemSize > 100 * 1000 * 1024)) {
         /* limit the search memory to 100MB, otherwise the search will take long time initially loading mem */
@@ -1385,7 +1385,7 @@ bool CLogScrutinizerDoc::PostProcSearch(void)
 /***********************************************************************************************************************
 *   StartPlot
 ***********************************************************************************************************************/
-bool CLogScrutinizerDoc::StartPlot(QList<CPlot *> *pendingPlot_execList_p, unsigned int startRow, unsigned int endRow)
+bool CLogScrutinizerDoc::StartPlot(QList<CPlot *> *pendingPlot_execList_p, int startRow, int endRow)
 {
     if ((pendingPlot_execList_p == nullptr) || pendingPlot_execList_p->isEmpty()) {
         return false;

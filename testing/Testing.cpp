@@ -49,7 +49,7 @@ bool LoadMapTIAandFIRA_filemapping(QString& LogFileName, QFile& Log_File, QFile&
 bool Filter(QFile& Log_File, int rows, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
             FilterItemInitializer *filterInitializers_p, int count, CFilterContainer& container);
 int Search(QFile& Log_File, uint8_t *TIA_mem_p, uint8_t *FIRA_mem_p, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
-           QString& searchText, unsigned int startRow, unsigned int endRow, bool backward, bool regExp);
+           QString& searchText, int startRow, int endRow, bool backward, bool regExp);
 bool VerifyTIA(TIA_t& TIA, const QString& repetitionPattern, const QString& matchPattern, int totalNumOfRows,
                int modulus);
 bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, const QString& repetitionPattern, const QString& matchPattern,
@@ -723,7 +723,7 @@ bool TestDocument()
 *   Search
 ***********************************************************************************************************************/
 int Search(QFile& Log_File, uint8_t *TIA_mem_p, uint8_t *FIRA_mem_p, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
-           QString& searchText, unsigned int startRow, unsigned int endRow, bool backward, bool regExp)
+           QString& searchText, int startRow, int endRow, bool backward, bool regExp)
 {
     CSearchCtrl searchCtrl;
 
@@ -744,7 +744,7 @@ int Search(QFile& Log_File, uint8_t *TIA_mem_p, uint8_t *FIRA_mem_p, TIA_t& TIA,
         regExp,
         false /* case sensitive ... TODO */);
 
-    unsigned int searchTI;
+    int searchTI;
     if (searchCtrl.GetSearchResult(&searchTI)) {
         return static_cast<int>(searchTI);
     } else {

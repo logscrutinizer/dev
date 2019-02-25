@@ -686,7 +686,7 @@ void CPlotWidget::InitilizeSubPlots(void)
 
     subPlot_p = (CSubPlot *)subPlots_p->first();
 
-    unsigned int count = subPlots_p->count();
+    int count = subPlots_p->count();
 
     subPlot_p->GetExtents(&extents);
 
@@ -1491,11 +1491,11 @@ void CPlotWidget::FillScreenPoint_FromDCViewPortPoint(QPoint *viewPortPoint_p, S
 /***********************************************************************************************************************
 *   GetClosest_GO
 ***********************************************************************************************************************/
-bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, unsigned int *distance_p)
+bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p)
 {
     int row_Best = -1;
-    unsigned int distance;
-    unsigned int distance_Best;
+    int distance;
+    int distance_Best;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
     CGraph *graph_p = nullptr;
     GraphicalObject_t *go_p = nullptr;
@@ -1591,7 +1591,7 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
      *
      * When the go has been found, then log row is determined. The log window is modified with a call to
      * SetFocusRow(...), this is a function in the log window. That will change the row which is currently in focus. */
-    unsigned int row;
+    int row;
     int row_Best = -1;
     double distance;
     double distance_Best;
@@ -1607,7 +1607,7 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
             if (surface_p->GetCursorRow(&screenPoint_p->DCBMP, &row, &time, &distance) != nullptr) {
                 if ((CSubPlot_Best_p == nullptr) || (distance < distance_Best)) {
                     CSubPlot_Best_p = surface_p;
-                    row_Best = (unsigned int)row;
+                    row_Best = row;
                     distance_Best = distance;
                 }
             }
@@ -2320,10 +2320,10 @@ bool CPlotWidget::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_p
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CPlotWidget::GetClosestGraph(unsigned int row, CGraph **graph_pp, GraphicalObject_t **go_pp, CSubPlot **subPlot_pp)
+bool CPlotWidget::GetClosestGraph(int row, CGraph **graph_pp, GraphicalObject_t **go_pp, CSubPlot **subPlot_pp)
 {
-    unsigned int distance = 0;
-    unsigned int distance_Best = 0;
+    int distance = 0;
+    int distance_Best = 0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
     CGraph *graph_p = nullptr;
     CGraph *graph_Best_p = nullptr;

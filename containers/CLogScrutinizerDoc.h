@@ -36,16 +36,16 @@
 
 #define PIXEL_STAMP_SET_STARTX(PIXELSTAMP, STARTX) \
     (PIXELSTAMP = static_cast<uint64_t>(static_cast<uint64_t>(PIXELSTAMP) & \
-                                        static_cast<uint64_t>(~PIXEL_STAMP_STARTX_MASK) | \
-                                        static_cast<uint64_t>(STARTX)))
+                                        (static_cast<uint64_t>(~PIXEL_STAMP_STARTX_MASK) | \
+                                         static_cast<uint64_t>(STARTX))))
 #define PIXEL_STAMP_SET_STARTY(PIXELSTAMP, STARTY) \
     (PIXELSTAMP = static_cast<uint64_t>(static_cast<uint64_t>(PIXELSTAMP) & \
-                                        static_cast<uint64_t>(~PIXEL_STAMP_STARTY_MASK) | \
-                                        (static_cast<uint64_t>(STARTY) << 32)))
+                                        (static_cast<uint64_t>(~PIXEL_STAMP_STARTY_MASK) | \
+                                         (static_cast<uint64_t>(STARTY) << 32))))
 #define PIXEL_STAMP_SET_FONT(PIXELSTAMP, FONT) \
     (PIXELSTAMP = static_cast<uint64_t>(static_cast<uint64_t>(PIXELSTAMP) & \
-                                        static_cast<uint64_t>(~PIXEL_STAMP_FONT_MASK) | static_cast<uint64_t>(FONT) << \
-                                        56))
+                                        (static_cast<uint64_t>(~PIXEL_STAMP_FONT_MASK) | static_cast<uint64_t>(FONT) << \
+                                         56)))
 
 #ifdef WIN32
  #define FILE_CHANGE_TIMER_DURATION 1000 /* 1 sec, since there is a bug on win32 platforms, the timer is the only
@@ -184,11 +184,11 @@ public:
     void ExecuteIncrementalFiltering(int startRow);
     void StartOneLineFiltering(int row, bool isBookmarkRemove = false);
 
-    bool StartSearch(const QString& searchText, unsigned int startRow, unsigned int endRow,
-                     unsigned int *row_p, bool backward, bool onlyFiltered, bool regExp, bool caseSensitive);
+    bool StartSearch(const QString& searchText, int startRow, int endRow,
+                     int *row_p, bool backward, bool onlyFiltered, bool regExp, bool caseSensitive);
     bool ExecuteSearch(void);
     bool PostProcSearch(void);
-    bool StartPlot(QList<CPlot *> *pendingPlot_execList_p, unsigned int startRow = 0, unsigned int endRow = 0);
+    bool StartPlot(QList<CPlot *> *pendingPlot_execList_p, int startRow = 0, int endRow = 0);
     bool ExecutePlot(void);
     void PostProcPlot(void);
 
@@ -251,9 +251,9 @@ public:
      * and used when the ProgressDlg calls to execute the search. The these parameters are brought to light
      *  and used to DO the search. */
     QString m_pendingSearch_searchText;
-    unsigned int m_pendingSearch_startRow;
-    unsigned int m_pendingSearch_endRow;
-    unsigned int *m_pendingSearch_row_p;
+    int m_pendingSearch_startRow;
+    int m_pendingSearch_endRow;
+    int *m_pendingSearch_row_p;
     bool m_pendingSearch_backward;
     bool m_pendingSearch_OnlyFiltered;
     bool m_pendingSearch_regExp;
@@ -265,8 +265,8 @@ public:
     bool m_pendingLoadLog_result;
     CFileCtrl *m_pendingFileCtrl_p;
     QList<CPlot *> *m_pendingPlot_execList_p;
-    unsigned int m_pendingPlot_startRow;
-    unsigned int m_pendingPlot_endRow;
+    int m_pendingPlot_startRow;
+    int m_pendingPlot_endRow;
     CRecentFile m_recentFiles;
     CWorkMem m_workMem;
     QFileSystemWatcher m_fileSysWatcher;

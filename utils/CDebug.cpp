@@ -303,7 +303,7 @@ void CDebug::FreePluginMsg(char *msg_p)
 
 CRamLog::CRamLog()
 {
-    for (unsigned int index = 0; index < RAM_LOG_MAX_COUNT; ++index) {
+    for (int index = 0; index < RAM_LOG_MAX_COUNT; ++index) {
         ramLogData_t *mem_p = static_cast<ramLogData_t *>(malloc(sizeof(ramLogData_t)));
 
         if (mem_p != nullptr) {
@@ -450,7 +450,7 @@ void CRamLog::CheckRamLogs(void)
     const quint32 totalSize = sizeof(ramLogData_t) + RAM_LOG_SIZE;
     QMutexLocker ml(&m_mutex);  /* when ml passes its scope the mutex will automatically be freed */
 
-    for (unsigned int index = 0; index < RAM_LOG_MAX_COUNT; ++index) {
+    for (int index = 0; index < RAM_LOG_MAX_COUNT; ++index) {
         ramLogEntry_t *entry_p;
 
         /* Must use m_ramLogPoolDebug since that keeps all ramLogData references, the other is just a pool */

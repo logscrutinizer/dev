@@ -197,7 +197,7 @@ typedef struct  /* Filter Item Reference Array */
 {
     int32_t index; /* The index into the array of packed_FIR_t elements, for fast lookup
                     * A value (not zero) also corresponds to the number of matches up to that point */
-    unsigned char LUT_index; /* Reference to a filter that matched the corresponding row
+    uint8_t LUT_index; /* Reference to a filter that matched the corresponding row
                               * BOOKMARK_FILTER_LUT_INDEX 0xff  reserved to bookmark
                               * 0 Means no match */
 }FIR_t;
@@ -205,7 +205,7 @@ typedef struct  /* Filter Item Reference Array */
 typedef struct  /* Use for array with only filter matches (packed) */
 {
     int32_t row; /* Row lookup index (into the log) */
-    unsigned char LUT_index; /* Reference to a filter that matched the corresponding row */
+    uint8_t LUT_index; /* Reference to a filter that matched the corresponding row */
 }packed_FIR_t;
 
 typedef struct {

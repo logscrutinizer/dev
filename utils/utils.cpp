@@ -8,7 +8,7 @@
 #include <cctype>
 
 bool g_upperChar_LUT_init = false;
-unsigned char g_upperChar_LUT[256];
+uint8_t g_upperChar_LUT[256];
 
 /***********************************************************************************************************************
 *   initUpperChar
@@ -16,7 +16,7 @@ unsigned char g_upperChar_LUT[256];
 void initUpperChar(void)
 {
     for (int i = 0; i < 256; i++) {
-        g_upperChar_LUT[i] = static_cast<unsigned char>(toupper(i));
+        g_upperChar_LUT[i] = static_cast<uint8_t>(toupper(i));
     }
     g_upperChar_LUT_init = true;
 }

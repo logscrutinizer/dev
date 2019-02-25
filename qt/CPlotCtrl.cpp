@@ -37,7 +37,7 @@ void CPlotThread::thread_Process(CThreadConfiguration *config_p)
 
     try {
         while (TIA_Index < stop_TIA_Index && !g_processingCtrl_p->m_abort) {
-            unsigned int textLength = TIA_p->textItemArray_p[TIA_Index].size;
+            int textLength = TIA_p->textItemArray_p[TIA_Index].size;
             char *text_p = FileIndex_To_MemRef(&TIA_p->textItemArray_p[TIA_Index].fileIndex,
                                                &config_p->m_chunkDescr.fileIndex, config_p->m_workMem_p);
 
@@ -76,9 +76,9 @@ void CPlotThread::thread_Process(CThreadConfiguration *config_p)
 /***********************************************************************************************************************
 *   Start_PlotProcessing
 ***********************************************************************************************************************/
-void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, unsigned int workMemSize, TIA_t *TIA_p,
-                                     int priority, QList<CPlot *> *pendingPlot_execList_p, unsigned int startRow,
-                                     unsigned int endRow, bool backward)
+void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
+                                     int priority, QList<CPlot *> *pendingPlot_execList_p, int startRow,
+                                     int endRow, bool backward)
 {
     TRACEX_I("Plugin plot generation started   startRow:%d endRow:%d", startRow, endRow);
     g_processingCtrl_p->AddProgressInfo(QString("Starting plot generation"));
@@ -88,8 +88,8 @@ void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, unsigned i
     /* Make sure that each thread work with all line, since each thread has its own plugin to work with */
     m_threadTI_Split = false;
 
-    unsigned int savedNumOfThreads = g_cfg_p->m_numOfThreads;          /* override temporary */
-    g_cfg_p->m_numOfThreads = (unsigned int)m_pendingPlot_execList_p->count();     /* override temporary */
+    int savedNumOfThreads = g_cfg_p->m_numOfThreads;          /* override temporary */
+    g_cfg_p->m_numOfThreads = m_pendingPlot_execList_p->count();     /* override temporary */
 
     CFileProcBase::Start(qFile_p, workMem_p, workMemSize, TIA_p, priority, startRow, endRow, false /*backward*/);
     g_cfg_p->m_numOfThreads = savedNumOfThreads;

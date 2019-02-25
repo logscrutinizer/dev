@@ -80,14 +80,14 @@ bool thread_Match(Match_Description_t *desc_p)
 
     /*early stop */
     for (textChIndex = 0; textChIndex < textLength && (filterLength <= (textLength - textChIndex)); ++textChIndex) {
-        const unsigned char *loopText_p; /* Direct reference to the character in the loop evaluation */
-        const unsigned char *loopFilter_p;
+        const uint8_t *loopText_p; /* Direct reference to the character in the loop evaluation */
+        const uint8_t *loopFilter_p;
 
         /*tempText_p is initilized with start or next letter */
-        loopText_p = reinterpret_cast<const unsigned char *>(&desc_p->text_p[textChIndex]);
+        loopText_p = reinterpret_cast<const uint8_t *>(&desc_p->text_p[textChIndex]);
 
         /*tempFilter_p is initialized with the beginning of the filter */
-        loopFilter_p = reinterpret_cast<const unsigned char *>(filterStart_p);
+        loopFilter_p = reinterpret_cast<const uint8_t *>(filterStart_p);
 
         filterChIndex = 0;
         textChLoopIndex = textChIndex;
@@ -150,8 +150,8 @@ bool thread_Match_RegExp_HyperScan(Match_Description_t *desc_p)
 /***********************************************************************************************************************
 *   Start
 ***********************************************************************************************************************/
-void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, unsigned int workMemSize, TIA_t *TIA_p, int priority,
-                          unsigned int startRow, unsigned int endRow, bool backward)
+void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p, int priority,
+                          int startRow, int endRow, bool backward)
 {
     m_qfile_p = qFile_p;
     m_workMem_p = workMem_p;
@@ -178,15 +178,15 @@ void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, unsigned int workMemS
         return;
     }
 
-    /* (unsigned int) rows will never be neg. */
-    if (!backward && (((unsigned int)TIA_p->rows <= endRow) || (startRow > endRow))) {
+    /* (int) rows will never be neg. */
+    if (!backward && (((int)TIA_p->rows <= endRow) || (startRow > endRow))) {
         TRACEX_E(" CFileProcBase::Start BAD INPUT  parameters workMem_p:0x%llx TIA_rows:%d "
                  "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward);
         return;
     }
 
-    /* (unsigned int) rows will never be neg */
-    if (backward && (((unsigned int)TIA_p->rows <= startRow) || (endRow > startRow))) {
+    /* (int) rows will never be neg */
+    if (backward && (((int)TIA_p->rows <= startRow) || (endRow > startRow))) {
         TRACEX_E(" CFileProcBase::Start BAD INPUT  BACKWARD parameters workMem_p:0x%llx TIA_rows:%d "
                  "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward);
         return;
@@ -266,7 +266,7 @@ bool CFileProcBase::LoadNextChunk(void)
         m_chunkDescr.TIA_startRow = m_chunkDescr.TIA_startRow + m_chunkDescr.numOfRows;
 
         if (m_chunkDescr.TIA_startRow > m_endRow) {
-            /*(unsigned int) startRow will never be neg */
+            /*(int) startRow will never be neg */
             return false;
         }
 
@@ -283,7 +283,7 @@ bool CFileProcBase::LoadNextChunk(void)
         /* Locate the first TIA index where the line starts outside the maxEndFileIndex. Loop through all the lines.
          * This means that the current line starts outside  of max data, then the previous line would end outside as
          * well. As such stop at TIA_index - 2.
-         * TODO: Do this loop quicker... loop to middle, loop to middle of next side, etc. *//* (unsigned int) startRow
+         * TODO: Do this loop quicker... loop to middle, loop to middle of next side, etc. *//* (int) startRow
          * will never be neg */
         for (int index = m_chunkDescr.TIA_startRow; index < m_endRow && !stop; ++index) {
             if (m_TIA_p->textItemArray_p[index].fileIndex > maxEndFileIndex) {
@@ -389,7 +389,8 @@ bool CFileProcBase::LoadNextChunk(void)
         int topMostIndex = m_chunkDescr.TIA_startRow;
 
         /* TODO: Do this loop quicker... loop to middle, loop to middle of next side, etc.
-         * Search for the first TIA index where the line starts outside the maxEndFileIndex. Loop through all the lines */
+         * Search for the first TIA index where the line starts outside the maxEndFileIndex. Loop through all the lines
+         **/
         while (!stop) {
             --topMostIndex; /* decrease index while not found/stopped */
 
@@ -499,7 +500,8 @@ void CFileProcBase::Process(void)
 
         m_threadInstances[threadIndex] = CreateProcThread(threadIndex, m_readySem_p, m_startSem_pp[threadIndex],
                                                           m_holdupSem_p, &m_configurationListMutex,
-                                                          &m_configurationList, &m_configurationPoolList); /* QT_THREAD */
+                                                          &m_configurationList, &m_configurationPoolList); /* QT_THREAD
+                                                                                                            * */
         m_threadInstances[threadIndex]->start();
     }
 

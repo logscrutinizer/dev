@@ -119,11 +119,11 @@ void CSearchThread::thread_Process(CThreadConfiguration *config_p)
         *a = 3;
     }
 
-    unsigned int TIA_Index = searchConfig_p->m_start_TIA_index;    /* use local variable for quicker access */
-    const unsigned int stop_TIA_Index = searchConfig_p->m_stop_TIA_Index;
+    int TIA_Index = searchConfig_p->m_start_TIA_index;    /* use local variable for quicker access */
+    const int stop_TIA_Index = searchConfig_p->m_stop_TIA_Index;
     const int TIA_step = searchConfig_p->m_TIA_step;
     const TIA_t *TIA_p = searchConfig_p->m_TIA_p;
-    unsigned int progressCount = PROGRESS_COUNTER_STEP;
+    int progressCount = PROGRESS_COUNTER_STEP;
     bool stopLoop = false;
 
     if (!searchConfig_p->m_backward) {
@@ -228,9 +228,9 @@ void CSearchThread::thread_Process(CThreadConfiguration *config_p)
 /***********************************************************************************************************************
 *   StartProcessing
 ***********************************************************************************************************************/
-void CSearchCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, unsigned int workMemSize, TIA_t *TIA_p,
+void CSearchCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
                                   FIRA_t *FIRA_p, CFilterItem **filterItem_LUT_p, int priority, QString *searchText_p,
-                                  unsigned int startRow, unsigned int endRow, bool backward, bool regExp,
+                                  int startRow, int endRow, bool backward, bool regExp,
                                   bool caseSensitive)
 {
     TRACEX_I("Search started  text:%s backward:%d regExp:%d startRow:%d endRow:%d  %s",
@@ -303,7 +303,8 @@ bool CSearchCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descript
          * -1 since it is 0 based indexing (and max index is MAX-1)   XXX */
         searchConfig_p->m_start_TIA_index = m_chunkDescr.TIA_startRow - threadIndex;
 
-        /* IMPORTANT, m_stop_TIA_Index is used, hence it must represent the last usable index. As such (m_numOf_TI - 1) */
+        /* IMPORTANT, m_stop_TIA_Index is used, hence it must represent the last usable index. As such (m_numOf_TI - 1)
+         * */
         searchConfig_p->m_stop_TIA_Index = searchConfig_p->m_start_TIA_index -
                                            (searchConfig_p->m_numOf_TI - 1) * searchConfig_p->m_TIA_step;
     }
@@ -313,7 +314,7 @@ bool CSearchCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descript
         if (hs_compile(searchConfig_p->m_searchText,
                        REGEXP_HYPERSCAN_FLAGS,
                        HS_MODE_BLOCK,
-                       NULL,
+                       nullptr,
                        &searchConfig_p->m_regexp_database,
                        &compile_err) != HS_SUCCESS) {
             TRACEX_I(QString("RegExp failed %1").arg(compile_err->message));

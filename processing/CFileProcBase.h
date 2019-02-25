@@ -136,12 +136,12 @@ public:
         /* If you override this vfunction don't forget to call the base class */
     }
 
-    uint32_t GetNumOf_TI() {return m_numOf_TI;}
+    int32_t GetNumOf_TI() {return m_numOf_TI;}
 
-    uint32_t m_numOf_TI; /* Number of TIA rows this thread shall process from the chunk */
-    uint32_t m_start_TIA_index; /* At which TIA index this thread shall start */
-    uint32_t m_stop_TIA_Index; /* Where this thread should stop */
-    uint32_t m_TIA_step; /* The index step taken when fetching new line */
+    int32_t m_numOf_TI; /* Number of TIA rows this thread shall process from the chunk */
+    int32_t m_start_TIA_index; /* At which TIA index this thread shall start */
+    int32_t m_stop_TIA_Index; /* Where this thread should stop */
+    int32_t m_TIA_step; /* The index step taken when fetching new line */
 
     /* Identify of the thread, set by the thread that picks up the configuration. If not processed this value is -1 */
     int32_t m_servedBy_threadIndex;
@@ -343,8 +343,8 @@ public:
     /* API */
 
     /* Call the base function to get the processing started */
-    virtual void Start(QFile *qFile_p, char *workMem_p, unsigned int workMemSize, TIA_t *TIA_p,
-                       int priority, unsigned int startRow, unsigned int endRow, bool backward);
+    virtual void Start(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
+                       int priority, int startRow, int endRow, bool backward);
     double GetExecTime(void) {return m_execTime;}
     double GetProgress(void) {return m_progress;}
     void Cancel(void); /* Cancel pending operation */
@@ -383,10 +383,10 @@ protected:
     uint32_t m_fileSize_LDW;
     uint32_t m_fileSize_HDW;
     char *m_workMem_p;
-    unsigned int m_workMemSize;
+    int m_workMemSize;
     TIA_t *m_TIA_p;
     int m_priority;
-    unsigned int m_totalNumOfRows; /* start - end row */
+    int m_totalNumOfRows; /* start - end row */
     int m_startRow; /* Zooming... restricting lines */
     int m_endRow; /* Zooming... restricting lines */
     bool m_backward; /* In case reading file backwards this flag is set */

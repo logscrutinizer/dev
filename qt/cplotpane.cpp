@@ -390,7 +390,6 @@ void CPlotPane::closeEvent(QCloseEvent *event)
 void CPlotPane::storeSettings(void)
 {
 #ifdef LOCAL_GEOMETRY_SETTING
-
     QSettings settings;
     settings.setValue("plotPaneWindow", size());
 #endif
@@ -742,11 +741,11 @@ bool CPlotPane::isPlotsActive(void)
 /***********************************************************************************************************************
 *   setPlotCursor
 ***********************************************************************************************************************/
-void CPlotPane::setPlotCursor(unsigned int row, unsigned int *cursorRow_p)
+void CPlotPane::setPlotCursor(int row, int *cursorRow_p)
 {
     bool first = true;
-    unsigned int min_distance = 0;
-    unsigned int distance = 0;
+    int min_distance = 0;
+    int distance = 0;
     GraphicalObject_t *bestGo_p = nullptr;
     GraphicalObject_t *go_p = nullptr;
     CPlotWidgetInterface *bestPlotWidget_p = nullptr;
@@ -775,7 +774,7 @@ void CPlotPane::setPlotCursor(unsigned int row, unsigned int *cursorRow_p)
     }
 
     if (!first && (bestPlotWidget_p != nullptr)) {
-        unsigned int bestRow = bestGo_p->row;
+        int bestRow = bestGo_p->row;
         double time = bestGo_p->x2;
 
         if (bestGo_p->properties & PROPERTIES_BITMASK_KIND_BOX_MASK) {

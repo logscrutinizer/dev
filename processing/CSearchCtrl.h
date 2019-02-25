@@ -108,13 +108,13 @@ public:
     virtual ~CSearchCtrl(void) {}
 
 public:
-    virtual void StartProcessing(QFile *qFile_p, char *workMem_p, unsigned int workMemSize, TIA_t *TIA_p,
+    virtual void StartProcessing(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
                                  FIRA_t *FIRA_p, CFilterItem **filterItem_LUT_p, int priority, QString *searchText_p,
-                                 unsigned int startRow, unsigned int endRow, bool backward, bool regExp,
+                                 int startRow, int endRow, bool backward, bool regExp,
                                  bool caseSensitive);
 
     /****/
-    bool GetSearchResult(unsigned int *searchResult_TI_p)
+    bool GetSearchResult(int *searchResult_TI_p)
     {
         *searchResult_TI_p = m_searchResult_TI;
         return m_searchSuccess;
@@ -155,7 +155,7 @@ private:
     FIRA_t *m_FIRA_p; /* Keeping track of filtered rows, if required. Null if full search */
     CFilterItem **m_filterItem_LUT_p;
     bool m_searchSuccess; /* Result of the search */
-    unsigned int m_searchResult_TI; /* Result of the search */
+    int m_searchResult_TI; /* Result of the search */
     int32_t m_threadStopRow[MAX_NUM_OF_THREADS]; /* Each thread put their value into the array when they exit the
                                                   * processing loop. Wrap up will determine the final search hit row */
 };

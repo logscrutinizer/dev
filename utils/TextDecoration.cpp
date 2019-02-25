@@ -1,3 +1,7 @@
+/***********************************************************************************************************************
+** Copyright (C) 2018 Robert Klang
+** Contact: https://www.logscrutinizer.com
+***********************************************************************************************************************/
 
 #include "CDebug.h"
 #include "CMemPool.h"
@@ -9,38 +13,39 @@
 #include <hs/hs.h>
 
 int debug_numOfRowsForHighLight = 0;
-
 struct regExpEventHandlerData {
-    QList<TextRectElement_t*>* elementRefs_p;
-    CTextRectElementFactory* elementFactory_p;
+    QList<TextRectElement_t *> *elementRefs_p;
+    CTextRectElementFactory *elementFactory_p;
     int matchCount;
 };
 
+/***********************************************************************************************************************
+*   eventHandler
+***********************************************************************************************************************/
 static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
-
     Q_UNUSED(id);
     Q_UNUSED(flags);
 
-    auto data = reinterpret_cast<struct regExpEventHandlerData*>(ctx);
+    auto data = reinterpret_cast<struct regExpEventHandlerData *>(ctx);
 
-    // MATCH!!! Create element, or merge
+    /* MATCH!!! Create element, or merge */
 
-    to = to > 0  ? to - 1 : 0;
+    to = to > 0 ? to - 1 : 0;
 
-    // check overlap, if overlap merge elements
+    /* check overlap, if overlap merge elements */
     if (data->elementRefs_p->count() > 0) {
         for (auto& elem : *data->elementRefs_p) {
-            if ((elem->endCol >= static_cast<int>(from) && elem->endCol < static_cast<int>(to)) ||
+            if (((elem->endCol >= static_cast<int>(from)) && (elem->endCol < static_cast<int>(to))) ||
                 (elem->startCol == static_cast<int>(from))) {
-                // merge elements
+                /* merge elements */
                 elem->endCol = static_cast<int>(to);
                 return 0;
             }
         }
     }
 
-    TextRectElement_t* element_p = data->elementFactory_p->create();
+    TextRectElement_t *element_p = data->elementFactory_p->create();
     element_p->startCol = static_cast<int>(from);
     element_p->endCol = static_cast<int>(to);
 
@@ -49,17 +54,18 @@ static int eventHandler(unsigned int id, unsigned long long from,
     return 0;
 }
 
-
-int FindTextElements(QList<TextRectElement_t*>* elementRefs_p, const char* text_p, const int textSize,
-                     const char* textMatch_p, const int textMatchSize, bool caseSensitive, bool regExp,
-                     CTextRectElementFactory* elementFactory_p)
+/***********************************************************************************************************************
+*   FindTextElements
+***********************************************************************************************************************/
+int FindTextElements(QList<TextRectElement_t *> *elementRefs_p, const char *text_p, const int textSize,
+                     const char *textMatch_p, const int textMatchSize, bool caseSensitive, bool regExp,
+                     CTextRectElementFactory *elementFactory_p)
 {
     int matchCount = 0;
 
     Q_ASSERT(g_upperChar_LUT_init == true);
 
-    if (text_p != nullptr && textSize > 0) {
-
+    if ((text_p != nullptr) && (textSize > 0)) {
         if (regExp) {
             struct regExpEventHandlerData data;
             data.elementFactory_p = elementFactory_p;
@@ -86,7 +92,8 @@ int FindTextElements(QList<TextRectElement_t*>* elementRefs_p, const char* text_
                 return 0;
             }
 
-            if (hs_scan(database, text_p, textSize, 0, scratch, eventHandler, &data) != HS_SUCCESS) {
+            if (hs_scan(database, text_p, (unsigned int)textSize, 0, scratch, eventHandler,
+                        &data) != HS_SUCCESS) {
                 TRACEX_W(QString("ERROR: Unable to scan input buffer"));
                 hs_free_scratch(scratch);
                 hs_free_database(database);
@@ -98,84 +105,84 @@ int FindTextElements(QList<TextRectElement_t*>* elementRefs_p, const char* text_
             hs_free_database(database);
 
             return data.matchCount;
-
         } else {
             /* Loop through the text against the match
-              - originalStart, the entire row text start
-              - whileLoopText(text_p), used to step over text, each step means doing a new match
-              - forloop(currentText_p), used when for-looping the text and matchText,
+             *  - originalStart, the entire row text start
+             *  - whileLoopText(text_p), used to step over text, each step means doing a new match
+             *  - forloop(currentText_p), used when for-looping the text and matchText,
              */
-            const char* origStart_p = text_p;
-            const unsigned char* endRef_p = reinterpret_cast<const unsigned char*>(text_p) +
-                    (textSize < DISPLAY_MAX_ROW_SIZE ? textSize : DISPLAY_MAX_ROW_SIZE);
-
+            const char *origStart_p = text_p;
+            const uint8_t *endRef_p = reinterpret_cast<const uint8_t *>(text_p) +
+                                      (textSize < DISPLAY_MAX_ROW_SIZE ? textSize : DISPLAY_MAX_ROW_SIZE);
             bool stop = false;
+            const uint8_t *endMatch = reinterpret_cast<const uint8_t *>(textMatch_p) + textMatchSize - 1;
 
-            const unsigned char* endMatch = reinterpret_cast<const unsigned char*>(textMatch_p) + textMatchSize - 1;
-
-            while (reinterpret_cast<const unsigned char*>(text_p) < endRef_p &&
+            while (reinterpret_cast<const uint8_t *>(text_p) < endRef_p &&
                    !stop &&
-                   (textMatchSize <= (endRef_p - reinterpret_cast<const unsigned char*>(text_p)))) {
+                   (textMatchSize <= (endRef_p - reinterpret_cast<const uint8_t *>(text_p)))) {
+                const uint8_t *currentText_p = reinterpret_cast<const uint8_t *>(text_p);
+                const uint8_t *currentMatch_p = reinterpret_cast<const uint8_t *>(textMatch_p);
 
-                const unsigned char *currentText_p = reinterpret_cast<const unsigned char*>(text_p);
-                const unsigned char *currentMatch_p = reinterpret_cast<const unsigned char*>(textMatch_p);
-
-                // The for loop iterates while the textMatch is matching the text, at missmatch the for-loop breaks
-                // and goes to outer while loop
-                for (; ; ++currentText_p, ++currentMatch_p) {
-
-                    // Match letter
+                /* The for loop iterates while the textMatch is matching the text, at missmatch the for-loop breaks
+                 * and goes to outer while loop */
+                for ( ; ; ++currentText_p, ++currentMatch_p) {
+                    /* Match letter */
                     if ((caseSensitive && (*currentMatch_p != *currentText_p)) ||
-                            (g_upperChar_LUT[*currentMatch_p] != g_upperChar_LUT[*currentText_p])) {
-                        ++text_p;  // move forward only one to start the matching at one ahead only
-                        break; // BREAK the loop
+                        (g_upperChar_LUT[*currentMatch_p] != g_upperChar_LUT[*currentText_p])) {
+                        ++text_p;  /* move forward only one to start the matching at one ahead only */
+                        break; /* BREAK the loop */
                     }
 
-                    // Check for complete match
+                    /* Check for complete match */
                     if (currentMatch_p == endMatch) {
-                        // MATCH!!! Create element
-                        TextRectElement_t* element_p = elementFactory_p->create();
+                        /* MATCH!!! Create element */
+                        TextRectElement_t *element_p = elementFactory_p->create();
                         element_p->startCol = static_cast<int>(text_p - origStart_p);
                         element_p->endCol = static_cast<int>(element_p->startCol + textMatchSize - 1);
                         elementRefs_p->append(element_p);
                         ++matchCount;
-                        text_p += textMatchSize;   // move the text forward with the length of the filter
-                        break; // BREAK the loop
+                        text_p += textMatchSize;   /* move the text forward with the length of the filter */
+                        break; /* BREAK the loop */
                     }
 
-                    // end of text string, stop the inner filter loop, no match
+                    /* end of text string, stop the inner filter loop, no match */
                     if (currentText_p == endRef_p) {
-                        stop = true; // ABORT the while/search
-                        break;// BREAK the loop
+                        stop = true; /* ABORT the while/search */
+                        break; /* BREAK the loop */
                     }
-
-                } // for
-            } // while
-        } // if regExp
-    } // if
+                } /* for */
+            } /* while */
+        } /* if regExp */
+    } /* if */
 
     return matchCount;
 }
 
-void CAutoHighLight::CleanAutoHighlight(TIA_Cache_MemMap_t* cacheRow_p)
+/***********************************************************************************************************************
+*   CleanAutoHighlight
+***********************************************************************************************************************/
+void CAutoHighLight::CleanAutoHighlight(TIA_Cache_MemMap_t *cacheRow_p)
 {
     cacheRow_p->autoHighligth.matchStamp = 0;
 
-    // Move all autoHighlight elements from the row to the pool
+    /* Move all autoHighlight elements from the row to the pool */
     while (!cacheRow_p->autoHighligth.elementRefs.isEmpty()) {
         m_autoHighlight_Pool.append(cacheRow_p->autoHighligth.elementRefs.takeLast());
     }
 }
 
-bool CAutoHighLight::GetAutoHighlightRowInfo(unsigned int row, AutoHightlight_RowInfo_t** rowInfo_pp)
+/***********************************************************************************************************************
+*   GetAutoHighlightRowInfo
+***********************************************************************************************************************/
+bool CAutoHighLight::GetAutoHighlightRowInfo(int row, AutoHightlight_RowInfo_t **rowInfo_pp)
 {
     if (m_autoHighligthMatchStamp == 0) {
         *rowInfo_pp = nullptr;
         return false;
     }
 
-    int  cacheIndex = row % CACHE_MEM_MAP_SIZE;
-    TIA_Cache_MemMap_t* cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
+    int cacheIndex = row % CACHE_MEM_MAP_SIZE;
+    TIA_Cache_MemMap_t *cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
 
     if (cacheRow_p->autoHighligth.matchStamp != m_autoHighligthMatchStamp) {
         debug_numOfRowsForHighLight++;
@@ -192,19 +199,22 @@ bool CAutoHighLight::GetAutoHighlightRowInfo(unsigned int row, AutoHightlight_Ro
     return true;
 }
 
-void CAutoHighLight::UpdateAutoHighlightList(unsigned int row)
+/***********************************************************************************************************************
+*   UpdateAutoHighlightList
+***********************************************************************************************************************/
+void CAutoHighLight::UpdateAutoHighlightList(int row)
 {
     if (m_autoHighligthMatchStamp == 0) {
         return;
     }
 
-    // Make sure that the correct text line is in cache
-    char* text_p;
-    int   textLength;
+    /* Make sure that the correct text line is in cache */
+    char *text_p;
+    int textLength;
     m_rowCache_p->Get(row, &text_p, &textLength);
 
-    int  cacheIndex = row % CACHE_MEM_MAP_SIZE;
-    TIA_Cache_MemMap_t* cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
+    int cacheIndex = row % CACHE_MEM_MAP_SIZE;
+    TIA_Cache_MemMap_t *cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
 
     if (cacheRow_p->autoHighligth.matchStamp == m_autoHighligthMatchStamp) {
         return;
@@ -220,7 +230,10 @@ void CAutoHighLight::UpdateAutoHighlightList(unsigned int row)
     cacheRow_p->autoHighligth.matchStamp = m_autoHighligthMatchStamp;
 }
 
-void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char* autoHighlight_p, bool caseSensitive, bool regExp)
+/***********************************************************************************************************************
+*   SetAutoHighlight
+***********************************************************************************************************************/
+void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char *autoHighlight_p, bool caseSensitive, bool regExp)
 {
     if (!m_autoHighLight_AutomaticUpdate) {
 #ifdef _DEBUG
@@ -232,7 +245,7 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char* autoHighl
     m_autoHighLight_CS = caseSensitive;
     m_autoHighLight_RegExp = regExp;
 
-    if (matchStamp == 0 || autoHighlight_p == nullptr || (strlen(autoHighlight_p) > MAX_AUTOHIGHLIGHT_LENGTH - 2)) {
+    if ((matchStamp == 0) || (autoHighlight_p == nullptr) || (strlen(autoHighlight_p) > MAX_AUTOHIGHLIGHT_LENGTH - 2)) {
         m_autoHighligthMatchStamp = 0;
         m_autoHighLightEnabled = false;
         m_autoHighLight_AutomaticUpdate = true;
@@ -241,8 +254,7 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char* autoHighl
         if (autoHighlight_p != nullptr) {
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update, length:%d",
                      (int)strlen(autoHighlight_p));
-        }
-        else {
+        } else {
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update");
         }
 #endif
@@ -260,14 +272,17 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char* autoHighl
     m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
 }
 
-bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char* matchString_p, CSelection* startSelection_p,
-                                                      bool forward, CSelection* nextSelection_p, bool caseSensitive,
+/***********************************************************************************************************************
+*   SearchAndUpdateNextAutoHighlight
+***********************************************************************************************************************/
+bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char *matchString_p, CSelection *startSelection_p,
+                                                      bool forward, CSelection *nextSelection_p, bool caseSensitive,
                                                       bool regExp)
 {
     bool quickSearchOK = false;
-    char* text_p;
+    char *text_p;
     int size;
-    QList<TextRectElement_t*> elementRefs;
+    QList<TextRectElement_t *> elementRefs;
 
     SetAutoHighlight(MW_GetTick(), matchString_p, caseSensitive, regExp);
     m_rowCache_p->Get(startSelection_p->row, &text_p, &size);
@@ -275,8 +290,8 @@ bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char* matchString_p,
     CTextRectElementFactory factory(&m_autoHighlight_Pool);
     if (FindTextElements(&elementRefs, text_p, size, m_autoHighLightMatch, m_autoHighLightMatchLength,
                          caseSensitive, regExp, &factory)) {
-        TextRectElement_t* element_p;
-        QList<TextRectElement_t*>::iterator iter;
+        TextRectElement_t *element_p = nullptr;
+        QList<TextRectElement_t *>::iterator iter;
         if (forward) {
             if (startSelection_p->startCol == -1) {
                 quickSearchOK = true;
@@ -288,8 +303,7 @@ bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char* matchString_p,
                     quickSearchOK = true;
                 }
             }
-        }
-        else {
+        } else {
             if (startSelection_p->endCol == -1) {
                 quickSearchOK = true;
                 element_p = elementRefs.last();
@@ -309,7 +323,7 @@ bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char* matchString_p,
         }
     }
 
-    // Move all autoHighlight elements from the row to the pool
+    /* Move all autoHighlight elements from the row to the pool */
     while (!elementRefs.isEmpty()) {
         m_autoHighlight_Pool.append(elementRefs.takeLast());
     }
@@ -317,17 +331,21 @@ bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char* matchString_p,
     return quickSearchOK;
 }
 
+/***********************************************************************************************************************
+*   AutoHighlightTest
+***********************************************************************************************************************/
 void CAutoHighLight::AutoHighlightTest(void)
 {
-    QList<TextRectElement_t*>  elementRefs;
-    TextRectElement_t*         element_p;
+    QList<TextRectElement_t *> elementRefs;
+    TextRectElement_t *element_p;
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, "Dummy");
     m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
 
     char testString[CFG_TEMP_STRING_MAX_SIZE];
 
-    //------------------------------------------------------------------------------------------------------------------
+    /*------------------------------------------------------------------------------------------------------------------
+     * */
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummy dummy Bummy Dummy");
 
@@ -339,12 +357,12 @@ void CAutoHighLight::AutoHighlightTest(void)
     }
 
     element_p = elementRefs.first();
-    if (element_p->startCol != 0 || element_p->endCol != 4) {
+    if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(1);
-    if (element_p->startCol != 18 || element_p->endCol != 22) {
+    if ((element_p->startCol != 18) || (element_p->endCol != 22)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
@@ -352,7 +370,8 @@ void CAutoHighLight::AutoHighlightTest(void)
         m_autoHighlight_Pool.append(elementRefs.takeLast());
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    /*------------------------------------------------------------------------------------------------------------------
+     * */
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "DummyDummyDummyDummy");
 
@@ -363,22 +382,22 @@ void CAutoHighLight::AutoHighlightTest(void)
     }
 
     element_p = elementRefs.at(0);
-    if (element_p->startCol != 0 || element_p->endCol != 4) {
+    if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(1);
-    if (element_p->startCol != 5 || element_p->endCol != 9) {
+    if ((element_p->startCol != 5) || (element_p->endCol != 9)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(2);
-    if (element_p->startCol != 10 || element_p->endCol != 14) {
+    if ((element_p->startCol != 10) || (element_p->endCol != 14)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(3);
-    if (element_p->startCol != 15 || element_p->endCol != 19) {
+    if ((element_p->startCol != 15) || (element_p->endCol != 19)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
@@ -386,7 +405,8 @@ void CAutoHighLight::AutoHighlightTest(void)
         m_autoHighlight_Pool.append(elementRefs.takeLast());
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    /*------------------------------------------------------------------------------------------------------------------
+     * */
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "DummDummDummDummy");
 
@@ -396,11 +416,12 @@ void CAutoHighLight::AutoHighlightTest(void)
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
-    //------------------------------------------------------------------------------------------------------------------
+    /*------------------------------------------------------------------------------------------------------------------
+     * */
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummmy DummY DDDDDDDummy");
 
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, strlen(testString),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, m_autoHighLight_CS, m_autoHighLight_RegExp,
                          &factory) != 1) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -410,8 +431,9 @@ void CAutoHighLight::AutoHighlightTest(void)
         m_autoHighlight_Pool.append(elementRefs.takeLast());
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // RegExp
+    /*
+     * ------------------------------------------------------------------------------------------------------------------
+     * RegExp */
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummy Bummy Pummy");
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, "[DBP]u.my");
@@ -424,17 +446,17 @@ void CAutoHighLight::AutoHighlightTest(void)
     }
 
     element_p = elementRefs.at(0);
-    if (element_p->startCol != 0 || element_p->endCol != 4) {
+    if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(1);
-    if (element_p->startCol != 6 || element_p->endCol != 10) {
+    if ((element_p->startCol != 6) || (element_p->endCol != 10)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(2);
-    if (element_p->startCol != 12 || element_p->endCol != 16) {
+    if ((element_p->startCol != 12) || (element_p->endCol != 16)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
@@ -442,11 +464,12 @@ void CAutoHighLight::AutoHighlightTest(void)
         m_autoHighlight_Pool.append(elementRefs.takeLast());
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // RegExp - overlap
+    /*
+     * ------------------------------------------------------------------------------------------------------------------
+     * RegExp - overlap */
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummy Bummy Pummy");
 
-    // The regExp will match, (1) Dummy, (2) Dummy Bummy, (3) Dummy Bummy Pummy
+    /* The regExp will match, (1) Dummy, (2) Dummy Bummy, (3) Dummy Bummy Pummy */
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, ".*my");
     m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
 
@@ -457,7 +480,7 @@ void CAutoHighLight::AutoHighlightTest(void)
     }
 
     element_p = elementRefs.at(0);
-    if (element_p->startCol != 0 || element_p->endCol != 16) {
+    if ((element_p->startCol != 0) || (element_p->endCol != 16)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
@@ -465,8 +488,9 @@ void CAutoHighLight::AutoHighlightTest(void)
         m_autoHighlight_Pool.append(elementRefs.takeLast());
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // Case in-sensitive
+    /*
+     * ------------------------------------------------------------------------------------------------------------------
+     * Case in-sensitive */
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "DUM12 DUM12 Dummy");
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, "dUm12");
@@ -479,12 +503,12 @@ void CAutoHighLight::AutoHighlightTest(void)
     }
 
     element_p = elementRefs.at(0);
-    if (element_p->startCol != 0 || element_p->endCol != 4) {
+    if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
     element_p = elementRefs.at(1);
-    if (element_p->startCol != 6 || element_p->endCol != 10) {
+    if ((element_p->startCol != 6) || (element_p->endCol != 10)) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
     }
 
@@ -493,7 +517,12 @@ void CAutoHighLight::AutoHighlightTest(void)
     }
 }
 
-bool CFontModification::GetFontModRowInfo(const int row, CFilterItem* filterItem_p, FontModification_RowInfo_t** rowInfo_pp)
+/***********************************************************************************************************************
+*   GetFontModRowInfo
+***********************************************************************************************************************/
+bool CFontModification::GetFontModRowInfo(const int row,
+                                          CFilterItem *filterItem_p,
+                                          FontModification_RowInfo_t **rowInfo_pp)
 {
     *rowInfo_pp = nullptr;
 
@@ -502,13 +531,13 @@ bool CFontModification::GetFontModRowInfo(const int row, CFilterItem* filterItem
         return false;
     }
 
-    int  cacheIndex = row % CACHE_MEM_MAP_SIZE;
-    TIA_Cache_MemMap_t* cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
+    int cacheIndex = row % CACHE_MEM_MAP_SIZE;
+    TIA_Cache_MemMap_t *cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
 
     if (cacheRow_p->row != row) {
-        // Make sure to update the row first
-        char* text_p;
-        int   textLength;
+        /* Make sure to update the row first */
+        char *text_p;
+        int textLength;
         m_rowCache_p->Get(row, &text_p, &textLength);
     }
 
@@ -518,23 +547,23 @@ bool CFontModification::GetFontModRowInfo(const int row, CFilterItem* filterItem
         return false;
     }
 
-    // TEMP
-    // Move all autoHighlight elements from the row to the pool
-    QList<FontModification_Element_t*>* elementRefs_p = &cacheRow_p->fontModification.elementRefs;
+    /* TEMP
+     * Move all autoHighlight elements from the row to the pool */
+    QList<FontModification_Element_t *> *elementRefs_p = &cacheRow_p->fontModification.elementRefs;
     while (!elementRefs_p->isEmpty()) {
         m_fontModification_Pool.append(elementRefs_p->takeLast());
     }
 
     CFontModElementFactory factory(&m_fontModification_Pool);
     FindTextElements(
-                (QList<TextRectElement_t*>*)&cacheRow_p->fontModification.elementRefs,
-                (char*)cacheRow_p->poolItem_p->GetDataRef(),
-                cacheRow_p->size,
-                filterItem_p->m_start_p,
-                filterItem_p->m_size,
-                filterItem_p->m_caseSensitive,
-                filterItem_p->m_regexpr,
-                &factory);
+        (QList<TextRectElement_t *> *) & cacheRow_p->fontModification.elementRefs,
+        (char *)cacheRow_p->poolItem_p->GetDataRef(),
+        cacheRow_p->size,
+        filterItem_p->m_start_p,
+        filterItem_p->m_size,
+        filterItem_p->m_caseSensitive,
+        filterItem_p->m_regexpr,
+        &factory);
 
     if (cacheRow_p->fontModification.elementRefs.isEmpty()) {
         *rowInfo_pp = nullptr;

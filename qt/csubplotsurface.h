@@ -125,13 +125,13 @@ public:
     }
 
     CGraph *m_graph_p;
-    unsigned int m_numOfItems;
+    int m_numOfItems;
     displayItem_t *m_items_a;
     QPen *m_pen_p;
     int m_color; /* Enumerated, may be overriden by m_overrideColor */
     GraphLinePattern_e m_pattern; /* Enumerated, may be overriden by m_overrideLinePattern */
     bool m_isOverrideColorSet; /* If the member m_overrideColor is set or not */
-    unsigned int m_overrideColor; /* 0 default */
+    int m_overrideColor; /* 0 default */
     GraphLinePattern_e m_overrideLinePattern; /* GLP_NONE default */
 };
 
@@ -151,11 +151,11 @@ public:
     void OnPaint_2(void);
     void SetZoom(double x_min, double x_max, bool reset_Y_Zoom = false);
 
-    const displayItem_t *GetCursorRow(const QPoint *point_p, unsigned int *row_p, double *time,
+    const displayItem_t *GetCursorRow(const QPoint *point_p, int *row_p, double *time,
                                       double *distance_p);
     bool GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double *distance_p,
                          GraphicalObject_t **go_pp);
-    bool GetClosestGraph(unsigned int row, CGraph **graph_pp, unsigned int *distance_p,
+    bool GetClosestGraph(int row, CGraph **graph_pp, int *distance_p,
                          GraphicalObject_t **go_pp);
 
     void SetCursor(double cursorTime);
@@ -204,9 +204,9 @@ public:
 private:
     CSubPlotSurface() {TRACEX_E("CSubPlotSurface::CSubPlotSurface  Default constructor not supported");}
 
-    const displayItem_t *FindClosest_GO(const unsigned int x, const unsigned int y,
+    const displayItem_t *FindClosest_GO(const int x, const int y,
                                         double *distance_p, CGraph **graph_pp = nullptr);
-    GraphicalObject_t *FindClosest_GO(unsigned int row, unsigned int *distance_p, CGraph **graph_pp = nullptr);
+    GraphicalObject_t *FindClosest_GO(int row, int *distance_p, CGraph **graph_pp = nullptr);
 
     bool LoadResources(void);
     void Initialize(void);
@@ -225,7 +225,7 @@ private:
     void DrawGraphs(void);
     void DrawDecorators(bool over = true);  /* if over is set the drawDecorators are called */
 
-    inline void GetPointLocation(GraphicalObject_t *go_p, unsigned int *pl_1_p, unsigned int *pl_2_p);
+    inline void GetPointLocation(GraphicalObject_t *go_p, int *pl_1_p, int *pl_2_p);
     inline void Setup_Y_Lines(void);
     inline void Setup_X_Lines(void);
 
@@ -242,11 +242,11 @@ private:
      * functions will be called, as
      * the intersection needs to be against one of the axises. */
 
-    bool Intersection_LINE_Out2In(unsigned int pl_1, unsigned int pl_2, /* POINT LOCATION - which square */
+    bool Intersection_LINE_Out2In(int pl_1, int pl_2, /* POINT LOCATION - which square */
                                   double *p0_x_p, float *p0_y_p, /* p0 is outside, need to be adjusted */
                                   double p1_x, float p1_y); /* p1 is inside */
 
-    bool Intersection_LINE_In2Out(unsigned int pl_0, unsigned int pl_1, /* POINT LOCATION - which square */
+    bool Intersection_LINE_In2Out(int pl_0, int pl_1, /* POINT LOCATION - which square */
                                   double *p0_x_p, float *p0_y_p,   /* p0 is inside */
                                   double p1_x, float p1_y); /* p1 is outside, need to be adjusted */
 
@@ -254,14 +254,14 @@ private:
                            double p2_x, float p2_y, double p3_x, float p3_y, /* Line 2:   p2 -> p2 */
                            double *i_x, float *i_y); /* Intersection */
 
-    bool Intersection_BOX_Out2In(unsigned int pl_1,
-                                 unsigned int pl_2,
+    bool Intersection_BOX_Out2In(int pl_1,
+                                 int pl_2,
                                  double *p0_x_p,
                                  float *p0_y_p,
                                  double p1_x,
                                  float p1_y);
-    bool Intersection_BOX_In2Out(unsigned int pl_0,
-                                 unsigned int pl_1,
+    bool Intersection_BOX_In2Out(int pl_0,
+                                 int pl_1,
                                  double *p0_x_p,
                                  float *p0_y_p,
                                  double p1_x,
@@ -283,7 +283,7 @@ public:
     char m_X_Label[CFG_TEMP_STRING_MAX_SIZE];
     int m_X_Label_len;
     QSize m_X_Label_Size;
-    unsigned int m_numOfDisplayGraphs; /* number of items in m_displayGraphs_a */
+    int m_numOfDisplayGraphs; /* number of items in m_displayGraphs_a */
     CDisplayGraph *m_displayGraphs_a; /* Array of displayGraph_t, allocated at construction */
     CDisplayGraph m_displayDecorator; /* Possibly there is a decorator */
     bool m_shadow; /* A shadow is a unique instance having a the m_subPlot_p referencing to some others
@@ -297,12 +297,12 @@ private:
 #define MAX_X_LINES 640
 
     double m_lines_Y[1000 /*MAX_Y_LINES*/];
-    unsigned int m_numOf_Y_Lines;
+    int m_numOf_Y_Lines;
     double m_lines_X[MAX_X_LINES];
-    unsigned int m_base_X_right_count; /* Number of x-values from 0 index that is to the right of base */
-    unsigned int m_numOf_X_Lines;
+    int m_base_X_right_count; /* Number of x-values from 0 index that is to the right of base */
+    int m_numOf_X_Lines;
     bool m_cursorRowEnabled;
-    unsigned int m_cursorRow;
+    int m_cursorRow;
     bool m_cursorTimeEnabled;
     double m_cursorTime;
     LS_Painter m_painter;
@@ -339,12 +339,12 @@ private:
     QBrush *m_bgBrush_p;
     QPen *m_bgPen_p;
     PendDescription_t *m_graphPenArray_p;
-    unsigned int m_graphPenArraySize;
+    int m_graphPenArraySize;
     ColorTableItem_t *m_colorTable_p;
-    unsigned int m_graphColors;
+    int m_graphColors;
     PendDescription_t m_graphPenArrayUser[MAX_NUM_OF_PENS]; /* These are pens with colors chosen by plugin
                                                              * (additional pens) */
-    unsigned int m_numOfGraphUserColors; /* The current number of pens created */
+    int m_numOfGraphUserColors; /* The current number of pens created */
     QPen *m_linePen_Y_p;
     QPen *m_cursorPen_Y_p;
     QImage m_bitmap_top;
@@ -358,11 +358,11 @@ private:
     bool m_resourcesLoaded;
     bool m_setupGraphs; /* Set to true when it is required to call SetupGraphs, shall be called from OnPaint */
     CGO_Label **m_label_refs_a;
-    unsigned int m_numOfLabelRefs;
+    int m_numOfLabelRefs;
     QSize m_lineSize; /*updated each time when drawing axis            = m_pDC->GetTextExtent("X", 1); */
     int m_halfLineHeight;     /*updated each time when drawing axis            = (int)((float)lineSize.cy /
                                * (float)2.0); */
-    unsigned int m_subplot_properties; /*updated each time when drawing axis = * m_subPlot_p->GetProperties(); */
+    int m_subplot_properties; /*updated each time when drawing axis = * m_subPlot_p->GetProperties(); */
     float m_avgPixPerLetter;
     float m_avgPixPerLetterHeight;
     bool m_hasFocus;

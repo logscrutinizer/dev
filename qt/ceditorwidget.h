@@ -61,7 +61,7 @@
 
 #define LS_LG_NONE        0
 
-const unsigned int NUM_TAB_STOBS = DISPLAY_MAX_ROW_SIZE / 4;
+const int NUM_TAB_STOBS = DISPLAY_MAX_ROW_SIZE / 4;
 
 typedef enum {
     PRESENTATION_MODE_ALL_e,
@@ -272,8 +272,8 @@ protected:
     int m_maxRowIndex; /**< The last possible row index, compensated for presentation mode and rowClipping */
     int m_minFIRAIndex; /**< The last FIRA index that can be used considering presentation mode and rowClipping */
     int m_maxFIRAIndex; /**< The last FIRA index that can be used considering presentation mode and rowClipping */
-    unsigned int m_textRectOffset_Y; /**< Since the text is positioned at the top of the RECT, we move the text
-                                      * placement compared to where the selection rect will be */
+    int m_textRectOffset_Y; /**< Since the text is positioned at the top of the RECT, we move the text
+                             * placement compared to where the selection rect will be */
     QFont m_FontStatusBar;
     QFont m_FontEmptyWindow;
     bool m_init;
@@ -341,7 +341,7 @@ protected:
 
 public:
     void Initialize_0(void); /* The previous contstructor for CLogScrutinizerView */
-    void Initialize(bool reload = false); /* Clean all members */
+    void Initialize(void); /* Clean all members */
     void CleanUp_0(void);
 
     void EmptySelectionList(bool invalidate = false);     /* Remove all selections */
@@ -411,8 +411,8 @@ public:
     void DrawBookmark(QRect *rect_p);
 
     void SearchNewTopLine(bool checkDisplayCache = true, int focusRow = -1);
-    bool RowExist_inScreen(const unsigned int row); /**< to check if the row is already present on the screen... then
-                                                     * e.g. no reason for scrolling */
+    bool RowExist_inScreen(const int row); /**< to check if the row is already present on the screen... then
+                                            * e.g. no reason for scrolling */
     bool SearchFilteredRows_inScreen(int startRow, int count, bool up, int *row_p);
     int SuggestedFocusRow(void);
 
@@ -446,7 +446,7 @@ public:
     bool GetActiveSelection(CSelection *selection_p, QString& text);
     bool GetCursorPosition(CSelection *selection_p); /* Fill selection with cursor position, if active return true,
                                                       * otherwise return false */
-    void ContinueSelection(unsigned int TIA_selectedRow, unsigned int startCol, unsigned int endCol);
+    void ContinueSelection(int TIA_selectedRow, int startCol, int endCol);
     void AddMultipleSelections(const int startRow, const int endRow, bool usePresentationMode = true);
     void ExpandSelection(CSelection *selection_p);
     CSelection GetCursorPosition(void) {return m_cursorSel;}
@@ -454,26 +454,26 @@ public:
     void EmptySelectionListAbove(CSelection *selection_p);
     void EmptySelectionListBelow(CSelection *selection_p);
 
-    void AddDragSelection(unsigned int TIA_Row, unsigned int startCol, unsigned int endCol);
+    void AddDragSelection(int TIA_Row, int startCol, int endCol);
     bool textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p,
                                     LS_LG_EVENT_t mouseEvent,
                                     Qt::KeyboardModifiers modifiers);
 
     /* QT_TODO  Should * use QtByteArray * instead */
     bool CopySelectionsToSharedFile(QString sharedFile /*CSharedFile* sf_p*/, int *bytesWritten_p);
-    bool CopySelectionsToMem(char *dest_p, unsigned int *bytesWritten_p);
+    bool CopySelectionsToMem(char *dest_p, int *bytesWritten_p);
     bool SaveSelectionsToFile(QString& fileName);
     QString GetSelectionText(void);
 
-    unsigned int GetSelectionsTextSize(void);
-    unsigned int GetSelectionsTextMaxSize(void);
+    int GetSelectionsTextSize(void);
+    int GetSelectionsTextMaxSize(void);
     void SelectionsToClipboard(void);
 
-    int CursorTo_TIA_Index(unsigned int screenRow);
+    int CursorTo_TIA_Index(int screenRow);
     bool SetVScrollGlue(bool enabled);
     bool SetVScrollBitmap(bool enabled);
 
-    bool PointToCursor(ScreenPoint_t *screenPoint_p, unsigned int *screenRow_p, unsigned int *screenCol_p,
+    bool PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p, int *screenCol_p,
                        bool *overHalf = nullptr);
     bool PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p, QPoint *alignedPoint_p);
     bool ColumnToPoint(int screenCol, int& x);
@@ -488,7 +488,7 @@ public:
     void PageUpDown(bool up, int lines = 0);
     void onHome(void);
     void onEnd(void);
-    void CursorUpDown(bool up, bool onlyScroll = false);
+    void CursorUpDown(bool up);
     void CursorLeftRight(bool left);
     void PageLeftRight(bool left, int charsToScroll = 0);
 

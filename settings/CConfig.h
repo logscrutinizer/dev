@@ -133,7 +133,7 @@
  * version */
 #define LCZ_FOOTER                    "</LogScrutinizer>"
 
-#define LCZ_FILE_VERSION              ((unsigned int)2)
+#define LCZ_FILE_VERSION              (2)
 
 #define SETTINGS_HEADER               "  <settings>"
 #define SETTINGS_FOOTER               "  </settings>"
@@ -286,13 +286,15 @@ typedef struct {
  #define DLL_EXT   "so"
 #endif
 
-/*extern unsigned int         CFG_MAX_NUM_OF_THREADS_persistent; */
-
-extern unsigned int FILECTRL_MINIMAL_NUM_OF_TIs_persistent;
-extern unsigned int FILECTRL_ROW_SIZE_ESTIMATE_persistent;
-extern unsigned int FILECTRL_ROW_MAX_SIZE_persistent;
+extern int FILECTRL_MINIMAL_NUM_OF_TIs_persistent;
+extern int FILECTRL_ROW_SIZE_ESTIMATE_persistent;
+extern int FILECTRL_ROW_MAX_SIZE_persistent;
 extern CFG_PADDING_t CFG_SCREEN_TEXT_ROW_PADDING_persistent;
 extern CFG_PADDING_t CFG_SCREEN_TEXT_WINDOW_PADDING_persistent;
+extern const ColorTableItem_t *g_fontColorTable_DEFAULT_p;
+extern int g_defaultNumOfFontColorItems;
+extern const ColorTableItem_t *g_graphColorTable_DEFAULT_p;
+extern int g_defaultNumOfGraphColorItems;
 
 /***********************************************************************************************************************
 *   CSCZ_CfgBase
@@ -364,7 +366,7 @@ public:
         QString *name_p,
         QString *description_p,
         const ColorTableItem_t *colorTable_DEFAULT_p,
-        const unsigned int defaultNumOfColors) : CSCZ_CfgSettingBase(tag_p, name_p, description_p)
+        const int defaultNumOfColors) : CSCZ_CfgSettingBase(tag_p, name_p, description_p)
     {
         m_colorTable_DEFAULT_p = colorTable_DEFAULT_p;
         m_currentNumColors = defaultNumOfColors;
@@ -393,7 +395,7 @@ public:
     *   GetCurrentNumberOfColors
     *   @return TODO
     *******************************************************************************************************************/
-    unsigned int GetCurrentNumberOfColors(void) {
+    int GetCurrentNumberOfColors(void) {
         return m_currentNumColors;
     }
 
@@ -458,8 +460,8 @@ class CSCZ_SettingUInt : public CSCZ_CfgSettingBase
 public:
     CSCZ_SettingUInt(QString *tag_p,
                      QString *identity_p,
-                     unsigned int *ref_p,
-                     unsigned int defaultValue,
+                     int *ref_p,
+                     int defaultValue,
                      QString *description_p)
         : CSCZ_CfgSettingBase(tag_p, identity_p, description_p)
     {
@@ -490,8 +492,8 @@ public:
     virtual bool SetValue(QString *value_p);
 
 private:
-    unsigned int m_defaultValue;
-    unsigned int *m_valueRef_p;
+    int m_defaultValue;
+    int *m_valueRef_p;
 };
 
 /***********************************************************************************************************************
@@ -583,7 +585,7 @@ public:
     bool RegisterSetting(CSCZ_CfgSettingBase *setting_p);
 
     bool RegisterSetting_INT(QString tag, QString identity, int *ref_p, int defaultValue, QString description);
-    bool RegisterSetting_UINT(QString tag, QString identity, unsigned int *ref_p, unsigned int defaultValue,
+    bool RegisterSetting_UINT(QString tag, QString identity, int *ref_p, int defaultValue,
                               QString description);
     bool RegisterSetting_BOOL(QString tag, QString identity, bool *ref_p, bool defaultValue, QString description);
     bool RegisterSetting_STRING(QString tag, QString name, QString *ref_p, QString defaultValue, QString description);
@@ -591,7 +593,7 @@ public:
     CSCZ_CfgSettingBase *GetSetting(QString *name_p);
     CSCZ_CfgSettingColorTable *RegisterColorTable(QString tag, QString name, QString description,
                                                   const ColorTableItem_t *colorTable_DEFAULT_p,
-                                                  const unsigned int defaultNumColors);
+                                                  const int defaultNumColors);
 
     void ReplaceColorInTable(char *id_p, int index, Q_COLORREF color, char *name_p);
     bool RemoveSetting(QString *identity_p);
@@ -613,27 +615,27 @@ private:
 public:
     int m_threadPriority;
     int32_t m_numOfThreads; /**< The default number of threads */
-    unsigned int m_v_scrollSpeed; /**< The vertical scroll speed */
-    unsigned int m_v_scrollGraphSpeed; /**< The vertical graph scroll speed */
-    unsigned int m_pluginDebugBitmask; /**< 0 - disabled */
-    unsigned int m_workMemSize;
-    unsigned int m_maxWorkMemSize;
-    unsigned int m_plot_lineEnds; /**< Determine with which line end  to use */
-    unsigned int m_plot_LineEnds_MinPixelDist; /**< Minimal number of pixels that there must be between line ends */
-    unsigned int m_plot_LineEnds_MaxCombinePixelDist; /**< Maximal number of pixels between lines that are
-                                                       *  combined, after this they will be * seperatly drawn */
-    unsigned int m_plot_TextFontSize; /**< Size of font used for text in  plots */
-    unsigned int m_plot_TextFontColor; /**< Size of font used for text in plots */
-    unsigned int m_plot_GraphLineSize; /**< Thinkness of graphs */
-    unsigned int m_plot_GraphAxisLineSize; /**< Thinkness of graphs axis */
-    unsigned int m_plot_GraphAxisLineColor; /**< Color of graphs axis */
-    unsigned int m_plot_GraphCursorLineSize; /**< Thinkness */
-    unsigned int m_plot_GraphCursorLineColor; /**< Color */
-    unsigned int m_plot_FocusLineSize;
-    unsigned int m_plot_FocusLineColor; /**< When a subPlot has focus this color is drawn around the * subPlot */
-    unsigned int m_plot_PassiveFocusLineColor; /**< When a subPlot has focus, but  not the PlotWnd, this color is
-                                                * drawn around the subPlot */
-    unsigned int m_scrollArrowScale; /**< Used to resize the vertial scroll arrow. 10  -> 0.1 */
+    int m_v_scrollSpeed; /**< The vertical scroll speed */
+    int m_v_scrollGraphSpeed; /**< The vertical graph scroll speed */
+    int m_pluginDebugBitmask; /**< 0 - disabled */
+    int m_workMemSize;
+    int m_maxWorkMemSize;
+    int m_plot_lineEnds; /**< Determine with which line end  to use */
+    int m_plot_LineEnds_MinPixelDist; /**< Minimal number of pixels that there must be between line ends */
+    int m_plot_LineEnds_MaxCombinePixelDist; /**< Maximal number of pixels between lines that are
+                                              *  combined, after this they will be * seperatly drawn */
+    int m_plot_TextFontSize; /**< Size of font used for text in  plots */
+    int m_plot_TextFontColor; /**< Size of font used for text in plots */
+    int m_plot_GraphLineSize; /**< Thinkness of graphs */
+    int m_plot_GraphAxisLineSize; /**< Thinkness of graphs axis */
+    int m_plot_GraphAxisLineColor; /**< Color of graphs axis */
+    int m_plot_GraphCursorLineSize; /**< Thinkness */
+    int m_plot_GraphCursorLineColor; /**< Color */
+    int m_plot_FocusLineSize;
+    int m_plot_FocusLineColor; /**< When a subPlot has focus this color is drawn around the * subPlot */
+    int m_plot_PassiveFocusLineColor; /**< When a subPlot has focus, but  not the PlotWnd, this color is
+                                       * drawn around the subPlot */
+    int m_scrollArrowScale; /**< Used to resize the vertial scroll arrow. 10  -> 0.1 */
     int m_plot_GrayIntensity;
     int m_log_GrayIntensity;
     int m_log_FilterMatchColorModify;
@@ -661,7 +663,7 @@ public:
     bool m_autoCloseProgressDlg;
     bool m_devToolsMenu;
     bool m_throwAtError;
-    unsigned int m_minNumOfTIs; /**< How many TIs that will be made space for in the TIA */
+    int m_minNumOfTIs; /**< How many TIs that will be made space for in the TIA */
     CFG_PADDING_t m_text_RowPadding;
     CFG_PADDING_t m_text_WindowPadding;
 };

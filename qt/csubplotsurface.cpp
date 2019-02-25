@@ -124,7 +124,7 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, QRect
         memset(m_label_refs_a, 0, sizeof(CGO_Label *) * labelList_p->count());
 
         CGO_Label *label_p = (CGO_Label *)labelList_p->first();
-        unsigned int index = 0;
+        int index = 0;
         while (label_p != nullptr) {
             m_label_refs_a[index++] = label_p;
             label_p = (CGO_Label *)labelList_p->GetNext((CListObject *)label_p);
@@ -249,7 +249,7 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, QRect
             memset(dgraph_p->m_items_a, 0, dgraph_p->m_numOfItems * sizeof(displayItem_t));
 
             GraphicalObject_t *go_p = graph_p->GetFirstGraphicalObject();
-            unsigned int itemIndex = 0;
+            int itemIndex = 0;
             const auto numOfItems = dgraph_p->m_numOfItems;
 
             while (go_p != nullptr && itemIndex < numOfItems) {
@@ -288,7 +288,7 @@ CSubPlotSurface::~CSubPlotSurface()
     }
 
     if (m_graphPenArray_p != nullptr) {
-        for (unsigned int index = 0; index < m_graphPenArraySize; ++index) {
+        for (int index = 0; index < m_graphPenArraySize; ++index) {
             if (m_graphPenArray_p[index].pen_p != nullptr) {
                 delete m_graphPenArray_p[index].pen_p;
             }
@@ -298,7 +298,7 @@ CSubPlotSurface::~CSubPlotSurface()
     }
 
     if (m_numOfGraphUserColors != 0) {
-        for (unsigned int index = 0; index < m_numOfGraphUserColors; ++index) {
+        for (int index = 0; index < m_numOfGraphUserColors; ++index) {
             if (m_graphPenArrayUser[index].pen_p != nullptr) {
                 delete m_graphPenArrayUser[index].pen_p;
                 m_graphPenArrayUser[index].pen_p = nullptr;
@@ -477,7 +477,7 @@ bool CSubPlotSurface::LoadResources(void)
 ***********************************************************************************************************************/
 void CSubPlotSurface::SetupGraphPens(void)
 {
-    unsigned int index;
+    int index;
 
     if (m_graphPenArray_p != nullptr) {
         for (index = 0; index < m_graphPenArraySize; ++index) {
@@ -554,7 +554,7 @@ void CSubPlotSurface::SetupGraphPens(void)
                 break;
         }
 
-        for (unsigned int colorIndex = 0;
+        for (int colorIndex = 0;
              colorIndex < m_graphColors && m_graphPenArraySize < MAX_GRAPH_TYPES;
              ++colorIndex, ++m_graphPenArraySize) {
             m_graphPenArray_p[m_graphPenArraySize].pen_p = new QPen(m_colorTable_p[colorIndex].color);
@@ -574,7 +574,7 @@ void CSubPlotSurface::SetupGraphPens(void)
 ***********************************************************************************************************************/
 QPen *CSubPlotSurface::GetUserDefinedPen(Q_COLORREF color, GraphLinePattern_e pattern)
 {
-    unsigned int index;
+    int index;
 
     for (index = 0; index < m_numOfGraphUserColors; ++index) {
         if ((m_graphPenArrayUser[index].pen_p != nullptr) &&
@@ -960,7 +960,7 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
 
     const QSize lineSize = m_lineSize;
     const int halfLineHeight = m_halfLineHeight;
-    const unsigned int subplot_properties = m_subplot_properties;
+    const SubPlot_Properties_t subplot_properties = m_subplot_properties;
 
     m_painter_p->setPen(Q_RGB(g_cfg_p->m_plot_GrayIntensity,
                               g_cfg_p->m_plot_GrayIntensity,
@@ -971,8 +971,8 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
 
     if (!graphList_p->isEmpty()) {
         CGraph *graph_p = (CGraph *)graphList_p->first();
-        unsigned int graphColorIndex = 0;
-        unsigned int graphIndex = 0;
+        int graphColorIndex = 0;
+        int graphIndex = 0;
 
         /* Print the LEGEND */
 
@@ -1045,7 +1045,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
     /* Legends and y-axis measurement lines */
     bool isOpaque = false;
     const int halfLineHeight = m_halfLineHeight;
-    const unsigned int subplot_properties = m_subplot_properties;
+    const SubPlot_Properties_t subplot_properties = m_subplot_properties;
 
     m_painter_p->setBackgroundMode(Qt::TransparentMode);
     m_painter_p->setPen(Q_RGB(g_cfg_p->m_plot_GrayIntensity,
@@ -1057,15 +1057,15 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
 
     if (!graphList_p->isEmpty()) {
         CGraph *graph_p = (CGraph *)graphList_p->first();
-        unsigned int graphColorIndex = 0;
-        unsigned int graphIndex = 0;
+        int graphColorIndex = 0;
+        int graphIndex = 0;
 
         /* Print the LEGEND */
 
         while (graph_p != nullptr) {
             if (graph_p->isEnabled()) {
                 bool isOverrideColorSet;
-                unsigned int overrideColor;
+                int overrideColor;
                 GraphLinePattern_e overrideLinePattern;
                 QRgb color;
 
@@ -1130,7 +1130,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
                                                   g_cfg_p->m_plot_GrayIntensity,
                                                   g_cfg_p->m_plot_GrayIntensity));
 
-        unsigned int index = 0;
+        int index = 0;
 
         while (index < m_numOf_Y_Lines) {
             startPoint.setY(m_viewPortRect.bottom()
@@ -1175,7 +1175,7 @@ void CSubPlotSurface::Draw_X_Axis(void)
                                                g_cfg_p->m_plot_GrayIntensity));
 
         QSize lineSize;
-        unsigned int index = 0;
+        int index = 0;
         auto skipLineCount = 0;
 
         while (index < m_numOf_X_Lines) {
@@ -1292,7 +1292,7 @@ void CSubPlotSurface::Setup_X_Lines(void)
         m_numOf_X_Lines = 0;
     }
 
-    auto numLinesEstimate = static_cast<unsigned int>(static_cast<float>(m_viewPortRect.width()) / m_avgPixPerLetter);
+    auto numLinesEstimate = static_cast<int>(static_cast<float>(m_viewPortRect.width()) / m_avgPixPerLetter);
     double x_diff_per_line = abs(x_diff) / numLinesEstimate;
     double base;
     double step = pow(10, floor(log10(x_diff_per_line)));
@@ -1309,7 +1309,7 @@ void CSubPlotSurface::Setup_X_Lines(void)
         base = 0.0;
     } else {
         /* No negative numbers.. */
-        unsigned int steps_to_xmin = static_cast<unsigned int>(floor(x_min / step));
+        int steps_to_xmin = static_cast<int>(floor(x_min / step));
         base = (steps_to_xmin - (steps_to_xmin % 10)) * step;
 
         while (base < x_min) {
@@ -1317,7 +1317,7 @@ void CSubPlotSurface::Setup_X_Lines(void)
         }
     }
 
-    unsigned int index = 0;
+    int index = 0;
     int steps = 0;
 
     while (base + (steps * step) < x_max && (index < MAX_X_LINES)) {
@@ -1344,24 +1344,24 @@ void CSubPlotSurface::DrawGraphs(void)
 {
     /* Define the avgPixPerLetter */
     const QSize lineSize = m_lineSize;
-    const unsigned int lineEnds = g_cfg_p->m_plot_lineEnds;
-    const unsigned int minPixelDist = g_cfg_p->m_plot_LineEnds_MinPixelDist;
-    const unsigned int maxPixelDist = g_cfg_p->m_plot_LineEnds_MaxCombinePixelDist;
+    const int lineEnds = g_cfg_p->m_plot_lineEnds;
+    const int minPixelDist = g_cfg_p->m_plot_LineEnds_MinPixelDist;
+    const int maxPixelDist = g_cfg_p->m_plot_LineEnds_MaxCombinePixelDist;
     float label_relative_from_top = 0.2f; /* to enable labels not overlapping entirely */
 
     /* In-case lines and boxes are labelled */
     m_painter_p->setBackgroundMode(Qt::TransparentMode);
 
-    unsigned int graphIndex = 0;
-    unsigned int objectIndex = 0;
+    int graphIndex = 0;
+    int objectIndex = 0;
 
     if (m_numOfDisplayGraphs > 0) {
-        const unsigned int numOfGraphs = m_numOfDisplayGraphs;
+        const int numOfGraphs = m_numOfDisplayGraphs;
         QPen *selectedPen_p = nullptr;
 
         for (graphIndex = 0; graphIndex < numOfGraphs; ++graphIndex) {
             CDisplayGraph *dgraph_p = &m_displayGraphs_a[graphIndex];
-            const unsigned int numOfItems = dgraph_p->m_numOfItems;
+            const int numOfItems = dgraph_p->m_numOfItems;
             int color = 0;
             int prevColor = 0;
             GraphLinePattern_e pattern = GLP_NONE;
@@ -1393,7 +1393,7 @@ void CSubPlotSurface::DrawGraphs(void)
                 int x2_old = 0;
                 int y2_old = 0;
                 QRect rect;
-                unsigned int prevPointsHidden = 0;
+                int prevPointsHidden = 0;
 
                 for ( ; objectIndex < numOfItems; ++objectIndex) {
                     const displayItem_t *di_p = &dgraph_p->m_items_a[objectIndex];
@@ -1782,16 +1782,16 @@ void CSubPlotSurface::DrawDecorators(bool over)
      * In-case lines and boxes are labelled */
     m_painter_p->setBackgroundMode(Qt::TransparentMode);
 
-    unsigned int objectIndex = 0;
+    int objectIndex = 0;
     CDisplayGraph *dgraph_p = &m_displayDecorator;
-    const unsigned int numOfItems = dgraph_p->m_numOfItems;
+    const int numOfItems = dgraph_p->m_numOfItems;
 
     if (dgraph_p->m_graph_p->isEnabled() && (numOfItems > 0)) {
         QRect rect;
         Q_COLORREF color = Q_RGB(0x55, 0x55, 0x55);  /* use red */
 
         /* First align the x2 boundary for all life line boxes */
-        auto life_line_x2 = (unsigned int)0;
+        auto life_line_x2 = (int)0;
         auto objectIndexPreLoop = objectIndex;
         for ( ; objectIndexPreLoop < numOfItems; ++objectIndexPreLoop) {
             const displayItem_t *di_p = &dgraph_p->m_items_a[objectIndexPreLoop];
@@ -1936,7 +1936,7 @@ void CSubPlotSurface::DrawDecorators(bool over)
 /***********************************************************************************************************************
 *   Intersection_LINE_Out2In
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_LINE_Out2In(unsigned int pl_0, unsigned int pl_1, double *p0_x_p,
+bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_p,
                                                float *p0_y_p, double p1_x, float p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
@@ -2024,7 +2024,7 @@ bool CSubPlotSurface::Intersection_LINE_Out2In(unsigned int pl_0, unsigned int p
 /***********************************************************************************************************************
 *   Intersection_LINE_In2Out
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_LINE_In2Out(unsigned int pl_0, unsigned int pl_1, double *p0_x_p,
+bool CSubPlotSurface::Intersection_LINE_In2Out(int pl_0, int pl_1, double *p0_x_p,
                                                float *p0_y_p, double p1_x, float p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
@@ -2148,7 +2148,7 @@ bool CSubPlotSurface::Intersection_LINE(
 /***********************************************************************************************************************
 *   Intersection_BOX_Out2In
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_BOX_Out2In(unsigned int pl_0, unsigned int pl_1,
+bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, int pl_1,
                                               double *p0_x_p, float *p0_y_p, double p1_x, float p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
@@ -2201,7 +2201,7 @@ bool CSubPlotSurface::Intersection_BOX_Out2In(unsigned int pl_0, unsigned int pl
 /***********************************************************************************************************************
 *   Intersection_BOX_In2Out
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_BOX_In2Out(unsigned int pl_0, unsigned int pl_1, double *p0_x_p,
+bool CSubPlotSurface::Intersection_BOX_In2Out(int pl_0, int pl_1, double *p0_x_p,
                                               float *p0_y_p, double p1_x, float p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
@@ -2257,8 +2257,8 @@ bool CSubPlotSurface::Intersection_BOX_In2Out(unsigned int pl_0, unsigned int pl
 ***********************************************************************************************************************/
 void CSubPlotSurface::SetupGraphs(void)
 {
-    unsigned int graphIndex;
-    const unsigned int numOfGraphs = m_numOfDisplayGraphs;
+    int graphIndex;
+    const int numOfGraphs = m_numOfDisplayGraphs;
     m_setupGraphs = false;
 
     int threadIndex = 0;
@@ -2295,10 +2295,10 @@ void CSubPlotSurface::SetupGraphs(void)
 
 #ifdef MULTIPROC_SETUPGRAPH
             if (m_displayGraphs_a[graphIndex].m_numOfItems > 10000) {
-                const unsigned int numOfItems = m_displayGraphs_a[graphIndex].m_numOfItems;
-                const unsigned int itemsPerThread = numOfItems / g_cfg_p->m_filter_NumOfThreads;
-                unsigned int startIndex = 0;
-                unsigned int loop = 1;
+                const int numOfItems = m_displayGraphs_a[graphIndex].m_numOfItems;
+                const int itemsPerThread = numOfItems / g_cfg_p->m_filter_NumOfThreads;
+                int startIndex = 0;
+                int loop = 1;
 
                 /* use each thread for this */
                 while (loop <= g_cfg_p->m_numOfThreads) {
@@ -2370,8 +2370,8 @@ void CSubPlotSurface::SetupGraphs(void)
 ***********************************************************************************************************************/
 void CSubPlotSurface::SetupDecorators(void)
 {
-    unsigned int itemIndex;
-    const unsigned int numOfItems = m_displayDecorator.m_numOfItems;
+    int itemIndex;
+    const int numOfItems = m_displayDecorator.m_numOfItems;
 
     m_setupGraphs = false;
 
@@ -2393,9 +2393,9 @@ void CSubPlotSurface::SetupDecorators(void)
                     if (m_displayDecorator.m_items_a[itemIndex].properties & GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_STR) {
                         GO_Label_t *label_p = &((GraphicalObject_LifeLine_Box_t *)
                                                 m_displayDecorator.m_items_a[itemIndex].go_p)->label;
-                        unsigned int pix_length =
-                            (unsigned int)((float)label_p->labelKind.textLabel.length * m_avgPixPerLetter);
-                        pix_length = (unsigned int)((float)pix_length * 1.1f);
+                        int pix_length =
+                            (int)((float)label_p->labelKind.textLabel.length * m_avgPixPerLetter);
+                        pix_length = (int)((float)pix_length * 1.1f);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2403,11 +2403,11 @@ void CSubPlotSurface::SetupDecorators(void)
                                GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_INDEX) {
                         GO_Label_t *label_p =
                             &((GraphicalObject_LifeLine_Box_t *)m_displayDecorator.m_items_a[itemIndex].go_p)->label;
-                        unsigned int pix_length =
-                            (unsigned int)((float)(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength)
-                                           * m_avgPixPerLetter);
+                        int pix_length =
+                            (int)((float)(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength)
+                                  * m_avgPixPerLetter);
 
-                        pix_length = (unsigned int)((float)pix_length * 1.1f);
+                        pix_length = (int)((float)pix_length * 1.1f);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2452,16 +2452,16 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
         cfgStartIndex = 0;
     }
 
-    const unsigned int stopIndex = cfgStopIndex;
+    const int stopIndex = cfgStopIndex;
 
     PRINT_SUBPLOTSURFACE("SetupGraph start:%d stop:%d", cfgStartIndex, cfgStopIndex);
 
     if (dgraph_p->m_graph_p->isEnabled() && (stopIndex > 0)) {
         /* Find first GO inside viewPort/surface */
 
-        unsigned int pl_1;     /* point location 1 */
-        unsigned int pl_2;
-        unsigned int objectIndex;
+        int pl_1;     /* point location 1 */
+        int pl_2;
+        int objectIndex;
 
         for (objectIndex = cfgStartIndex; objectIndex <= stopIndex; ++objectIndex) {
             displayItem_t *di_p = &dgraph_p->m_items_a[objectIndex];
@@ -2489,7 +2489,7 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
          * x_coord within the window */
 
         for ( ; objectIndex <= stopIndex; ++objectIndex) {
-            const unsigned int ALL_CENTER = (X_C | Y_C);
+            const int ALL_CENTER = (X_C | Y_C);
             displayItem_t *di_p = &dgraph_p->m_items_a[objectIndex];
             GraphicalObject_t *go_p = di_p->go_p;
 
@@ -2624,7 +2624,7 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
 /***********************************************************************************************************************
 *   GetPointLocation
 ***********************************************************************************************************************/
-void CSubPlotSurface::GetPointLocation(GraphicalObject_t *go_p, unsigned int *pl_1_p, unsigned int *pl_2_p)
+void CSubPlotSurface::GetPointLocation(GraphicalObject_t *go_p, int *pl_1_p, int *pl_2_p)
 {
     *pl_1_p = 0;
     *pl_2_p = 0;
@@ -2669,7 +2669,7 @@ void CSubPlotSurface::GetPointLocation(GraphicalObject_t *go_p, unsigned int *pl
 /***********************************************************************************************************************
 *   GetCursorRow
 ***********************************************************************************************************************/
-const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, unsigned int *row_p,
+const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *row_p,
                                                    double *time, double *distance_p)
 {
     if ((point_p->x() >= m_DC_viewPortRect.left()) &&
@@ -2760,7 +2760,7 @@ bool CSubPlotSurface::GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CSubPlotSurface::GetClosestGraph(unsigned int row, CGraph **graph_pp, unsigned int *distance_p,
+bool CSubPlotSurface::GetClosestGraph(int row, CGraph **graph_pp, int *distance_p,
                                       GraphicalObject_t **go_pp)
 {
     if ((graph_pp == nullptr) || (go_pp == nullptr)) {
@@ -2785,8 +2785,8 @@ bool CSubPlotSurface::GetClosestGraph(unsigned int row, CGraph **graph_pp, unsig
 *   FindClosest_GO
 ***********************************************************************************************************************/
 const displayItem_t *CSubPlotSurface::FindClosest_GO(
-    const unsigned int x,
-    const unsigned int y,
+    const int x,
+    const int y,
     double *distance_p,
     CGraph **graph_pp)
 {
@@ -2797,22 +2797,22 @@ const displayItem_t *CSubPlotSurface::FindClosest_GO(
         *graph_pp = nullptr;
     }
 
-    const unsigned int numOfGraphs = m_numOfDisplayGraphs;
-    unsigned int graphIndex;
+    const int numOfGraphs = m_numOfDisplayGraphs;
+    int graphIndex;
 
     for (graphIndex = 0; graphIndex < numOfGraphs; ++graphIndex) {
         double graphSmallestDiff;
         CDisplayGraph *dgraph_p = &m_displayGraphs_a[graphIndex];
-        const unsigned int numOfItems = dgraph_p->m_numOfItems;
-        unsigned int objectIndex;
+        const int numOfItems = dgraph_p->m_numOfItems;
+        int objectIndex;
 
         if (numOfItems == 0) {
             continue;
         }
 
         /* Initialize the at least one match */
-        unsigned int x2 = (x - dgraph_p->m_items_a[0].x2_pix) * (x - dgraph_p->m_items_a[0].x2_pix);
-        unsigned int y2 = (y - dgraph_p->m_items_a[0].y2_pix) * (y - dgraph_p->m_items_a[0].y2_pix);
+        int x2 = (x - dgraph_p->m_items_a[0].x2_pix) * (x - dgraph_p->m_items_a[0].x2_pix);
+        int y2 = (y - dgraph_p->m_items_a[0].y2_pix) * (y - dgraph_p->m_items_a[0].y2_pix);
         graphSmallestDiff = sqrt(static_cast<double>(x2 + y2));
 
         if (found_di_p == nullptr) {
@@ -2862,8 +2862,8 @@ const displayItem_t *CSubPlotSurface::FindClosest_GO(
 *   FindClosest_GO
 ***********************************************************************************************************************/
 GraphicalObject_t *CSubPlotSurface::FindClosest_GO(
-    unsigned int row,
-    unsigned int *distance_p,
+    int row,
+    int *distance_p,
     CGraph **graph_pp)
 {
     CList_LSZ *graphList_p;
@@ -2941,7 +2941,7 @@ GraphicalObject_t *CSubPlotSurface::FindClosest_GO(
         graph_p = reinterpret_cast<CGraph *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
     } /* while graph */
 
-    *distance_p = static_cast<unsigned int>(abs(total_smallestDiff));
+    *distance_p = static_cast<int>(abs(total_smallestDiff));
     return found_GO_p;
 }
 

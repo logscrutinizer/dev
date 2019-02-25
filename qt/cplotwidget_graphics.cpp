@@ -64,7 +64,7 @@ void CGraphicsSubplotSurface::Populate(void)
         m_label_refs_a = std::vector<CGO_Label *>(labelList_p->count());
 
         auto label_p = reinterpret_cast<CGO_Label *>(labelList_p->first());
-        unsigned int index = 0;
+        int index = 0;
         while (label_p != nullptr) {
             m_label_refs_a[index++] = label_p;
             label_p = reinterpret_cast<CGO_Label *>(labelList_p->GetNext(reinterpret_cast<CListObject *>(label_p)));
@@ -92,8 +92,8 @@ void CGraphicsSubplotSurface::Populate(void)
 
     if (numOfDisplayGraphs != 0) {
         CGraph *graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
-        unsigned int graphIndex = 0;
-        unsigned int itemIndex = 0;
+        int graphIndex = 0;
+        int itemIndex = 0;
 
         while (graph_p != nullptr) {
 #ifdef _DEBUG
@@ -105,7 +105,7 @@ void CGraphicsSubplotSurface::Populate(void)
 
             const auto numOfItems = graph_p->GetNumOfObjects();
             bool isOverrideColorSet;
-            unsigned int overrideColor;
+            int overrideColor;
             GraphLinePattern_e overrideLinePattern;
 
             graph_p->GetOverrides(&isOverrideColorSet, &overrideColor, &overrideLinePattern);
@@ -269,7 +269,11 @@ bool CPlotWidgetGraphics::event(QEvent *event)
                     return true;
                 }
             }
+            break;
         } /*KeyPress */
+
+        default:
+            break;
     }
     return QWidget::event(event);
 }
@@ -691,7 +695,7 @@ void CPlotWidgetGraphics::FillScreenPoint_FromDCViewPortPoint(QPoint *viewPortPo
 /***********************************************************************************************************************
 *   GetClosest_GO
 ***********************************************************************************************************************/
-bool CPlotWidgetGraphics::GetClosest_GO(int row, GraphicalObject_t **go_pp, unsigned int *distance_p)
+bool CPlotWidgetGraphics::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p)
 {
     Q_UNUSED(row);
     Q_UNUSED(go_pp);
@@ -1202,7 +1206,7 @@ bool CPlotWidgetGraphics::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph *
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CPlotWidgetGraphics::GetClosestGraph(unsigned int row,
+bool CPlotWidgetGraphics::GetClosestGraph(int row,
                                           CGraph **graph_pp,
                                           GraphicalObject_t **go_pp,
                                           CSubPlot **subPlot_pp)

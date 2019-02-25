@@ -32,7 +32,6 @@
 #include "cplotpane.h"
 
 extern CLogScrutinizerDoc *GetDocument(void);
-CEditorWidget *g_logView_p = nullptr;
 
 typedef enum {
     VIEW_CURSOR_BEAM_e,
@@ -145,8 +144,6 @@ const struct info_text_elem log_file_empty[] =
 ***********************************************************************************************************************/
 void CEditorWidget::Initialize_0(void)
 {
-    g_logView_p = this;
-
     m_textWindow = QRect(0, 0, 0, 0);
     m_vscrollFrame = QRect(0, 0, 0, 0);
     m_vscrollSlider = QRect(0, 0, 0, 0);
@@ -249,9 +246,9 @@ void CEditorWidget::Initialize_0(void)
 
     /* Test the pixel stamps */
 
-    int startx = 0xfefe;
-    int starty = 0xefef;
-    int font = 0x55;
+    uint64_t startx = 0xfefe;
+    uint64_t starty = 0xefef;
+    uint64_t font = 0x55;
     uint64_t pixelStamp = 0;
 
     PIXEL_STAMP_SET_STARTX(pixelStamp, startx);
@@ -275,7 +272,7 @@ void CEditorWidget::Initialize_0(void)
 /***********************************************************************************************************************
 *   Initialize
 ***********************************************************************************************************************/
-void CEditorWidget::Initialize(bool reload)
+void CEditorWidget::Initialize(void)
 {
     EmptySelectionList();
 
@@ -524,7 +521,7 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
     m_rowAdjustment = 1;
     m_numOf_1_PixelBonus = 0;
 
-    m_maxDisplayRows = (unsigned int)((float)(m_textWindow.bottom() - m_textWindow.top()) / (float)m_rowHeigth);
+    m_maxDisplayRows = (int)((float)(m_textWindow.bottom() - m_textWindow.top()) / (float)m_rowHeigth);
 
     if (m_maxDisplayRows > m_totalNumOfRows) {
         m_maxDisplayRows = m_totalNumOfRows;
@@ -687,7 +684,7 @@ void CEditorWidget::UpdateTextOption(void)
 {
     if (m_tabStops.isEmpty()) {
         /* Only done once initially */
-        for (unsigned int index = 0; index < NUM_TAB_STOBS; ++index) {
+        for (int index = 0; index < NUM_TAB_STOBS; ++index) {
             m_tabStops.append(QTextOption::Tab(index, QTextOption::LeftTab)); /* dummy add */
         }
     }
@@ -1093,7 +1090,7 @@ void CEditorWidget::FillWindowWithConstData(const struct info_text_elem *text_el
     QFontMetrics metrics(m_FontEmptyWindow);
     const int offset = metrics.height() * 2;
 
-    for (unsigned int i = 0; i < byte_size / sizeof(struct info_text_elem); ++i) {
+    for (int i = 0; i < byte_size / static_cast<int>(sizeof(struct info_text_elem)); ++i) {
         y_pos += offset * text_elems[i].y_rel;
         m_painter_p->drawText(QPoint(x_pos, y_pos), QString(text_elems[i].text));
     }
@@ -1214,12 +1211,12 @@ void CEditorWidget::FillScreenRows_Filtered(void)
 
     LimitTopLine(); /* Precaution */
 
-    unsigned int packed_FIRA_Index = doc_p->m_database.FIRA.FIR_Array_p[m_topLine].index;
-    const unsigned int Max_FIRA_Index = m_maxFIRAIndex;
+    int packed_FIRA_Index = doc_p->m_database.FIRA.FIR_Array_p[m_topLine].index;
+    const int Max_FIRA_Index = m_maxFIRAIndex;
     int index;
 
     for (index = 0; packed_FIRA_Index <= Max_FIRA_Index && index < m_maxDisplayRows; ++index, ++packed_FIRA_Index) {
-        unsigned int row = doc_p->m_database.packedFIRA_p[packed_FIRA_Index].row;
+        int row = doc_p->m_database.packedFIRA_p[packed_FIRA_Index].row;
 
         m_screenRows[index].valid = true;
         m_screenRows[index].row = row;
@@ -1241,7 +1238,7 @@ bool CEditorWidget::OutlineScreenRows(void)
 {
     QRect lineRect;
     auto doc_p = GetDocument();
-    unsigned int index = 0;
+    int index = 0;
     int numOfRowAdjustments = m_numOfRowAdjustments;
     int rowAdjustment = m_rowAdjustment;
     int numOf_1_PixelBonus = m_numOf_1_PixelBonus;
@@ -1431,7 +1428,7 @@ void CEditorWidget::DrawRows(void)
 
         AutoHightlight_RowInfo_t* autoHighlightInfo_p;
 
-        if (m_inFocus && doc_p->m_autoHighLighter_p->GetAutoHighlightRowInfo(static_cast<unsigned int>(row),
+        if (m_inFocus && doc_p->m_autoHighLighter_p->GetAutoHighlightRowInfo(static_cast<int>(row),
                                                                              &autoHighlightInfo_p)) {
 
             QList<TextRectElement_t*>& list = autoHighlightInfo_p->elementRefs;
@@ -1570,7 +1567,7 @@ void CEditorWidget::DrawRows(void)
 ***********************************************************************************************************************/
 bool CEditorWidget::ContainsTabs(const char *text_p, const int textSize)
 {
-    for (unsigned int index = 0; index < textSize; index++) {
+    for (int index = 0; index < textSize; index++) {
         if (*text_p == 9) {
             return true;
         }
@@ -1725,7 +1722,7 @@ void CEditorWidget::SearchNewTopLine(bool checkDisplayCache, int focusRow)
          * line will be put in the center of the screen.
          * If there is no selection, and the cursor is not currently visible, then pick a row in the middle of the
          * screen to align to. */
-        if (checkDisplayCache && RowExist_inScreen(static_cast<unsigned int>(focusRow))) {
+        if (checkDisplayCache && RowExist_inScreen(static_cast<int>(focusRow))) {
             TRACEX_D("CEditorWidget::SearchNewTopLine   Cursor or Selection "
                      "Visible at row:%d", focusRow);
             return;
@@ -1774,7 +1771,7 @@ void CEditorWidget::SearchNewTopLine(bool checkDisplayCache, int focusRow)
 ***********************************************************************************************************************/
 bool CEditorWidget::GetCursorDisplayRow(int *displayRow_p)
 {
-    unsigned int rowIndex = 0;
+    int rowIndex = 0;
 
     while (m_screenRows[rowIndex].valid) {
         if (m_screenRows[rowIndex].row == m_cursorSel.row) {
@@ -1789,9 +1786,9 @@ bool CEditorWidget::GetCursorDisplayRow(int *displayRow_p)
 /***********************************************************************************************************************
 *   RowExist_inScreen
 ***********************************************************************************************************************/
-bool CEditorWidget::RowExist_inScreen(const unsigned int row)
+bool CEditorWidget::RowExist_inScreen(const int row)
 {
-    unsigned int rowIndex = 0;
+    int rowIndex = 0;
 
     while (m_screenRows[rowIndex].valid) {
         if (m_screenRows[rowIndex].row == static_cast<int>(row)) {
@@ -1870,7 +1867,7 @@ bool CEditorWidget::GetClosestFilteredRow(int startRow, bool up, int *row_p)
 
     if (up) {
         while (row > 0 && !found) {
-            unsigned char LUT_Index = doc_p->m_database.FIRA.FIR_Array_p[row].LUT_index;
+            uint8_t LUT_Index = doc_p->m_database.FIRA.FIR_Array_p[row].LUT_index;
 
             if ((LUT_Index != 0) && !(doc_p->m_database.filterItem_LUT[LUT_Index]->m_exclude)) {
                 found = true;
@@ -1882,7 +1879,7 @@ bool CEditorWidget::GetClosestFilteredRow(int startRow, bool up, int *row_p)
         const int max_row = doc_p->m_database.TIA.rows;
 
         while (row < max_row && !found) {
-            unsigned char LUT_Index = doc_p->m_database.FIRA.FIR_Array_p[row].LUT_index;
+            uint8_t LUT_Index = doc_p->m_database.FIRA.FIR_Array_p[row].LUT_index;
             if ((LUT_Index != 0) && !(doc_p->m_database.filterItem_LUT[LUT_Index]->m_exclude)) {
                 found = true;
             } else {
@@ -1914,7 +1911,7 @@ bool CEditorWidget::GetClosestFilteredRow(int startRow, bool up, int *row_p)
 bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int *row_p, int *remains_p)
 {
     CLogScrutinizerDoc *doc_p = GetDocument();
-    int row;
+    int row = 0;
 
     *row_p = startRow; /* get the same row back (no move) */
 
@@ -2107,7 +2104,7 @@ void CEditorWidget::GotoRow(void)
         }
 
         EmptySelectionList();
-        AddSelection((unsigned int)row, -1, -1, true, false);
+        AddSelection((int)row, -1, -1, true, false);
 
         SearchNewTopLine(); /* uses the selection as focus */
         LimitTopLine();
@@ -2660,7 +2657,7 @@ void CEditorWidget::SetPlotCursor(void)
     }
 
     if (GetActiveSelection(&selection) || GetCursorPosition(&selection)) {
-        unsigned int newRow = 0;
+        int newRow = 0;
         int size;
         char *text_p;
         double time;
@@ -2745,13 +2742,13 @@ void CEditorWidget::SetRowClip(bool isStart, int row)
 
     if ((g_cfg_p->m_Log_rowClip_Start > 0) && (g_cfg_p->m_Log_rowClip_Start < doc_p->m_database.TIA.rows - 1)) {
         FIR_t *FIRA_p = doc_p->m_database.FIRA.FIR_Array_p;
-        memset(&FIRA_p[0], 0, sizeof(FIR_t) * (g_cfg_p->m_Log_rowClip_Start + 1));
+        memset(&FIRA_p[0], 0, sizeof(FIR_t) * static_cast<size_t>(g_cfg_p->m_Log_rowClip_Start + 1));
     }
 
     if (((g_cfg_p->m_Log_rowClip_End) > 0) && ((g_cfg_p->m_Log_rowClip_End) < doc_p->m_database.TIA.rows - 1)) {
         FIR_t *FIRA_p = doc_p->m_database.FIRA.FIR_Array_p;
         memset(&FIRA_p[g_cfg_p->m_Log_rowClip_End], 0,
-               sizeof(FIR_t) * (doc_p->m_database.TIA.rows - g_cfg_p->m_Log_rowClip_End));
+               sizeof(FIR_t) * static_cast<size_t>(doc_p->m_database.TIA.rows - g_cfg_p->m_Log_rowClip_End));
     }
 
     doc_p->CleanRowCache();  /* FIR information is stored there */
@@ -3558,8 +3555,8 @@ void CEditorWidget::OnLButtonDown(Qt::KeyboardModifiers modifiers, ScreenPoint_t
             (screenPoint.mouse.y() > m_vscrollFrame.top()) && (screenPoint.mouse.y() < m_vscrollFrame.bottom())) {
             /* Full row selection */
 
-            unsigned int screenRow;
-            unsigned int screenCol;
+            int screenRow;
+            int screenCol;
 
             if (PointToCursor(&screenPoint, &screenRow, &screenCol)) {
                 int TIA_row = CursorTo_TIA_Index(screenRow);
@@ -3630,7 +3627,7 @@ void CEditorWidget::OnLButtonUp(ScreenPoint_t& screenPoint)
         mouseOverBitmap = true;
     }
 
-    invalidate = textWindow_SelectionUpdate(&screenPoint, LS_LG_EVENT_LMOUSE_UP_e, 0);
+    invalidate = textWindow_SelectionUpdate(&screenPoint, LS_LG_EVENT_LMOUSE_UP_e, Qt::NoModifier);
 
     if (m_vscrollSliderGlue || m_hscrollSliderGlue) {
         SetVScrollGlue(false);
@@ -3654,6 +3651,9 @@ void CEditorWidget::OnLButtonUp(ScreenPoint_t& screenPoint)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRButtonDown(Qt::KeyboardModifiers modifiers, ScreenPoint_t& screenPoint)
 {
+    Q_UNUSED(modifiers);
+    Q_UNUSED(screenPoint);
+
     if (!m_inFocus) {
         setFocus();
     }
@@ -3797,7 +3797,7 @@ void CEditorWidget::mouseDoubleClickEvent(QMouseEvent *e)
 /***********************************************************************************************************************
 *   CursorUpDown
 ***********************************************************************************************************************/
-void CEditorWidget::CursorUpDown(bool up, bool onlyScroll)
+void CEditorWidget::CursorUpDown(bool up)
 {
 /* If there is a selection
  *
@@ -4547,9 +4547,9 @@ bool CEditorWidget::AddFilterItem(void)
 
         if ((selection_p->endCol - selection_p->startCol) > 0) {
             textSize = selection_p->endCol - selection_p->startCol + 1;
-            memcpy(m_tempStr, &start_p[selection_p->startCol], textSize);
+            memcpy(m_tempStr, &start_p[selection_p->startCol], static_cast<size_t>(textSize));
         } else {
-            memcpy(m_tempStr, start_p, textSize);
+            memcpy(m_tempStr, start_p, static_cast<size_t>(textSize));
         }
 
         m_tempStr[textSize] = 0;
@@ -4654,7 +4654,7 @@ void CEditorWidget::EmptySelectionList(bool invalidate)
 ***********************************************************************************************************************/
 void CEditorWidget::EmptySelectionListAbove(CSelection *selection_p)
 {
-    unsigned int count = 0;
+    int count = 0;
 
     if (m_selectionList.isEmpty() || (m_selectionList.count() == 1)) {
         return;
@@ -4677,7 +4677,7 @@ void CEditorWidget::EmptySelectionListAbove(CSelection *selection_p)
 ***********************************************************************************************************************/
 void CEditorWidget::EmptySelectionListBelow(CSelection *selection_p)
 {
-    unsigned int count = 0;
+    int count = 0;
 
     if (m_selectionList.isEmpty() || (m_selectionList.count() == 1)) {
         return;
@@ -4749,7 +4749,7 @@ void CEditorWidget::AddSelection(
     }
 
     if (TIA_Row >= doc_p->m_database.TIA.rows) {
-        /*(unsigned int) rows will never be neg */
+        /*(int) rows will never be neg */
         TRACEX_W("AddSelection failed, Row outside database, Row:%d SCol:%d ECol:%d", TIA_Row, startCol, endCol);
         return;
     }
@@ -5078,9 +5078,9 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
     if (text_p != nullptr) {
         int index = selection_p->startCol;
 
-        if (isdigit((unsigned char)text_p[selection_p->startCol])) {
+        if (isdigit((uint8_t)text_p[selection_p->startCol])) {
             expandKind = ExpandKind_Digit;
-        } else if (isalpha((unsigned char)text_p[selection_p->startCol])) {
+        } else if (isalpha((uint8_t)text_p[selection_p->startCol])) {
             expandKind = ExpandKind_Letter;
         } else if (text_p[selection_p->startCol] == '_') {
             expandKind = ExpandKind_Digit;
@@ -5095,13 +5095,13 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
                 stop = true;
             } else if ((text_p[index] == ' ') ||
                        ((expandKind == ExpandKind_Digit) &&
-                        (!isdigit((unsigned char)text_p[index]) && !isalpha((unsigned char)text_p[index]) &&
+                        (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
                          (text_p[index] != '_'))) ||
                        ((expandKind == ExpandKind_Letter) &&
-                        (!isdigit((unsigned char)text_p[index]) && !isalpha((unsigned char)text_p[index]) &&
+                        (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
                          (text_p[index] != '_'))) ||
                        ((expandKind == ExpandKind_Other) &&
-                        (isalpha((unsigned char)text_p[index]) || isdigit((unsigned char)text_p[index])))) {
+                        (isalpha((uint8_t)text_p[index]) || isdigit((uint8_t)text_p[index])))) {
                 stop = true;
                 ++index;
             } else {
@@ -5123,13 +5123,13 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
             while (!stop && index < size) {
                 if ((text_p[index] == ' ') ||
                     ((expandKind == ExpandKind_Digit) &&
-                     (!isdigit((unsigned char)text_p[index]) && !isalpha((unsigned char)text_p[index]) &&
+                     (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
                       (text_p[index] != '_'))) ||
                     ((expandKind == ExpandKind_Letter) &&
-                     (!isdigit((unsigned char)text_p[index]) && !isalpha((unsigned char)text_p[index]) &&
+                     (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
                       (text_p[index] != '_'))) ||
                     ((expandKind == ExpandKind_Other) &&
-                     (isalpha((unsigned char)text_p[index]) || isdigit((unsigned char)text_p[index])))) {
+                     (isalpha((uint8_t)text_p[index]) || isdigit((uint8_t)text_p[index])))) {
                     stop = true;
                 } else {
                     ++index;
@@ -5142,13 +5142,13 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
         while (index < size &&
                text_p[index] != ' ' &&
                (((expandKind == ExpandKind_Digit) &&
-                 (isdigit((unsigned char)text_p[index]) || isalpha((unsigned char)text_p[index]) ||
+                 (isdigit((uint8_t)text_p[index]) || isalpha((uint8_t)text_p[index]) ||
                   text_p[index] == '_')) ||
                 ((expandKind == ExpandKind_Letter) &&
-                 (isdigit((unsigned char)text_p[index]) || isalpha((unsigned char)text_p[index]) ||
+                 (isdigit((uint8_t)text_p[index]) || isalpha((uint8_t)text_p[index]) ||
                   text_p[index] == '_')) ||
                 ((expandKind == ExpandKind_Other) &&
-                 (!isalpha((unsigned char)text_p[index]) && !isdigit((unsigned char)text_p[index]))))) {
+                 (!isalpha((uint8_t)text_p[index]) && !isdigit((uint8_t)text_p[index]))))) {
             ++index;
         }
 
@@ -5165,7 +5165,7 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
         if (selection_p->endCol < selection_p->startCol) {
             /* Make sure start col is before end col */
 
-            unsigned int tempCol = selection_p->startCol;
+            int tempCol = selection_p->startCol;
             selection_p->startCol = selection_p->endCol;
             selection_p->endCol = tempCol;
         }
@@ -5292,7 +5292,7 @@ void CEditorWidget::AddMultipleSelections(const int startRow, const int endRow, 
 *    latest single selection
 *
 ***********************************************************************************************************************/
-void CEditorWidget::ContinueSelection(unsigned int TIA_selectedRow, unsigned int startCol, unsigned int endCol)
+void CEditorWidget::ContinueSelection(int TIA_selectedRow, int startCol, int endCol)
 {
     CSelection startPoint;
 
@@ -5339,8 +5339,8 @@ void CEditorWidget::ContinueSelection(unsigned int TIA_selectedRow, unsigned int
         return;
     }
 
-    unsigned int index;
-    unsigned int endRow;
+    int index;
+    int endRow;
 
     if (startPoint.row > (int)TIA_selectedRow) {
         index = TIA_selectedRow;
@@ -5447,15 +5447,15 @@ QString CEditorWidget::GetSelectionText(void)
 /***********************************************************************************************************************
 *   GetSelectionsTextSize
 ***********************************************************************************************************************/
-unsigned int CEditorWidget::GetSelectionsTextSize(void)
+int CEditorWidget::GetSelectionsTextSize(void)
 {
     int textSize;
-    unsigned int TIA_Row;
+    int TIA_Row;
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
     char *start_p;
 
     /* Find out the total size first */
-    unsigned int totalSize = 0;
+    int totalSize = 0;
 
     for (auto selection_p : m_selectionList) {
         textSize = 0;
@@ -5479,14 +5479,14 @@ unsigned int CEditorWidget::GetSelectionsTextSize(void)
 /***********************************************************************************************************************
 *   GetSelectionsTextMaxSize
 ***********************************************************************************************************************/
-unsigned int CEditorWidget::GetSelectionsTextMaxSize(void)
+int CEditorWidget::GetSelectionsTextMaxSize(void)
 {
     int textSize;
-    unsigned int TIA_Row;
+    int TIA_Row;
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
     char *start_p;
-    unsigned int selectionMaxSize = 0;
-    unsigned int selectionSize = 0;
+    int selectionMaxSize = 0;
+    int selectionSize = 0;
 
     /* Find out the total size first */
 
@@ -5558,8 +5558,8 @@ void CEditorWidget::OnAutoHighlightTimer(void)
 bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_LG_EVENT_t LS_LG_Event,
                                                Qt::KeyboardModifiers modifiers)
 {
-    unsigned int screenRow;
-    unsigned int screenCol;
+    int screenRow;
+    int screenCol;
     bool reselection = false;
     int TIA_row;
     CSelection *reselection_p;
@@ -5703,7 +5703,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
             }
 
             if (newSelection.startCol > newSelection.endCol) {
-                unsigned int tempCol = newSelection.startCol;
+                int tempCol = newSelection.startCol;
                 newSelection.startCol = newSelection.endCol;
                 newSelection.endCol = tempCol;
             }
@@ -5737,7 +5737,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
 /***********************************************************************************************************************
 *   AddDragSelection
 ***********************************************************************************************************************/
-void CEditorWidget::AddDragSelection(unsigned int TIA_Row, unsigned int startCol, unsigned int endCol)
+void CEditorWidget::AddDragSelection(int TIA_Row, int startCol, int endCol)
 {
     m_origDragSelection.row = TIA_Row;
     m_origDragSelection.startCol = startCol;
@@ -5749,6 +5749,9 @@ void CEditorWidget::AddDragSelection(unsigned int TIA_Row, unsigned int startCol
 /* Use QByteArray instead of CShareFile */
 bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile* sf_p*/, int *bytesWritten_p)
 {
+    Q_UNUSED(sharedFile);
+    Q_UNUSED(bytesWritten_p);
+
 #ifdef QT_TODO
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
     CSelection *selection_p = nullptr;
@@ -5756,7 +5759,7 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
     char *start_p;
     int textSize;
     bool dataCopied = false;
-    unsigned int TIA_Row;
+    int TIA_Row;
     char *tempStr_p;
 
     *bytesWritten_p = 0;
@@ -5766,7 +5769,7 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
         return false;
     }
 
-    unsigned int totalSize = GetSelectionsTextMaxSize();
+    int totalSize = GetSelectionsTextMaxSize();
 
     tempStr_p = (char *)malloc(totalSize);
 
@@ -5819,8 +5822,11 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
 /***********************************************************************************************************************
 *   CopySelectionsToMem
 ***********************************************************************************************************************/
-bool CEditorWidget::CopySelectionsToMem(char *dest_p, unsigned int *bytesWritten_p)
+bool CEditorWidget::CopySelectionsToMem(char *dest_p, int *bytesWritten_p)
 {
+    Q_UNUSED(dest_p);
+    Q_UNUSED(bytesWritten_p);
+
 #ifdef QT_TODO
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
     CSelection *selection_p = nullptr;
@@ -5828,9 +5834,9 @@ bool CEditorWidget::CopySelectionsToMem(char *dest_p, unsigned int *bytesWritten
     char *start_p;
     int textSize;
     bool dataCopied = false;
-    unsigned int TIA_Row;
+    int TIA_Row;
     int maxPrint = 10;
-    unsigned int destIndex = 0; /* *bytesWritten_p */
+    int destIndex = 0; /* *bytesWritten_p */
 
     *bytesWritten_p = 0;
 
@@ -6025,7 +6031,7 @@ void CEditorWidget::SelectionsToClipboard(void)
 /***********************************************************************************************************************
 *   PointToCursor
 ***********************************************************************************************************************/
-bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, unsigned int *screenRow_p, unsigned int *screenCol_p,
+bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p, int *screenCol_p,
                                   bool *overHalf)
 {
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
@@ -6114,8 +6120,6 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, unsigned int *sc
 
         size = GetTabbedSize(text_p, initial_index, m_blackFont_p->font_p);
 
-        auto screenCoord = size.width() + x_offset;
-
         while (mousePoint < (size.width() + x_offset)) {
             size = GetTabbedSize(text_p, --initial_index, m_blackFont_p->font_p);
         }
@@ -6151,11 +6155,11 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, unsigned int *sc
                     }
                 }
 
-                if (*screenCol_p >= (unsigned int)textSize) {
+                if (*screenCol_p >= (int)textSize) {
                     if (textSize <= 0) {
                         *screenCol_p = 0;
                     } else {
-                        *screenCol_p = (unsigned int)textSize;
+                        *screenCol_p = (int)textSize;
                     }
                 }
                 return true;
@@ -6168,7 +6172,7 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, unsigned int *sc
             if (textSize == 0) {
                 *screenCol_p = 0;
             } else {
-                *screenCol_p = (unsigned int)textSize;
+                *screenCol_p = (int)textSize;
             }
             return true;
         }
@@ -6232,7 +6236,7 @@ bool CEditorWidget::GetSelectionRect(CSelection *selection_p, QRect *rect_p)
 bool CEditorWidget::RowColumnToRect(int row, int screenCol, QRect *rect_p)
 {
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
-    unsigned int index = 0;
+    int index = 0;
     bool found = false;
     char *text_p = nullptr;
     int textSize = 0;
@@ -6387,7 +6391,7 @@ bool CEditorWidget::ColumnToPoint(int screenCol, int& x)
 /***********************************************************************************************************************
 *   CursorTo_TIA_Index
 ***********************************************************************************************************************/
-int CEditorWidget::CursorTo_TIA_Index(unsigned int screenRow)
+int CEditorWidget::CursorTo_TIA_Index(int screenRow)
 {
     CLogScrutinizerDoc *doc_p = GetDocument();
 
@@ -6461,7 +6465,7 @@ void CEditorWidget::NextBookmark(bool backward)
 ***********************************************************************************************************************/
 bool CEditorWidget::isRowVisible(const int row)
 {
-    unsigned int index = 0;
+    int index = 0;
 
     while (m_screenRows[index].valid) {
         if (m_screenRows[index].row == row) {
@@ -6489,7 +6493,7 @@ bool CEditorWidget::isCursorVisible(void)
 ***********************************************************************************************************************/
 int CEditorWidget::GetScreenRowOffset(const int row)
 {
-    unsigned int index = 0;
+    int index = 0;
 
     while (m_screenRows[index].valid) {
         if (m_screenRows[index].row == row) {
@@ -6528,10 +6532,14 @@ void CEditorWidget::FillRockScroll(void)
         if (m_rockScrollInfo.itemArray_p != nullptr) {
             free(m_rockScrollInfo.itemArray_p);
         }
+
+        /* +100 some extra */
         m_rockScrollInfo.itemArray_p =
-            (RockScrollItem_t *)malloc(sizeof(RockScrollItem_t) * (m_vscrollFrame.height() + 100)); /* +100 some extra
-                                                                                                     * :-) */
-        memset(m_rockScrollInfo.itemArray_p, 0, sizeof(RockScrollItem_t) * (m_vscrollFrame.height() + 100));
+            reinterpret_cast<RockScrollItem_t *>(malloc(sizeof(RockScrollItem_t) *
+                                                        static_cast<size_t>(m_vscrollFrame.height() + 100)));
+        memset(m_rockScrollInfo.itemArray_p, 0,
+               sizeof(RockScrollItem_t) * static_cast<size_t>(m_vscrollFrame.height() + 100));
+
         m_rockScrollInfo.itemArraySize = m_vscrollFrame.height() + 100; /* MAX size */
     }
 
@@ -6539,7 +6547,7 @@ void CEditorWidget::FillRockScroll(void)
     double rowsPerRaster;
     double y = 0.0;
     int next_y = 1;
-    unsigned char bestLUT = 0;
+    uint8_t bestLUT = 0;
     int bestLUT_ref = 0;    /* Row, or packed FIR index in-case of PRESENTATION_MODE_ONLY_FILTERED_e */
     packed_FIR_t *packedFIR_p = &doc_p->m_database.packedFIRA_p[0];
     rowsPerRaster = static_cast<double>(m_totalNumOfRows) / static_cast<double>(m_vscrollFrame.height());
@@ -6561,7 +6569,7 @@ void CEditorWidget::FillRockScroll(void)
                 static_cast<double>(m_vscrollFrame.height()) / static_cast<double>(MAX_ITEM_INDEX - m_minFIRAIndex);
 
             for (int index = m_minFIRAIndex; index < MAX_ITEM_INDEX; ++index) {
-                unsigned char currentLUT = packedFIR_p[index].LUT_index;
+                uint8_t currentLUT = packedFIR_p[index].LUT_index;
 
                 if ((bestLUT == 0) || (currentLUT < bestLUT)) {
                     bestLUT = currentLUT;
@@ -6612,8 +6620,8 @@ void CEditorWidget::FillRockScroll(void)
             int y_fill_pix = 0;
 
             for (int index = m_minFIRAIndex; index < MAX_ITEM_INDEX; ++index) {
-                unsigned char currentLUT = packedFIR_p[index].LUT_index;  /* packedFIR_p doesn't contain exclude filters
-                                                                           * */
+                uint8_t currentLUT = packedFIR_p[index].LUT_index;  /* packedFIR_p doesn't contain exclude filters
+                                                                     * */
                 y_start_pix = static_cast<int>(y);
                 y_end_pix = y_start_pix + static_cast<int>(rasterHeight + 0.5);
                 y_fill_pix = y_end_pix - y_start_pix + 1;
@@ -6696,7 +6704,7 @@ void CEditorWidget::FillRockScroll(void)
                 int index = 0;
 
                 for (int row = 0; row < NUM_ROWS; ++row) {
-                    unsigned char currentLUT = doc_p->m_database.FIRA.FIR_Array_p[row].LUT_index;
+                    uint8_t currentLUT = doc_p->m_database.FIRA.FIR_Array_p[row].LUT_index;
                     if ((bestLUT == 0) || ((currentLUT < bestLUT) && (currentLUT != 0))) {
                         bestLUT = currentLUT;
                         bestLUT_ref = row;
@@ -7156,6 +7164,8 @@ void CEditorWidget::moveEvent(QMoveEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::mainWindowIsMoving(QMoveEvent *event)
 {
+    Q_UNUSED(event);
+
     /* When porting to QT it is required to do the cursor toggeling in a paint event, hence to make the cursor toggle
      * the entire window
      * is currently repainted. This causes some heavy load, and if the entire window is moved it creates some glitches

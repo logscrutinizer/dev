@@ -74,7 +74,7 @@ typedef int CfgItemStatus_t;
 #define CFG_ITEM_STATUS_BITMASK_DISABLED    (1 << 3)    /* 8, Disabled */
 #define CFG_ITEM_STATUS_BITMASK_GRAYED      (1 << 4)    /* 8, Disabled */
 
-typedef unsigned int CfgItemSaveOptions_t;
+typedef int CfgItemSaveOptions_t;
 
 #define CFG_ITEM_SAVE_OPTION_NO_OPTIONS                     0
 #define CFG_ITEM_SAVE_OPTION_TO_DEFAULT_WORKSPACE     (1 << 0)
@@ -594,10 +594,10 @@ public:
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
 
 public:
-    unsigned int m_rowStart;
-    unsigned int m_rowEnd;
-    unsigned int m_colStart;
-    unsigned int m_colEnd;
+    int m_rowStart;
+    int m_rowEnd;
+    int m_colStart;
+    int m_colEnd;
     QString m_title;
     QString m_comment;
 };

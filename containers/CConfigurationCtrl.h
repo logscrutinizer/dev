@@ -123,7 +123,7 @@ protected:
     inElement_en m_inElement_L1;
     inElement_en m_inElement_L2;
     inSetting_en m_inSetting; /* Used for settings with more than one parameter */
-    unsigned int m_version;
+    int m_version;
     QString m_filterFileName; /* The name of the filter being parsed, can be set at parse start if TAT file */
     QString m_filterFileName_Loaded; /* The name of the filter file that was loaded */
     CFilterItem *m_newFilterItem_p;
@@ -132,13 +132,13 @@ protected:
     CCfgItem_Filter *m_cfgFilterReload_p;            /* Used for re-loading */
     char m_tempText[CFG_TEMP_STRING_MAX_SIZE]; /* used for temp storage of attributes */
     char m_tempText_2[CFG_TEMP_STRING_MAX_SIZE]; /* used for temp storage of attributes */
-    unsigned int m_tempIndex;
-    unsigned int m_tempRow;
-    unsigned int m_tempStartRow;
-    unsigned int m_tempStartCol;
-    unsigned int m_tempEndRow;
-    unsigned int m_tempEndCol;
-    unsigned int m_tempColor;
+    int m_tempIndex;
+    int m_tempRow;
+    int m_tempStartRow;
+    int m_tempStartCol;
+    int m_tempEndRow;
+    int m_tempEndCol;
+    int m_tempColor;
     RecentFileInfo_t m_recentFile;
     char m_tempStr[CFG_TEMP_STRING_MAX_SIZE];
     QFile m_file; /* Member used to load file */
