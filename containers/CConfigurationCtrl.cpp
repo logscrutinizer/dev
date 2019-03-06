@@ -774,7 +774,7 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
 
             if (LoadFile(fileName)) {
                 /* Check if we can find a log file in the *.lsz file. If so we need to unload all other stuff */
-                SetDocument(m_fileRef_p, m_numOfBytesRead);
+                SetDocument(m_fileRef_p, static_cast<size_t>(m_numOfBytesRead));
 
                 char logFileName[CFG_TEMP_STRING_MAX_SIZE];
 
@@ -1794,7 +1794,7 @@ void CConfigurationCtrl::Element_Attribute_Setting(char *name_p, char *value_p)
             if (strcmp(name_p, "color") == 0) {
                 m_inSetting = inSetting_colorTable_e;
 
-                int32_t color;
+                Q_COLORREF color;
                 QTextStream reader(value_p);
                 reader >> color;
 
@@ -1821,7 +1821,7 @@ void CConfigurationCtrl::Element_Attribute_RecentFile(char *name_p, char *value_
      *      <kind="1" path="c:\...." / timestamp="037231423">
      *    </recentfiles> */
     if (strcmp(name_p, "kind") == 0) {
-        m_recentFile.kind = (RecentFile_Kind_e)atoi(value_p);
+        m_recentFile.kind = static_cast<RecentFile_Kind_e>(atoi(value_p));
     } else if (strcmp(name_p, "path") == 0) {
         m_recentFile.filePath = value_p;
     } else if (strcmp(name_p, "timestamp") == 0) {

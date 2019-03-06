@@ -138,7 +138,7 @@ protected:
     int m_tempStartCol;
     int m_tempEndRow;
     int m_tempEndCol;
-    int m_tempColor;
+    Q_COLORREF m_tempColor;
     RecentFileInfo_t m_recentFile;
     char m_tempStr[CFG_TEMP_STRING_MAX_SIZE];
     QFile m_file; /* Member used to load file */
