@@ -18,13 +18,13 @@
 #define TO_TT_CLOSE                          (200)
 
 /* Constants used for encoding/decoding data for drag and drop */
-const quint32 MIME_STREAM_START_TAG = 0x11111111;
-const quint32 MIME_ITEM_START_TAG = 0x22222222;
-const quint32 MIME_ITEM_END_TAG = 0x33333333;
-const quint32 MIME_STREAM_END_TAG = 0x44444444;
-const quint32 MIME_CFG_ITEM_KIND_TAG = 0xFEED00;
-const quint32 MIME_CFG_ITEM_KIND_TAG_BITS = 0xFFFF00;
-const quint32 MIME_CFG_ITEM_KIND_BITS = 0xFF;
+const int MIME_STREAM_START_TAG = 0x11111111;
+const int MIME_ITEM_START_TAG = 0x22222222;
+const int MIME_ITEM_END_TAG = 0x33333333;
+const int MIME_STREAM_END_TAG = 0x44444444;
+const int MIME_CFG_ITEM_KIND_TAG = 0xFEED00;
+const int MIME_CFG_ITEM_KIND_TAG_BITS = 0xFFFF00;
+const int MIME_CFG_ITEM_KIND_BITS = 0xFF;
 
 typedef enum {
     ToolTipState_WaitForRequest,

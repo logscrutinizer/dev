@@ -98,7 +98,7 @@ void CWorkspace_SetFocus(void)
 *   CWorkspace_AddFilterItem
 ***********************************************************************************************************************/
 CCfgItem_FilterItem *CWorkspace_AddFilterItem(char *filterText_p, CCfgItem_FilterItem *cfgFilterItem_p,
-                                              CCfgItem_Filter *parentFilter_p)
+                                              CCfgItem_Filter *parentFilter_p, QWidget *parent)
 {
     if (g_workspace_p == nullptr) {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
@@ -110,7 +110,7 @@ CCfgItem_FilterItem *CWorkspace_AddFilterItem(char *filterText_p, CCfgItem_Filte
     if (g_workspace_p->m_model_p == nullptr) {
         return nullptr;
     }
-    return g_workspace_p->AddFilterItem(filterText_p, cfgFilterItem_p, parentFilter_p);
+    return g_workspace_p->AddFilterItem(filterText_p, cfgFilterItem_p, parentFilter_p, parent);
 }
 
 /***********************************************************************************************************************
@@ -207,7 +207,7 @@ void CWorkspace_BeginInsertRows(CCfgItem *parent, const CCfgItem *before, int co
 /***********************************************************************************************************************
 *   CWorkspace_EndInsertRows
 ***********************************************************************************************************************/
-void CWorkspace_EndInsertRows(void)
+void CWorkspace_EndInsertRows(bool expand)
 {
     if (g_workspace_p == nullptr) {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
@@ -219,7 +219,7 @@ void CWorkspace_EndInsertRows(void)
     if (g_workspace_p->m_model_p == nullptr) {
         return;
     }
-    g_workspace_p->m_model_p->stopInsertRows();
+    g_workspace_p->m_model_p->stopInsertRows(expand);
 }
 
 /***********************************************************************************************************************
@@ -1293,7 +1293,7 @@ bool CWorkspace::isSingleKindSelections(CfgItemKind_t *kind_p)
 * If filterItem_pp is nullptr then it shall be created.
 ***********************************************************************************************************************/
 CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_FilterItem *cfgFilterItem_p,
-                                               CCfgItem_Filter *parentFilter_p)
+                                               CCfgItem_Filter *parentFilter_p, QWidget *parent)
 {
     CLogScrutinizerDoc *doc_p = GetTheDoc();
     CCfgItem_Filter *cfgFilter_p = parentFilter_p;
@@ -1359,7 +1359,8 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
                           &filterItem_p->m_exclude,
                           &filterItem_p->m_regexpr,
                           m_filters_p,  /* MOVE_FILTER */
-                          &cfgFilter_p);  /* MOVE_FILTER */
+                          &cfgFilter_p,
+                          parent);  /* MOVE_FILTER */
 
     dlg.setModal(true);
 
@@ -2592,7 +2593,7 @@ extern void MW_TV_Expand(QModelIndex& modelIndex);
 /***********************************************************************************************************************
 *   stopInsertRows
 ***********************************************************************************************************************/
-void Model::stopInsertRows(void)
+void Model::stopInsertRows(bool expand)
 {
     if (CSCZ_SystemState == SYSTEM_STATE_SHUTDOWN) {
         return;
@@ -2600,7 +2601,9 @@ void Model::stopInsertRows(void)
     endInsertRows();
 
     QModelIndex parentIndex = createIndex(lastInsertParent->index(), 0, lastInsertParent);
-    MW_TV_Expand(parentIndex);
+    if (expand) {
+        MW_TV_Expand(parentIndex);
+    }
     lastInsertParent = nullptr;
 }
 

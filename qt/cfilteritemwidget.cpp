@@ -26,7 +26,7 @@ CFilterItemWidget::CFilterItemWidget(
     CCfgItem_Filters *filters_p,
     CCfgItem_Filter **filterSelection_pp,
     QWidget *pParent)
-    : QDialog(nullptr, Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint), ui(new Ui::FilterItemEditor)
+    : QDialog(pParent, Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint), ui(new Ui::FilterItemEditor)
 {
     TRACEX_DE(QString("CFilterItemWidget text:%1").arg(*filterText_p));
 

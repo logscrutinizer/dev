@@ -914,7 +914,7 @@ void CPlotWidget::RealignSubPlots(void)
 /***********************************************************************************************************************
 *   ModifySubPlotSize
 ***********************************************************************************************************************/
-void CPlotWidget::ModifySubPlotSize(short zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
+void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
     /* screenPoint_p, defines which subPlot to increase
      * zDelta, if larger than 0 the subPlot will increase in size
@@ -1008,7 +1008,7 @@ void CPlotWidget::RestoreSubPlotWindows(void)
 /***********************************************************************************************************************
 *   ZoomSubPlot_X_Axis
 ***********************************************************************************************************************/
-void CPlotWidget::ZoomSubPlot_X_Axis(short zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
+void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
     QRect viewPort;
 
@@ -1088,7 +1088,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(short zDelta, const ScreenPoint_t *screenPo
 /***********************************************************************************************************************
 *   ZoomSubPlot_Y_Axis
 ***********************************************************************************************************************/
-void CPlotWidget::ZoomSubPlot_Y_Axis(short zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
+void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
     CSubPlotSurface *subPlot_p = nullptr;
 

@@ -20,10 +20,10 @@
 #include <QUrl>
 #include <QLibrary>
 
-CConfigurationCtrl *g_cfg_ctrl_p = nullptr;
+static CConfigurationCtrl *g_cfg_ctrl_p = nullptr;
 
 /* the same function for both workspace and settings */
-CConfigurationCtrl cfg_ctrl;
+static CConfigurationCtrl cfg_ctrl;
 
 bool Load_FileType(const QString& title,
                    const QStringList& filters,
@@ -122,6 +122,8 @@ bool CFGCTRL_Load_FileType(const QString& title,
                            const QList<RecentFile_Kind_e>& kindList,
                            const QString& defaultDIR)
 {
+    Q_UNUSED(title);
+
     QStringList fileNames = CFGCTRL_GetUserPickedFileNames(QString(""),
                                                            QFileDialog::AcceptOpen,
                                                            filters,
@@ -283,7 +285,6 @@ bool CFGCTRL_SaveWorkspaceFile(QString& fileName, bool force)
     } else {
         return (g_cfg_ctrl_p->Save_WorkspaceFile(fileName));
     }
-    return true;
 }
 
 /***********************************************************************************************************************
@@ -723,7 +724,6 @@ bool CConfigurationCtrl::Save_FilterAs(const QString *originalFileName, CCfgItem
 bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
 {
     CLogScrutinizerDoc *doc_p = GetTheDoc();
-    bool lzh_status = true;
     auto beforeValue = CSCZ_TreeViewSelectionEnabled;
 
     /* To ensure that the global flag is restored when leaving the function */
@@ -1173,7 +1173,7 @@ bool CConfigurationCtrl::LoadFile(const QString& fileName)
         return false;
     } else {
         QFileInfo fileInfo(absoluteFileName);
-        m_fileSize = fileInfo.size();
+        m_fileSize = static_cast<int>(fileInfo.size());
 
         if (m_memPoolItem_p != nullptr) {
 #ifdef _DEBUG
@@ -1184,6 +1184,11 @@ bool CConfigurationCtrl::LoadFile(const QString& fileName)
 
         m_memPoolItem_p = doc_p->m_memPool.AllocMem(m_fileSize);
         m_fileRef_p = static_cast<char *>(m_memPoolItem_p->GetDataRef());
+
+        if (m_fileRef_p == nullptr) {
+            TRACEX_QFILE(LOG_LEVEL_WARNING, "Could not allocate memory for file", &m_file);
+            return false;
+        }
 
         m_numOfBytesRead = m_file.read(m_fileRef_p, m_fileSize);
         status = m_numOfBytesRead > 0 ? true : false;
@@ -1218,7 +1223,7 @@ bool CConfigurationCtrl::ProcessData()
     }
 
     /*--- PARSING ---- */
-    Parse(m_fileRef_p, m_numOfBytesRead);
+    Parse(m_fileRef_p, static_cast<int>(m_numOfBytesRead));
 
     doc_p->m_recentFiles.AddFile(m_file.fileName());
 
@@ -1395,7 +1400,6 @@ void CConfigurationCtrl::ElementStart(char *name_p)
                          m_inElement_L2);
                 XML_Error();
                 return;
-                break;
         }
     }
 
@@ -1652,21 +1656,21 @@ void CConfigurationCtrl::Element_Attribute_FilterItem(char *name_p, char *value_
     /*if (m_inFilterTag && m_newFilterItem_p != nullptr) */
     {
         if (strcmp(name_p, "text") == 0) {
-            int size = (int)strlen(value_p); /*do not include the 0 */
-            m_newFilterItem_p->m_size = size;
+            size_t size = strlen(value_p); /*do not include the 0 */
+            m_newFilterItem_p->m_size = static_cast<int>(size);
             m_newFilterItem_p->m_freeStartRef = true;
 
-            m_newFilterItem_p->m_start_p = (char *)malloc(size + 1);
+            m_newFilterItem_p->m_start_p = reinterpret_cast<char *>(malloc(size + 1));
 
             if (m_newFilterItem_p->m_start_p != nullptr) {
-                memcpy(m_newFilterItem_p->m_start_p, value_p, size);
+                memcpy(m_newFilterItem_p->m_start_p, value_p, size_t(size));
                 m_newFilterItem_p->m_start_p[size] = 0;
             } else {
                 TRACEX_E(
                     "CConfigurationCtrl::Element_Attribute_FilterItem   m_newFilterItem_p->m_start_p nullptr ");
             }
         } else if (strcmp(name_p, "color") == 0) {
-            int32_t color;
+            Q_COLORREF color;
             QString value_s(value_p);
             if (!value_s.contains("0x", Qt::CaseInsensitive)) {
                 value_s.insert(0, 'x');
@@ -1678,7 +1682,7 @@ void CConfigurationCtrl::Element_Attribute_FilterItem(char *name_p, char *value_
             reader >> color; /* Value is RGB, 0xrrggbb, however without the 0x */
             m_newFilterItem_p->m_color = color;
         } else if (strcmp(name_p, "bg_color") == 0) {
-            int32_t color;
+            Q_COLORREF color;
             QString value_s(value_p);
             if (!value_s.contains("0x", Qt::CaseInsensitive)) {
                 value_s.insert(0, 'x');

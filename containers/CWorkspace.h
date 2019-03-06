@@ -94,7 +94,7 @@ public:
     void beginReset(void);
     void endReset(void);
     void startInsertRows(CCfgItem *parent, const CCfgItem *before, int count);
-    void stopInsertRows(void);
+    void stopInsertRows(bool expand = true);
     void startRemoveRows(CCfgItem *parent, const CCfgItem *before, int count);
     void stopRemoveRows(void);
     int itemRow(CCfgItem *item_p) const;
@@ -139,7 +139,7 @@ public:
     void CreateFilter(void);
 
     CCfgItem_FilterItem *AddFilterItem(char *filterText_p, CCfgItem_FilterItem *cfgFilterItem_p,
-                                       CCfgItem_Filter *parentFilter_p);
+                                       CCfgItem_Filter *parentFilter_p, QWidget *parent);
     CCfgItem_Filter *CreateCfgFilter(CFilter *filterRef_p);
     bool ReinsertCfgFilter(CCfgItem_Filter *treeItemFilter_p);
     void DisableFilterItem(int uniqueID);

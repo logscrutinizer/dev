@@ -110,7 +110,7 @@ void CWorkspaceTreeView::mouseDoubleClickEvent(QMouseEvent *event)
         TRACEX_DE(QString("CWorkspaceTreeView::mouseDoubleClickEvent"));
 
         CCfgItem *cfgItem_p = selectionList.last();
-        cfgItem_p->OnDblClick();
+        cfgItem_p->OnDblClick(this);
     }
     QTreeView::mouseDoubleClickEvent(event);
 }
@@ -240,7 +240,7 @@ void CWorkspaceTreeView::keyPressEvent(QKeyEvent *event)
         case Qt::Key_Enter:
             if (!selectionList.isEmpty()) {
                 CCfgItem *cfgItem_p = selectionList.last();
-                cfgItem_p->OnDblClick();
+                cfgItem_p->OnDblClick(this);
                 event->accept();
                 return;
             }

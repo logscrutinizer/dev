@@ -4555,7 +4555,7 @@ bool CEditorWidget::AddFilterItem(void)
         m_tempStr[textSize] = 0;
     }
 
-    auto filterItem = CWorkspace_AddFilterItem(m_tempStr, nullptr, nullptr);
+    auto filterItem = CWorkspace_AddFilterItem(m_tempStr, nullptr, nullptr, this);
     if (filterItem != nullptr) {
         CWorkspace_TreeView_Select(filterItem);
     }

@@ -24,7 +24,7 @@
 #include <QInputDialog>
 #include <QList>
 
-char g_cfgItem_tempString[CFG_TEMP_STRING_MAX_SIZE];
+static char g_cfgItem_tempString[CFG_TEMP_STRING_MAX_SIZE];
 enumStringItem CfgItemKindStringArray[] =
 {
     MakeEnumStringItem(CFG_ITEM_KIND_None),
@@ -137,7 +137,7 @@ void CCfgItem::Serialize(QDataStream& dstream, bool pack)
     if (pack) {
         dstream << static_cast<qint32>(m_itemKind | MIME_CFG_ITEM_KIND_TAG); /* This it put twice in the stream */
     } else {
-        qint32 temp_kind;
+        quint32 temp_kind;
         dstream >> temp_kind;
         Q_ASSERT((temp_kind & MIME_CFG_ITEM_KIND_TAG_BITS) != MIME_CFG_ITEM_KIND_TAG); /* This is a sort of stamp to
                                                                                         * ensure correct data is being
@@ -213,6 +213,8 @@ void CCfgItem::InsertItem(bool select, bool expand, bool insert, CCfgItem *itemB
      * insert, is it required to add the item to the parent list, or is it already in the list and this is just UI
      * updated (not for QT, or?)
      * last, if the item is last or not */
+    Q_UNUSED(expand);
+
     Q_ASSERT(m_tag == CCFG_ITEM_TAG);
     if (itemBefore_p != nullptr) {
         /* For QT the assumption is that maintaining the view is not done from the model, but vice-versa. Hence there
@@ -224,7 +226,7 @@ void CCfgItem::InsertItem(bool select, bool expand, bool insert, CCfgItem *itemB
         if (insert) {
             /* check if list handling is needed, otherwise this is already done */
 
-            CWorkspace_InsertRowsScopeGuard guard(m_itemParent_p, itemBefore_p, 1);
+            CWorkspace_InsertRowsScopeGuard guard(m_itemParent_p, itemBefore_p, 1, expand);
 
             if (m_itemParent_p == itemBefore_p) {
                 m_itemParent_p->m_cfgChildItems.push_front(this); /* put this object first in the list if before is the
@@ -313,8 +315,10 @@ void CCfgItem::RemoveAllChildren(void)
 /***********************************************************************************************************************
 *   OnDblClick
 ***********************************************************************************************************************/
-void CCfgItem::OnDblClick(void)
-{}
+void CCfgItem::OnDblClick(QWidget *parent)
+{
+    Q_UNUSED(parent);
+}
 
 /***********************************************************************************************************************
 *   OpenContainingFolder
@@ -483,6 +487,7 @@ CCfgItem_Comment::CCfgItem_Comment(
 ***********************************************************************************************************************/
 bool CCfgItem_Comment::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options)
 {
+    Q_UNUSED(options);
     WriteTagToFile(fileStream, QString("    <Comment text=\"not implemented\" />\n"));
     return false;
 }
@@ -737,6 +742,8 @@ void CCfgItem_Bookmark::PrepareDelete(void)
 ***********************************************************************************************************************/
 bool CCfgItem_Bookmark::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options)
 {
+    Q_UNUSED(options);
+
     bool status = true;
     QString bookmarkString = QString("    <bookmark row=\"%1\" text=\"%2\" />\n").arg(m_row).arg(m_comment);
     if (status) {
@@ -749,14 +756,14 @@ bool CCfgItem_Bookmark::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_
 /***********************************************************************************************************************
 *   OnDblClick
 ***********************************************************************************************************************/
-void CCfgItem_Bookmark::OnDblClick(void)
+void CCfgItem_Bookmark::OnDblClick(QWidget *parent)
 {
     TRACEX_D("CCfgItem_Bookmark::OnDblClick");
 
     extern void CEditorWidget_SetFocusRow(int row);
     CEditorWidget_SetFocusRow(m_row);
 
-    CCfgItem::OnDblClick();
+    CCfgItem::OnDblClick(parent);
 }
 
 /***********************************************************************************************************************
@@ -948,12 +955,12 @@ CCfgItem_Plugin::CCfgItem_Plugin(
         CCfgItem_Decoders *CfgDecoders_p = new CCfgItem_Decoders(this);
         CfgDecoders_p->InsertItem();
 
-        CDecoder *decoder_p = (CDecoder *)list_p->first();
+        auto *decoder_p = static_cast<CDecoder *>(list_p->first());
 
         while (decoder_p != nullptr) {
             CCfgItem_Decoder *CfgDecoder_p = new CCfgItem_Decoder(decoder_p, CfgDecoders_p);
             CfgDecoder_p->InsertItem();
-            decoder_p = (CDecoder *)list_p->GetNext(decoder_p);
+            decoder_p = static_cast<CDecoder *>(list_p->GetNext(decoder_p));
         }
 
         doc_p->AddDecoders(&CfgDecoders_p->m_cfgChildItems);
@@ -965,7 +972,7 @@ CCfgItem_Plugin::CCfgItem_Plugin(
         CCfgItem_Plots *CfgPlots_p = new CCfgItem_Plots(this);
         CfgPlots_p->InsertItem();
 
-        CPlot *plot_p = (CPlot *)list_p->first();
+        auto *plot_p = static_cast<CPlot *>(list_p->first());
 
         while (plot_p != nullptr) {
             CCfgItem_Plot *CfgPlot_p = new CCfgItem_Plot(plot_p, CfgPlots_p);
@@ -976,16 +983,16 @@ CCfgItem_Plugin::CCfgItem_Plugin(
             CList_LSZ *subPlotList_p;
             plot_p->GetSubPlots(&subPlotList_p);
 
-            CSubPlot *subPlot_p = (CSubPlot *)subPlotList_p->first();
+            auto *subPlot_p = static_cast<CSubPlot *>(subPlotList_p->first());
 
             while (subPlot_p != nullptr) {
                 CCfgItem_SubPlot *CfgSubPlot_p = new CCfgItem_SubPlot(subPlot_p, CfgPlot_p);
                 CfgSubPlot_p->InsertItem();
-                subPlot_p = (CSubPlot *)subPlotList_p->GetNext(subPlot_p);
+                subPlot_p = static_cast<CSubPlot *>(subPlotList_p->GetNext(subPlot_p));
             }
 
             /* Subplots - end */
-            plot_p = (CPlot *)list_p->GetNext(plot_p);
+            plot_p = static_cast<CPlot *>(list_p->GetNext(plot_p));
         }
     }
 }
@@ -1337,7 +1344,7 @@ int CCfgItem_Graph::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *t
                 CCfgItem_Graph *graphItem_p = static_cast<CCfgItem_Graph *>(item_p);
                 graphItem_p->m_graph_ref_p->SetEnableFlag(doEnable);
                 if (plotRef_p == nullptr) {
-                    plotRef_p = ((CCfgItem_Plot *)graphItem_p->m_itemParent_p->m_itemParent_p)->m_plot_ref_p;
+                    plotRef_p = static_cast<CCfgItem_Plot *>(graphItem_p->m_itemParent_p->m_itemParent_p)->m_plot_ref_p;
                 }
             }
             if (plotRef_p != nullptr) {
@@ -1398,9 +1405,9 @@ int CCfgItem_SequenceDiagram::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QT
             for (auto& item_p : *selectionList_p) {
                 CCfgItem_Graph *graphItem_p = static_cast<CCfgItem_Graph *>(item_p);
                 graphItem_p->m_graph_ref_p->SetEnableFlag(doEnable);
-                MW_SetSubPlotUpdated(((CCfgItem_SubPlot *)graphItem_p->m_itemParent_p)->m_subPlot_ref_p);
+                MW_SetSubPlotUpdated(static_cast<CCfgItem_SubPlot *>(graphItem_p->m_itemParent_p)->m_subPlot_ref_p);
                 if (plotRef_p == nullptr) {
-                    plotRef_p = ((CCfgItem_Plot *)graphItem_p->m_itemParent_p->m_itemParent_p)->m_plot_ref_p;
+                    plotRef_p = static_cast<CCfgItem_Plot *>(graphItem_p->m_itemParent_p->m_itemParent_p)->m_plot_ref_p;
                 }
             }
             if (plotRef_p != nullptr) {
@@ -1681,7 +1688,7 @@ int CCfgItem_Filters::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p = menu_p->addAction(tr("Add filter item to Filter File..."));
         action_p->setEnabled(true);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
-            auto filterItem = CWorkspace_AddFilterItem(nullptr, nullptr, nullptr);
+            auto filterItem = CWorkspace_AddFilterItem(nullptr, nullptr, nullptr, treeview_p);
             if (filterItem != nullptr) {
                 CWorkspace_TreeView_Select(filterItem);
             }
@@ -1791,11 +1798,11 @@ int CCfgItem_FilterItem::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeVi
 /***********************************************************************************************************************
 *   OnDblClick
 ***********************************************************************************************************************/
-void CCfgItem_FilterItem::OnDblClick(void)
+void CCfgItem_FilterItem::OnDblClick(QWidget *parent)
 {
     /*m_filterItem_ref_p->m_enabled = m_filterItem_ref_p->m_enabled == true ? false : true; */
-    PropertiesDlg(nullptr);
-    CCfgItem::OnDblClick();
+    PropertiesDlg(parent);
+    CCfgItem::OnDblClick(parent);
     CWorkspace_ItemUpdated(this);
 }
 
@@ -1812,7 +1819,8 @@ void CCfgItem_FilterItem::PropertiesDlg(QWidget *widget_p)
         return;
     }
 
-    CWorkspace_AddFilterItem(m_filterItem_ref_p->m_start_p, this, static_cast<CCfgItem_Filter *>(m_itemParent_p));
+    CWorkspace_AddFilterItem(m_filterItem_ref_p->m_start_p, this, static_cast<CCfgItem_Filter *>(m_itemParent_p),
+                             widget_p);
     CEditorWidget_Repaint();
 }
 
@@ -1821,12 +1829,8 @@ void CCfgItem_FilterItem::PropertiesDlg(QWidget *widget_p)
 ***********************************************************************************************************************/
 bool CCfgItem_FilterItem::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options)
 {
-    /*    uint32_t color = ((m_filterItem_ref_p->m_color & 0xff) << 16) | (m_filterItem_ref_p->m_color & 0xff00) |
-     * ((m_filterItem_ref_p->m_color & 0xff0000) >> 16);
-     *    uint32_t bg_color = ((m_filterItem_ref_p->m_bg_color & 0xff) << 16) | (m_filterItem_ref_p->m_bg_color &
-     * 0xff00) | ((m_filterItem_ref_p->m_bg_color & 0xff0000) >> 16); *//*memcpy(g_cfgItem_tempString,
-     * m_filterItem_ref_p->m_start_p, m_filterItem_ref_p->m_size);
-     *  g_cfgItem_tempString[m_filterItem_ref_p->m_size] = 0;*//* add special \ before all " in the text */
+    Q_UNUSED(options);
+
     int destIndex = 0;
     for (int srcIndex = 0; srcIndex < m_filterItem_ref_p->m_size; ++srcIndex) {
         if (m_filterItem_ref_p->m_start_p[srcIndex] == '"') {
@@ -1909,7 +1913,7 @@ void CCfgItem_FilterItem::Serialize(QDataStream& dstream, bool pack)
         dstream >> m_filterItem_ref_p->m_size;
 
         int temp = m_filterItem_ref_p->m_size;
-        m_filterItem_ref_p->m_start_p = static_cast<char *>(malloc(temp + 1));
+        m_filterItem_ref_p->m_start_p = static_cast<char *>(malloc(size_t(temp) + 1));
         if (dstream.readRawData(m_filterItem_ref_p->m_start_p, temp) != temp) {
             Q_ASSERT(false);
         }
@@ -1956,7 +1960,7 @@ int CCfgItem_Filter::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
             QAction *action_p = menu_p->addAction(tr("Add filter item..."));
             if (selectionList_p->count() == 1) {
                 treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
-                    CWorkspace_AddFilterItem(nullptr, nullptr, this);
+                    CWorkspace_AddFilterItem(nullptr, nullptr, this, treeview_p);
                 });
             } else {
                 action_p->setEnabled(false);

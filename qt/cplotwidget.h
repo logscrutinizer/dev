@@ -129,11 +129,11 @@ private:
     void SetupTotalDQRect(void);
     bool SetupWindowSizes(void);
 
-    void ModifySubPlotSize(short zDelta, const ScreenPoint_t *screenPoint_p,
+    void ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint_p,
                            bool *invalidate_p = nullptr);
-    void ZoomSubPlot_X_Axis(short zDelta, const ScreenPoint_t *screenPoint_p,
+    void ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoint_p,
                             bool *invalidate_p = nullptr);
-    void ZoomSubPlot_Y_Axis(short zDelta, const ScreenPoint_t *screenPoint_p,
+    void ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoint_p,
                             bool *invalidate_p = nullptr);
     void ZoomSubPlot_Move(const ScreenPoint_t *screenPoint_p, bool *invalidate_p);
 

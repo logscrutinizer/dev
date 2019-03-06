@@ -61,16 +61,16 @@ void CGraphicsSubplotSurface::Populate(void)
     m_subPlot_p->GetLabels(&labelList_p);
 
     if ((labelList_p != nullptr) && (labelList_p->count() > 0)) {
-        m_label_refs_a = std::vector<CGO_Label *>(labelList_p->count());
+        m_label_refs_a = std::vector<CGO_Label *>(static_cast<std::vector<CGO_Label>::size_type>(labelList_p->count()));
 
         auto label_p = reinterpret_cast<CGO_Label *>(labelList_p->first());
-        int index = 0;
+        unsigned int index = 0;
         while (label_p != nullptr) {
             m_label_refs_a[index++] = label_p;
             label_p = reinterpret_cast<CGO_Label *>(labelList_p->GetNext(reinterpret_cast<CListObject *>(label_p)));
         }
 
-        m_numOfLabelRefs = index;
+        m_numOfLabelRefs = static_cast<int>(index);
     }
 
     if (g_cfg_p->m_pluginDebugBitmask != 0) {
@@ -257,7 +257,7 @@ bool CPlotWidgetGraphics::event(QEvent *event)
     {
         case QEvent::KeyPress:
         {
-            QKeyEvent *k = (QKeyEvent *)event;
+            QKeyEvent *k = static_cast<QKeyEvent *>(event);
             if (!(k->modifiers() & (Qt::ControlModifier | Qt::AltModifier))) {
                 if ((k->key() == Qt::Key_Backtab) ||
                     ((k->key() == Qt::Key_Tab) && (k->modifiers() & Qt::ShiftModifier))) {
@@ -283,6 +283,7 @@ bool CPlotWidgetGraphics::event(QEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     update();
 }
 
@@ -309,11 +310,11 @@ void CPlotWidgetGraphics::FillEmptyWindow(QPainter *painter)
 
     painter->drawText(x_pos, y_pos, "The window is empty because you have loaded a plugin but you haven't run it's "
                                     "plot-function yet, or that");
-    y_pos += (int)((float)fontSize.height() * (float)(1.1));
+    y_pos += y_pos_offset;
     painter->drawText(x_pos, y_pos, "the plugin plot-function didn't create any graphical objects for LogScrutinizer "
                                     "to present");
 
-    y_pos += (int)((float)fontSize.height() * (float)(1.5));
+    y_pos += y_pos_offset_extra;
     x_pos += fontSize.width();
 
     char *title_p;
@@ -350,7 +351,9 @@ void CPlotWidgetGraphics::FillEmptyWindow(QPainter *painter)
 *   SurfaceToClipBoard
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::SurfaceToClipBoard(const ScreenPoint_t *screenPoint_p)
-{}
+{
+    Q_UNUSED(screenPoint_p);
+}
 
 /***********************************************************************************************************************
 *   InitilizeSubPlots
@@ -553,7 +556,7 @@ void CPlotWidgetGraphics::wheelEvent(QWheelEvent *event)
 /***********************************************************************************************************************
 *   ModifySubPlotSize
 ***********************************************************************************************************************/
-void CPlotWidgetGraphics::ModifySubPlotSize(short zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
+void CPlotWidgetGraphics::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
     /* screenPoint_p, defines which subPlot to increase
      * zDelta, if larger than 0 the subPlot will increase in size
@@ -574,7 +577,7 @@ void CPlotWidgetGraphics::RestoreSubPlotWindows(void)
 /***********************************************************************************************************************
 *   ZoomSubPlot_X_Axis
 ***********************************************************************************************************************/
-void CPlotWidgetGraphics::ZoomSubPlot_X_Axis(short zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
+void CPlotWidgetGraphics::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
     Q_UNUSED(screenPoint_p);
 
@@ -602,7 +605,7 @@ void CPlotWidgetGraphics::ZoomSubPlot_X_Axis(short zDelta, const ScreenPoint_t *
 /***********************************************************************************************************************
 *   ZoomSubPlot_Y_Axis
 ***********************************************************************************************************************/
-void CPlotWidgetGraphics::ZoomSubPlot_Y_Axis(short zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
+void CPlotWidgetGraphics::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
     Q_UNUSED(screenPoint_p);
 
@@ -1053,13 +1056,13 @@ void CPlotWidgetGraphics::DrawToolTip(void)
 
         QSize size = doc_p->m_fontCtrl.GetFontSize();
         QPoint point(m_lastCursorPos.DCBMP.x() + 5, m_lastCursorPos.DCBMP.y() - 5);
-        float delta = (float)size.height() * 1.2f;
-        float y = static_cast<float>(point.y());
+        auto delta = size.height() * 1.2f;
+        auto y = static_cast<float>(point.y());
 
         for (auto& string : m_toolTipStrings) {
             m_pDC->drawText(point, string);
             y += delta;
-            point.setY((int)y);
+            point.setY(static_cast<int>(y));
         }
     }
 }
@@ -1087,12 +1090,13 @@ bool CPlotWidgetGraphics::OpenToolTip(void)
 
         if (!m_plot_p->vPlotGraphicalObjectFeedback(text_p, textSize, go_p->x2, go_p->row, graph_p, temp,
                                                     CFG_TEMP_STRING_MAX_SIZE)) {
-            m_toolTipStrings.append(QString("%1 %2 - %3").arg(go_p->y2).arg(y_axis_label_p).arg(graphName_p));
+            m_toolTipStrings.append(QString("%1 %2 - %3")
+                                        .arg(static_cast<double>(go_p->y2)).arg(y_axis_label_p).arg(graphName_p));
         } else {
             int index = 0;    /* current parser index of the temp string (which may contain sub-strings) */
             int startIndex = 0;    /* where the current sub-string started */
-            int maxLength = 0;    /* the max length of multiple sub-strings */
-            int currentLength = 0;    /* length of the current sub-string */
+            size_t maxLength = 0;    /* the max length of multiple sub-strings */
+            size_t currentLength = 0;    /* length of the current sub-string */
 
             while ((index < CFG_TEMP_STRING_MAX_SIZE) && (temp[index] != 0)) {
                 if (temp[index] == 0x0a) {
@@ -1102,7 +1106,7 @@ bool CPlotWidgetGraphics::OpenToolTip(void)
                     temp[index] = 0;
                     m_toolTipStrings.append(QString(&temp[startIndex]));
 
-                    currentLength = (int)strlen(&temp[startIndex]);
+                    currentLength = strlen(&temp[startIndex]);
                     if (currentLength > maxLength) {
                         maxLength = currentLength;
                     }
@@ -1115,7 +1119,7 @@ bool CPlotWidgetGraphics::OpenToolTip(void)
                 if ((temp[index] == 0) && (temp[index - 1] != 0)) {
                     m_toolTipStrings.append(QString(&temp[startIndex]));
 
-                    currentLength = (int)strlen(&temp[startIndex]);
+                    currentLength = strlen(&temp[startIndex]);
                     if (currentLength > maxLength) {
                         maxLength = currentLength;
                     }

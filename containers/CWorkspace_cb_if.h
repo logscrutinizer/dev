@@ -14,7 +14,7 @@
 #include "CFilter.h"
 
 CCfgItem_FilterItem *CWorkspace_AddFilterItem(char *filterText_p, CCfgItem_FilterItem *cfgFilterItem_pp,
-                                              CCfgItem_Filter *parentFilter_p);
+                                              CCfgItem_Filter *parentFilter_p, QWidget *parent);
 CCfgItem_Filter *CWorkspace_CreateCfgFilter(CFilter *filterRef_p);
 bool CWorkspace_CleanAllPlots(void);
 void CWorkspace_CloseAllPlugins(void);
@@ -59,7 +59,7 @@ void CWorkspace_TreeView_Select(CCfgItem *cfgItem_p);
 void CWorkspace_BeginReset(void);
 void CWorkspace_EndReset(void);
 void CWorkspace_BeginInsertRows(CCfgItem *parent, const CCfgItem *before, int count);
-void CWorkspace_EndInsertRows(void);
+void CWorkspace_EndInsertRows(bool expand = true);
 void CWorkspace_BeginRemoveRows(CCfgItem *parent, const CCfgItem *startItem, int count);
 void CWorkspace_EndRemoveRows(void);
 
@@ -82,15 +82,19 @@ public:
 class CWorkspace_InsertRowsScopeGuard
 {
 public:
-    explicit CWorkspace_InsertRowsScopeGuard(CCfgItem *parent, const CCfgItem *before, int count)
+    explicit CWorkspace_InsertRowsScopeGuard(CCfgItem *parent, const CCfgItem *before, int count, bool expand = true)
+        : m_expand(expand)
     {
         CWorkspace_BeginInsertRows(parent, before, count);
     }
 
     ~CWorkspace_InsertRowsScopeGuard()
     {
-        CWorkspace_EndInsertRows();
+        CWorkspace_EndInsertRows(m_expand);
     }
+
+private:
+    bool m_expand;
 };
 
 /***********************************************************************************************************************

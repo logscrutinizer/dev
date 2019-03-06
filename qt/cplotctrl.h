@@ -14,23 +14,6 @@
 #include "plugin_api.h"
 
 /***********************************************************************************************************************
-*   CPlotThreadConfiguration
-***********************************************************************************************************************/
-class CPlotThreadConfiguration : public CThreadConfiguration
-{
-public:
-    CPlotThreadConfiguration() : CThreadConfiguration() {}
-
-    virtual ~CPlotThreadConfiguration(void)
-    {
-        /* Not sure if anything should be put here, see ExitInstance instead */
-    }
-
-public:
-    /* Direct usage of CFileProceBase (or sub-class of that) */
-};
-
-/***********************************************************************************************************************
 *   CPlotThread
 ***********************************************************************************************************************/
 class CPlotThread : public CFileProcThreadBase
@@ -75,7 +58,7 @@ class CPlotCtrl : public CFileProcBase
 {
 public:
     CPlotCtrl(void) {}
-    virtual ~CPlotCtrl(void) {}
+    virtual ~CPlotCtrl(void) override {}
 
 public:
     /* API */
@@ -86,8 +69,7 @@ public:
                               int priority,
                               QList<CPlot *> *pendingPlot_execList_p,
                               int startRow,
-                              int endRow,
-                              bool backward = false);
+                              int endRow);
 
 protected:
     /* Overrides */

@@ -30,18 +30,22 @@ typedef struct {
 /***********************************************************************************************************************
 *   CMemPoolItem
 ***********************************************************************************************************************/
-class CMemPoolItem
+
+/* If you inherit from this then make sure to add virtual destructors */
+class CMemPoolItem final
 {
 public:
-    CMemPoolItem(int size)
+    CMemPoolItem() = delete;
+
+    explicit CMemPoolItem(int size)
     {
-        m_data_p = (void *)malloc(size);
+        m_data_p = reinterpret_cast<int *>(malloc(static_cast<size_t>(size)));
         m_size = size;
 
         g_pool_total_size += size;
     }
 
-    virtual ~CMemPoolItem()
+    inline ~CMemPoolItem()
     {
         if (m_data_p != nullptr) {
             g_pool_total_size -= m_size;
@@ -53,28 +57,24 @@ public:
     inline void MemSet(void)
     {
         if ((m_data_p != nullptr) && (m_size != 0)) {
-            memset(m_data_p, 0, m_size);
+            memset(m_data_p, 0, static_cast<size_t>(m_size));
         }
     }
 
     inline int GetDataSize(void) {return m_size;}
-    void *GetDataRef(void) {return m_data_p;}
+    inline void *GetDataRef(void) {return reinterpret_cast<void *>(m_data_p);}
 
 private:
-    CMemPoolItem() {Init();}
-
-    QList<CMemPoolItem *> *GetPool();
-
-    void Init(void) {m_size = 0; m_data_p = nullptr;}
-
+    int *m_data_p;
     int m_size;
-    void *m_data_p;
 };
 
 /***********************************************************************************************************************
 *   CMemPoolItemBin
 ***********************************************************************************************************************/
-class CMemPoolItemBin
+
+/* If you inherit from this then make sure to add virtual destructors */
+class CMemPoolItemBin final
 {
 public:
     CMemPoolItemBin(int minSize, int maxSize, int numOfStartItems)
@@ -87,7 +87,7 @@ public:
         }
     }
 
-    virtual ~CMemPoolItemBin()
+    ~CMemPoolItemBin()
     {
         while (!m_poolItemList.isEmpty()) {
             auto item = m_poolItemList.takeLast();
@@ -98,7 +98,7 @@ public:
     }
 
     /****/
-    inline CMemPoolItem *AllocMem(int minimumSize)
+    inline CMemPoolItem *AllocMem(void)
     {
         if (!m_poolItemList.isEmpty()) {
             return m_poolItemList.takeFirst();
@@ -131,12 +131,14 @@ private:
 /***********************************************************************************************************************
 *   CMemPool
 ***********************************************************************************************************************/
-class CMemPool
+
+/* If you inherit from this then make sure to add virtual destructors */
+class CMemPool final
 {
 public:
     CMemPool() = delete;
 
-    CMemPool(const CMemPool_Config_t *config_p)
+    explicit CMemPool(const CMemPool_Config_t *config_p)
     {
         Init();
 
@@ -164,7 +166,7 @@ public:
         m_numOfRanges = m_config.numOfRanges;
     }
 
-    virtual ~CMemPool()
+    ~CMemPool()
     {
         for (int index = 0; index < m_numOfRanges; ++index) {
             if (m_bins_p[index] != nullptr) {
@@ -174,17 +176,17 @@ public:
     }
 
     /****/
-    inline CMemPoolItem *AllocMem(int minimumSize)
+    inline CMemPoolItem *AllocMem(qint64 minimumSize)
     {
         for (int index = 0; index < m_numOfRanges; ++index) {
             if ((m_bins_p[index] != nullptr) && (minimumSize <= m_bins_p[index]->GetMaxSize())) {
-                return m_bins_p[index]->AllocMem(minimumSize);
+                return m_bins_p[index]->AllocMem();
             }
         }
 
         if ((m_numOfRanges > 0) && (m_numOfRanges <= MEMPOOL_MAX_NUM_OF_BINS) &&
             (m_bins_p[m_numOfRanges - 1] != nullptr)) {
-            TRACEX_E("CMemPool::AllocMem    size outside range %u -> memory nullptr", minimumSize);
+            TRACEX_E(QString("CMemPool::AllocMem    size outside range %1 -> memory nullptr").arg(minimumSize));
             return nullptr;
         }
 
@@ -224,7 +226,7 @@ private:
 };
 
 /* Used for allocating virtual memory on the platform */
-class VirtualMem
+class VirtualMem final
 {
 private:
     /* Not possible to create an instance of this memory, this is just an interface */
@@ -248,7 +250,7 @@ public:
 #else
 
         /* void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset); */
-        voidPtr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
+        voidPtr = mmap(nullptr, static_cast<size_t>(size), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
         if ((voidPtr == MAP_FAILED) || (voidPtr == nullptr)) {
             TRACEX_E("VirtualMem    allocation failed code:%d", errno);
             return nullptr;
@@ -274,14 +276,14 @@ public:
  #endif
 #endif
 
-        uint64_t *headPtr = (uint64_t *)voidPtr;
+        uint64_t *headPtr = reinterpret_cast<uint64_t *>(voidPtr);
         uint64_t *sizePtr = headPtr + 1;
         *headPtr = 0x5555555555555555;
-        *sizePtr = size;
+        *sizePtr = static_cast<uint64_t>(size);
 
         uint64_t *footerPtr = headPtr + (size >> 3) - 1;
         *footerPtr = 0x5555555555555555;
-        voidPtr = (void *)(headPtr + 2);
+        voidPtr = reinterpret_cast<void *>(headPtr + 2);
         Q_CHECK_PTR(voidPtr);
         return voidPtr;
     }
@@ -289,7 +291,7 @@ public:
     /****/
     static bool Free(void *mem_p)   /* non-zero on success */
     {
-        uint64_t *headPtr = ((uint64_t *)mem_p) - 2;
+        uint64_t *headPtr = (reinterpret_cast<uint64_t *>(mem_p)) - 2;
 
         if (*headPtr != 0x5555555555555555) {
             TRACEX_E("VirtualMem    Free - header wrong");
@@ -323,7 +325,7 @@ public:
     /****/
     static bool CheckMem(void *mem_p)   /* non-zero on success */
     {
-        uint64_t *headPtr = ((uint64_t *)mem_p) - 2;
+        uint64_t *headPtr = (reinterpret_cast<uint64_t *>(mem_p)) - 2;
 
         if (*headPtr != 0x5555555555555555) {
             TRACEX_E("VirtualMem  CheckMem    - header wrong");

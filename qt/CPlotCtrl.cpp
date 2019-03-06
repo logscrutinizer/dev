@@ -14,7 +14,7 @@
 ***********************************************************************************************************************/
 inline char *FileIndex_To_MemRef(int64_t *fileIndex_p, int64_t *workMemFileIndex_p, char *WorkMem_p)
 {
-    return ((char *)(WorkMem_p + (*fileIndex_p - *workMemFileIndex_p)));
+    return (reinterpret_cast<char *>(WorkMem_p + (*fileIndex_p - *workMemFileIndex_p)));
 }
 
 /***********************************************************************************************************************
@@ -78,7 +78,7 @@ void CPlotThread::thread_Process(CThreadConfiguration *config_p)
 ***********************************************************************************************************************/
 void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
                                      int priority, QList<CPlot *> *pendingPlot_execList_p, int startRow,
-                                     int endRow, bool backward)
+                                     int endRow)
 {
     TRACEX_I("Plugin plot generation started   startRow:%d endRow:%d", startRow, endRow);
     g_processingCtrl_p->AddProgressInfo(QString("Starting plot generation"));
@@ -103,7 +103,7 @@ bool CPlotCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descriptio
 {
     CFileProcBase::ConfigureThread(config_p, chunkDescription_p, threadIndex);    /* Setup thread */
 
-    CPlotThread *plotThread_p = (CPlotThread *)m_threadInstances[threadIndex];
+    auto plotThread_p = reinterpret_cast<CPlotThread *>(m_threadInstances[threadIndex]);
 
     if (!plotThread_p->m_isConfiguredOnce) {
         plotThread_p->m_isConfiguredOnce = true;
@@ -123,7 +123,7 @@ bool CPlotCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descriptio
 ***********************************************************************************************************************/
 CThreadConfiguration *CPlotCtrl::CreateConfigurationObject(void)
 {
-    return static_cast<CThreadConfiguration *>(new CPlotThreadConfiguration());
+    return new CThreadConfiguration();
 }
 
 /***********************************************************************************************************************

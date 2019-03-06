@@ -185,7 +185,7 @@ public:
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) {return 0;}
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QPoint *pt_p) {return 0;}  /* Return non-zero if caller
                                                                                             * must take action */
-    virtual void OnDblClick(void);
+    virtual void OnDblClick(QWidget *parent);
     virtual void OnSelection(void) {}     /* Action when item has been selected */
 
     virtual void Save(QList<CCfgItem *> *selectionList_p = nullptr) {}
@@ -250,7 +250,7 @@ public:
     virtual ~CCfgItem_FilterItem();
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
-    virtual void OnDblClick(void) override;
+    virtual void OnDblClick(QWidget *parent) override;
     virtual void PropertiesDlg(QWidget *widget_p) override;
     virtual void OnSelection(void) override {CSCZ_SetLastSelectionKind(CSCZ_LastSelectionKind_FilterItemSel_e);}
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
@@ -456,7 +456,7 @@ public:
     virtual ~CCfgItem_Bookmark() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
-    virtual void OnDblClick(void) override;
+    virtual void OnDblClick(QWidget *parent) override;
     virtual void PropertiesDlg(QWidget *widget_p) override;
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
     virtual void PrepareDelete(void) override;
@@ -499,7 +499,7 @@ public:
     virtual void OnSelection(void) override {CPlotPane_SetPlotFocus(m_plot_ref_p);}
 
     /****/
-    virtual void OnDblClick(void) override {CPlotPane_SetPlotFocus(m_plot_ref_p);}
+    virtual void OnDblClick(QWidget *parent) override {Q_UNUSED(parent); CPlotPane_SetPlotFocus(m_plot_ref_p);}
 
 public:
     bool m_enabled;
@@ -519,7 +519,7 @@ public:
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 
     /****/
-    virtual void OnDblClick(void) override {CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);}
+    virtual void OnDblClick(QWidget *parent) override {Q_UNUSED(parent); CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);}
 
 public:
     CSubPlot *m_subPlot_ref_p;
@@ -537,7 +537,7 @@ public:
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 
     /****/
-    virtual void OnDblClick(void) override
+    virtual void OnDblClick(QWidget *parent) override
     {
         CPlotPane_SetSubPlotFocus(((CCfgItem_SubPlot *)m_itemParent_p)->m_subPlot_ref_p);
     }
@@ -561,7 +561,7 @@ public:
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 
     /****/
-    virtual void OnDblClick(void) override
+    virtual void OnDblClick(QWidget *parent) override
     {
         CPlotPane_SetSubPlotFocus(((CCfgItem_SubPlot *)m_itemParent_p)->m_subPlot_ref_p);
     }

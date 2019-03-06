@@ -142,10 +142,10 @@ protected:
     RecentFileInfo_t m_recentFile;
     char m_tempStr[CFG_TEMP_STRING_MAX_SIZE];
     QFile m_file; /* Member used to load file */
-    int m_fileSize; /* Member used to load file */
+    qint64 m_fileSize; /* Member used to load file */
     char *m_fileRef_p; /* Member used to load file */
     CMemPoolItem *m_memPoolItem_p; /* Member used to load file */
-    uint32_t m_numOfBytesRead; /* Member used to load file */
+    qint64 m_numOfBytesRead; /* Member used to load file */
     bool m_inWorkspace; /* Set when it is a workspace being parsed/loaded */
 
     /****/
