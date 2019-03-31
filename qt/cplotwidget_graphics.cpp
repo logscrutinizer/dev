@@ -1304,10 +1304,9 @@ void CPlotWidgetGraphics::Align_X_Cursor(double cursorTime, double x_min, double
 /***********************************************************************************************************************
 *   ZoomSubPlotInFocus
 ***********************************************************************************************************************/
-void CPlotWidgetGraphics::ZoomSubPlotInFocus(double zoom, bool in, bool horizontal)
+void CPlotWidgetGraphics::ZoomSubPlotInFocus(bool in, bool horizontal)
 {
     /* Not supported */
-    Q_UNUSED(zoom);
     Q_UNUSED(in);
     Q_UNUSED(horizontal);
 }
@@ -1315,9 +1314,8 @@ void CPlotWidgetGraphics::ZoomSubPlotInFocus(double zoom, bool in, bool horizont
 /***********************************************************************************************************************
 *   ResizeSubPlotInFocus
 ***********************************************************************************************************************/
-void CPlotWidgetGraphics::ResizeSubPlotInFocus(double zoom, bool increase)
+void CPlotWidgetGraphics::ResizeSubPlotInFocus(bool increase)
 {
     /* Not supported */
-    Q_UNUSED(zoom);
     Q_UNUSED(increase);
 }

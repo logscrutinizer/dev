@@ -23,8 +23,6 @@
 #undef max
 #include <algorithm>
 
-#define ZOOM_STEP                   ((double)0.1)
-
 /***********************************************************************************************************************
 *   CGraphicsSubplotSurface
 ***********************************************************************************************************************/
@@ -163,8 +161,8 @@ public:
     virtual void Align_X_Zoom(double x_min, double x_max) override;
     virtual void Align_Reset_Zoom(double x_min, double x_max) override;
     virtual void Align_X_Cursor(double cursorTime, double x_min, double x_max) override;
-    virtual void ZoomSubPlotInFocus(double zoom, bool in, bool horizontal) override;
-    virtual void ResizeSubPlotInFocus(double zoom, bool increase) override;
+    virtual void ZoomSubPlotInFocus(bool in, bool horizontal) override;
+    virtual void ResizeSubPlotInFocus(bool increase) override;
     virtual void RestoreSubPlotSizes(void) override {m_restoreSubPlotSize = true; update();}
     virtual void ZoomRestore(void) override;
 

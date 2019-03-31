@@ -14,10 +14,13 @@
 class CSubPlot;
 class CSubPlotSurface;
 
+#define ZOOM_STEP                   0.1
+
 /* Abstract class, just a interface definition */
 class CPlotWidgetInterface
 {
 public:
+    CPlotWidgetInterface();
     virtual ~CPlotWidgetInterface(void) {}
 
     virtual void RemoveSurfaces(void) = 0;
@@ -51,8 +54,8 @@ public:
     virtual void Align_X_Zoom(double x_min, double x_max) = 0;
     virtual void Align_Reset_Zoom(double x_min, double x_max) = 0;
     virtual void Align_X_Cursor(double cursorTime, double x_min, double x_max) = 0;
-    virtual void ZoomSubPlotInFocus(double zoom, bool in, bool horizontal) = 0;
-    virtual void ResizeSubPlotInFocus(double zoom, bool increase) = 0;
+    virtual void ZoomSubPlotInFocus(bool in, bool horizontal) = 0;
+    virtual void ResizeSubPlotInFocus(bool increase) = 0;
     virtual void RestoreSubPlotSizes(void) = 0;
     virtual void ZoomRestore(void) = 0;
 };

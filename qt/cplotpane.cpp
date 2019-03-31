@@ -185,7 +185,7 @@ CPlot *CPlotPane_GetPlotFocus(void)
 /***********************************************************************************************************************
 *   CPlotPane_ZoomSubPlotInFocus
 ***********************************************************************************************************************/
-void CPlotPane_ZoomSubPlotInFocus(double zoom, bool in  /*or out*/, bool horizontal)
+void CPlotPane_ZoomSubPlotInFocus(bool in  /*or out*/, bool horizontal)
 {
     /* The caller may choose to use the zoom factor or the in/out variable. If the zoom is 0.0 then the bool
      * in is used instead */
@@ -197,7 +197,7 @@ void CPlotPane_ZoomSubPlotInFocus(double zoom, bool in  /*or out*/, bool horizon
         g_CPlotPane->getPlotFocus(&plotWidget_p, &plot_p);
 
         if (plotWidget_p != nullptr) {
-            plotWidget_p->ZoomSubPlotInFocus(zoom, in, horizontal);
+            plotWidget_p->ZoomSubPlotInFocus(in, horizontal);
         } else {
             Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
             if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
@@ -215,7 +215,7 @@ void CPlotPane_ZoomSubPlotInFocus(double zoom, bool in  /*or out*/, bool horizon
 /***********************************************************************************************************************
 *   CPlotPane_ResizeSubPlotInFocus
 ***********************************************************************************************************************/
-void CPlotPane_ResizeSubPlotInFocus(double zoom, bool increase)
+void CPlotPane_ResizeSubPlotInFocus(bool increase)
 {
     CPlot *plot_p = nullptr;
     CPlotWidgetInterface *plotWnd_p = nullptr;
@@ -227,7 +227,7 @@ void CPlotPane_ResizeSubPlotInFocus(double zoom, bool increase)
     }
 
     if (plotWnd_p != nullptr) {
-        plotWnd_p->ResizeSubPlotInFocus(zoom, increase);
+        plotWnd_p->ResizeSubPlotInFocus(increase);
     } else {
         TRACEX_E(QString("%1 plot_p nullptr").arg(__FUNCTION__));
     }

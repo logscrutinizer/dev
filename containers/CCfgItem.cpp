@@ -1213,7 +1213,7 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p->setEnabled(extraOptions);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);
-            CPlotPane_ZoomSubPlotInFocus(0.0, true, true);
+            CPlotPane_ZoomSubPlotInFocus(true, true);
         });
     }
 
@@ -1224,7 +1224,7 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p->setEnabled(extraOptions);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);
-            CPlotPane_ZoomSubPlotInFocus(0.0, false, true);
+            CPlotPane_ZoomSubPlotInFocus(false, true);
         });
     }
 
@@ -1235,7 +1235,7 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p->setEnabled(extraOptions);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);
-            CPlotPane_ZoomSubPlotInFocus(0.0, true, false);
+            CPlotPane_ZoomSubPlotInFocus(true, false);
         });
     }
 
@@ -1246,7 +1246,7 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p->setEnabled(extraOptions);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);
-            CPlotPane_ZoomSubPlotInFocus(0.0, false, false);
+            CPlotPane_ZoomSubPlotInFocus(false, false);
         });
     }
 
@@ -1268,7 +1268,7 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p->setEnabled(extraOptions);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);
-            CPlotPane_ResizeSubPlotInFocus(0.0, true);
+            CPlotPane_ResizeSubPlotInFocus(true);
         });
     }
 
@@ -1279,7 +1279,7 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
         action_p->setEnabled(extraOptions);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             CPlotPane_SetSubPlotFocus(m_subPlot_ref_p);
-            CPlotPane_ResizeSubPlotInFocus(0.0, false);
+            CPlotPane_ResizeSubPlotInFocus(false);
         });
     }
 

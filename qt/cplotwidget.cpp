@@ -15,7 +15,7 @@
 #include "mainwindow_cb_if.h"
 #include "CWorkspace_cb_if.h"
 #include "cplotpane_cb_if.h"
-
+#include "utils.h"
 #include "../processing/CThread.h"
 
 #include <QOpenGLWidget>
@@ -49,6 +49,8 @@ typedef struct {
 
 static OnPaint_Data_t g_onPaint_WorkData[MAX_NUM_OF_THREADS];
 void OnPaint_ThreadAction(volatile void *data_p);
+
+CPlotWidgetInterface::CPlotWidgetInterface() {} /* for vtable impl. */
 
 /***********************************************************************************************************************
 *   CZoomRect
@@ -218,7 +220,7 @@ bool CPlotWidget::event(QEvent *event)
     {
         case QEvent::KeyPress:
         {
-            QKeyEvent *k = (QKeyEvent *)event;
+            QKeyEvent *k = static_cast<QKeyEvent *>(event);
             if (!(k->modifiers() & (Qt::ControlModifier | Qt::AltModifier))) {
                 if ((k->key() == Qt::Key_Backtab) ||
                     ((k->key() == Qt::Key_Tab) && (k->modifiers() & Qt::ShiftModifier))) {
@@ -244,6 +246,8 @@ bool CPlotWidget::event(QEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event);
+
     LS_Painter originalPainter(this);
     static bool inPaintEvent = false;
 
@@ -383,7 +387,7 @@ void CPlotWidget::DrawScrollbar(void)
             zoomWindow = 1.0;
         }
         m_hscrollSliderActive = true;
-        m_hscrollSlider_Width = m_hscrollFrame.width() * zoomWindow;
+        m_hscrollSlider_Width = static_cast<int>(m_hscrollFrame.width() * zoomWindow);
         m_hscrollSlider_Width = m_hscrollSlider_Width < 2 ? 2 : m_hscrollSlider_Width;
         m_hrelPos = (zoom.x_min - maxExtents.x_min) / max_window;
         PRINT_SUBPLOTSURFACE(QString("hscrollSlider:%1 zoomWindow:%2 m_hrelPos:%3 zmax:%4 zmin:%5 max:%6 min:%7")
@@ -394,7 +398,7 @@ void CPlotWidget::DrawScrollbar(void)
 
     m_vscrollSlider_Height = (m_windowRect.height() * m_vscrollFrame.height()) / m_totalDQRect.height();
 
-    m_vbmpOffset = (int)(m_vrelPos * (m_totalDQRect.height() - m_windowRect.height()));
+    m_vbmpOffset = static_cast<int>(m_vrelPos * (m_totalDQRect.height() - m_windowRect.height()));
 
     m_vscrollSlider = m_vscrollFrame;
     m_hscrollSlider = m_hscrollFrame;
@@ -406,8 +410,9 @@ void CPlotWidget::DrawScrollbar(void)
     m_pDC->fillRect(m_hscrollFrame.left(), m_hscrollFrame.top() + m_vbmpOffset, m_hscrollFrame.width(),
                     m_hscrollFrame.height(), SCROLLBAR_FRAME_COLOR);
 
-    m_vscrollSlider.setTop((int)((float)m_vscrollFrame.top() +
-                                 m_vrelPos * ((float)m_vscrollFrame.height() - (float)m_vscrollSlider_Height)));
+    m_vscrollSlider.setTop(static_cast<int>(m_vscrollFrame.top() +
+                                            m_vrelPos *
+                                            m_vscrollFrame.height() - m_vscrollSlider_Height));
     m_vscrollSlider.setBottom(m_vscrollSlider.top() + m_vscrollSlider_Height);
 
     /* Draw v scroll slider */
@@ -426,8 +431,8 @@ void CPlotWidget::DrawScrollbar(void)
     if (m_hscrollSliderGlue) {
         color = SCROLLBAR_SLIDER_SELECTED_COLOR;
     }
-    m_hscrollSlider.setLeft((int)((float)m_hscrollFrame.left() +
-                                  m_hrelPos * ((float)m_hscrollFrame.width())));
+    m_hscrollSlider.setLeft(static_cast<int>(m_hscrollFrame.left() +
+                                             m_hrelPos * m_hscrollFrame.width()));
     m_hscrollSlider.setWidth(m_hscrollSlider_Width);
 
     /* Draw v scroll slider */
@@ -450,8 +455,8 @@ void CPlotWidget::FillEmptyWindow(void)
 
     TRACEX_DE(QString("%1").arg(__FUNCTION__));
 
-    int x_pos = (int)((float)(m_windowRect.right() - m_windowRect.left()) * (float)0.1);
-    int y_pos = (int)((float)(m_windowRect.bottom() - m_windowRect.top()) * (float)0.1);
+    int x_pos = static_cast<int>((m_windowRect.right() - m_windowRect.left()) * 0.1f);
+    int y_pos = static_cast<int>((m_windowRect.bottom() - m_windowRect.top()) * 0.1f);
 
     doc_p->m_fontCtrl.SetFont(m_pDC, m_FontEmptyWindow_p);
 
@@ -464,11 +469,11 @@ void CPlotWidget::FillEmptyWindow(void)
 
     m_pDC->drawText(x_pos, y_pos, "The window is empty because you have loaded a plugin but you haven't run it's "
                                   "plot-function yet, or that");
-    y_pos += (int)((float)fontSize.height() * (float)(1.1));
+    y_pos += static_cast<int>(fontSize.height() * 1.1f);
     m_pDC->drawText(x_pos, y_pos, "the plugin plot-function didn't create any graphical objects for LogScrutinizer "
                                   "to present");
 
-    y_pos += (int)((float)fontSize.height() * (float)(1.5));
+    y_pos += static_cast<int>(fontSize.height() * 1.5f);
     x_pos += fontSize.width();
 
     char *title_p;
@@ -485,20 +490,20 @@ void CPlotWidget::FillEmptyWindow(void)
         m_pDC->drawText(x_pos, y_pos, QString("(1.) Right-click on Plots->%1").arg(title_p));
     }
 
-    y_pos += (int)((float)fontSize.height() * (float)(1.1));
+    y_pos += static_cast<int>(fontSize.height() * 1.1f);
 
     m_pDC->drawText(x_pos, y_pos, "(2.) Select  Run");
 
-    y_pos += (int)((float)fontSize.height() * (float)(1.1));
+    y_pos += static_cast<int>(fontSize.height() * 1.1f);
 
     m_pDC->drawText(x_pos, y_pos, "(3.) LogScrutinizer will then activate the plugin to process the log, "
                                   "and present graphical output in this window");
 
-    y_pos += (int)((float)fontSize.height() * (float)(1.5));
+    y_pos += static_cast<int>(fontSize.height() * 1.5f);
 
     m_pDC->drawText(x_pos, y_pos, "Tip: You can also run all the loaded plugin's plot-function by pressing CTRL-R");
 
-    y_pos += (int)((float)fontSize.height() * (float)(2.0));
+    y_pos += static_cast<int>(fontSize.height() * 2.0f);
 
     m_pDC->drawText(x_pos, y_pos, "Read more about plugins at www.logscrutinizer.com. Press F1 for quick "
                                   "help web page");
@@ -531,7 +536,7 @@ void CPlotWidget::DrawSubPlots(void)
 
                 g_CPlotPane_ThreadMananger_p->ConfigureThread(threadIndex,
                                                               OnPaint_ThreadAction,
-                                                              (void *)&g_onPaint_WorkData[threadIndex]);
+                                                              reinterpret_cast<void *>(&g_onPaint_WorkData[threadIndex]));
 
                 /* OnPaint_ThreadAction((void*)&g_onPaint_WorkData[threadIndex]); */
 
@@ -593,7 +598,7 @@ void CPlotWidget::SurfaceToClipBoard(const ScreenPoint_t *screenPoint_p)
 ***********************************************************************************************************************/
 void OnPaint_ThreadAction(volatile void *data_p)
 {
-    OnPaint_Data_t *onPaint_data_p = (OnPaint_Data_t *)data_p;
+    auto *onPaint_data_p = reinterpret_cast<volatile OnPaint_Data_t *>(data_p);
 
     if (onPaint_data_p->subplotSurface_p->isPaintable()) {
         onPaint_data_p->subplotSurface_p->OnPaint_1();
@@ -647,7 +652,7 @@ void CPlotWidget::InitilizeSubPlots(void)
         return;
     }
 
-    subPlot_p = (CSubPlot *)subPlots_p->first();
+    subPlot_p = static_cast<CSubPlot *>(subPlots_p->first());
     while (subPlot_p != nullptr && !go_exists) {
         CList_LSZ *graphList_p;
 
@@ -670,7 +675,7 @@ void CPlotWidget::InitilizeSubPlots(void)
             }
         }
 
-        subPlot_p = (CSubPlot *)subPlots_p->GetNext((CListObject *)subPlot_p);
+        subPlot_p = static_cast<CSubPlot *>(subPlots_p->GetNext(static_cast<CListObject *>(subPlot_p)));
     }
 
     if (!go_exists) {
@@ -684,7 +689,7 @@ void CPlotWidget::InitilizeSubPlots(void)
     int subPlotHeigth = m_plotWindowRect.height() / subPlots_p->count();
     GraphicalObject_Extents_t extents;
 
-    subPlot_p = (CSubPlot *)subPlots_p->first();
+    subPlot_p = static_cast<CSubPlot *>(subPlots_p->first());
 
     int count = subPlots_p->count();
 
@@ -719,7 +724,7 @@ void CPlotWidget::InitilizeSubPlots(void)
             m_min_X = extents.x_min;
         }
 
-        subPlot_p = (CSubPlot *)subPlots_p->GetNext((CListObject *)subPlot_p);
+        subPlot_p = static_cast<CSubPlot *>(subPlots_p->GetNext(static_cast<CListObject *>(subPlot_p)));
         ++subPlotIndex;
     }
     m_surfacesCreated = true;
@@ -825,7 +830,7 @@ void CPlotWidget::wheelEvent(QWheelEvent *event)
     } else {
         /*WHEEL_DELTA , A positive value indicates that the wheel was rotated forward */
 
-        m_vrelPos += (double)(g_cfg_p->m_v_scrollGraphSpeed / 100.0 * (zDelta > 0 ? -1.0 : 1.0));
+        m_vrelPos += g_cfg_p->m_v_scrollGraphSpeed / (100.0 * (zDelta > 0 ? -1.0 : 1.0));
 
         if (m_vrelPos < 0.0) {
             m_vrelPos = 0.0;
@@ -877,7 +882,7 @@ void CPlotWidget::RealignSubPlots(void)
         sum_Y_Size += rect.height();
     }
 
-    int y_bias = (m_plotWindowRect.height() - sum_Y_Size) / (int)m_surfaces.count();
+    int y_bias = (m_plotWindowRect.height() - sum_Y_Size) / m_surfaces.count();
     y_bias = y_bias > 0 ? y_bias : 0;
 
     PRINT_SIZE(QString("%1 y_bias:%2 sum_Y_size:%3 winRectHeight:%4")
@@ -916,6 +921,8 @@ void CPlotWidget::RealignSubPlots(void)
 ***********************************************************************************************************************/
 void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
+    Q_UNUSED(invalidate_p);
+
     /* screenPoint_p, defines which subPlot to increase
      * zDelta, if larger than 0 the subPlot will increase in size
      * Example, say we have subplots 1,2,3. SP_1: 100y, SP_2 50y, SP_3 20y
@@ -933,9 +940,9 @@ void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint
         if (rect.contains(screenPoint_p->DCBMP)) {
             if (zDelta > 0) {
                 /* increase size of window */
-                rect.adjust(0, 0, 0, (long)(rect.height() * ZOOM_STEP));
+                rect.adjust(0, 0, 0, static_cast<int>(rect.height() * ZOOM_STEP));
             } else {
-                rect.adjust(0, 0, 0, -(long)(rect.height() * ZOOM_STEP));
+                rect.adjust(0, 0, 0, -static_cast<int>(rect.height() * ZOOM_STEP));
             }
 
             if (rect.height() < MIN_WINDOW_HEIGHT) {
@@ -985,7 +992,7 @@ void CPlotWidget::RestoreSubPlotWindows(void)
 
     QRect surfaceRect = m_plotWindowRect;
     int subPlotIndex = 0;
-    int subPlotHeight = m_plotWindowRect.height() / (int)m_surfaces.count();
+    int subPlotHeight = m_plotWindowRect.height() / m_surfaces.count();
 
     if (subPlotHeight < DEFAULT_WINDOW_HEIGHT) {
         subPlotHeight = DEFAULT_WINDOW_HEIGHT;
@@ -1020,12 +1027,13 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
 
     subPlot_p->GetViewPortRect(&viewPort);
 
-    double x_rel = (double)(screenPoint_p->DCBMP.x() - viewPort.left()) / (double)viewPort.width();
-    double maxWidth = (double)(m_max_X - m_min_X);
-    double currentZoom = maxWidth / (double)(m_zoom_right - m_zoom_left);
+    double x_rel = static_cast<double>(screenPoint_p->DCBMP.x() - viewPort.left()) /
+                   static_cast<double>(viewPort.width());
+    double maxWidth = m_max_X - m_min_X;
+    double currentZoom = maxWidth / (m_zoom_right - m_zoom_left);
     double newWidth = 0.0;
 
-    m_offset_X = (double)(m_zoom_left + (m_zoom_right - m_zoom_left) * x_rel);
+    m_offset_X = m_zoom_left + (m_zoom_right - m_zoom_left) * x_rel;
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  pt.x:%d rel:%f curr offset:%e",
              screenPoint_p->DCBMP.x(),
@@ -1054,7 +1062,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
     m_zoom_left = m_offset_X - (newWidth * x_rel);
     m_zoom_right = m_offset_X + (newWidth * (1.0 - x_rel));
 
-    if (m_zoom_left == m_zoom_right) {
+    if (almost_equal(m_zoom_left, m_zoom_right)) {
         TRACEX_W("CPlotWidget::ZoomSubPlot_X_Axis  Zoom error");
 
         m_zoom_right = m_zoom_left + 1;
@@ -1108,14 +1116,15 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
     subPlot_p->GetMaxExtents(&maxExtents);   /* The sub-plot max/min extents */
     subPlot_p->GetViewPortRect(&viewPort);   /* The viewPort in pixels (for the surface) */
 
-    double y_rel = (double)(screenPoint_p->DCBMP.y() - viewPort.top()) / (double)viewPort.height();
-    double maxHeight = (double)(maxExtents.y_max - maxExtents.y_min);
-    double currentZoom = maxHeight / (double)(zoom.y_max - zoom.y_min);
+    double y_rel = static_cast<double>(screenPoint_p->DCBMP.y() - viewPort.top()) /
+                   static_cast<double>(viewPort.height());
+    double maxHeight = static_cast<double>(maxExtents.y_max - maxExtents.y_min);
+    double currentZoom = maxHeight / static_cast<double>(zoom.y_max - zoom.y_min);
     double newHeight = 0.0;
 
     /* since Y 0 is a the top, however the graph 0 is at the bottom, it is necessary to reverse the
      * y_offset */
-    double y_offset = (float)(zoom.y_min + (zoom.y_max - zoom.y_min) * (1.0 - y_rel));
+    double y_offset = static_cast<double>(zoom.y_min + (zoom.y_max - zoom.y_min)) * (1.0 - y_rel);
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  pt.y:%d rel:%f curr offset:%e",
              screenPoint_p->DCBMP.y(),
@@ -1131,15 +1140,16 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
         newHeight = maxHeight / currentZoom;
     }
 
-    zoom.y_min = (float)(y_offset - (newHeight * (1.0 - y_rel)));             /* Maintain the center of zoom */
-    zoom.y_max = (float)(y_offset + (newHeight * y_rel));
+    zoom.y_min = static_cast<float>(y_offset - (newHeight * (1.0 - y_rel)));             /* Maintain the center of zoom
+                                                                                          * */
+    zoom.y_max = static_cast<float>(y_offset + (newHeight * y_rel));
 
 #ifdef PREVENT_Y_AXIS_OUTOF_MAXEXT
     zoom.y_min = zoom.y_min < maxExtents.y_min ? maxExtents.y_min : zoom.y_min;
     zoom.y_max = zoom.y_max > maxExtents.y_max ? maxExtents.y_max : zoom.y_max;
 #endif
 
-    if (zoom.y_min == zoom.y_max) {
+    if (almost_equal(zoom.y_min, zoom.y_max)) {
         TRACEX_W("CPlotWidget::ZoomSubPlot_Y_Axis  Zoom error");
 
         zoom.y_max = zoom.y_min + 1;
@@ -1151,8 +1161,8 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  zoom:%4.2f min:%e max:%e offset:%e",
              currentZoom,
-             zoom.y_min,
-             zoom.y_max,
+             static_cast<double>(zoom.y_min),
+             static_cast<double>(zoom.y_max),
              y_offset);
 
     subPlot_p->SetSurfaceZoom(&zoom);
@@ -1194,15 +1204,15 @@ void CPlotWidget::ZoomSubPlot_Move(const ScreenPoint_t *screenPoint_p, bool *inv
     m_subPlot_inFocus_p->GetMaxExtents(&maxExtents);   /* The sub-plot max/min extents */
     m_subPlot_inFocus_p->GetViewPortRect(&viewPort);   /* The viewPort in pixels (for the surface) */
 
-    float y_diff = (float)-1.0 * (float)(diff.y() * unitsPerPixel_Y);
-    double x_diff = (double)(diff.x() * unitsPerPixel_X);
+    double y_diff = -1.0 * (diff.y() * unitsPerPixel_Y);
+    double x_diff = diff.x() * unitsPerPixel_X;
 
     m_subPlot_StartMovePoint = screenPoint_p->mouse;
 
     auto new_zoom = zoom;
 
-    new_zoom.y_min += y_diff;
-    new_zoom.y_max += y_diff;
+    new_zoom.y_min += static_cast<float>(y_diff);
+    new_zoom.y_max += static_cast<float>(y_diff);
     new_zoom.x_min += x_diff;
     new_zoom.x_max += x_diff;
 
@@ -1222,7 +1232,7 @@ void CPlotWidget::ZoomSubPlot_Move(const ScreenPoint_t *screenPoint_p, bool *inv
     m_subPlot_inFocus_p->SetSurfaceZoom(&zoom);
 
     /* If X axis is moved for one subplot, all shall be moved */
-    if (x_diff != 0) {
+    if (!almost_equal(x_diff, 0.0)) {
         m_zoom_left = zoom.x_min;
         m_zoom_right = zoom.x_max;
 
@@ -1351,8 +1361,8 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
             ZoomSubPlot_Move(&screenPoint, &updateNeeded);
         } else if (m_vscrollSliderGlue) {
             updateNeeded = true;
-            m_vrelPos = ((double)screenPoint.mouse.y() - (double)m_vscrollSliderGlueOffset) /
-                        ((double)m_windowRect.height() - (double)m_vscrollSlider_Height);
+            m_vrelPos = static_cast<double>(screenPoint.mouse.y() - m_vscrollSliderGlueOffset) /
+                        (m_windowRect.height() - m_vscrollSlider_Height);
 
             if (m_vrelPos < 0.0) {
                 m_vrelPos = 0.0;
@@ -1362,8 +1372,8 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
             PRINT_SCROLL_INFO("%s m_vrelPos: %f", __FUNCTION__, m_vrelPos);
         } else if (m_hscrollSliderGlue) {
             updateNeeded = true;
-            m_hrelPos = ((double)screenPoint.mouse.x() - (double)m_hscrollSliderGlueOffset) /
-                        ((double)m_windowRect.width());
+            m_hrelPos = static_cast<double>(screenPoint.mouse.x() - m_hscrollSliderGlueOffset) /
+                        (m_windowRect.width());
 
             if (m_hrelPos < 0.0) {
                 m_hrelPos = 0.0;
@@ -1494,8 +1504,8 @@ void CPlotWidget::FillScreenPoint_FromDCViewPortPoint(QPoint *viewPortPoint_p, S
 bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p)
 {
     int row_Best = -1;
-    int distance;
-    int distance_Best;
+    int distance = 0;
+    int distance_Best = 0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
     CGraph *graph_p = nullptr;
     GraphicalObject_t *go_p = nullptr;
@@ -1594,8 +1604,8 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
     int row;
     int row_Best = -1;
     double distance;
-    double distance_Best;
-    double time;
+    double distance_Best = 0.0;
+    double time = 0.0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
 
     TRACEX_D("CPlotWidget::SetRow");
@@ -1636,6 +1646,8 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
 ***********************************************************************************************************************/
 bool CPlotWidget::HandleKeyDown(QKeyEvent *e)
 {
+    Q_UNUSED(e);
+
     bool CTRL_Pressed = QApplication::keyboardModifiers() & Qt::ControlModifier ? true : false;
     bool SHIFT_Pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier ? true : false;
     bool ALT_Pressed = QApplication::keyboardModifiers() & Qt::AltModifier ? true : false;
@@ -1903,6 +1915,8 @@ void CPlotWidget::OnContextMenu(ScreenPoint_t& screenPoint)
 ***********************************************************************************************************************/
 void CPlotWidget::focusInEvent(QFocusEvent *event)
 {
+    Q_UNUSED(event);
+
     m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
     m_toolTipState = ToolTipState_WaitForRequest;
 
@@ -1925,6 +1939,8 @@ void CPlotWidget::focusInEvent(QFocusEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidget::focusOutEvent(QFocusEvent *event)
 {
+    Q_UNUSED(event);
+
     m_toolTipTimer->stop();
     m_toolTipEnabled = false;
     if (m_toolTipState == ToolTipState_Running) {
@@ -2065,14 +2081,6 @@ void CPlotWidget::onToolTipTimer(void)
                 }
             }
             break;
-
-        default:
-            m_toolTipTimer->stop();
-            if (CSCZ_ToolTipDebugEnabled) {
-                TRACEX_W(QString("%1  ToolTipState UNKNOWN").arg(__FUNCTION__));
-            }
-            Q_ASSERT(false);
-            break;
     }
 }
 
@@ -2088,13 +2096,13 @@ void CPlotWidget::DrawToolTip(void)
 
         QSize size = doc_p->m_fontCtrl.GetFontSize();
         QPoint point(m_lastCursorPos.DCBMP.x() + 5, m_lastCursorPos.DCBMP.y() - 5);
-        float delta = (float)size.height() * 1.2f;
+        float delta = size.height() * 1.2f;
         float y = static_cast<float>(point.y());
 
         for (auto& string : m_toolTipStrings) {
             m_pDC->drawText(point, string);
             y += delta;
-            point.setY((int)y);
+            point.setY(static_cast<int>(y));
         }
     }
 }
@@ -2122,7 +2130,8 @@ bool CPlotWidget::OpenToolTip(void)
 
         if (!m_plot_p->vPlotGraphicalObjectFeedback(text_p, textSize, go_p->x2, go_p->row, graph_p, temp,
                                                     CFG_TEMP_STRING_MAX_SIZE)) {
-            m_toolTipStrings.append(QString("%1 %2 - %3").arg(go_p->y2).arg(y_axis_label_p).arg(graphName_p));
+            m_toolTipStrings.append(QString("%1 %2 - %3").arg(static_cast<double>(go_p->y2)).arg(y_axis_label_p).arg(
+                                        graphName_p));
         } else {
             int index = 0;    /* current parser index of the temp string (which may contain sub-strings) */
             int startIndex = 0;    /* where the current sub-string started */
@@ -2137,7 +2146,7 @@ bool CPlotWidget::OpenToolTip(void)
                     temp[index] = 0;
                     m_toolTipStrings.append(QString(&temp[startIndex]));
 
-                    currentLength = (int)strlen(&temp[startIndex]);
+                    currentLength = static_cast<int>(strlen(&temp[startIndex]));
                     if (currentLength > maxLength) {
                         maxLength = currentLength;
                     }
@@ -2150,7 +2159,7 @@ bool CPlotWidget::OpenToolTip(void)
                 if ((temp[index] == 0) && (temp[index - 1] != 0)) {
                     m_toolTipStrings.append(QString(&temp[startIndex]));
 
-                    currentLength = (int)strlen(&temp[startIndex]);
+                    currentLength = static_cast<int>(strlen(&temp[startIndex]));
                     if (currentLength > maxLength) {
                         maxLength = currentLength;
                     }
@@ -2197,6 +2206,7 @@ void CPlotWidget::Initialize(void)
 ***********************************************************************************************************************/
 void CPlotWidget::closeEvent(QCloseEvent *event)
 {
+    Q_UNUSED(event);
     m_toolTipTimer->stop();
 }
 
@@ -2691,7 +2701,7 @@ void CPlotWidget::Align_X_Cursor(double cursorTime, double x_min, double x_max)
 /***********************************************************************************************************************
 *   ZoomSubPlotInFocus
 ***********************************************************************************************************************/
-void CPlotWidget::ZoomSubPlotInFocus(double zoom, bool in, bool horizontal)
+void CPlotWidget::ZoomSubPlotInFocus(bool in, bool horizontal)
 {
     if (!m_surfaces.isEmpty()) {
         for (auto& surface_p : m_surfaces) {
@@ -2722,7 +2732,7 @@ void CPlotWidget::ZoomSubPlotInFocus(double zoom, bool in, bool horizontal)
 /***********************************************************************************************************************
 *   ResizeSubPlotInFocus
 ***********************************************************************************************************************/
-void CPlotWidget::ResizeSubPlotInFocus(double zoom, bool increase)
+void CPlotWidget::ResizeSubPlotInFocus(bool increase)
 {
     if (!m_surfaces.isEmpty()) {
         for (auto& surface_p : m_surfaces) {
