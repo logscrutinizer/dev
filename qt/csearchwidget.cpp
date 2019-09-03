@@ -18,6 +18,7 @@
 #include <QPushButton>
 #include <QCheckBox>
 #include <QApplication>
+#include <QCompleter>
 
 /***********************************************************************************************************************
 *   on_pushButton_Forward_clicked
@@ -141,8 +142,8 @@ void CSearchWidget::showEvent(QShowEvent *event)
 void CSearchWidget::activate(void)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
-    combo_p->setAutoCompletion(true);
-    combo_p->setAutoCompletionCaseSensitivity(Qt::CaseSensitive);
+    completer.setCaseSensitivity(Qt::CaseSensitive);
+    combo_p->setCompleter(&completer);
     combo_p->setFocus();
 }
 

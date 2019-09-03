@@ -43,8 +43,12 @@ public:
 
   static void __cdecl PureCallHandler();
 
-  static void __cdecl InvalidParameterHandler(const wchar_t* expression, 
-    const wchar_t* function, const wchar_t* file, int line, uintptr_t pReserved);
+  static void __cdecl InvalidParameterHandler(
+      const wchar_t* expression,
+      const wchar_t* function,
+      const wchar_t* file,
+      unsigned int line,
+      uintptr_t pReserved);
 
   static int __cdecl NewHandler(size_t);
   static void SetWin32ExceptionHandler();

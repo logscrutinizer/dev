@@ -430,7 +430,6 @@ void __cdecl CCrashHandler::InvalidParameterHandler(
 
   // Invalid parameter exception
   GetExceptionAndTerminate();
-
 }
 
 

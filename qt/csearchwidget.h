@@ -6,6 +6,7 @@
 #pragma once
 
 #include <QWidget>
+#include <QCompleter>
 
 #include "csubplotsurface.h"
 #include "plugin_api.h"
@@ -72,6 +73,7 @@ private slots:
 
 private:
     CSearchWidget() = delete;
+    QCompleter completer;
 
 public:
     virtual void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;

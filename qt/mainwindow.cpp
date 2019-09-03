@@ -780,8 +780,9 @@ void MainWindow::showEvent(QShowEvent *e)
         if (isExitStateMaximized()) {
             showMaximized();
 
-            auto newSize = QApplication::desktop()->availableGeometry();
-            resize(newSize.size());
+            auto screenList = QGuiApplication::screens();
+            auto first_screen = screenList.first();
+            resize(first_screen->size());
             raise();
         }
 
@@ -2187,7 +2188,10 @@ void MainWindow::moveEvent(QMoveEvent *event)
 ***********************************************************************************************************************/
 void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    QRect rec = QApplication::desktop()->availableGeometry();
+    auto screenList = QGuiApplication::screens();
+    auto first_screen = screenList.first();
+    auto rec = first_screen->size();
+
     PRINT_SIZE(QString("MainWindow resize %1,%2 -> %3,%4 state:%5 (max %6,%7 - %8,%9)")
                    .arg(event->oldSize().width()).arg(event->oldSize().height())
                    .arg(event->size().width()).arg(event->size().height())

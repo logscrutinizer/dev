@@ -2979,7 +2979,7 @@ void CSubPlotSurface::CreatePainter(QWidget *widget_p)
     }
 
     m_painter_p = new LS_Painter(&m_double_buffer_image);
-    m_painter_p->initFrom(widget_p);
+    m_painter_p->begin(widget_p);
     doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
     m_painter_p->setRenderHint(QPainter::Antialiasing, true);
 }
