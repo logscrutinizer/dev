@@ -244,6 +244,7 @@ There is no pre-built download for this component, hence you need to build it yo
     set(VC_REDIST "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012")
     set(HS_PATH "C:/Program Files/hyperscan")
     ```
+
 #### Building using Visual Studio (Generate sln-file from cmake-gui)
   * Configure and Generate the __LogScrutinizer.sln__ from cmake-gui
     * Start cmake-gui
@@ -256,7 +257,23 @@ There is no pre-built download for this component, hence you need to build it yo
     * Select the LogScrutinizer target as "Set as Startup project"
     * Select __Release x64__ build variant
     * Build solution
+  * Run LogScrutinizer from Visual Studio
+    * LogScrutinizer is Qt5 dependent, and you need first to copy the Qt5 dlls to the same location as your logscrutinizer.exe when e.g. starting the debugger, or running in release mode. You typically find the Dlls in your Qt5 install directory under
+
+    ```
+    C:\Qt\5.13.0\msvc2017_64\bin
+
+    ```
+
+    dependent on your installation.
     * Press Ctrl-F5 to run (run Release version).
+    * Note, if you want to run in Debug you need to build HyperScan in Debug as well, and vice-versa for release. Then you run the HyperScan install project as well again to have it installed to "program files".
+
+
+#### Make an installation package)
+
+* Select the PACKAGE project in the solution file and build
+Note, if the version gets wrong in the installation package its because the file product_version.cmake hasn't be re-created. Just remove it, build the gen_product_version project (where it will be re-created), and then build the PACKAGE project again.
 
 #### Building using QtCreator
   * Start QtCreator
