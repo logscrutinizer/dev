@@ -14,6 +14,12 @@
 #include <stdint.h>
 #include "CDebug.h"
 
+/* For sentimental recording, the first commit ever made was done
+ * Thu Mar 7 23:26:06 2013
+ * At the point merging to github, the last commit was made in a private branch Fri Jan 18 17:18:02 2019.
+ * Between these points there were 913 commits
+ */
+
 /*
  *
  * ---------- Product Version Kinds

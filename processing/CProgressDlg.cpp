@@ -142,7 +142,7 @@ void CProgressDlg::UpdateProgressInfo(void)
             progress = 0.0f;
         }
 
-        m_progressBar_p->setValue(progress * 100.0f);
+        m_progressBar_p->setValue(static_cast<int>(progress * 100.0f));
 
         bool moreToRead;
         do {
@@ -187,9 +187,9 @@ void CProgressDlg::UpdateProgressInfo(void)
 ***********************************************************************************************************************/
 void CProgressDlg::OnBnClickedAbort()
 {
-    m_autoClose = (int)m_autoCloseCheck_p->isChecked();
+    m_autoClose = m_autoCloseCheck_p->isChecked();
 
-    if (m_autoClose != (int)g_cfg_p->m_autoCloseProgressDlg) {
+    if (m_autoClose != g_cfg_p->m_autoCloseProgressDlg) {
         g_cfg_p->m_autoCloseProgressDlg = m_autoClose;
     }
 
@@ -257,6 +257,8 @@ void CProgressDlg::showEvent(QShowEvent *event)
 ***********************************************************************************************************************/
 int CProgressDlg::OnPluginMsg(int wParam, int lParam)
 {
+    Q_UNUSED(wParam);
+    Q_UNUSED(lParam);
     return 1;
 }
 
@@ -287,8 +289,8 @@ void CProgressDlg::OnProcessingDone()
 
     g_processingCtrl_p->Processing_StopReport();
 
-    m_autoClose = (int)m_autoCloseCheck_p->isChecked();
-    if (m_autoClose != (int)g_cfg_p->m_autoCloseProgressDlg) {
+    m_autoClose = m_autoCloseCheck_p->isChecked();
+    if (m_autoClose != g_cfg_p->m_autoCloseProgressDlg) {
         g_cfg_p->m_autoCloseProgressDlg = m_autoClose;
     }
 

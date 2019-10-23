@@ -66,12 +66,15 @@ void test(void)
 }
 #endif
 
+CSearchThreadConfiguration::~CSearchThreadConfiguration(void)
+{}
+
 /***********************************************************************************************************************
 *   FileIndex_To_MemRef
 ***********************************************************************************************************************/
 inline char *FileIndex_To_MemRef(int64_t *fileIndex_p, int64_t *workMemFileIndex_p, char *WorkMem_p)
 {
-    return ((char *)(WorkMem_p + (*fileIndex_p - *workMemFileIndex_p)));
+    return (WorkMem_p + (*fileIndex_p - *workMemFileIndex_p));
 }
 
 /***********************************************************************************************************************
@@ -102,7 +105,8 @@ void CSearchThread::thread_Process(CThreadConfiguration *config_p)
     m_isStopped = false;
     *searchConfig_p->m_TIA_Index_p = -1; /* invalid value, hence shall not be used for wrap-up */
 
-    matchDescr.filterLength = (int)strlen(searchConfig_p->m_searchText) - 1; /* filter length is compared to index */
+    /* filter length is compared to index */
+    matchDescr.filterLength = static_cast<int>(strlen(searchConfig_p->m_searchText) - 1);
     matchDescr.filter_p = searchConfig_p->m_searchText;
 
     const bool regExp = searchConfig_p->m_regExp;
@@ -234,7 +238,7 @@ void CSearchCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int workMemSi
                                   bool caseSensitive)
 {
     TRACEX_I("Search started  text:%s backward:%d regExp:%d startRow:%d endRow:%d  %s",
-             searchText_p->toLatin1().constData(), (int)backward, (int)regExp, startRow, endRow,
+             searchText_p->toLatin1().constData(), backward ? 1 : 0, regExp ? 1 : 0, startRow, endRow,
              FIRA_p == nullptr ? "Full search" : "Filtered search");
 
 #ifdef TEST_HS
@@ -262,7 +266,7 @@ bool CSearchCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descript
 
     CFileProcBase::ConfigureThread(config_p, chunkDescription_p, threadIndex); /* Use the default initialization */
     SAFE_STR_MEMCPY(searchConfig_p->m_searchText, CFG_TEMP_STRING_MAX_SIZE, m_searchText_p->toLatin1().constData(),
-                    m_searchText_p->size());
+                    static_cast<size_t>(m_searchText_p->size()));
 
     searchConfig_p->m_searchStop_p = &m_searchStop;
     searchConfig_p->m_backward = m_backward;
@@ -371,7 +375,7 @@ void CSearchCtrl::WrapUp(void)
     char searchText[4096];
 
     SAFE_STR_MEMCPY(searchText, CFG_TEMP_STRING_MAX_SIZE, m_searchText_p->toLatin1().constData(),
-                    m_searchText_p->size());
+                    static_cast<size_t>(m_searchText_p->size()));
 
     m_searchResult_TI = 0;
     m_searchSuccess = false;
@@ -424,7 +428,7 @@ void CSearchCtrl::WrapUp(void)
 
             memset(&matchDescr, 0, sizeof(Match_Description_t));
 
-            matchDescr.filterLength = (int)strlen(searchText) - 1;
+            matchDescr.filterLength = static_cast<int>(strlen(searchText) - 1);
             matchDescr.filter_p = searchText;
 
             if (m_regExp) {

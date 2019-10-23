@@ -25,10 +25,7 @@ class CSearchThreadConfiguration : public CThreadConfiguration
 public:
     CSearchThreadConfiguration() : CThreadConfiguration() {}
 
-    virtual ~CSearchThreadConfiguration(void)
-    {
-        /* Not sure if anything should be put here, see ExitInstance instead */
-    }
+    virtual ~CSearchThreadConfiguration(void) override;
 
     /***********************************************************************************************************************
     *   PrepareRemove

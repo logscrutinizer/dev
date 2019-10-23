@@ -29,7 +29,7 @@ class CTIA_Chunk
 {
 public:
     CTIA_Chunk(void) : m_num_TI(0) {}
-    CTIA_Chunk(int maxNumOf_TI) : m_num_TI(0) {
+    CTIA_Chunk(int64_t maxNumOf_TI) : m_num_TI(0) {
         m_TIA_p = reinterpret_cast<TI_t *>(VirtualMem::Alloc(static_cast<int64_t>(sizeof(TI_t)) * maxNumOf_TI));
     }
 
@@ -60,8 +60,8 @@ public:
     void AddChunk(CTIA_Chunk *chunk_p) {m_CTIA_Chunks.append(chunk_p);}
 
 private:
-    int m_num_TI; /* Total number of stored TIs in file */
-    int m_StorageSize; /* The size of the external file */
+    int64_t m_num_TI; /* Total number of stored TIs in file */
+    int64_t m_StorageSize; /* The size of the external file */
     QList<CTIA_Chunk *> m_CTIA_Chunks;
 };
 
@@ -85,7 +85,7 @@ public:
     uint32_t ThreadMain_CTIA(void);
 
     /****/
-    void Configure(char *start_p, int size, int64_t fileStartIndex) {
+    void Configure(char *start_p, int64_t size, int64_t fileStartIndex) {
         m_start_p = start_p;
         m_size = size;
         m_fileStartIndex = fileStartIndex;
@@ -95,12 +95,12 @@ public:
     QList<CTIA_Chunk *> m_CTIA_Chunks; /* List of chunks, possible more than one element if estimated line size was too
                                         * large */
     char *m_start_p; /* Reference to where in the WORK MEM the thread shall start to parse */
-    int m_size;  /* number of bytes to parse */
+    int64_t m_size;  /* number of bytes to parse */
     int64_t m_fileStartIndex; /* Which index in the file the current thread starts, used in combination with m_start_p
                                * (MEM_REF) */
     double m_execTime;
     bool m_isSteppingProgressCounter; /* Indicate if this thread should step the progress counter */
-    int m_maxNumOf_TI_estimated; /* Estimate the number of TIs to create in each CTIA_Chunk */
+    int64_t m_maxNumOf_TI_estimated; /* Estimate the number of TIs to create in each CTIA_Chunk */
 };
 
 /***********************************************************************************************************************
@@ -139,11 +139,10 @@ public:
     void PrintExecTimes(void);
 
     void Setup(CFileCtrl_FileHandle_t *fileHandle_p, int64_t file_StartOffset, int64_t file_TotalSize,
-               char *workMem_p, int size);    /* Creates a set of threads to handle the ParseCmd */
+               char *workMem_p, int64_t size);    /* Creates a set of threads to handle the ParseCmd */
     void Execute(void);
 
     void FileStore(QFile& qfile);
-    void FileLoad(char *destMem_p, int *size_p);
 
     int GetNumOf_TI(void);
 
@@ -155,11 +154,11 @@ public:
 
 private:
     /* A thread never works on memory more than 2^31 */
-    void AddThread(char *start_p, int m_size, int64_t fileStartIndex);
+    void AddThread(char *start_p, int64_t size, int64_t fileStartIndex);
 
     CFileCtrl_FileHandle_t *m_fileHandle_p;
     int64_t m_fileSize;                                   /* The total size of the file */
-    int m_size;                                       /* Number of bytes to read */
+    int64_t m_size;                                       /* Number of bytes to read */
     char *m_workMem_p;
     QList <double> m_threadExecTimeList;
     CTIA_FileStorage m_fileStorage;                                /* Storage of the result of the parse command (TIAs)
@@ -172,7 +171,7 @@ private:
 class CFileCtrl
 {
 public:
-    CFileCtrl(void) : m_numOf_TI(0), m_loadTime(0.0) {}
+    CFileCtrl(void);
     virtual ~CFileCtrl(void)
     {
         while (!m_parseCmdList.isEmpty()) {

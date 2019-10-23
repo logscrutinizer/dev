@@ -103,7 +103,7 @@ public:
     CThreadConfiguration() : m_numOf_TI(0), m_start_TIA_index(0), m_stop_TIA_Index(0), m_TIA_step(0),
         m_servedBy_threadIndex(-1), m_workMem_p(nullptr), m_TIA_p(nullptr) {}
 
-    virtual ~CThreadConfiguration() {}
+    virtual ~CThreadConfiguration();
 
     /****/
     void BasicInit(char *workMem_p, TIA_t *TIA_p)
@@ -113,8 +113,8 @@ public:
     }
 
     /****/
-    void DeltaInit(Chunk_Description_t *chunkDescr_p, uint32_t numOf_TI, uint32_t start_TIA_index,
-                   uint32_t stop_TIA_Index, uint32_t TIA_step)
+    void DeltaInit(Chunk_Description_t *chunkDescr_p, int numOf_TI, int start_TIA_index,
+                   int stop_TIA_Index, int TIA_step)
     {
         m_chunkDescr = *chunkDescr_p;
         m_numOf_TI = numOf_TI;
@@ -136,15 +136,15 @@ public:
         /* If you override this vfunction don't forget to call the base class */
     }
 
-    int32_t GetNumOf_TI() {return m_numOf_TI;}
+    int GetNumOf_TI() {return m_numOf_TI;}
 
-    int32_t m_numOf_TI; /* Number of TIA rows this thread shall process from the chunk */
-    int32_t m_start_TIA_index; /* At which TIA index this thread shall start */
-    int32_t m_stop_TIA_Index; /* Where this thread should stop */
-    int32_t m_TIA_step; /* The index step taken when fetching new line */
+    int m_numOf_TI; /* Number of TIA rows this thread shall process from the chunk */
+    int m_start_TIA_index; /* At which TIA index this thread shall start */
+    int m_stop_TIA_Index; /* Where this thread should stop */
+    int m_TIA_step; /* The index step taken when fetching new line */
 
     /* Identify of the thread, set by the thread that picks up the configuration. If not processed this value is -1 */
-    int32_t m_servedBy_threadIndex;
+    int m_servedBy_threadIndex;
     Chunk_Description_t m_chunkDescr;
     char *m_workMem_p; /* Memory containing the loaded text file */
     TIA_t *m_TIA_p; /* Text Item Array, mapping between fileIndex and rows in the textFile */
@@ -172,7 +172,7 @@ public:
 
     CFileProcThreadBase(void) = delete;
 
-    virtual ~CFileProcThreadBase(void)
+    virtual ~CFileProcThreadBase() override
     {}
 
     /****/
@@ -234,7 +234,12 @@ public:
 
 protected:
     /* Functions called in thread context only */
-    virtual void thread_Process(CThreadConfiguration *config_p) {m_isStopped = false; thread_ProcessingDone();}
+    virtual void thread_Process(CThreadConfiguration *config_p)
+    {
+        Q_UNUSED(config_p);
+        m_isStopped = false;
+        thread_ProcessingDone();
+    }
     void thread_ProcessingDone(void) {}
     bool thread_isStopped(void) {return m_isStopped;}
 
@@ -343,7 +348,7 @@ public:
     /* API */
 
     /* Call the base function to get the processing started */
-    virtual void Start(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
+    virtual void Start(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p,
                        int priority, int startRow, int endRow, bool backward);
     double GetExecTime(void) {return m_execTime;}
     double GetProgress(void) {return m_progress;}
@@ -383,7 +388,7 @@ protected:
     uint32_t m_fileSize_LDW;
     uint32_t m_fileSize_HDW;
     char *m_workMem_p;
-    int m_workMemSize;
+    int64_t m_workMemSize;
     TIA_t *m_TIA_p;
     int m_priority;
     int m_totalNumOfRows; /* start - end row */

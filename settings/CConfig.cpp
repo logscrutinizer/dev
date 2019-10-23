@@ -781,11 +781,7 @@ bool CSCZ_SettingString::SetValue(QString *value_p)
 CSCZ_CfgSettingColorTable::~CSCZ_CfgSettingColorTable()
 {
     while (!colorChangeList.isEmpty()) {
-        auto item = colorChangeList.takeLast();
-
-        if (nullptr != item) {
-            delete item;
-        }
+        delete colorChangeList.takeLast();
     }
 }
 

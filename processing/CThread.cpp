@@ -54,19 +54,21 @@ CThreadManager::CThreadManager()
 {
     m_numOfThreads = g_cfg_p->m_numOfThreads;
 
-    m_threadInstanceArray = (threadInstance_base_t *)malloc(sizeof(threadInstance_base_t) * m_numOfThreads);
+    m_threadInstanceArray =
+        static_cast<threadInstance_base_t *>(malloc(sizeof(threadInstance_base_t) *
+                                                    static_cast<size_t>(m_numOfThreads)));
     if (m_threadInstanceArray == nullptr) {
         TRACEX_E("CThreadManager::CThreadManager  m_threadInstanceArray is nullptr");
         return;
     }
-    memset(m_threadInstanceArray, 0, sizeof(threadInstance_base_t) * m_numOfThreads);
+    memset(m_threadInstanceArray, 0, sizeof(threadInstance_base_t) * static_cast<size_t>(m_numOfThreads));
 
-    m_hThreadArray_pp = static_cast<CWorker **>(malloc(sizeof(CWorker *) * m_numOfThreads));
+    m_hThreadArray_pp = static_cast<CWorker **>(malloc(sizeof(CWorker *) * static_cast<size_t>(m_numOfThreads)));
     if (m_hThreadArray_pp == nullptr) {
         TRACEX_E("CThreadManager::CThreadManager  m_hThreadArray_pp is nullptr");
         return;
     }
-    memset(m_hThreadArray_pp, 0, sizeof(QThread *) * m_numOfThreads);
+    memset(m_hThreadArray_pp, 0, sizeof(QThread *) * static_cast<size_t>(m_numOfThreads));
 
     InitializeThreads();
 }

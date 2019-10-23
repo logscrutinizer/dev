@@ -53,7 +53,8 @@ void CTIA_Thread::run()
     auto unregisterRamLog = makeMyScopeGuard([&] () {
         g_RamLog->UnregisterThread();
     });
-    int m_maxNumOf_TI_estimated = m_size / FILECTRL_ROW_SIZE_ESTIMATE_persistent;
+
+    m_maxNumOf_TI_estimated = m_size / FILECTRL_ROW_SIZE_ESTIMATE_persistent;
 
     m_maxNumOf_TI_estimated = m_maxNumOf_TI_estimated < FILECTRL_MINIMAL_NUM_OF_TIs_persistent ?
                               FILECTRL_MINIMAL_NUM_OF_TIs_persistent : m_maxNumOf_TI_estimated;
@@ -176,7 +177,7 @@ static int Seek_EOL(QFile *qFile_p, char *workMem_p, int64_t fileStartIndex, int
     int64_t readBytes;
     int64_t to_readBytes;
     int64_t totalIndex;
-    int index;
+    int64_t index;
     int64_t fileOffset;
     bool stop = false;
 
@@ -255,7 +256,7 @@ static int Seek_EOL(QFile *qFile_p, char *workMem_p, int64_t fileStartIndex, int
 /***********************************************************************************************************************
 *   AddThread
 ***********************************************************************************************************************/
-void CParseCmd::AddThread(char *start_p, int size, int64_t fileStartIndex)
+void CParseCmd::AddThread(char *start_p, int64_t size, int64_t fileStartIndex)
 {
     CTIA_Thread *thread_p = new CTIA_Thread;
 
@@ -274,7 +275,7 @@ void CParseCmd::AddThread(char *start_p, int size, int64_t fileStartIndex)
 *   Setup
 ***********************************************************************************************************************/
 void CParseCmd::Setup(CFileCtrl_FileHandle_t *fileHandle_p, int64_t file_StartOffset, int64_t file_TotalSize,
-                      char *workMem_p, int size)
+                      char *workMem_p, int64_t size)
 {
     m_fileStart = file_StartOffset;
     m_fileSize = file_TotalSize;
@@ -290,11 +291,11 @@ void CParseCmd::Setup(CFileCtrl_FileHandle_t *fileHandle_p, int64_t file_StartOf
 
         int64_t fileOffset = m_fileStart;
         char *currentStart_p = workMem_p;
-        int sizePerThread;
-        int index;
+        int64_t sizePerThread;
+        int64_t index;
         int64_t file_SeekEnd_StartIndex;
         int64_t EOL_Offset;
-        int seekResult;
+        int seekStatus;
         bool stop = false;
 
         sizePerThread = m_size / g_cfg_p->m_numOfThreads;
@@ -307,18 +308,19 @@ void CParseCmd::Setup(CFileCtrl_FileHandle_t *fileHandle_p, int64_t file_StartOf
             if (file_SeekEnd_StartIndex < m_fileSize) {
                 /* Seek directly in the file where the last line for the threads ends. The offset from fileStartIndex is
                  * stored in EOL_Offset */
-                if (!(seekResult = Seek_EOL(fileHandle_p->qFile_p, workMem_p,
+                if (!(seekStatus = Seek_EOL(fileHandle_p->qFile_p, workMem_p,
                                             file_SeekEnd_StartIndex, m_fileSize, &EOL_Offset))) {
-                    if (seekResult == SEEK_EOL_ERROR) {
+                    if (seekStatus == SEEK_EOL_ERROR) {
                         TRACEX_E("CParseCmd::Setup  SeekError");
-                    } else if (seekResult == SEEK_EOL_FILE_END) {
+                    } else if (seekStatus == SEEK_EOL_FILE_END) {
                         TRACEX_E("CParseCmd::Setup  SeekError Reached EOL during seek");
                     }
 
                     return;
                 }
 
-                uint32_t threadWorkSize = sizePerThread + EOL_Offset;
+                /*EOL_Offset is relative to file_SeekEnd_StartIndex, not from file start*/
+                auto threadWorkSize = sizePerThread + EOL_Offset;
 
                 AddThread(currentStart_p, threadWorkSize, fileOffset);
 
@@ -334,7 +336,7 @@ void CParseCmd::Setup(CFileCtrl_FileHandle_t *fileHandle_p, int64_t file_StartOf
         }
 
         /* Setup the last thread, with the remainder, not necessary to seek for EOL */
-        AddThread(currentStart_p, m_size - (int)(currentStart_p - workMem_p), fileOffset);
+        AddThread(currentStart_p, m_size - (currentStart_p - workMem_p), fileOffset);
     } else {
         /* Create only one thread */
         AddThread(workMem_p, size, file_StartOffset);
@@ -408,7 +410,7 @@ void CParseCmd::Execute(void)
     QString loadInfo = QString("   Loading complete, %1").arg(time);
 
     g_processingCtrl_p->AddProgressInfo(loadInfo);
-    g_processingCtrl_p->AddProgressInfo(QString("   Processing, threads:%1").arg((int)g_totalNumOfThreads));
+    g_processingCtrl_p->AddProgressInfo(QString("   Processing, threads:%1").arg(g_totalNumOfThreads));
 
 #ifdef DEBUG_TIA_PARSING
     TRACEX_D("Starting ParseCmd:0x%llx threads", this);
@@ -493,14 +495,6 @@ void CParseCmd::FileStore(QFile& qTIAfile)
 }
 
 /***********************************************************************************************************************
-*   FileLoad
-***********************************************************************************************************************/
-void CParseCmd::FileLoad(char *destMem_p, int *size_p)
-{
-    /*  m_fileStorage.Load_CTIA(destMem_p, size_p); */
-}
-
-/***********************************************************************************************************************
 *   GetNumOf_TI
 ***********************************************************************************************************************/
 int CParseCmd::GetNumOf_TI(void)
@@ -532,6 +526,12 @@ int CParseCmd::GetNumOf_TI(void)
 
     return numOf_TI;
 }
+
+/***********************************************************************************************************************
+*   Search_TIA
+***********************************************************************************************************************/
+CFileCtrl::CFileCtrl(void) : m_numOf_TI(0), m_loadTime(0.0)
+{}
 
 /***********************************************************************************************************************
 *   Search_TIA
@@ -589,7 +589,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
     seekIndex = 0;
     fileIndex = 0;
 
-    numOf_CMDs = (int32_t)((fileSize / workMemSize) + 1);
+    numOf_CMDs = static_cast<int>(fileSize / workMemSize) + 1;
 
 #ifdef TIME_MEASURE_TIA_PARSING
     fileSetupTime = execTime.ms();
@@ -657,7 +657,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
             return false;
         }
 
-        parseCmd_p->Setup(&m_LogFile, fileIndex, fileSize, work_mem_p, (int)(fileSize - fileIndex));
+        parseCmd_p->Setup(&m_LogFile, fileIndex, fileSize, work_mem_p, fileSize - fileIndex);
         m_parseCmdList.append(parseCmd_p);
     }
 
@@ -693,7 +693,8 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
 
     while (iterCmd != m_parseCmdList.end() && !g_processingCtrl_p->m_abort) {
         parseCmd_p = *iterCmd;
-        g_processingCtrl_p->SetProgressCounter((float)parseCmd_p->m_fileStart / (float)fileSize);
+        g_processingCtrl_p->SetProgressCounter(
+            static_cast<float>(parseCmd_p->m_fileStart) / static_cast<float>(fileSize));
 
         parseCmd_p->Execute();
 
@@ -853,10 +854,10 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
         if (*ref_p == 0x0a) {
             if (*(ref_p - 1) == 0x0d) {
                 /* double zeroes, do not include the 0 in the count */
-                TIA_p[currentItemIndex].size = (int)(ref_p - start_p - 1);
+                TIA_p[currentItemIndex].size = static_cast<int>(ref_p - start_p - 1);
             } else {
                 /* double zeroes, do not include the 0 in the count */
-                TIA_p[currentItemIndex].size = (int)(ref_p - start_p);
+                TIA_p[currentItemIndex].size = static_cast<int>(ref_p - start_p);
             }
 
             /* initiate the next text item */
@@ -889,7 +890,7 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
 
     /* Check if the last letter wasn't a return */
     if ((*(ref_p - 1) != 0x0a)) {
-        TIA_p[currentItemIndex].size = (int)(ref_p - start_p);
+        TIA_p[currentItemIndex].size = static_cast<int>(ref_p - start_p);
 
         if (*(ref_p - 1) == 0x0d) {
             TIA_p[currentItemIndex].size--; /* if line ends with 0x0a 0x0d (and not only 0x0a) */
@@ -905,10 +906,11 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
     m_numOf_TI = fromRowIndex + *rows_added_p;
 
     /* Seek to where the new entries in TIA file should be added */
-    m_TIA_File.seek(sizeof(TIA_FileHeader_t) + fromRowIndex * sizeof(TI_t));
+    m_TIA_File.seek(static_cast<int64_t>(sizeof(TIA_FileHeader_t) + static_cast<uint64_t>(fromRowIndex) *
+                                         sizeof(TI_t)));
 
     for (auto& chunk_p : CTIA_Chunks) {
-        int64_t bytesToWrite = chunk_p->m_num_TI * sizeof(TI_t);
+        int64_t bytesToWrite = chunk_p->m_num_TI * static_cast<int64_t>(sizeof(TI_t));
         int64_t bytesWritten = 0;
 
         bytesWritten = m_TIA_File.write(reinterpret_cast<char *>(chunk_p->m_TIA_p), bytesToWrite);
@@ -950,9 +952,10 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
         /* First, find out the size of the file log file.
          * Read the last TIA */
         TI_t ti;
-        if (!m_TIA_File.seek(sizeof(header) + sizeof(TI_t) * (m_numOf_TI - 1))) {
+        if (!m_TIA_File.seek(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) * (m_numOf_TI - 1))) {
             TRACEX_E(QString("Failed to seek to last TI in TIA file size:%1 seek:%2")
-                         .arg(m_TIA_File.size()).arg(sizeof(header) + sizeof(TI_t) * (m_numOf_TI - 1)));
+                         .arg(m_TIA_File.size()).arg(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) *
+                                                     (m_numOf_TI - 1)));
         }
 
         auto readBytes = m_TIA_File.read(reinterpret_cast<char *>(&ti), sizeof(TI_t));
@@ -960,7 +963,7 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
             TRACEX_E(QString("Failed to read last entry in TIA file, "
                              "size:%1 seek:%2 toRead:%3")
                          .arg(TIAFileInfo.size())
-                         .arg(sizeof(header) + sizeof(TI_t) * (m_numOf_TI - 1))
+                         .arg(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) * (m_numOf_TI - 1))
                          .arg(sizeof(TI_t)));
         }
 
@@ -970,7 +973,7 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
         m_LogFile.qFile_p->seek(ti.fileIndex + ti.size); /* Put to end of file, check EOL marker */
 
         char data[2];
-        int readSize = m_LogFile.qFile_p->read(data, 2);
+        auto readSize = m_LogFile.qFile_p->read(data, 2);
         if (readSize == 2) {
             /* Read last + 2 char */
             if (data[1] == 0x0a) {
@@ -1025,7 +1028,7 @@ bool CTIA_FileStorage::Store_CTIA(QFile& qfile)
 
     while (chunkIter != m_CTIA_Chunks.end()) {
         CTIA_Chunk *chunk_p = *chunkIter;
-        int64_t bytesToWrite = chunk_p->m_num_TI * sizeof(TI_t);
+        int64_t bytesToWrite = chunk_p->m_num_TI * static_cast<int64_t>(sizeof(TI_t));
         int64_t bytesWritten = 0;
 
         bytesWritten = qfile.write(reinterpret_cast<char *>(chunk_p->m_TIA_p), bytesToWrite);
@@ -1041,7 +1044,7 @@ bool CTIA_FileStorage::Store_CTIA(QFile& qfile)
         ++chunkIter;
     }
 
-    if (TRACEX_IS_ENABLED(LOG_LEVEL_DEBUG) && (m_StorageSize % sizeof(TI_t) != 0)) {
+    if (TRACEX_IS_ENABLED(LOG_LEVEL_DEBUG) && (m_StorageSize % static_cast<int64_t>(sizeof(TI_t)) != 0)) {
         TRACEX_E("CTIA_FileStorage::Store_CTIA  Total number of SAVE is not equal to "
                  "mod of TI size Size:%d mod:%d", m_StorageSize, sizeof(TI_t));
     }
@@ -1057,7 +1060,7 @@ bool CTIA_FileStorage::Store_CTIA(QFile& qfile)
 void TestFileCtrl(void)
 {
     CFileCtrl fileCtrl;
-    char *mem_p = (char *)VirtualMem::Alloc(1024 * 1000);
+    char *mem_p = static_cast<char *>(VirtualMem::Alloc(1024 * 1000));
     QFile logFile("D:\\Projects\\LogScrutinizer\\logs\\long_lines.txt");
     char tia_name[] = ("D:\\Projects\\LogScrutinizer\\logs\\long_lines_tia.txt");
     int rows;
@@ -1105,8 +1108,8 @@ void TestSeek()
         return;
     }
 
-    const uint32_t repPatLength = repetitionPattern.size();
-    const uint32_t lineLength = repPatLength + lineEndingCount;
+    const auto repPatLength = repetitionPattern.size();
+    const auto lineLength = repPatLength + lineEndingCount;
 
     for (int row = 0; row < numOfRows; ++row) {
         int64_t fileStartIndex = row * lineLength + row % lineLength; /* continously shift start position */

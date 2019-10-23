@@ -9,8 +9,12 @@
 #include <QApplication>
 #include <QWidget>
 
-CProgressMgr procCtrl;
+static CProgressMgr procCtrl;
 CProgressMgr *g_processingCtrl_p = nullptr;
+
+/* Main for v-table generation */
+CProgressMgr::~CProgressMgr(void)
+{}
 
 /***********************************************************************************************************************
 *   CProgressMgr_Abort

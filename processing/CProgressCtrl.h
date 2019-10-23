@@ -37,7 +37,7 @@ public:
         m_processingLevel = 0;
         g_processingCtrl_p = this;
     }
-    virtual ~CProgressMgr(void) {}
+    virtual ~CProgressMgr(void);
 
     /* The count step is a  precentile  of 100%. Each call to StepProgress will increase the
      *  counter until reaching * 1.0 */

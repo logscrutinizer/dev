@@ -122,6 +122,11 @@ bool thread_Match(Match_Description_t *desc_p)
 ***********************************************************************************************************************/
 static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
+    Q_UNUSED(id);
+    Q_UNUSED(to);
+    Q_UNUSED(from);
+    Q_UNUSED(flags);
+
     auto descr_p = (reinterpret_cast<Match_Description_t *>(ctx));
     descr_p->match = true;
     return 0;
@@ -138,7 +143,7 @@ bool thread_Match_RegExp_HyperScan(Match_Description_t *desc_p)
 
     desc_p->match = false;
 
-    if (hs_scan(desc_p->regexp_database, desc_p->text_p, desc_p->textLength,
+    if (hs_scan(desc_p->regexp_database, desc_p->text_p, static_cast<unsigned int>(desc_p->textLength),
                 0 /*flags*/, desc_p->regexp_scratch,
                 eventHandler, desc_p) != HS_SUCCESS) {
         return false;
@@ -147,10 +152,17 @@ bool thread_Match_RegExp_HyperScan(Match_Description_t *desc_p)
     return desc_p->match;
 }
 
+/*
+ *********************************************************************************************************************
+ * Mainly for v-table generation
+ */
+CThreadConfiguration::~CThreadConfiguration()
+{}
+
 /***********************************************************************************************************************
 *   Start
 ***********************************************************************************************************************/
-void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p, int priority,
+void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p, int priority,
                           int startRow, int endRow, bool backward)
 {
     m_qfile_p = qFile_p;
@@ -179,14 +191,14 @@ void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_
     }
 
     /* (int) rows will never be neg. */
-    if (!backward && (((int)TIA_p->rows <= endRow) || (startRow > endRow))) {
+    if (!backward && ((TIA_p->rows <= endRow) || (startRow > endRow))) {
         TRACEX_E(" CFileProcBase::Start BAD INPUT  parameters workMem_p:0x%llx TIA_rows:%d "
                  "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward);
         return;
     }
 
     /* (int) rows will never be neg */
-    if (backward && (((int)TIA_p->rows <= startRow) || (endRow > startRow))) {
+    if (backward && ((TIA_p->rows <= startRow) || (endRow > startRow))) {
         TRACEX_E(" CFileProcBase::Start BAD INPUT  BACKWARD parameters workMem_p:0x%llx TIA_rows:%d "
                  "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward);
         return;
@@ -218,10 +230,10 @@ bool CFileProcBase::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descri
      * configuration list. But it is configuration for runnign a thread... sort of...
      * Default, typical for having threads searching at different areas in the chunk */
 
-    uint32_t start_TIA_index;
-    uint32_t num_Of_TI;
-    uint32_t stop_TIA_Index;
-    uint32_t TIA_step;
+    int start_TIA_index;
+    int num_Of_TI;
+    int stop_TIA_Index;
+    int TIA_step;
 
     /* Set to -1 to identify that this configuration hasn't been used yet. The thread will set its index when
      * picking it from the list */
@@ -312,7 +324,7 @@ bool CFileProcBase::LoadNextChunk(void)
         int TIA_LastIndex = m_chunkDescr.TIA_startRow + m_chunkDescr.numOfRows - 1;
         int64_t read = 0;
         int64_t toRead = m_TIA_p->textItemArray_p[TIA_LastIndex].fileIndex
-                         + (int64_t)m_TIA_p->textItemArray_p[TIA_LastIndex].size
+                         + m_TIA_p->textItemArray_p[TIA_LastIndex].size
                          - m_chunkDescr.fileIndex;
         QString size = GetTheDoc()->FileSizeToString(toRead);
         g_processingCtrl_p->AddProgressInfo(QString("  Loading log file to memory, %1").arg(size));
@@ -373,7 +385,7 @@ bool CFileProcBase::LoadNextChunk(void)
         m_chunkDescr.TIA_startRow -= m_chunkDescr.numOfRows;
 
         bytesLeft = (m_TIA_p->textItemArray_p[m_chunkDescr.TIA_startRow].fileIndex
-                     + (int64_t)m_TIA_p->textItemArray_p[m_chunkDescr.TIA_startRow].size)
+                     + m_TIA_p->textItemArray_p[m_chunkDescr.TIA_startRow].size)
                     - m_fileEndIndex;
 
         if (bytesLeft <= 0) {
@@ -599,19 +611,19 @@ void CFileProcBase::Process(void)
         float currentStep;
 
         if (m_threadTI_Split) {
-            currentStep = (float)(PROGRESS_COUNTER_STEP * m_numberOfChunkThreads) / (float)(m_totalNumOfRows);
+            currentStep = (PROGRESS_COUNTER_STEP * m_numberOfChunkThreads) / static_cast<float>(m_totalNumOfRows);
         } else {
-            currentStep = (float)(PROGRESS_COUNTER_STEP) / (float)(m_totalNumOfRows);
+            currentStep = (PROGRESS_COUNTER_STEP) / static_cast<float>(m_totalNumOfRows);
         }
 
         g_processingCtrl_p->SetupProgessCounter(currentStep);
 
         if (!m_backward) {
             g_processingCtrl_p->SetProgressCounter(
-                (float)(m_chunkDescr.TIA_startRow - m_startRow) / (float)m_totalNumOfRows);
+                (m_chunkDescr.TIA_startRow - m_startRow) / static_cast<float>(m_totalNumOfRows));
         } else {
             g_processingCtrl_p->SetProgressCounter(
-                (float)(m_startRow - m_chunkDescr.TIA_startRow) / (float)m_totalNumOfRows);
+                (m_startRow - m_chunkDescr.TIA_startRow) / static_cast<float>(m_totalNumOfRows));
         }
         g_processingCtrl_p->AddProgressInfo(QString("Processing, threads:%1").arg(m_numberOfChunkThreads));
 

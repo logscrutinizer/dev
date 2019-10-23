@@ -24,7 +24,7 @@ class CFilterThreadConfiguration : public CThreadConfiguration
 {
 public:
     CFilterThreadConfiguration() : CThreadConfiguration() {}
-    ~CFilterThreadConfiguration() {}
+    ~CFilterThreadConfiguration();
 
     void FilterInit(FIR_t *FIRA_p, packedFilterItem_t *packedFilters_p, int numOfFilterItems);
 
@@ -84,7 +84,7 @@ class CFilterProcCtrl : public CFileProcBase
 {
 public:
     CFilterProcCtrl(void) : m_numOfFilterItems(0) {}
-    virtual ~CFilterProcCtrl(void) {}
+    virtual ~CFilterProcCtrl(void) override {}
 
 public:
     void StartProcessing(

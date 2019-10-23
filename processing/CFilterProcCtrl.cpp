@@ -13,8 +13,11 @@
 ***********************************************************************************************************************/
 inline char *FileIndex_To_MemRef(int64_t *fileIndex_p, int64_t *workMemFileIndex_p, char *WorkMem_p)
 {
-    return ((char *)(WorkMem_p + (*fileIndex_p - *workMemFileIndex_p)));
+    return (static_cast<char *>(WorkMem_p + (*fileIndex_p - *workMemFileIndex_p)));
 }
+
+/* Main for v-table generation */
+CFilterThreadConfiguration::~CFilterThreadConfiguration() {}
 
 /***********************************************************************************************************************
 *   thread_Process
@@ -97,7 +100,7 @@ void CFilterThread::thread_Process(CThreadConfiguration *config_p)
 
         if (match) {
             /* Index 0 means none found, hence first filter starts at index +1 */
-            filterConfig_p->m_FIRA_p[TIA_Index].LUT_index = (filterIndex + 1);
+            filterConfig_p->m_FIRA_p[TIA_Index].LUT_index = static_cast<uint8_t>(filterIndex + 1);
         }
 
         TIA_Index += TIA_step;
@@ -130,8 +133,8 @@ void CFilterThreadConfiguration::FilterInit(FIR_t *FIRA_p, packedFilterItem_t *p
          * If there are RegEx based filters, create an array an initialize each filter (assign the regEx) */
 
         if (m_numOfRegExpFilters > 0) {
-            m_regexp_database_array = new hs_database_t *[m_numOfRegExpFilters];
-            m_regexp_scratch_array = new hs_scratch_t *[m_numOfRegExpFilters];
+            m_regexp_database_array = new hs_database_t *[static_cast<uint32_t>(m_numOfRegExpFilters)];
+            m_regexp_scratch_array = new hs_scratch_t *[static_cast<uint32_t>(m_numOfRegExpFilters)];
 
             /* Create a set of database and scratch for each filter (in each configuration objects) */
             for (int index = 0; index < m_numOfFilterItems; index++) {
@@ -457,7 +460,7 @@ void CFilterProcCtrl::WrapUp(void)
 ***********************************************************************************************************************/
 void CFilterProcCtrl::PackFilters(void)
 {
-    uint64_t totalFilterTextSize = 0;
+    int64_t totalFilterTextSize = 0;
     char *destMem_p = nullptr;
     packedFilterItem_t *packedfilterItem_p;
     CTimeMeas timeExec;
@@ -474,8 +477,8 @@ void CFilterProcCtrl::PackFilters(void)
 
     m_filterStrings_p = static_cast<char *>(VirtualMem::Alloc(totalFilterTextSize));
     m_packedFilterItems_p =
-        static_cast<packedFilterItem_t *>(VirtualMem::Alloc(static_cast<uint64_t>(m_numOfFilterItems) *
-                                                            sizeof(packedFilterItem_t)));
+        static_cast<packedFilterItem_t *>(VirtualMem::Alloc(m_numOfFilterItems *
+                                                            static_cast<int>(sizeof(packedFilterItem_t))));
 
     packedfilterItem_p = m_packedFilterItems_p;
     destMem_p = m_filterStrings_p;
@@ -514,7 +517,7 @@ void CFilterProcCtrl::PackFilters(void)
         }
     }
 
-    if (static_cast<uint64_t>(destMem_p - m_filterStrings_p - 1) > totalFilterTextSize) {
+    if ((destMem_p - m_filterStrings_p - 1) > totalFilterTextSize) {
         TRACEX_E("Filter packing wrong in size %d != %d",
                  totalFilterTextSize, destMem_p - m_filterStrings_p - 1);
     }
@@ -603,7 +606,7 @@ void CFilterProcCtrl::ClearFilterRefs(void)
     const int startIndex = m_incremental ? m_startRow : 0;
     const int rows = (m_endRow + 1) - startIndex;
 
-    memset(&m_FIRA_p[startIndex], 0, sizeof(FIR_t) * rows);
+    memset(&m_FIRA_p[startIndex], 0, sizeof(FIR_t) * static_cast<unsigned int>(rows));
 }
 
 /***********************************************************************************************************************
@@ -617,11 +620,16 @@ struct test_vector_element {
     char text[64];
     char valid;
 };
-char global_match = 0;
+static char global_match = 0;
 
 /****/
 static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
+    Q_UNUSED(id);
+    Q_UNUSED(from);
+    Q_UNUSED(to);
+    Q_UNUSED(flags);
+    Q_UNUSED(ctx);
     global_match = 1;
     return HS_SUCCESS; /*HS_SCAN_TERMINATED */
 }
@@ -674,7 +682,7 @@ int TestHS(void)
         global_match = 0;
 
         hs_error_t result =
-            hs_scan(database, test_vector[index].text, (unsigned int)strlen(test_vector[index].text),
+            hs_scan(database, test_vector[index].text, static_cast<unsigned int>(strlen(test_vector[index].text)),
                     0 /*flags*/, scratch, eventHandler, nullptr);
 
         switch (result)
