@@ -1,3 +1,8 @@
+/***********************************************************************************************************************
+** Copyright (C) 2018 Robert Klang
+** Contact: https://www.logscrutinizer.com
+***********************************************************************************************************************/
+
 #include <QtCore/QCoreApplication>
 
 #include <stdio.h>
@@ -19,23 +24,22 @@
 #define ARGV_INDEX_DATA_FILE 1
 
 #define TEMP_STRING_LENGHT 256
-char tempString[TEMP_STRING_LENGHT];
 
-//----------------------------------------------------------------------------------------------------------------------
-//-- Test helper functions --
-//----------------------------------------------------------------------------------------------------------------------
+/*char tempString[TEMP_STRING_LENGHT]; */
 
+/* ----------------------------------------------------------------------------------------------------------------------
+ * -- Test helper functions --
+ * ----------------------------------------------------------------------------------------------------------------------
+ * */
 
-//"Line:0 Time:0 Value:1",
-//"Line:0 Time:1 Value:4",
+/* "Line:0 Time:0 Value:1",
+ * "Line:0 Time:1 Value:4", */
 
-//----------------------------------------------------------------------------------------------------------------------
-int main(int argc, char* argv[])
+/*---------------------------------------------------------------------------------------------------------------------- */
+int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-
     bool doReopen = false;
-
     QString data_filePath;
     if (argc != ARGC_COUNT) {
         data_filePath = QString("data.txt");
@@ -46,10 +50,10 @@ int main(int argc, char* argv[])
     QFile data_file(data_filePath);
     QTime timer;
     timer.start();
+
     bool doWrap = true;
 
     while (true) {
-
         if (timer.elapsed() > 5 * 1000) {
             timer.restart();
             doWrap = doReopen;
@@ -64,7 +68,7 @@ int main(int argc, char* argv[])
             QFileInfo dataFileInfo(data_filePath);
             if (!data_file.open(QIODevice::WriteOnly)) {
                 qInfo() << "Input parameter error\n" <<
-                           QString("The file %1 cannot be created").arg(data_filePath);
+                    QString("The file %1 cannot be created").arg(data_filePath);
                 return -1;
             }
             QThread::sleep(4);
@@ -82,15 +86,13 @@ int main(int argc, char* argv[])
                 data_file.flush();
                 QThread::msleep(100);
             }
-
         } catch (int error_code) {
-            switch (error_code) {
-            case 0: //fall-through
+            switch (error_code)
             {
-            }
-            default:
-                break;
-            } // switch
+                case 0: /*fall-through */
+                default:
+                    break;
+            } /* switch */
             qInfo() << "Aiiieeee";
             return -1;
         }

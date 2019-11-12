@@ -35,17 +35,17 @@
     (static_cast<uint64_t>(static_cast<uint64_t>(A & PIXEL_STAMP_FONT_MASK)) >> 56)
 
 #define PIXEL_STAMP_SET_STARTX(PIXELSTAMP, STARTX) \
-    (PIXELSTAMP = static_cast<uint64_t>(static_cast<uint64_t>(PIXELSTAMP) & \
-                                        (static_cast<uint64_t>(~PIXEL_STAMP_STARTX_MASK) | \
+    (PIXELSTAMP = static_cast<uint64_t>((static_cast<uint64_t>(PIXELSTAMP) & \
+                                         (static_cast<uint64_t>(~PIXEL_STAMP_STARTX_MASK)) | \
                                          static_cast<uint64_t>(STARTX))))
 #define PIXEL_STAMP_SET_STARTY(PIXELSTAMP, STARTY) \
-    (PIXELSTAMP = static_cast<uint64_t>(static_cast<uint64_t>(PIXELSTAMP) & \
-                                        (static_cast<uint64_t>(~PIXEL_STAMP_STARTY_MASK) | \
+    (PIXELSTAMP = static_cast<uint64_t>((static_cast<uint64_t>(PIXELSTAMP) & \
+                                         (static_cast<uint64_t>(~PIXEL_STAMP_STARTY_MASK)) | \
                                          (static_cast<uint64_t>(STARTY) << 32))))
 #define PIXEL_STAMP_SET_FONT(PIXELSTAMP, FONT) \
-    (PIXELSTAMP = static_cast<uint64_t>(static_cast<uint64_t>(PIXELSTAMP) & \
-                                        (static_cast<uint64_t>(~PIXEL_STAMP_FONT_MASK) | static_cast<uint64_t>(FONT) << \
-                                         56)))
+    (PIXELSTAMP = static_cast<uint64_t>((static_cast<uint64_t>(PIXELSTAMP) & \
+                                         static_cast<uint64_t>(~PIXEL_STAMP_FONT_MASK)) | static_cast<uint64_t>(FONT) << \
+                                        56))
 
 #ifdef WIN32
  #define FILE_CHANGE_TIMER_DURATION 1000 /* 1 sec, since there is a bug on win32 platforms, the timer is the only

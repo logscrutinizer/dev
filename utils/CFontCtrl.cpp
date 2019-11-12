@@ -103,7 +103,7 @@ void CFontCtrl::SetFont(LS_Painter *painter_p, FontItem_t *font_p)
 
     QFontMetrics metrics(*font_p->font_p);
 
-    m_fontLetterWidth = metrics.width('X');
+    m_fontLetterWidth = metrics.horizontalAdvance('X');
     m_fontLetterHeight = metrics.height();
 
     if ((m_fontLetterHeight == 0) || (m_fontLetterWidth == 0)) {
@@ -142,7 +142,7 @@ void CFontCtrl::UpdateAllFonts(void)
 
     QFontMetrics metrics(*m_fonts[0]->font_p);
 
-    m_fontLetterWidth = metrics.width('X');
+    m_fontLetterWidth = metrics.horizontalAdvance('X');
     m_fontLetterHeight = metrics.height();
 }
 

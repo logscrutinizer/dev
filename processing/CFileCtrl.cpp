@@ -952,7 +952,8 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
         /* First, find out the size of the file log file.
          * Read the last TIA */
         TI_t ti;
-        if (!m_TIA_File.seek(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) * (m_numOf_TI - 1))) {
+        auto last_ti_entry_pos = sizeof(header) + (sizeof(TI_t) * static_cast<uint64_t>(m_numOf_TI - 1));
+        if (!m_TIA_File.seek(static_cast<int64_t>(last_ti_entry_pos))) {
             TRACEX_E(QString("Failed to seek to last TI in TIA file size:%1 seek:%2")
                          .arg(m_TIA_File.size()).arg(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) *
                                                      (m_numOf_TI - 1)));

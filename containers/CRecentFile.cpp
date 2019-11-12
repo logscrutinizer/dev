@@ -372,7 +372,7 @@ void CRecentFile::Sort(void)
             fileInfo_2_p = m_recentFileList[index + 1];
 
             if (fileInfo_1_p->lastAccessed < fileInfo_2_p->lastAccessed) {
-                m_recentFileList.swap(index, index + 1);
+                m_recentFileList.swapItemsAt(index, index + 1);
                 swapWasDone = true;
             }
         }

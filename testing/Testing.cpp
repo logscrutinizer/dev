@@ -141,7 +141,7 @@ void MainTest()
 
     (void)TestFiltering();
 
-    TRACEX_I(QString("Time: to write settings:%1").arg(measTime.ms()));
+    TRACEX_I(QString("TEST SUCCESS"));
 }
 
 /***********************************************************************************************************************
@@ -280,7 +280,7 @@ bool TestRowCacheAndAutoHighlight(void)
         return false;
     }
 
-    QString logFileName = "D:\\Projects\\LogScrutinizer\\logs\\testLog1.txt";
+    QString logFileName = "test_cache_autohightlight.txt";
     QString repetitionPattern = "Dummy string Dummy string Dummy string Dummy string";
     QString matchPattern = "Match me";
     int totalNumOfRows = TOTAL_NUM_OF_ROWS;
@@ -380,7 +380,7 @@ bool TestSearch(bool useIfExist)
         return false;
     }
 
-    QString logFileName = "testLog1.txt";
+    QString logFileName = "test_search.txt";
     QString repetitionPattern = "Dummy string Dummy string Dummy string Dummy string";
     QString matchPattern = "Match me";
     int totalNumOfRows = TOTAL_NUM_OF_ROWS;
@@ -673,7 +673,7 @@ bool TestDocument()
         return false;
     }
 
-    QString logFileName = "testLog1.txt";
+    QString logFileName = "test_document.txt";
     QString repetitionPattern = "Dummy string Dummy string Dummy string Dummy string";
     QString matchPattern = "Match me";
     int totalNumOfRows = TOTAL_NUM_OF_ROWS;
@@ -799,6 +799,7 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
 
     if (LogFile.exists()) {
         if (useIfExist) {
+            TRACEX_I(QString("GenerateFilterTestLog, file exists %1").arg(QFileInfo(LogFile).absoluteFilePath()));
             return true;
         } else {
             LogFile.remove();
@@ -828,6 +829,8 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
         TRACEX_E("GenerateFilterTestLog Failed - ASSERT");
         qFatal("  ");
     }
+
+    TRACEX_I(QString("Generated file %1").arg(QFileInfo(LogFile).absoluteFilePath()));
 
     LogFile.close();
 

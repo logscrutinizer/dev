@@ -264,7 +264,7 @@ void CPlotWidget::paintEvent(QPaintEvent *event)
     QImage double_buffer_image(QSize(m_totalDQRect.width(), m_totalDQRect.height()),
                                QImage::Format_ARGB32_Premultiplied);
     LS_Painter painter(&double_buffer_image);
-    painter.initFrom(this);
+    painter.begin(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
     m_pDC = &painter; /* Switch m_painter_p to double buffer */
 
@@ -348,6 +348,8 @@ void CPlotWidget::paintEvent(QPaintEvent *event)
         double_buffer_image,
         m_windowRect.left(), m_windowRect.top() + m_vbmpOffset, /* Source point */
         m_windowRect.width(), m_windowRect.height());
+
+    painter.end();
 }
 
 /***********************************************************************************************************************

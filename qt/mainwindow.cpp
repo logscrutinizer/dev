@@ -47,8 +47,8 @@
 extern CWorkspace *g_workspace_p;
 extern void APP_UPDATE_CSS(void);
 static bool firstStart = true;
-MainWindow *g_mainWindow_p = nullptr;
-CTimeMeas g_system_tick;
+static MainWindow *g_mainWindow_p = nullptr;
+static CTimeMeas g_system_tick;
 
 /* Style sheets for qtreeview
  * http://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtreeview */

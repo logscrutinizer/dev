@@ -152,6 +152,15 @@ void CDebug::Initialize(void)
 }
 
 /* SLOW, use from main thread in non-time critical operations */
+#ifndef _WIN32
+
+/* https://stackoverflow.com/questions/20167124/vsprintf-and-vsnprintf-wformat-nonliteral-warning-on-clang-5-0 */
+__attribute__((__format__(__printf__, 3, 0)))
+#endif
+
+/***********************************************************************************************************************
+*   TRACEX
+***********************************************************************************************************************/
 void CDebug::TRACEX(int logLevel, const char *pcStr, ...)
 {
     QString msgString;
@@ -209,16 +218,20 @@ void CDebug::TRACEX(int logLevel, const QString *msgString_p)
     QTextStream textStream(&logString);
     QTextStream fileStream(m_file_p);
 
+    if (CSCZ_SystemState == SYSTEM_STATE_SHUTDOWN) {
+        return;
+    }
+
+    if (m_isSystemError) {
+        return;
+    }
+
     if ((g_RamLog != nullptr) && (msgString_p != nullptr)) {
         g_RamLog->AddBuffer(msgString_p->toLatin1().data());
     }
 
     if (logLevel > m_logLevel) {
         /* Log-level of print is too high, not prioritized */
-        return;
-    }
-
-    if (m_isSystemError) {
         return;
     }
 
@@ -457,7 +470,7 @@ void CRamLog::CheckRamLogs(void)
         if (m_ramLogPoolTracking[index]->used && (m_ramLogPoolTracking[index]->stamp == 0xbeefbeef)) {
             ramLog_p = m_ramLogPoolTracking[index];
 
-            const ramLogEntry_t *endEntry_p = (ramLogEntry_t *)((char *)&(ramLog_p->ramLog[0]) + totalSize);
+            const ramLogEntry_t *endEntry_p = reinterpret_cast<ramLogEntry_t *>(&ramLog_p->ramLog[0] + totalSize);
             entry_p = reinterpret_cast<ramLogEntry_t *>(&ramLog_p->ramLog[0]);
 
             bool stop = false;
@@ -485,7 +498,7 @@ void CRamLog::CheckRamLogs(void)
     }
 }
 
-char RamLogTestArray[][40] =
+static char RamLogTestArray[][40] =
 {
     "Hej", "Svej", "Grej", "Paj", "1232312312HubbaHepp", "SmockDock", "Flubber", "Hubber", "HubbaHopps",
     "Hej", "Svej", "Grej", "Paj", "1232312312HubbaHepp", "SmockDock", "Flubber", "Hubber", "HubbaHopps",
@@ -581,7 +594,9 @@ int CRamLog::GetRamLog(int index, char **pointerArray_pp, int pointerArrayMaxSiz
     while ((entry_p < endEntry_p) && (entryIndex < pointerArrayMaxSize) && (entry_p->startMarker == 0xbeefbeef)) {
         pointerArray_pp[entryIndex] = &entry_p->data[0];
         ++entryIndex;
-        entry_p = (ramLogEntry_t *)(((char *)(entry_p)) + entry_p->size + sizeof(ramLogEntry_t));
+        entry_p =
+            reinterpret_cast<ramLogEntry_t *>(reinterpret_cast<char *>(entry_p) + entry_p->size +
+                                              sizeof(ramLogEntry_t));
     }
 
     return entryIndex;
