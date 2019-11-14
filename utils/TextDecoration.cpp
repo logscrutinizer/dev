@@ -14,9 +14,10 @@
 
 int debug_numOfRowsForHighLight = 0;
 struct regExpEventHandlerData {
+    int unused_SuppressAlignmentWarning; /* or use -wpadded */
+    int matchCount;
     QList<TextRectElement_t *> *elementRefs_p;
     CTextRectElementFactory *elementFactory_p;
-    int matchCount;
 };
 
 /***********************************************************************************************************************
@@ -77,7 +78,7 @@ int FindTextElements(QList<TextRectElement_t *> *elementRefs_p, const char *text
             if (hs_compile(textMatch_p,
                            HS_FLAG_DOTALL | HS_FLAG_SOM_LEFTMOST,
                            HS_MODE_BLOCK,
-                           NULL,
+                           nullptr,
                            &database,
                            &compile_err) != HS_SUCCESS) {
                 TRACEX_W(QString("RegExp failed %1").arg(compile_err->message));
@@ -85,14 +86,14 @@ int FindTextElements(QList<TextRectElement_t *> *elementRefs_p, const char *text
                 return 0;
             }
 
-            hs_scratch_t *scratch = NULL;
+            hs_scratch_t *scratch = nullptr;
             if (hs_alloc_scratch(database, &scratch) != HS_SUCCESS) {
                 TRACEX_W(QString("ERROR: Unable to allocate scratch space"));
                 hs_free_database(database);
                 return 0;
             }
 
-            if (hs_scan(database, text_p, (unsigned int)textSize, 0, scratch, eventHandler,
+            if (hs_scan(database, text_p, static_cast<unsigned int>(textSize), 0, scratch, eventHandler,
                         &data) != HS_SUCCESS) {
                 TRACEX_W(QString("ERROR: Unable to scan input buffer"));
                 hs_free_scratch(scratch);
@@ -253,7 +254,7 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char *autoHighl
 #ifdef _DEBUG
         if (autoHighlight_p != nullptr) {
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update, length:%d",
-                     (int)strlen(autoHighlight_p));
+                     static_cast<int>(strlen(autoHighlight_p)));
         } else {
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update");
         }
@@ -269,7 +270,7 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char *autoHighl
     m_autoHighLightEnabled = true;
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, autoHighlight_p);
-    m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
+    m_autoHighLightMatchLength = static_cast<int>(strlen(m_autoHighLightMatch));
 }
 
 /***********************************************************************************************************************
@@ -340,7 +341,7 @@ void CAutoHighLight::AutoHighlightTest(void)
     TextRectElement_t *element_p;
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, "Dummy");
-    m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
+    m_autoHighLightMatchLength = static_cast<int>(strlen(m_autoHighLightMatch));
 
     char testString[CFG_TEMP_STRING_MAX_SIZE];
 
@@ -350,7 +351,7 @@ void CAutoHighLight::AutoHighlightTest(void)
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummy dummy Bummy Dummy");
 
     CTextRectElementFactory factory(&m_autoHighlight_Pool);
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength,
                          true /*CS*/, false /*regExp*/, &factory) != 2) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -375,7 +376,7 @@ void CAutoHighLight::AutoHighlightTest(void)
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "DummyDummyDummyDummy");
 
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, false /*regExp*/,
                          &factory) != 4) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -410,7 +411,7 @@ void CAutoHighLight::AutoHighlightTest(void)
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "DummDummDummDummy");
 
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, false /*regExp*/,
                          &factory) != 1) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -421,7 +422,7 @@ void CAutoHighLight::AutoHighlightTest(void)
 
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummmy DummY DDDDDDDummy");
 
-    if (FindTextElements(&elementRefs, testString, strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, m_autoHighLight_CS, m_autoHighLight_RegExp,
                          &factory) != 1) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -437,9 +438,9 @@ void CAutoHighLight::AutoHighlightTest(void)
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "Dummy Bummy Pummy");
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, "[DBP]u.my");
-    m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
+    m_autoHighLightMatchLength = static_cast<int>(strlen(m_autoHighLightMatch));
 
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, true /*regExp*/,
                          &factory) != 3) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -471,9 +472,9 @@ void CAutoHighLight::AutoHighlightTest(void)
 
     /* The regExp will match, (1) Dummy, (2) Dummy Bummy, (3) Dummy Bummy Pummy */
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, ".*my");
-    m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
+    m_autoHighLightMatchLength = static_cast<int>(strlen(m_autoHighLightMatch));
 
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, true /*regExp*/,
                          &factory) != 1) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -494,9 +495,9 @@ void CAutoHighLight::AutoHighlightTest(void)
     strcpy_s(testString, CFG_TEMP_STRING_MAX_SIZE, "DUM12 DUM12 Dummy");
 
     strcpy_s(m_autoHighLightMatch, CFG_TEMP_STRING_MAX_SIZE, "dUm12");
-    m_autoHighLightMatchLength = (int)strlen(m_autoHighLightMatch);
+    m_autoHighLightMatchLength = static_cast<int>(strlen(m_autoHighLightMatch));
 
-    if (FindTextElements(&elementRefs, testString, (int)strlen(testString),
+    if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, false /*CS*/, false /*regExp*/,
                          &factory) != 2) {
         TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
@@ -556,8 +557,8 @@ bool CFontModification::GetFontModRowInfo(const int row,
 
     CFontModElementFactory factory(&m_fontModification_Pool);
     FindTextElements(
-        (QList<TextRectElement_t *> *) & cacheRow_p->fontModification.elementRefs,
-        (char *)cacheRow_p->poolItem_p->GetDataRef(),
+        reinterpret_cast<QList<TextRectElement_t *> *>(&cacheRow_p->fontModification.elementRefs),
+        static_cast<char *>(cacheRow_p->poolItem_p->GetDataRef()),
         cacheRow_p->size,
         filterItem_p->m_start_p,
         filterItem_p->m_size,

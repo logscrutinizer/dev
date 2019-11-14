@@ -299,8 +299,7 @@ bool CLogScrutinizerDoc::loadLogIncrement(void)
         /* Remap the TIA file */
         if (FileMapping::CreateTIA_MemMapped(m_qFile_Log, m_qFile_TIA, &m_database.TIA.rows,
                                              m_database.TIA.textItemArray_p, &fileSize)) {
-            if (FileMapping::IncrementalFIRA_MemMap(m_qFile_FIRA, m_database.FIRA.FIR_Array_p, m_database.TIA.rows,
-                                                    rows_added - rowsToReload)) {
+            if (FileMapping::IncrementalFIRA_MemMap(m_qFile_FIRA, m_database.FIRA.FIR_Array_p, m_database.TIA.rows)) {
                 /* uses m_FIRA_fileName */
                 if (oldNumRows > m_database.TIA.rows) {
                     return false;

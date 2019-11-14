@@ -44,7 +44,7 @@ namespace FileMapping
             return false;
         }
 
-        if (TIA_fileInfo.size() <= (qint64)sizeof(TIA_FileHeader_t)) {
+        if (TIA_fileInfo.size() <= static_cast<int64_t>(sizeof(TIA_FileHeader_t))) {
             TRACEX_I("FileMapping::CreateTIA_MemMapped - Failed, file exists but is empty", &TIA_File);
             return false;
         }
@@ -164,14 +164,14 @@ namespace FileMapping
             return false;
         }
 
-        if (!FIRA_File.resize(sizeof(FIR_t) * rows)) {
+        if (!FIRA_File.resize(static_cast<int>(sizeof(FIR_t)) * rows)) {
             TRACEX_E("Mapping FIRA file failed, file couldn't be resized %s, "
                      "please try again",
                      FIRA_File.fileName().toLatin1().constData());
             return false;
         }
 
-        FIRA_mem_p = reinterpret_cast<FIR_t *>(FIRA_File.map(0, sizeof(FIR_t) * rows));
+        FIRA_mem_p = reinterpret_cast<FIR_t *>(FIRA_File.map(0, static_cast<int>(sizeof(FIR_t)) * rows));
 
         if (FIRA_mem_p == nullptr) {
             TRACEX_E("Mapping FIRA file failed, memory error");
@@ -180,12 +180,12 @@ namespace FileMapping
 
         TRACEX_I("FIRA file memory mapped: %s", FIRA_File.fileName().toLatin1().constData());
 
-        memset(FIRA_mem_p, 0, sizeof(FIR_t) * rows);    /* FIRA Use OK */
+        memset(FIRA_mem_p, 0, sizeof(FIR_t) * static_cast<size_t>(rows));    /* FIRA Use OK */
         return true;
     }
 
     /* This function extends the existing FIRA file with the additional rows that has recently been loaded */
-    bool IncrementalFIRA_MemMap(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int totalRows, const int incrementalRows)
+    bool IncrementalFIRA_MemMap(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int totalRows)
     {
         if (FIRA_File.fileName().isEmpty()) {
             TRACEX_E(QString("%1 Failed - No FIRA file name").arg(__FUNCTION__));
@@ -207,13 +207,13 @@ namespace FileMapping
         }
 
         /* Increase size of FIRA file */
-        if (!FIRA_File.resize(sizeof(FIR_t) * totalRows)) {
+        if (!FIRA_File.resize(static_cast<int64_t>(sizeof(FIR_t)) * totalRows)) {
             TRACEX_E(QString("%1 Mapping FIRA file failed, file couldn't be resized %2")
                          .arg(__FUNCTION__).arg(FIRA_File.fileName().toLatin1().constData()));
             return false;
         }
 
-        FIRA_mem_p = reinterpret_cast<FIR_t *>(FIRA_File.map(0, sizeof(FIR_t) * totalRows));
+        FIRA_mem_p = reinterpret_cast<FIR_t *>(FIRA_File.map(0, static_cast<int64_t>(sizeof(FIR_t)) * totalRows));
 
         if (FIRA_mem_p == nullptr) {
             TRACEX_E(QString("%1 Mapping FIRA file failed, memory error").arg(__FUNCTION__));

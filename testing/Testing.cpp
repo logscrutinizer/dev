@@ -27,7 +27,7 @@
 
 #define TOTAL_NUM_OF_ROWS (1024 * 1024 * 1)
 
-FilterItemInitializer myFilters[] = {{"Match me", false, false}};
+static FilterItemInitializer myFilters[] = {{"Match me", false, false}};
 extern void TestFileCtrl(void);
 extern void TestSeek();
 extern bool TestDocument();
@@ -48,14 +48,20 @@ bool LoadMapTIAandFIRA_filemapping(QString& LogFileName, QFile& Log_File, QFile&
                                    TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/, int& rows);
 bool Filter(QFile& Log_File, int rows, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
             FilterItemInitializer *filterInitializers_p, int count, CFilterContainer& container);
-int Search(QFile& Log_File, uint8_t *TIA_mem_p, uint8_t *FIRA_mem_p, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
-           QString& searchText, int startRow, int endRow, bool backward, bool regExp);
+int Search(QFile& Log_File,
+           TIA_t& TIA,
+           FIRA_t& FIRA,
+           char *mem_p /*input*/,
+           QString& searchText,
+           int startRow,
+           int endRow,
+           bool backward,
+           bool regExp);
 bool VerifyTIA(TIA_t& TIA, const QString& repetitionPattern, const QString& matchPattern, int totalNumOfRows,
                int modulus);
-bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, const QString& repetitionPattern, const QString& matchPattern,
-                int totalNumOfRows, int modulus);
-void CloseAndUnmap(QString& LogFileName, QFile& Log_File, QFile& TIA_File, QFile& FIRA_File, uint8_t *& TIA_mem_p,
-                   uint8_t *& FIRA_mem_p, TIA_t& TIA, FIRA_t& FIRA);
+
+bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, int totalNumOfRows, int modulus);
+void CloseAndUnmap(QFile& Log_File, QFile& TIA_File, QFile& FIRA_File, uint8_t *& TIA_mem_p, uint8_t *& FIRA_mem_p);
 void CloseAndUnmap_filemapping(QFile& Log_File, QFile& TIA_File, QFile& FIRA_File, TIA_t& TIA, FIRA_t& FIRA);
 
 /***********************************************************************************************************************
@@ -217,7 +223,7 @@ bool TestFiltering(bool useIfExist)
 
     /*#define TEST_FILTER_PROC_MEM_SIZE  (1024 * 1024 * 2) */
 
-    char *mem_p = (char *)VirtualMem::Alloc(TEST_FILTER_PROC_MEM_SIZE);
+    char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_FILTER_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
         TRACEX_E("TestFiltering - Virtual Alloc failed\n");
@@ -254,7 +260,7 @@ bool TestFiltering(bool useIfExist)
         return false;
     }
 
-    if (!VerifyFIRA(FIRA, TIA, repetitionPattern, matchPattern, totalNumOfRows, modulus)) {
+    if (!VerifyFIRA(FIRA, TIA, totalNumOfRows, modulus)) {
         TRACEX_E("TestFiltering - VerifyFIRA\n");
         return false;
     }
@@ -273,7 +279,7 @@ bool TestRowCacheAndAutoHighlight(void)
 {
 #define TEST_ROW_CACHE_PROC_MEM_SIZE  (1024 * 1024 * 50)
 
-    char *mem_p = (char *)VirtualMem::Alloc(TEST_ROW_CACHE_PROC_MEM_SIZE);
+    char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_ROW_CACHE_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
         TRACEX_E("TestRowCacheAndAutoHighlight - Virtual Alloc failed\n");
@@ -312,7 +318,7 @@ bool TestRowCacheAndAutoHighlight(void)
         return false;
     }
 
-    if (!VerifyFIRA(FIRA, TIA, repetitionPattern, matchPattern, totalNumOfRows, modulus)) {
+    if (!VerifyFIRA(FIRA, TIA, totalNumOfRows, modulus)) {
         TRACEX_E("TestRowCacheAndAutoHighlight - VerifyFIRA\n");
         return false;
     }
@@ -355,7 +361,7 @@ bool TestRowCacheAndAutoHighlight(void)
     autoHighlight.AutoHighlightTest();
 
     /* Wrapup and exit */
-    CloseAndUnmap(logFileName, Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p, TIA, FIRA);
+    CloseAndUnmap(Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p);
 
     VirtualMem::Free(LUT_FIR_p);
     VirtualMem::Free(mem_p);
@@ -373,7 +379,7 @@ bool TestSearch(bool useIfExist)
     /*#define TEST_FILTER_PROC_MEM_SIZE  (1024 * 1024 * 2) */
 
     CSearchCtrl searchCtrl;
-    char *mem_p = (char *)VirtualMem::Alloc(TEST_FILTER_PROC_MEM_SIZE);
+    char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_FILTER_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
         TRACEX_E("TestFiltering - Virtual Alloc failed\n");
@@ -416,8 +422,6 @@ bool TestSearch(bool useIfExist)
     /* Forward search */
     for (int currentRow = startRow; currentRow < 100; currentRow++) {
         matchRow = Search(Log_File,
-                          TIA_mem_p,
-                          nullptr,
                           TIA,
                           FIRA,
                           mem_p,
@@ -449,7 +453,7 @@ bool TestSearch(bool useIfExist)
 
     for (int currentRow = endRow; currentRow > endRow - 100; currentRow--) {
         matchRow =
-            Search(Log_File, TIA_mem_p, nullptr, TIA, FIRA, mem_p, matchPattern, currentRow, 0, backward, regExp);
+            Search(Log_File, TIA, FIRA, mem_p, matchPattern, currentRow, 0, backward, regExp);
         if (matchRow == -1) {
             TRACEX_E("TestSearch - Filter\n");
             return false;
@@ -465,7 +469,7 @@ bool TestSearch(bool useIfExist)
         }
     }
 
-    CloseAndUnmap(logFileName, Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p, TIA, FIRA);
+    CloseAndUnmap(Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p);
 
     VirtualMem::Free(mem_p);
 
@@ -546,12 +550,12 @@ bool LoadMapTIAandFIRA(QString& LogFileName, QFile& Log_File, QFile& TIA_File, Q
         return false;
     }
 
-    if (!FIRA_File.resize(sizeof(FIR_t) * rows)) {
+    if (!FIRA_File.resize(static_cast<int64_t>(sizeof(FIR_t) * static_cast<uint64_t>(rows)))) {
         TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be resized");
         return false;
     }
 
-    FIRA_mem_p = FIRA_File.map(0, sizeof(FIR_t) * rows);
+    FIRA_mem_p = FIRA_File.map(0, static_cast<int64_t>(sizeof(FIR_t)) * rows);
 
     if (FIRA_mem_p == nullptr) {
         TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be mapped");
@@ -666,7 +670,7 @@ bool TestDocument()
 {
 #define TEST_DOC_PROC_MEM_SIZE  (1024 * 1024 * 50)
 
-    char *mem_p = (char *)VirtualMem::Alloc(TEST_DOC_PROC_MEM_SIZE);
+    char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_DOC_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
         TRACEX_E("TestDocument - Virtual Alloc failed\n");
@@ -722,7 +726,7 @@ bool TestDocument()
 /***********************************************************************************************************************
 *   Search
 ***********************************************************************************************************************/
-int Search(QFile& Log_File, uint8_t *TIA_mem_p, uint8_t *FIRA_mem_p, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
+int Search(QFile& Log_File, TIA_t& TIA, FIRA_t& FIRA, char *mem_p /*input*/,
            QString& searchText, int startRow, int endRow, bool backward, bool regExp)
 {
     CSearchCtrl searchCtrl;
@@ -755,8 +759,8 @@ int Search(QFile& Log_File, uint8_t *TIA_mem_p, uint8_t *FIRA_mem_p, TIA_t& TIA,
 /***********************************************************************************************************************
 *   CloseAndUnmap
 ***********************************************************************************************************************/
-void CloseAndUnmap(QString& LogFileName, QFile& Log_File, QFile& TIA_File, QFile& FIRA_File, uint8_t *& TIA_mem_p,
-                   uint8_t *& FIRA_mem_p, TIA_t& TIA, FIRA_t& FIRA)
+void CloseAndUnmap(QFile& Log_File, QFile& TIA_File, QFile& FIRA_File, uint8_t *& TIA_mem_p,
+                   uint8_t *& FIRA_mem_p)
 {
     if (FIRA_mem_p != nullptr) {
         FIRA_File.unmap(FIRA_mem_p);
@@ -822,8 +826,7 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
             }
         } /* for */
     } catch (std::exception &e) {
-        TRACEX_E("GenerateFilterTestLog Failed - ASSERT");
-        e = e;
+        TRACEX_E(QString("GenerateFilterTestLog Failed - ASSERT %1").arg(e.what()));
         qFatal("  ");
     } catch (...) {
         TRACEX_E("GenerateFilterTestLog Failed - ASSERT");
@@ -871,8 +874,7 @@ bool VerifyTIA(TIA_t& TIA, const QString& repetitionPattern, const QString& matc
 /***********************************************************************************************************************
 *   VerifyFIRA
 ***********************************************************************************************************************/
-bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, const QString& repetitionPattern, const QString& matchPattern,
-                int totalNumOfRows, int modulus)
+bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, int totalNumOfRows, int modulus)
 {
     int filterIndex = 0;
     for (int index = 0; index < totalNumOfRows; ++index) {
@@ -898,7 +900,7 @@ bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, const QString& repetitionPattern, cons
 ***********************************************************************************************************************/
 void TestMemory(void)
 {
-    char *mem_p = (char *)VirtualMem::Alloc(1000);
+    char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(1000));
     memset(mem_p, 0x11, 1000);
     VirtualMem::Free(mem_p);
 }

@@ -26,6 +26,6 @@ namespace FileMapping
 
     bool RemoveTIA_MemMapped(QFile& TIA_File, TI_t *& TIA_mem_p, bool forceRemove_TIA_file);
     bool CreateFIRA_MemMapped(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int rows);
-    bool IncrementalFIRA_MemMap(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int totalRows, const int incrementalRows);
+    bool IncrementalFIRA_MemMap(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int totalRows);
     bool RemoveFIRA_MemMapped(QFile& FIRA_File, FIR_t *& FIRA_mem_p, bool remove = true);
 }

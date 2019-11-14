@@ -26,7 +26,7 @@ bool CXMLBase::SearchElementAttribute(const char *elementName_p, const char *att
 *   SearchNextElementAttribute
 ***********************************************************************************************************************/
 bool CXMLBase::SearchNextElementAttribute(const char *elementName_p, const char *attributeName_p,
-                                          char *value_p, const size_t maxValueLength)
+                                          char *value_p, const int maxValueLength)
 {
     bool isInsideElement = false;
     bool status = true;
@@ -53,13 +53,13 @@ bool CXMLBase::SearchNextElementAttribute(const char *elementName_p, const char 
 
                     if (status && isInsideElement) {
                         if (strcmp(attributeName_p, m_tempString) == 0) {
-                            size_t length = strlen(m_tempAttribute);
+                            int length = static_cast<int>(strlen(m_tempAttribute));
 
                             if (length > (maxValueLength - 1)) {
                                 length = maxValueLength - 1;
                             }
 
-                            memcpy(value_p, m_tempAttribute, length);
+                            memcpy(value_p, m_tempAttribute, static_cast<size_t>(length));
                             value_p[length] = 0;
 
                             return true;

@@ -87,7 +87,7 @@ void CParseTest_Extract::Execute(void)
     }
 
     if (strcmp(m_expectedResult, resultString) != 0) {
-        TRACEX_E("CParseTest_Extract::Execute  test ERROR  Expected:%s Result:%s \n", m_expectedResult, resultString);
+        TRACEX_E("CParseTest_Extract::Execute  test ERROR  Expected:%s Result:%s", m_expectedResult, resultString);
     }
 }
 
@@ -102,8 +102,9 @@ void CParseTest_Float::Execute(void)
 
     m_parser.ParseFloat(&value);
 
-    if (value != m_expectedResult) {
-        TRACEX_E("CParseTest_Float::Execute  test ERROR  Expected:%f Result:%f \n", m_expectedResult, value);
+    if (!almost_equal(value, m_expectedResult)) {
+        TRACEX_E(QString("CParseTest_Float::Execute  test ERROR  Expected:%1 Result:%2")
+                     .arg(static_cast<double>(m_expectedResult), 'f').arg(static_cast<double>(value), 'f'));
     }
 }
 

@@ -44,7 +44,7 @@ public:
     /***********************************************************************************************************************
     *   SetDocument
     ***********************************************************************************************************************/
-    void SetDocument(char *document_p, size_t size)
+    void SetDocument(char *document_p, int64_t size)
     {
         m_document_p = document_p;
         m_documentSize = size;
@@ -60,7 +60,7 @@ public:
 
     /* As above but requires that the current references are setup and that the XML header is parsed allready */
     bool SearchNextElementAttribute(const char *elementName_p, const char *attributeName_p,
-                                    char *value_p, const size_t maxValueLength);
+                                    char *value_p, const int maxValueLength);
 
 protected:
     virtual void Init(void) = 0;
@@ -72,7 +72,7 @@ protected:
     void XML_Error(void); /**< Call this to abort the parse, when an error has been detected */
 
     char *m_document_p; /**< Text file to parse XML elements */
-    size_t m_documentSize;
+    int64_t m_documentSize;
     int m_elementLevel; /**< In which hierachy we are at */
 
 private:
