@@ -246,7 +246,7 @@ bool CPlotWidget::event(QEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidget::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     LS_Painter originalPainter(this);
     static bool inPaintEvent = false;
@@ -923,7 +923,7 @@ void CPlotWidget::RealignSubPlots(void)
 ***********************************************************************************************************************/
 void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
-    Q_UNUSED(invalidate_p);
+    Q_UNUSED(invalidate_p)
 
     /* screenPoint_p, defines which subPlot to increase
      * zDelta, if larger than 0 the subPlot will increase in size
@@ -1648,7 +1648,7 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
 ***********************************************************************************************************************/
 bool CPlotWidget::HandleKeyDown(QKeyEvent *e)
 {
-    Q_UNUSED(e);
+    Q_UNUSED(e)
 
     bool CTRL_Pressed = QApplication::keyboardModifiers() & Qt::ControlModifier ? true : false;
     bool SHIFT_Pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier ? true : false;
@@ -1917,7 +1917,7 @@ void CPlotWidget::OnContextMenu(ScreenPoint_t& screenPoint)
 ***********************************************************************************************************************/
 void CPlotWidget::focusInEvent(QFocusEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
     m_toolTipState = ToolTipState_WaitForRequest;
@@ -1941,7 +1941,7 @@ void CPlotWidget::focusInEvent(QFocusEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidget::focusOutEvent(QFocusEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     m_toolTipTimer->stop();
     m_toolTipEnabled = false;
@@ -2208,7 +2208,7 @@ void CPlotWidget::Initialize(void)
 ***********************************************************************************************************************/
 void CPlotWidget::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     m_toolTipTimer->stop();
 }
 

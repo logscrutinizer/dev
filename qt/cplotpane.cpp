@@ -419,7 +419,7 @@ QSize CPlotPane::sizeHint() const
 ***********************************************************************************************************************/
 CPlotWidgetInterface *CPlotPane::addPlot(const char *plotName_p, CPlot *plot_p)
 {
-    Q_UNUSED(plotName_p);
+    Q_UNUSED(plotName_p)
 
     CPlotWidgetInterface *pwi_p;
     CList_LSZ *list_p;
@@ -437,7 +437,7 @@ CPlotWidgetInterface *CPlotPane::addPlot(const char *plotName_p, CPlot *plot_p)
     char *title_p = nullptr;
     char *axisLabel_p = nullptr;
     plot_p->GetTitle(&title_p, &axisLabel_p);
-    Q_UNUSED(axisLabel_p);
+    Q_UNUSED(axisLabel_p)
     addTab(dynamic_cast<QWidget *>(pwi_p), QString(title_p));
     m_plotWnds.append(pwi_p);
 

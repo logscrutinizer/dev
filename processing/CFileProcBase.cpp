@@ -122,10 +122,10 @@ bool thread_Match(Match_Description_t *desc_p)
 ***********************************************************************************************************************/
 static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
-    Q_UNUSED(id);
-    Q_UNUSED(to);
-    Q_UNUSED(from);
-    Q_UNUSED(flags);
+    Q_UNUSED(id)
+    Q_UNUSED(to)
+    Q_UNUSED(from)
+    Q_UNUSED(flags)
 
     auto descr_p = (reinterpret_cast<Match_Description_t *>(ctx));
     descr_p->match = true;

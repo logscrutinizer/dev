@@ -76,7 +76,7 @@ void CPlotThread::thread_Process(CThreadConfiguration *config_p)
 /***********************************************************************************************************************
 *   Start_PlotProcessing
 ***********************************************************************************************************************/
-void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
+void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p,
                                      int priority, QList<CPlot *> *pendingPlot_execList_p, int startRow,
                                      int endRow)
 {

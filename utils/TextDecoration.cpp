@@ -21,12 +21,36 @@ struct regExpEventHandlerData {
 };
 
 /***********************************************************************************************************************
+*   create
+***********************************************************************************************************************/
+TextRectElement_t *CTextRectElementFactory::create(void)
+{
+    if (m_autoHighlight_Pool_p->isEmpty()) {
+        return static_cast<TextRectElement_t *>(malloc(sizeof(TextRectElement_t)));
+    } else {
+        return m_autoHighlight_Pool_p->takeLast();
+    }
+}
+
+/***********************************************************************************************************************
+*   create
+***********************************************************************************************************************/
+TextRectElement_t *CFontModElementFactory::create(void)
+{
+    if (m_fontModification_Pool_p->isEmpty()) {
+        return static_cast<TextRectElement_t *>(malloc(sizeof(FontModification_Element_t)));
+    } else {
+        return reinterpret_cast<TextRectElement_t *>(m_fontModification_Pool_p->takeLast());
+    }
+}
+
+/***********************************************************************************************************************
 *   eventHandler
 ***********************************************************************************************************************/
 static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
-    Q_UNUSED(id);
-    Q_UNUSED(flags);
+    Q_UNUSED(id)
+    Q_UNUSED(flags)
 
     auto data = reinterpret_cast<struct regExpEventHandlerData *>(ctx);
 
@@ -254,7 +278,7 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char *autoHighl
 #ifdef _DEBUG
         if (autoHighlight_p != nullptr) {
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update, length:%d",
-                     static_cast<int>(strlen(autoHighlight_p)));
+                     static_cast<int>(strlen(autoHighlight_p)))
         } else {
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update")
         }

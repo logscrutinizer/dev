@@ -283,7 +283,7 @@ bool CPlotWidgetGraphics::event(QEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::resizeEvent(QResizeEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     update();
 }
 
@@ -352,7 +352,7 @@ void CPlotWidgetGraphics::FillEmptyWindow(QPainter *painter)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::SurfaceToClipBoard(const ScreenPoint_t *screenPoint_p)
 {
-    Q_UNUSED(screenPoint_p);
+    Q_UNUSED(screenPoint_p)
 }
 
 /***********************************************************************************************************************
@@ -561,9 +561,9 @@ void CPlotWidgetGraphics::ModifySubPlotSize(int zDelta, const ScreenPoint_t *scr
     /* screenPoint_p, defines which subPlot to increase
      * zDelta, if larger than 0 the subPlot will increase in size
      * not supported */
-    Q_UNUSED(zDelta);
-    Q_UNUSED(screenPoint_p);
-    Q_UNUSED(invalidate_p);
+    Q_UNUSED(zDelta)
+    Q_UNUSED(screenPoint_p)
+    Q_UNUSED(invalidate_p)
 }
 
 /***********************************************************************************************************************
@@ -579,7 +579,7 @@ void CPlotWidgetGraphics::RestoreSubPlotWindows(void)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
-    Q_UNUSED(screenPoint_p);
+    Q_UNUSED(screenPoint_p)
 
     if (m_surfaces.isEmpty()) {
         return;
@@ -607,7 +607,7 @@ void CPlotWidgetGraphics::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *sc
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoint_p, bool *invalidate_p)
 {
-    Q_UNUSED(screenPoint_p);
+    Q_UNUSED(screenPoint_p)
 
     if (m_surfaces.isEmpty()) {
         return;
@@ -700,9 +700,9 @@ void CPlotWidgetGraphics::FillScreenPoint_FromDCViewPortPoint(QPoint *viewPortPo
 ***********************************************************************************************************************/
 bool CPlotWidgetGraphics::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p)
 {
-    Q_UNUSED(row);
-    Q_UNUSED(go_pp);
-    Q_UNUSED(distance_p);
+    Q_UNUSED(row)
+    Q_UNUSED(go_pp)
+    Q_UNUSED(distance_p)
     return false;
 }
 
@@ -712,7 +712,7 @@ bool CPlotWidgetGraphics::GetClosest_GO(int row, GraphicalObject_t **go_pp, int 
 void CPlotWidgetGraphics::SetFocusTime(const double time)
 {
     /* Not supported */
-    Q_UNUSED(time);
+    Q_UNUSED(time)
 }
 
 /***********************************************************************************************************************
@@ -720,7 +720,7 @@ void CPlotWidgetGraphics::SetFocusTime(const double time)
 ***********************************************************************************************************************/
 bool CPlotWidgetGraphics::HandleKeyDown(QKeyEvent *e)
 {
-    Q_UNUSED(e);
+    Q_UNUSED(e)
 
     bool CTRL_Pressed = QApplication::keyboardModifiers() & Qt::ControlModifier ? true : false;
     bool SHIFT_Pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier ? true : false;
@@ -877,7 +877,7 @@ void CPlotWidgetGraphics::OnContextMenu(ScreenPoint_t& screenPoint)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::focusInEvent(QFocusEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
     m_toolTipState = ToolTipState_WaitForRequest;
@@ -900,7 +900,7 @@ void CPlotWidgetGraphics::focusInEvent(QFocusEvent *event)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::focusOutEvent(QFocusEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     m_toolTipTimer->stop();
     m_toolTipEnabled = false;
@@ -1165,7 +1165,7 @@ void CPlotWidgetGraphics::Initialize(void)
 ***********************************************************************************************************************/
 void CPlotWidgetGraphics::closeEvent(QCloseEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
     m_toolTipTimer->stop();
 }
 
@@ -1190,7 +1190,7 @@ void CPlotWidgetGraphics::ResetFocus(void)
 void CPlotWidgetGraphics::UpdateFocus(const ScreenPoint_t *screenPoint_p)
 {
     /* Not supported */
-    Q_UNUSED(screenPoint_p);
+    Q_UNUSED(screenPoint_p)
 }
 
 /***********************************************************************************************************************
@@ -1200,10 +1200,10 @@ bool CPlotWidgetGraphics::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph *
                                           CSubPlot **subPlot_pp)
 {
     /* Not supported */
-    Q_UNUSED(screenPoint_p);
-    Q_UNUSED(graph_pp);
-    Q_UNUSED(go_pp);
-    Q_UNUSED(subPlot_pp);
+    Q_UNUSED(screenPoint_p)
+    Q_UNUSED(graph_pp)
+    Q_UNUSED(go_pp)
+    Q_UNUSED(subPlot_pp)
     return false;
 }
 
@@ -1216,10 +1216,10 @@ bool CPlotWidgetGraphics::GetClosestGraph(int row,
                                           CSubPlot **subPlot_pp)
 {
     /* Not supported */
-    Q_UNUSED(row);
-    Q_UNUSED(graph_pp);
-    Q_UNUSED(go_pp);
-    Q_UNUSED(subPlot_pp);
+    Q_UNUSED(row)
+    Q_UNUSED(graph_pp)
+    Q_UNUSED(go_pp)
+    Q_UNUSED(subPlot_pp)
     return false;
 }
 
@@ -1247,7 +1247,7 @@ bool CPlotWidgetGraphics::isSurfaceInList(QList<CSubPlotSurface *> *list_p, CSub
 void CPlotWidgetGraphics::SetSurfaceFocus(CSubPlot *subPlot_p)
 {
     /* Not supported */
-    Q_UNUSED(subPlot_p);
+    Q_UNUSED(subPlot_p)
 }
 
 /***********************************************************************************************************************
@@ -1255,8 +1255,8 @@ void CPlotWidgetGraphics::SetSurfaceFocus(CSubPlot *subPlot_p)
 ***********************************************************************************************************************/
 bool CPlotWidgetGraphics::SearchFocus(CSubPlot **subPlot_pp, CSubPlotSurface **surface_pp)
 {
-    Q_UNUSED(subPlot_pp);
-    Q_UNUSED(surface_pp);
+    Q_UNUSED(subPlot_pp)
+    Q_UNUSED(surface_pp)
     return false;
 }
 
@@ -1265,8 +1265,8 @@ bool CPlotWidgetGraphics::SearchFocus(CSubPlot **subPlot_pp, CSubPlotSurface **s
 ***********************************************************************************************************************/
 bool CPlotWidgetGraphics::SearchSubPlot(CSubPlot *subPlot_p, CSubPlotSurface **surface_pp)
 {
-    Q_UNUSED(subPlot_p);
-    Q_UNUSED(surface_pp);
+    Q_UNUSED(subPlot_p)
+    Q_UNUSED(surface_pp)
     return false;
 }
 
@@ -1276,8 +1276,8 @@ bool CPlotWidgetGraphics::SearchSubPlot(CSubPlot *subPlot_p, CSubPlotSurface **s
 void CPlotWidgetGraphics::Align_X_Zoom(double x_min, double x_max)
 {
     /* Not supported */
-    Q_UNUSED(x_min);
-    Q_UNUSED(x_max);
+    Q_UNUSED(x_min)
+    Q_UNUSED(x_max)
 }
 
 /***********************************************************************************************************************
@@ -1286,8 +1286,8 @@ void CPlotWidgetGraphics::Align_X_Zoom(double x_min, double x_max)
 void CPlotWidgetGraphics::Align_Reset_Zoom(double x_min, double x_max)
 {
     /* Not supported */
-    Q_UNUSED(x_min);
-    Q_UNUSED(x_max);
+    Q_UNUSED(x_min)
+    Q_UNUSED(x_max)
 }
 
 /***********************************************************************************************************************
@@ -1296,9 +1296,9 @@ void CPlotWidgetGraphics::Align_Reset_Zoom(double x_min, double x_max)
 void CPlotWidgetGraphics::Align_X_Cursor(double cursorTime, double x_min, double x_max)
 {
     /* Not supported */
-    Q_UNUSED(cursorTime);
-    Q_UNUSED(x_min);
-    Q_UNUSED(x_max);
+    Q_UNUSED(cursorTime)
+    Q_UNUSED(x_min)
+    Q_UNUSED(x_max)
 }
 
 /***********************************************************************************************************************
@@ -1307,8 +1307,8 @@ void CPlotWidgetGraphics::Align_X_Cursor(double cursorTime, double x_min, double
 void CPlotWidgetGraphics::ZoomSubPlotInFocus(bool in, bool horizontal)
 {
     /* Not supported */
-    Q_UNUSED(in);
-    Q_UNUSED(horizontal);
+    Q_UNUSED(in)
+    Q_UNUSED(horizontal)
 }
 
 /***********************************************************************************************************************
@@ -1317,5 +1317,5 @@ void CPlotWidgetGraphics::ZoomSubPlotInFocus(bool in, bool horizontal)
 void CPlotWidgetGraphics::ResizeSubPlotInFocus(bool increase)
 {
     /* Not supported */
-    Q_UNUSED(increase);
+    Q_UNUSED(increase)
 }

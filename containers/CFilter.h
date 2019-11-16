@@ -25,15 +25,15 @@ class CFilterItem
 {
 public:
     CFilterItem(QString *start_p = nullptr) :
-        m_start_p(nullptr), m_size(0), m_color(BLACK), m_bg_color(BACKGROUND_COLOR), m_font_p(nullptr), m_freeStartRef(
-            false), m_enabled(true), m_caseSensitive(false),
-        m_exclude(false), m_regexpr(false), m_adaptiveClipEnabled(false), m_uniqueID(0)
+        m_start_p(nullptr), m_font_p(nullptr), m_uniqueID(0), m_size(0), m_color(BLACK), m_bg_color(BACKGROUND_COLOR),
+        m_freeStartRef(false), m_enabled(true), m_caseSensitive(false),
+        m_exclude(false), m_regexpr(false), m_adaptiveClipEnabled(false)
     {
         if (start_p != nullptr) {
-            m_start_p = (char *)malloc(start_p->length() + 1);
+            m_start_p = reinterpret_cast<char *>(malloc(static_cast<size_t>(start_p->length()) + 1));
             m_size = start_p->length();
             m_freeStartRef = true;
-            memcpy(m_start_p, start_p->toLatin1().constData(), m_size);
+            memcpy(m_start_p, start_p->toLatin1().constData(), static_cast<size_t>(m_size));
             m_start_p[m_size] = 0;
         }
         m_uniqueID = g_unique_id_count++;
@@ -52,13 +52,13 @@ public:
     /****/
     void copy(CFilterItem *from_p)
     {
-        m_start_p = (char *)malloc(from_p->m_size + 1);
+        m_start_p = reinterpret_cast<char *>(malloc(static_cast<size_t>(from_p->m_size + 1)));
 
         m_size = from_p->m_size;
         m_freeStartRef = true;
 
         if (m_start_p != nullptr) {
-            memcpy(m_start_p, from_p->m_start_p, m_size + 1);
+            memcpy(m_start_p, from_p->m_start_p, static_cast<size_t>(m_size + 1));
         } else {
             TRACEX_E("CFilterItem::CFilterItem  m_start_p nullptr")
         }
@@ -76,28 +76,22 @@ public:
 
     int Check(QString& string); /* string will contain the error text */
 
-    virtual ~CFilterItem(void)
-    {
-        /* The m_font_p is deleted in the CFontCtrl object when that is destructed */
-        if (m_freeStartRef) {
-            free(m_start_p);
-        }
-    }
+    virtual ~CFilterItem(void);
 
 public:
     char *m_start_p; /* Reference to the start of the filter text */
+    FontItem_t *m_font_p; /* Font used to paint rows matching this filter (in combination with color) */
+    int m_uniqueID; /* This is used to cross reference the filters that exist in ViewTree with the copy used for
+                     * filtering, -1 when not set */
     int m_size; /* Number of lettr in this filter item, no 0 in the end, size is only letters */
     Q_COLORREF m_color; /* Which color lines matching this filter item will painted with */
     Q_COLORREF m_bg_color; /* */
-    FontItem_t *m_font_p; /* Font used to paint rows matching this filter (in combination with color) */
     bool m_freeStartRef; /* this will be set to true if the m_start_p needs to be freed in the destructor */
     bool m_enabled; /* This flag is used to disable the filter from the filering */
     bool m_caseSensitive;
     bool m_exclude; /* This is set if a specific line matching this filter shall be not shown */
     bool m_regexpr; /* True if the m_start_p filterMatch is defined with regular expression */
     bool m_adaptiveClipEnabled;  /* True if this filter is enabled for adaptive clipping */
-    int m_uniqueID; /* This is used to cross reference the filters that exist in ViewTree with the copy used for
-                     * filtering, -1 when not set */
 };
 
 /***********************************************************************************************************************
@@ -198,8 +192,8 @@ typedef struct  /* Filter Item Reference Array */
     int32_t index; /* The index into the array of packed_FIR_t elements, for fast lookup
                     * A value (not zero) also corresponds to the number of matches up to that point */
     uint8_t LUT_index; /* Reference to a filter that matched the corresponding row
-                              * BOOKMARK_FILTER_LUT_INDEX 0xff  reserved to bookmark
-                              * 0 Means no match */
+                        * BOOKMARK_FILTER_LUT_INDEX 0xff  reserved to bookmark
+                        * 0 Means no match */
 }FIR_t;
 
 typedef struct  /* Use for array with only filter matches (packed) */

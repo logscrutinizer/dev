@@ -62,7 +62,8 @@ void CheckRemoveSelection(CCfgItem *cfgItem_p, QList<CCfgItem *> *selectionList_
 ***********************************************************************************************************************/
 void CCfgItem_Delete(CCfgItem *cfgItem_p)
 {
-    CHECK_CCFGITEM(cfgItem_p);
+    CHECK_CCFGITEM(cfgItem_p)
+
     {
         CWorkspace_RemoveRowsScopeGuard guard(cfgItem_p->m_itemParent_p, cfgItem_p, 1);
         cfgItem_p->PrepareDelete();
@@ -213,7 +214,7 @@ void CCfgItem::InsertItem(bool select, bool expand, bool insert, CCfgItem *itemB
      * insert, is it required to add the item to the parent list, or is it already in the list and this is just UI
      * updated (not for QT, or?)
      * last, if the item is last or not */
-    Q_UNUSED(expand);
+    Q_UNUSED(expand)
 
     Q_ASSERT(m_tag == CCFG_ITEM_TAG);
     if (itemBefore_p != nullptr) {
@@ -262,7 +263,7 @@ void CCfgItem::InsertItem(bool select, bool expand, bool insert, CCfgItem *itemB
                   m_itemText.toLatin1().constData(),
                   m_itemParent_p,
                   itemBefore_p,
-                  this);
+                  this)
 
         if (insert && (m_itemParent_p != nullptr)) {
             CWorkspace_InsertRowsScopeGuard guard(m_itemParent_p, itemBefore_p, 1);
@@ -317,7 +318,7 @@ void CCfgItem::RemoveAllChildren(void)
 ***********************************************************************************************************************/
 void CCfgItem::OnDblClick(QWidget *parent)
 {
-    Q_UNUSED(parent);
+    Q_UNUSED(parent)
 }
 
 /***********************************************************************************************************************
@@ -487,7 +488,7 @@ CCfgItem_Comment::CCfgItem_Comment(
 ***********************************************************************************************************************/
 bool CCfgItem_Comment::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options)
 {
-    Q_UNUSED(options);
+    Q_UNUSED(options)
     WriteTagToFile(fileStream, QString("    <Comment text=\"not implemented\" />\n"));
     return false;
 }
@@ -742,7 +743,7 @@ void CCfgItem_Bookmark::PrepareDelete(void)
 ***********************************************************************************************************************/
 bool CCfgItem_Bookmark::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options)
 {
-    Q_UNUSED(options);
+    Q_UNUSED(options)
 
     bool status = true;
     QString bookmarkString = QString("    <bookmark row=\"%1\" text=\"%2\" />\n").arg(m_row).arg(m_comment);
@@ -1814,8 +1815,7 @@ void CCfgItem_FilterItem::PropertiesDlg(QWidget *widget_p)
     if ((m_filterItem_ref_p == nullptr) ||
         (m_filterItem_ref_p->m_start_p == nullptr)) {
         /* Code analysis,  C6387 */
-        TRACEX_E(
-            "%s   Bad initialization     m_filterItem_ref_p:0x%x", __FUNCTION__, m_filterItem_ref_p);
+        TRACEX_E("%s   Bad initialization     m_filterItem_ref_p:0x%x", __FUNCTION__, m_filterItem_ref_p)
         return;
     }
 
@@ -1829,7 +1829,7 @@ void CCfgItem_FilterItem::PropertiesDlg(QWidget *widget_p)
 ***********************************************************************************************************************/
 bool CCfgItem_FilterItem::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options)
 {
-    Q_UNUSED(options);
+    Q_UNUSED(options)
 
     int destIndex = 0;
     for (int srcIndex = 0; srcIndex < m_filterItem_ref_p->m_size; ++srcIndex) {

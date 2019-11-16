@@ -180,25 +180,25 @@ void CEditorWidget::Initialize_0(void)
     m_bitmap_left_top = QImage(":IDB_BRUSH_LEFT_TOP_BMP");
     if (m_bitmap_left_top.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  "
-                 "Bitmap IDB_BRUSH_LEFT_TOP_BMP load FAILED");
+                 "Bitmap IDB_BRUSH_LEFT_TOP_BMP load FAILED")
     }
 
     m_bitmap_left_bottom = QImage(":IDB_BRUSH_LEFT_BOTTOM_BMP");
     if (m_bitmap_left_bottom.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap "
-                 "IDB_BRUSH_LEFT_BOTTOM_BMP load FAILED");
+                 "IDB_BRUSH_LEFT_BOTTOM_BMP load FAILED")
     }
 
     m_bitmap_right_bottom = QImage(":IDB_BRUSH_RIGHT_BOTTOM_BMP");
     if (m_bitmap_right_bottom.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  "
-                 "Bitmap IDB_BRUSH_RIGHT_BOTTOM_BMP load FAILED");
+                 "Bitmap IDB_BRUSH_RIGHT_BOTTOM_BMP load FAILED")
     }
 
     m_bitmap_right_top = QImage(":IDB_BRUSH_RIGHT_TOP_BMP");
     if (m_bitmap_right_top.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  "
-                 "Bitmap IDB_BRUSH_RIGHT_TOP_BMP load FAILED");
+                 "Bitmap IDB_BRUSH_RIGHT_TOP_BMP load FAILED")
     }
 
     m_bitmap_bug = MakeTransparantImage(":IDB_BUG_BITMAP_24", Q_RGB(0x7C, 0xFC, 0x00));
@@ -265,7 +265,7 @@ void CEditorWidget::Initialize_0(void)
 
     if ((startx != 0xfefe) || (starty != 0xefef) || (font != 0x55)) {
         TRACEX_E("CEditorWidget::CEditorWidget  Pixel stamp startup test FAILED,  "
-                 "Internal Error");
+                 "Internal Error")
     }
 }
 
@@ -416,7 +416,7 @@ void CEditorWidget::UpdateTotalNumRows(void)
               "FIRA_min:%d FIRA_max:%d RowClip:%d %d",
               doc_p->m_database.TIA.rows, doc_p->m_database.FIRA.filterMatches,
               m_totalNumOfRows, m_minRowIndex, m_maxRowIndex, m_minFIRAIndex, m_maxFIRAIndex,
-              g_cfg_p->m_Log_rowClip_Start, g_cfg_p->m_Log_rowClip_End);
+              g_cfg_p->m_Log_rowClip_Start, g_cfg_p->m_Log_rowClip_End)
 #endif
 }
 
@@ -3652,8 +3652,8 @@ void CEditorWidget::OnLButtonUp(ScreenPoint_t& screenPoint)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRButtonDown(Qt::KeyboardModifiers modifiers, ScreenPoint_t& screenPoint)
 {
-    Q_UNUSED(modifiers);
-    Q_UNUSED(screenPoint);
+    Q_UNUSED(modifiers)
+    Q_UNUSED(screenPoint)
 
     if (!m_inFocus) {
         setFocus();
@@ -5750,11 +5750,12 @@ void CEditorWidget::AddDragSelection(int TIA_Row, int startCol, int endCol)
 /* Use QByteArray instead of CShareFile */
 bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile* sf_p*/, int *bytesWritten_p)
 {
-    Q_UNUSED(sharedFile);
-    Q_UNUSED(bytesWritten_p);
+    Q_UNUSED(sharedFile)
+    Q_UNUSED(bytesWritten_p)
 
 #ifdef QT_TODO
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+
     CSelection *selection_p = nullptr;
     POSITION pos;
     char *start_p;
@@ -5825,11 +5826,12 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
 ***********************************************************************************************************************/
 bool CEditorWidget::CopySelectionsToMem(char *dest_p, int *bytesWritten_p)
 {
-    Q_UNUSED(dest_p);
-    Q_UNUSED(bytesWritten_p);
+    Q_UNUSED(dest_p)
+    Q_UNUSED(bytesWritten_p)
 
 #ifdef QT_TODO
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+
     CSelection *selection_p = nullptr;
     POSITION pos;
     char *start_p;
@@ -7165,7 +7167,7 @@ void CEditorWidget::moveEvent(QMoveEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::mainWindowIsMoving(QMoveEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     /* When porting to QT it is required to do the cursor toggeling in a paint event, hence to make the cursor toggle
      * the entire window

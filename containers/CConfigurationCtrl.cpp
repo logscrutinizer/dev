@@ -122,7 +122,7 @@ bool CFGCTRL_Load_FileType(const QString& title,
                            const QList<RecentFile_Kind_e>& kindList,
                            const QString& defaultDIR)
 {
-    Q_UNUSED(title);
+    Q_UNUSED(title)
 
     QStringList fileNames = CFGCTRL_GetUserPickedFileNames(QString(""),
                                                            QFileDialog::AcceptOpen,
@@ -659,6 +659,7 @@ bool CConfigurationCtrl::Save_WorkspaceFileAs(void)
     TRACEX_D(QString("%1").arg(__FUNCTION__))
 
     CLogScrutinizerDoc *doc_p = GetTheDoc();
+
     QStringList filters;
     filters << "Workspace file (*.lsz)";
 
@@ -774,7 +775,7 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
 
             if (LoadFile(fileName)) {
                 /* Check if we can find a log file in the *.lsz file. If so we need to unload all other stuff */
-                SetDocument(m_fileRef_p, static_cast<size_t>(m_numOfBytesRead));
+                SetDocument(m_fileRef_p, m_numOfBytesRead);
 
                 char logFileName[CFG_TEMP_STRING_MAX_SIZE];
 
@@ -1161,7 +1162,7 @@ bool CConfigurationCtrl::LoadFile(const QString& fileName)
 
     if (m_file.isOpen()) {
 #ifdef _DEBUG
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "CConfigurationCtrl::LoadFile  m_file not cleaned up", &m_file);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "CConfigurationCtrl::LoadFile  m_file not cleaned up", &m_file)
 #endif
         m_file.close();
     }
@@ -1177,7 +1178,7 @@ bool CConfigurationCtrl::LoadFile(const QString& fileName)
 
         if (m_memPoolItem_p != nullptr) {
 #ifdef _DEBUG
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "CConfigurationCtrl::LoadFile  m_memPoolItem_p not cleaned up", &m_file);
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "CConfigurationCtrl::LoadFile  m_memPoolItem_p not cleaned up", &m_file)
 #endif
             doc_p->m_memPool.ReturnMem(&m_memPoolItem_p);
         }
@@ -1186,7 +1187,7 @@ bool CConfigurationCtrl::LoadFile(const QString& fileName)
         m_fileRef_p = static_cast<char *>(m_memPoolItem_p->GetDataRef());
 
         if (m_fileRef_p == nullptr) {
-            TRACEX_QFILE(LOG_LEVEL_WARNING, "Could not allocate memory for file", &m_file);
+            TRACEX_QFILE(LOG_LEVEL_WARNING, "Could not allocate memory for file", &m_file)
             return false;
         }
 
@@ -1271,7 +1272,7 @@ bool CConfigurationCtrl::CanFileBeOpenedForFileRead(const QString& fileName, boo
     if (!testFile.exists() || !testFile.open(QIODevice::ReadOnly)) {
         if (promtWarning) {
             TRACEX_I(QString("Not possible to open file: %1, starting from path: %2")
-                         .arg(fileName).arg(QDir::currentPath()));
+                         .arg(fileName).arg(QDir::currentPath()))
 
             QMessageBox msgBox(QMessageBox::Warning, QString("File load failed"), QString(
                                    "Couldn't open file: %1, starting from path %2")
@@ -1395,16 +1396,14 @@ void CConfigurationCtrl::ElementStart(char *name_p)
 
             default:
                 TRACEX_E("CConfigurationCtrl::ElementStart  Unknown L2 tag %s   L1:%d L2:%d",
-                         name_p,
-                         m_inElement_L1,
-                         m_inElement_L2);
+                         name_p, m_inElement_L1, m_inElement_L2)
                 XML_Error();
                 return;
         }
     }
 
     TRACEX_DE("CConfigurationCtrl::ElementStart   L1:%d L2:%d -> L1%d L2:%d",
-              l1_old, l2_old, m_inElement_L1, m_inElement_L2);
+              l1_old, l2_old, m_inElement_L1, m_inElement_L2)
 }
 
 /***********************************************************************************************************************
@@ -1546,10 +1545,7 @@ void CConfigurationCtrl::ElementEnd(void)
     }
 
     TRACEX_DE("CConfigurationCtrl::ElementEnd   L1:%d L2:%d -> L1:%d L2:%d",
-              l1_old,
-              l2_old,
-              m_inElement_L1,
-              m_inElement_L2);
+              l1_old, l2_old, m_inElement_L1, m_inElement_L2)
 }
 
 /***********************************************************************************************************************
@@ -1596,8 +1592,7 @@ void CConfigurationCtrl::Element_Attribute(char *name_p, char *value_p)
 
             default:
                 TRACEX_E("CConfigurationCtrl::Element_Attribute   Parse Error  Unknown L2?   L1:%d L2:d",
-                         m_inElement_L1,
-                         m_inElement_L2);
+                         m_inElement_L1, m_inElement_L2)
                 XML_Error();
                 return;
         } /* switch */
@@ -1619,8 +1614,7 @@ void CConfigurationCtrl::Element_Attribute(char *name_p, char *value_p)
 
             default:
                 TRACEX_E("CConfigurationCtrl::Element_Attribute   Parse Error  Unknown L2?   L1:%d L2:d",
-                         m_inElement_L1,
-                         m_inElement_L2);
+                         m_inElement_L1, m_inElement_L2)
                 XML_Error();
                 return;
         } /*switch */
@@ -1666,8 +1660,7 @@ void CConfigurationCtrl::Element_Attribute_FilterItem(char *name_p, char *value_
                 memcpy(m_newFilterItem_p->m_start_p, value_p, size_t(size));
                 m_newFilterItem_p->m_start_p[size] = 0;
             } else {
-                TRACEX_E(
-                    "CConfigurationCtrl::Element_Attribute_FilterItem   m_newFilterItem_p->m_start_p nullptr ");
+                TRACEX_E("CConfigurationCtrl::Element_Attribute_FilterItem   m_newFilterItem_p->m_start_p nullptr ")
             }
         } else if (strcmp(name_p, "color") == 0) {
             Q_COLORREF color;

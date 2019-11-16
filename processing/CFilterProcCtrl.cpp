@@ -625,11 +625,11 @@ static char global_match = 0;
 /****/
 static int eventHandler(unsigned int id, unsigned long long from,
                         unsigned long long to, unsigned int flags, void *ctx) {
-    Q_UNUSED(id);
-    Q_UNUSED(from);
-    Q_UNUSED(to);
-    Q_UNUSED(flags);
-    Q_UNUSED(ctx);
+    Q_UNUSED(id)
+    Q_UNUSED(from)
+    Q_UNUSED(to)
+    Q_UNUSED(flags)
+    Q_UNUSED(ctx)
     global_match = 1;
     return HS_SUCCESS; /*HS_SCAN_TERMINATED */
 }

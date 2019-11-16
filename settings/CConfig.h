@@ -317,7 +317,7 @@ public:
     *   @return TODO
     ***********************************************************************************************************************/
     virtual bool WriteToFile(QTextStream *textStream_p) {
-        Q_UNUSED(textStream_p);
+        Q_UNUSED(textStream_p)
         return true;
     }
 

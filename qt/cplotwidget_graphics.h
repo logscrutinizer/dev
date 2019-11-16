@@ -97,13 +97,13 @@ public:
 
     /****/
     virtual void SetMinMax(QRectF& rect) override {
-        Q_UNUSED(rect);
+        Q_UNUSED(rect)
     }
 
     /****/
     virtual void SetUpdated(CSubPlot *subPlot_p) override {
         /* CPlotWidgetGraphics has only one subplot */
-        Q_UNUSED(subPlot_p);
+        Q_UNUSED(subPlot_p)
         SetUpdateSubplots();
     }
 
@@ -151,12 +151,12 @@ public:
     /****/
     virtual void MoveSubPlot(QList<CSubPlotSurface *> *to_list_p, QList<CSubPlotSurface *> *from_list_p,
                              CSubPlotSurface *moveSubPlot_p) override {
-        Q_UNUSED(to_list_p);
-        Q_UNUSED(from_list_p);
-        Q_UNUSED(moveSubPlot_p); /* No action */
+        Q_UNUSED(to_list_p)
+        Q_UNUSED(from_list_p)
+        Q_UNUSED(moveSubPlot_p) /* No action */
     }
 
-    virtual void RemoveShadowSubPlot(CSubPlotSurface *subPlot_p) override {Q_UNUSED(subPlot_p); /* No action */}
+    virtual void RemoveShadowSubPlot(CSubPlotSurface *subPlot_p) override {Q_UNUSED(subPlot_p) /* No action */}
 
     virtual void Align_X_Zoom(double x_min, double x_max) override;
     virtual void Align_Reset_Zoom(double x_min, double x_max) override;
@@ -208,7 +208,7 @@ private:
     /****/
     virtual void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE
     {
-        Q_UNUSED(event);
+        Q_UNUSED(event)
 
         QPainter painter(this);
 

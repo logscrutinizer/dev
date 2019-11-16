@@ -40,7 +40,7 @@ namespace FileMapping
         }
 
         if (!TIA_File.open(QIODevice::ReadOnly)) {
-            TRACEX_QFILE(LOG_LEVEL_INFO, "FileMapping::CreateTIA_MemMapped - file could not be opened", &TIA_File);
+            TRACEX_QFILE(LOG_LEVEL_INFO, "FileMapping::CreateTIA_MemMapped - file could not be opened", &TIA_File)
             return false;
         }
 
@@ -69,7 +69,7 @@ namespace FileMapping
             /* check the file size, must be the same (file size of the original log file, and the value in the TIA
              *  file header) */
             TRACEX_I(QString("TIA file size not matching TIA:%1 Log:%2 (Incremental?)")
-                         .arg(header_p->fileSize).arg(fileSize));
+                         .arg(header_p->fileSize).arg(fileSize))
             if (check) {
                 headerOK = false;
             }
@@ -85,7 +85,7 @@ namespace FileMapping
 
             if (sinceEpoch != header_p->fileTime) {
                 TRACEX_I(QString("TIA file time not matching, TIA:%1 Log:%2")
-                             .arg(header_p->fileTime).arg(sinceEpoch));
+                             .arg(header_p->fileTime).arg(sinceEpoch))
                 if (check) {
                     headerOK = false;
                 }
@@ -98,7 +98,7 @@ namespace FileMapping
 
             if (*rows_p != -1) {
                 TRACEX_W(QString("The TIA file header seems corrupt.\n Please remove the TIA file %1 and try again")
-                             .arg(TIA_File.fileName()));
+                             .arg(TIA_File.fileName()))
             }
 
             return false;
@@ -117,17 +117,17 @@ namespace FileMapping
         /* TIA is in a memory mapped file */
 
         TRACEX_D("FileMapping::RemoveTIA_MemMapped %s",
-                 TIA_File.fileName().toLatin1().constData());
+                 TIA_File.fileName().toLatin1().constData())
 
         if (!TIA_File.isOpen()) {
             TRACEX_E("Failed to remove the memory mapped TIA file, it is not open: s%",
-                     TIA_File.fileName().toLatin1().constData());
+                     TIA_File.fileName().toLatin1().constData())
             return false;
         }
 
         if (TIA_mem_p == nullptr) {
             TRACEX_E("Failed to remove the memory mapped TIA file, memory was nullptr: s%",
-                     TIA_File.fileName().toLatin1().constData());
+                     TIA_File.fileName().toLatin1().constData())
             return false;
         }
 
@@ -141,7 +141,7 @@ namespace FileMapping
 
         if (forceRemove_TIA_file || !g_cfg_p->m_keepTIA_File) {
             if (!TIA_File.remove()) {
-                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to remove the memory mapped TIA file", &TIA_File);
+                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to remove the memory mapped TIA file", &TIA_File)
             }
         }
 
@@ -160,14 +160,14 @@ namespace FileMapping
         if (!FIRA_File.open(QIODevice::ReadWrite)) {
             /* On error */
             TRACEX_I(QString("FIRA file couldn't be open/created %1\n%2")
-                         .arg(FIRA_File.fileName().toLatin1().constData()).arg(FIRA_File.errorString()));
+                         .arg(FIRA_File.fileName().toLatin1().constData()).arg(FIRA_File.errorString()))
             return false;
         }
 
         if (!FIRA_File.resize(static_cast<int>(sizeof(FIR_t)) * rows)) {
             TRACEX_E("Mapping FIRA file failed, file couldn't be resized %s, "
                      "please try again",
-                     FIRA_File.fileName().toLatin1().constData());
+                     FIRA_File.fileName().toLatin1().constData())
             return false;
         }
 
@@ -196,20 +196,20 @@ namespace FileMapping
             if (!FIRA_File.open(QIODevice::ReadWrite)) {
                 /* On error */
                 TRACEX_I(QString("FIRA file couldn't be open/created %1\n%2")
-                             .arg(FIRA_File.fileName().toLatin1().constData()).arg(FIRA_File.errorString()));
+                             .arg(FIRA_File.fileName().toLatin1().constData()).arg(FIRA_File.errorString()))
                 return false;
             }
         } else {
             if (!FIRA_File.unmap(reinterpret_cast<uchar *>(FIRA_mem_p))) {
                 TRACEX_I(QString("%1 Failed to unmap %2")
-                             .arg(__FUNCTION__).arg(FIRA_File.fileName().toLatin1().constData()));
+                             .arg(__FUNCTION__).arg(FIRA_File.fileName().toLatin1().constData()))
             }
         }
 
         /* Increase size of FIRA file */
         if (!FIRA_File.resize(static_cast<int64_t>(sizeof(FIR_t)) * totalRows)) {
             TRACEX_E(QString("%1 Mapping FIRA file failed, file couldn't be resized %2")
-                         .arg(__FUNCTION__).arg(FIRA_File.fileName().toLatin1().constData()));
+                         .arg(__FUNCTION__).arg(FIRA_File.fileName().toLatin1().constData()))
             return false;
         }
 
@@ -229,17 +229,17 @@ namespace FileMapping
     bool RemoveFIRA_MemMapped(QFile& FIRA_File, FIR_t *& FIRA_mem_p, bool remove)
     {
         TRACEX_D("FileMapping::RemoveFIRA_MemMapped %s",
-                 FIRA_File.fileName().toLatin1().constData());
+                 FIRA_File.fileName().toLatin1().constData())
 
         if (!FIRA_File.isOpen()) {
             TRACEX_E("Failed to remove the memory mapped FIRA file, it is not open: s%",
-                     FIRA_File.fileName().toLatin1().constData());
+                     FIRA_File.fileName().toLatin1().constData())
             return false;
         }
 
         if (FIRA_mem_p == nullptr) {
             TRACEX_E("Failed to remove the memory mapped FIRA file, memory was nullptr: s%",
-                     FIRA_File.fileName().toLatin1().constData());
+                     FIRA_File.fileName().toLatin1().constData())
             return false;
         }
 
@@ -249,7 +249,7 @@ namespace FileMapping
         FIRA_mem_p = nullptr;
 
         if (remove && !FIRA_File.remove()) {
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to remove the memory mapped TIA file", &FIRA_File);
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to remove the memory mapped TIA file", &FIRA_File)
         }
 
         TRACEX_D("Unmapped the FIRA file %s", FIRA_File.fileName().toLatin1().constData())

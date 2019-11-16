@@ -64,7 +64,7 @@ public:
     /* API */
     void Start_PlotProcessing(QFile *qFile_p,
                               char *workMem_p,
-                              int workMemSize,
+                              int64_t workMemSize,
                               TIA_t *TIA_p,
                               int priority,
                               QList<CPlot *> *pendingPlot_execList_p,

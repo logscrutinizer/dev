@@ -54,6 +54,17 @@ void CFilter::GetFileNameOnly(QString *fileName_p)
 }
 
 /***********************************************************************************************************************
+*   ~CFilterItem
+***********************************************************************************************************************/
+CFilterItem:: ~CFilterItem(void)
+{
+    /* The m_font_p is deleted in the CFontCtrl object when that is destructed */
+    if (m_freeStartRef) {
+        free(m_start_p);
+    }
+}
+
+/***********************************************************************************************************************
 *   Check
 ***********************************************************************************************************************/
 int CFilterItem::Check(QString& string)
@@ -107,7 +118,9 @@ namespace FilterMgr
 
         FIR_t *FIR_Array_p = &FIRA.FIR_Array_p[0];
 
-        packedFIR_base_p = (packed_FIR_t *)VirtualMem::Alloc(sizeof(packed_FIR_t) * FIRA.filterMatches);
+        packedFIR_base_p =
+            reinterpret_cast<packed_FIR_t *>(VirtualMem::Alloc(static_cast<int64_t>(sizeof(packed_FIR_t)) *
+                                                               FIRA.filterMatches));
 
         if (packedFIR_base_p == nullptr) {
             TRACEX_E("CLogScrutinizerDoc::CreatePackedFIRA    packedFIRA_p nullptr, out of memory?")
@@ -129,7 +142,7 @@ namespace FilterMgr
                 if (FIR_Array_p[index].index != count) {
                     TRACEX_E(
                         QString("Internal error packedFIRA and FIRA doesn't match packed:%1 matches:%2")
-                            .arg(FIR_Array_p[index].index).arg(count));
+                            .arg(FIR_Array_p[index].index).arg(count))
                 }
                 ++packedFIR_p;
                 count++;
@@ -140,7 +153,7 @@ namespace FilterMgr
 #ifdef _DEBUG
             TRACEX_E(
                 QString("Internal error  packedFIRA and FIRA doesn't match packed:%1 matches:%2")
-                    .arg(packedFIR_p - packedFIR_base_p).arg(FIRA.filterMatches).arg(count));
+                    .arg(packedFIR_p - packedFIR_base_p).arg(FIRA.filterMatches).arg(count))
 #endif
             FIRA.filterMatches = 0;
             return nullptr;

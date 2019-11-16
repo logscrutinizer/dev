@@ -232,7 +232,7 @@ void CSearchThread::thread_Process(CThreadConfiguration *config_p)
 /***********************************************************************************************************************
 *   StartProcessing
 ***********************************************************************************************************************/
-void CSearchCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int workMemSize, TIA_t *TIA_p,
+void CSearchCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p,
                                   FIRA_t *FIRA_p, CFilterItem **filterItem_LUT_p, int priority, QString *searchText_p,
                                   int startRow, int endRow, bool backward, bool regExp,
                                   bool caseSensitive)

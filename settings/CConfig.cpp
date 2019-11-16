@@ -625,7 +625,7 @@ bool CSCZ_CfgSettingColorTable::isDefaultValue(void)
 ***********************************************************************************************************************/
 bool CSCZ_CfgSettingColorTable::SetValue(QString *value_p)
 {
-    Q_UNUSED(value_p);
+    Q_UNUSED(value_p)
     return false;
 }
 

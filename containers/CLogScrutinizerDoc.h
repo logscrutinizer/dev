@@ -171,10 +171,9 @@ public:
     bool LoadLogFile(QString fileName, bool reload = false); /* Will start the progress dialog */
     void ExecuteLoadLog(void); /* Is run  from the progress dialog */
 
-    /* setNewLog is used after the log has been loaded and memory mapped to inform other components such
+    /* logUpdated is used after the log has been loaded and memory mapped to inform other components such
      * rowcache about the changes */
-    void setNewLog(QFile *qFile_p, TIA_t *TIA_p, FIRA_t *FIRA_p, CFilterItem **filterItem_LUT, CMemPool& memPool,
-                   int64_t fileSize);
+    void logUpdated(int64_t fileSize);
     void replaceFileSysWatcherFile(QString& fileName);
 
     void Filter(void);

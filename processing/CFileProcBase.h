@@ -236,7 +236,7 @@ protected:
     /* Functions called in thread context only */
     virtual void thread_Process(CThreadConfiguration *config_p)
     {
-        Q_UNUSED(config_p);
+        Q_UNUSED(config_p)
         m_isStopped = false;
         thread_ProcessingDone();
     }

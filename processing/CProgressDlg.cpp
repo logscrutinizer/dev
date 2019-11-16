@@ -257,8 +257,8 @@ void CProgressDlg::showEvent(QShowEvent *event)
 ***********************************************************************************************************************/
 int CProgressDlg::OnPluginMsg(int wParam, int lParam)
 {
-    Q_UNUSED(wParam);
-    Q_UNUSED(lParam);
+    Q_UNUSED(wParam)
+    Q_UNUSED(lParam)
     return 1;
 }
 

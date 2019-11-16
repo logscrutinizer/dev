@@ -195,7 +195,6 @@ bool CXMLBase::GetNextElement(void)
                 return true;
 
             case NO_TOKEN:
-            default:
                 XML_Error();
                 break;
         }
@@ -371,21 +370,21 @@ void CXMLBase::XML_Error(void)
 
 #ifdef _DEBUG
 
-char doc1[] = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>"
-              "<TextAnalysisTool.NET version=\"2006-12-04\" showOnlyFilteredLines=\"False\"><filters>"
-              "<filter enabled=\"y\" excluding=\"n\" color=\"ff0000\" type=\"matches_text\" case_sensitive=\"n\" "
-              "regex=\"n\" text=\"hickup din lille gris pis && \" /> <filter enabled=\"y \" excluding=\"  n\" "
-              "color   =\" ff0000\" type=\"  matches_text \" case_sensitive  =  \"n\" regex=\"n\" "
-              "text=\"hickup\" /> </filters></TextAnalysisTool.NET>";
+static char doc1[] = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>"
+                     "<TextAnalysisTool.NET version=\"2006-12-04\" showOnlyFilteredLines=\"False\"><filters>"
+                     "<filter enabled=\"y\" excluding=\"n\" color=\"ff0000\" type=\"matches_text\" case_sensitive=\"n\" "
+                     "regex=\"n\" text=\"hickup din lille gris pis && \" /> <filter enabled=\"y \" excluding=\"  n\" "
+                     "color   =\" ff0000\" type=\"  matches_text \" case_sensitive  =  \"n\" regex=\"n\" "
+                     "text=\"hickup\" /> </filters></TextAnalysisTool.NET>";
 
 /***********************************************************************************************************************
 *   Start
 ***********************************************************************************************************************/
 void CXMLBase_Test::Start(void)
 {
-    Parse(doc1, (int)strlen(doc1) + 1);
+    Parse(doc1, static_cast<int>(strlen(doc1) + 1));
 
-    SetDocument(doc1, (int)strlen(doc1));
+    SetDocument(doc1, static_cast<int>(strlen(doc1)));
 
     char tempi[256];
     bool found = false;

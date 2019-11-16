@@ -37,15 +37,9 @@ public:
     explicit CTextRectElementFactory(QList<TextRectElement_t *> *autoHighlight_Pool_p) : m_autoHighlight_Pool_p(
             autoHighlight_Pool_p) {}
 
-    /****/
-    virtual TextRectElement_t *create()
-    {
-        if (m_autoHighlight_Pool_p->isEmpty()) {
-            return static_cast<TextRectElement_t *>(malloc(sizeof(TextRectElement_t)));
-        } else {
-            return m_autoHighlight_Pool_p->takeLast();
-        }
-    }
+    virtual ~CTextRectElementFactory() {}
+
+    virtual TextRectElement_t *create(void);
 
 private:
     QList<TextRectElement_t *> *m_autoHighlight_Pool_p;
@@ -60,15 +54,7 @@ public:
     explicit CFontModElementFactory(QList<FontModification_Element_t *> *fontModification_Pool_p) :
         CTextRectElementFactory(nullptr), m_fontModification_Pool_p(fontModification_Pool_p) {}
 
-    /****/
-    virtual TextRectElement_t *create() override
-    {
-        if (m_fontModification_Pool_p->isEmpty()) {
-            return static_cast<TextRectElement_t *>(malloc(sizeof(FontModification_Element_t)));
-        } else {
-            return reinterpret_cast<TextRectElement_t *>(m_fontModification_Pool_p->takeLast());
-        }
-    }
+    virtual TextRectElement_t *create(void) override;
 
 private:
     QList<FontModification_Element_t *> *m_fontModification_Pool_p;

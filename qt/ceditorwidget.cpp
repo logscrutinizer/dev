@@ -171,7 +171,7 @@ void CEditorWidget_SetCursor(QCursor *cursor_p)
 ***********************************************************************************************************************/
 void CEditorWidget_Initialize(bool reload)
 {
-    Q_UNUSED(reload);
+    Q_UNUSED(reload)
 
 #ifdef ASSERT_ON_NULL
     Q_ASSERT(g_editorWidget_p != nullptr);
@@ -437,7 +437,7 @@ CEditorWidget::CEditorWidget(QWidget *parent) :
 ***********************************************************************************************************************/
 void CEditorWidget::paintEvent(QPaintEvent *event)
 {
-    Q_UNUSED(event);
+    Q_UNUSED(event)
 
     try {
         LS_Painter painter(this);
@@ -471,12 +471,12 @@ QSize CEditorWidget::sizeHint() const
     windowSize = m_lastResize;
 
     auto refreshEditorWindow = makeMyScopeGuard([&] () {
-        PRINT_SIZE(QString("Editor sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+        PRINT_SIZE(QString("Editor sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()))
     });
 
     if (CSCZ_AdaptWindowSizes) {
         windowSize = m_adaptWindowSize;
-        PRINT_SIZE(QString("Editor adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+        PRINT_SIZE(QString("Editor adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
     }
 
     return windowSize;
