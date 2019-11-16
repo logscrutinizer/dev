@@ -25,7 +25,7 @@
 ***********************************************************************************************************************/
 void CSearchWidget::on_pushButton_Forward_clicked(void)
 {
-    TRACEX_DE("Forward");
+    TRACEX_DE("Forward")
     addCurrentToHistory();
     CEditorWidget_EmptySelectionList();
     MW_Search(true);
@@ -60,7 +60,7 @@ void CSearchWidget::keyPressEvent(QKeyEvent *e)
 ***********************************************************************************************************************/
 void CSearchWidget::on_pushButton_Back_clicked(void)
 {
-    TRACEX_DE("Backwards");
+    TRACEX_DE("Backwards")
     addCurrentToHistory();
     CEditorWidget_EmptySelectionList();
     MW_Search(false);

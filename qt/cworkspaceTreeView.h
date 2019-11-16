@@ -77,7 +77,7 @@ protected:
     {
         auto type = event->type();
         if (type != QEvent::Paint) {
-            TRACEX_D(QString("Workspace event %1").arg(type));
+            TRACEX_D(QString("Workspace event %1").arg(type))
         }
         return QTreeView::event(event);
     }

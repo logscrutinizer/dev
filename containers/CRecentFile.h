@@ -29,7 +29,7 @@ typedef struct {
 class CRecentFile
 {
 public:
-    CRecentFile() {TRACEX_DE("CRecentFile::CRecentFile");}
+    CRecentFile() {TRACEX_DE("CRecentFile::CRecentFile")}
     ~CRecentFile() {Clean();}
 
     void Clean(void);

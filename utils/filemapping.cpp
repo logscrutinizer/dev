@@ -26,16 +26,16 @@ namespace FileMapping
         *fileSize_p = 0;
 
         if (TRACEX_IS_ENABLED(LOG_LEVEL_DEBUG)) {
-            TRACEX_D(QString("Creating TIA memory mapped using file: %1").arg(TIA_File.fileName()));
+            TRACEX_D(QString("Creating TIA memory mapped using file: %1").arg(TIA_File.fileName()))
         }
 
         if (TIA_File.fileName().isEmpty()) {
-            TRACEX_E("CreateTIA_MemMapped Failed - TIA File name is not setup");
+            TRACEX_E("CreateTIA_MemMapped Failed - TIA File name is not setup")
             return false;
         }
 
         if (!TIA_File.exists()) {
-            TRACEX_I("CreateTIA_MemMapped Failed - TIA File doesn't exist");
+            TRACEX_I("CreateTIA_MemMapped Failed - TIA File doesn't exist")
             return false;
         }
 
@@ -45,14 +45,14 @@ namespace FileMapping
         }
 
         if (TIA_fileInfo.size() <= static_cast<int64_t>(sizeof(TIA_FileHeader_t))) {
-            TRACEX_I("FileMapping::CreateTIA_MemMapped - Failed, file exists but is empty", &TIA_File);
+            TRACEX_I("FileMapping::CreateTIA_MemMapped - Failed, file exists but is empty", &TIA_File)
             return false;
         }
 
         /* start by using the memory as the header, this will be later cast to the TIA array */
         TIA_FileHeader_t *header_p = reinterpret_cast<TIA_FileHeader_t *>(TIA_File.map(0, TIA_fileInfo.size()));
         if (header_p == nullptr) {
-            TRACEX_E(QString("Failed to memory map TIA file - memory issue %1").arg(TIA_File.fileName()));
+            TRACEX_E(QString("Failed to memory map TIA file - memory issue %1").arg(TIA_File.fileName()))
             return false;
         }
 
@@ -145,7 +145,7 @@ namespace FileMapping
             }
         }
 
-        TRACEX_D("Unmapped the TIA file %s", TIA_File.fileName().toLatin1().constData());
+        TRACEX_D("Unmapped the TIA file %s", TIA_File.fileName().toLatin1().constData())
         return true;
     }
 
@@ -153,7 +153,7 @@ namespace FileMapping
     bool CreateFIRA_MemMapped(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int rows)
     {
         if (FIRA_File.fileName().isEmpty()) {
-            TRACEX_E("CreateFIRA_MemMapped Failed - FIRA File name is not setup");
+            TRACEX_E("CreateFIRA_MemMapped Failed - FIRA File name is not setup")
             return false;
         }
 
@@ -174,11 +174,11 @@ namespace FileMapping
         FIRA_mem_p = reinterpret_cast<FIR_t *>(FIRA_File.map(0, static_cast<int>(sizeof(FIR_t)) * rows));
 
         if (FIRA_mem_p == nullptr) {
-            TRACEX_E("Mapping FIRA file failed, memory error");
+            TRACEX_E("Mapping FIRA file failed, memory error")
             return false;
         }
 
-        TRACEX_I("FIRA file memory mapped: %s", FIRA_File.fileName().toLatin1().constData());
+        TRACEX_I("FIRA file memory mapped: %s", FIRA_File.fileName().toLatin1().constData())
 
         memset(FIRA_mem_p, 0, sizeof(FIR_t) * static_cast<size_t>(rows));    /* FIRA Use OK */
         return true;
@@ -188,7 +188,7 @@ namespace FileMapping
     bool IncrementalFIRA_MemMap(QFile& FIRA_File, FIR_t *& FIRA_mem_p, const int totalRows)
     {
         if (FIRA_File.fileName().isEmpty()) {
-            TRACEX_E(QString("%1 Failed - No FIRA file name").arg(__FUNCTION__));
+            TRACEX_E(QString("%1 Failed - No FIRA file name").arg(__FUNCTION__))
             return false;
         }
 
@@ -216,11 +216,11 @@ namespace FileMapping
         FIRA_mem_p = reinterpret_cast<FIR_t *>(FIRA_File.map(0, static_cast<int64_t>(sizeof(FIR_t)) * totalRows));
 
         if (FIRA_mem_p == nullptr) {
-            TRACEX_E(QString("%1 Mapping FIRA file failed, memory error").arg(__FUNCTION__));
+            TRACEX_E(QString("%1 Mapping FIRA file failed, memory error").arg(__FUNCTION__))
             return false;
         }
 
-        TRACEX_D("FIRA file memory mapped: %s", FIRA_File.fileName().toLatin1().constData());
+        TRACEX_D("FIRA file memory mapped: %s", FIRA_File.fileName().toLatin1().constData())
 
         return true;
     }
@@ -252,7 +252,7 @@ namespace FileMapping
             TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to remove the memory mapped TIA file", &FIRA_File);
         }
 
-        TRACEX_D("Unmapped the FIRA file %s", FIRA_File.fileName().toLatin1().constData());
+        TRACEX_D("Unmapped the FIRA file %s", FIRA_File.fileName().toLatin1().constData())
         return true;
     }
 } /* namespace */

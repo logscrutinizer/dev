@@ -25,13 +25,13 @@ void CWorker::run(void)
     });
 
 #ifdef _DEBUG
-    TRACEX_D("Thread:%p Cmd:%d", m_data_p);
+    TRACEX_D("Thread:%p Cmd:%d", m_data_p)
 #endif
 
     m_data_p->cmdSync_sem_p->acquire();
 
 #ifdef _DEBUG
-    TRACEX_D("Thread:0x%x Cmd:%d", m_data_p, m_data_p->command);
+    TRACEX_D("Thread:0x%x Cmd:%d", m_data_p, m_data_p->command)
 #endif
 
     while (m_data_p->command & (THREAD_CMD_START | THREAD_CMD_CONTINUE)) {
@@ -40,12 +40,12 @@ void CWorker::run(void)
         m_data_p->cmdSync_sem_p->acquire();
 
 #ifdef _DEBUG
-        TRACEX_D("Thread:%p Cmd:%d", m_data_p, m_data_p->command);
+        TRACEX_D("Thread:%p Cmd:%d", m_data_p, m_data_p->command)
 #endif
     }
 
 #ifdef _DEBUG
-    TRACEX_D("Thread:%p Cmd:%d", m_data_p, m_data_p->command);
+    TRACEX_D("Thread:%p Cmd:%d", m_data_p, m_data_p->command)
 #endif
     m_data_p->killed_sem_p->release();
 }
@@ -58,14 +58,14 @@ CThreadManager::CThreadManager()
         static_cast<threadInstance_base_t *>(malloc(sizeof(threadInstance_base_t) *
                                                     static_cast<size_t>(m_numOfThreads)));
     if (m_threadInstanceArray == nullptr) {
-        TRACEX_E("CThreadManager::CThreadManager  m_threadInstanceArray is nullptr");
+        TRACEX_E("CThreadManager::CThreadManager  m_threadInstanceArray is nullptr")
         return;
     }
     memset(m_threadInstanceArray, 0, sizeof(threadInstance_base_t) * static_cast<size_t>(m_numOfThreads));
 
     m_hThreadArray_pp = static_cast<CWorker **>(malloc(sizeof(CWorker *) * static_cast<size_t>(m_numOfThreads)));
     if (m_hThreadArray_pp == nullptr) {
-        TRACEX_E("CThreadManager::CThreadManager  m_hThreadArray_pp is nullptr");
+        TRACEX_E("CThreadManager::CThreadManager  m_hThreadArray_pp is nullptr")
         return;
     }
     memset(m_hThreadArray_pp, 0, sizeof(QThread *) * static_cast<size_t>(m_numOfThreads));
@@ -110,11 +110,11 @@ void CThreadManager::InitializeThreads(void)
         m_threadInstanceArray[threadIndex].command = THREAD_CMD_STOP;
 
         m_hThreadArray_pp[threadIndex] = new CWorker();
-        TRACEX_DE(QString("%1 - Creating thread %2").arg(__FUNCTION__).arg(threadIndex));
+        TRACEX_DE(QString("%1 - Creating thread %2").arg(__FUNCTION__).arg(threadIndex))
         m_hThreadArray_pp[threadIndex]->setData(&m_threadInstanceArray[threadIndex]);
 
         if (m_hThreadArray_pp[threadIndex] == nullptr) {
-            TRACEX_E("CThreadManager::InitializeThreads - Creating thread %u failed", threadIndex);
+            TRACEX_E("CThreadManager::InitializeThreads - Creating thread %u failed", threadIndex)
             return;
         }
         m_hThreadArray_pp[threadIndex]->start(); /* The thread will stop at wait for cmdSync_sem_p */
@@ -129,7 +129,7 @@ void CThreadManager::StartConfiguredThreads(void)
     /* Start/Release the threads */
     for (int threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         if (m_threadInstanceArray[threadIndex].isConfigured) {
-            TRACEX_DE(QString("%1 - Started %2").arg(__FUNCTION__).arg(threadIndex));
+            TRACEX_DE(QString("%1 - Started %2").arg(__FUNCTION__).arg(threadIndex))
             m_threadInstanceArray[threadIndex].cmdSync_sem_p->release();
         }
     }
@@ -144,9 +144,9 @@ void CThreadManager::WaitForAllThreads(void)
 
     for (threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         if (m_threadInstanceArray[threadIndex].isConfigured) {
-            TRACEX_DE(QString("%1 - Waiting for %2").arg(__FUNCTION__).arg(threadIndex));
+            TRACEX_DE(QString("%1 - Waiting for %2").arg(__FUNCTION__).arg(threadIndex))
             m_threadInstanceArray[threadIndex].doneSync_sem_p->acquire();
-            TRACEX_DE(QString("%1 - Done waiting for %2").arg(__FUNCTION__).arg(threadIndex));
+            TRACEX_DE(QString("%1 - Done waiting for %2").arg(__FUNCTION__).arg(threadIndex))
         }
     }
 
@@ -164,7 +164,7 @@ void CThreadManager::ConfigureThread(int index, ThreadAction_fptr_t action_p, vo
     m_threadInstanceArray[index].action_p = action_p;
     m_threadInstanceArray[index].isConfigured = true;
     m_threadInstanceArray[index].command = THREAD_CMD_CONTINUE;
-    TRACEX_DE(QString("%1 - Configured %2").arg(__FUNCTION__).arg(index));
+    TRACEX_DE(QString("%1 - Configured %2").arg(__FUNCTION__).arg(index))
 }
 
 /***********************************************************************************************************************
@@ -182,14 +182,14 @@ void CThreadManager::KillThreads(void)
     /* Kill all threads */
     for (threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
         m_threadInstanceArray[threadIndex].command = THREAD_CMD_STOP;
-        TRACEX_DE(QString("%1 - Stopping %2").arg(__FUNCTION__).arg(threadIndex));
+        TRACEX_DE(QString("%1 - Stopping %2").arg(__FUNCTION__).arg(threadIndex))
         m_threadInstanceArray[threadIndex].cmdSync_sem_p->release();
     }
 
     for (threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
-        TRACEX_DE(QString("%1 - Waiting for %2").arg(__FUNCTION__).arg(threadIndex));
+        TRACEX_DE(QString("%1 - Waiting for %2").arg(__FUNCTION__).arg(threadIndex))
         m_threadInstanceArray[threadIndex].killed_sem_p->acquire();
-        TRACEX_DE(QString("%1 - Done wainting for %2").arg(__FUNCTION__).arg(threadIndex));
+        TRACEX_DE(QString("%1 - Done wainting for %2").arg(__FUNCTION__).arg(threadIndex))
     }
 
     m_numOfThreads = 0;

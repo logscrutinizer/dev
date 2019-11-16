@@ -67,7 +67,7 @@ void CPlotThread::thread_Process(CThreadConfiguration *config_p)
 
         error = error.arg(title_p).arg(e);
 
-        TRACEX_DE(g_processingCtrl_p->m_exceptionInfo);
+        TRACEX_DE(g_processingCtrl_p->m_exceptionInfo)
     }
 
     (void)thread_ProcessingDone();
@@ -80,7 +80,7 @@ void CPlotCtrl::Start_PlotProcessing(QFile *qFile_p, char *workMem_p, int workMe
                                      int priority, QList<CPlot *> *pendingPlot_execList_p, int startRow,
                                      int endRow)
 {
-    TRACEX_I("Plugin plot generation started   startRow:%d endRow:%d", startRow, endRow);
+    TRACEX_I("Plugin plot generation started   startRow:%d endRow:%d", startRow, endRow)
     g_processingCtrl_p->AddProgressInfo(QString("Starting plot generation"));
 
     m_pendingPlot_execList_p = pendingPlot_execList_p;
@@ -137,5 +137,5 @@ void CPlotCtrl::WrapUp(void)
     } else {
         g_processingCtrl_p->SetFail();
     }
-    TRACEX_DE("CPlotCtrl::WrapUp");
+    TRACEX_DE("CPlotCtrl::WrapUp")
 }

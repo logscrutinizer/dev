@@ -112,7 +112,7 @@ void CRowCache::Get(const int rowIndex, char **text_p, int *size_p, int *propert
         }
 
         if (nullptr == m_cache_memMap[cacheIndex].poolItem_p) {
-            TRACEX_E(QString("Failed to allocate memory to string of size %1").arg(rowSize));
+            TRACEX_E(QString("Failed to allocate memory to string of size %1").arg(rowSize))
             return;
         }
 

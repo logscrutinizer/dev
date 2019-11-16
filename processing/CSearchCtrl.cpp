@@ -40,7 +40,7 @@ void test(void)
                    &database,
                    &compile_err) != HS_SUCCESS) {
         g_processingCtrl_p->AddProgressInfo(QString("Regular expression contains error: %1").arg(pattern));
-        TRACEX_I(QString("RegExp failed %1").arg(compile_err->message));
+        TRACEX_I(QString("RegExp failed %1").arg(compile_err->message))
         hs_free_compile_error(compile_err);
         g_processingCtrl_p->m_abort = true;
         return;
@@ -321,7 +321,7 @@ bool CSearchCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descript
                        nullptr,
                        &searchConfig_p->m_regexp_database,
                        &compile_err) != HS_SUCCESS) {
-            TRACEX_I(QString("RegExp failed %1").arg(compile_err->message));
+            TRACEX_I(QString("RegExp failed %1").arg(compile_err->message))
             g_processingCtrl_p->AddProgressInfo(QString("Regular expression contains error: %1")
                                                     .arg(searchConfig_p->m_searchText));
             g_processingCtrl_p->m_abort = true;
@@ -330,7 +330,7 @@ bool CSearchCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descript
         }
 
         if (hs_alloc_scratch(searchConfig_p->m_regexp_database, &searchConfig_p->m_regexp_scratch) != HS_SUCCESS) {
-            TRACEX_I(QString("ERROR: Unable to allocate scratch space. Exiting."));
+            TRACEX_I(QString("ERROR: Unable to allocate scratch space. Exiting."))
             fprintf(stderr, "ERROR: Unable to allocate scratch space. Exiting.");
             return false;
         }
@@ -390,7 +390,7 @@ void CSearchCtrl::WrapUp(void)
     /* Hard to say if all threads manage to process all their lines, one thread might have been quicker and
      * the match is actually not the last one */
 
-    TRACEX_D("CSearchCtrl::WrapUp");
+    TRACEX_D("CSearchCtrl::WrapUp")
 
     /*Sweep from thread with lowest TI until the one with the highest, pick the earliest */
 
@@ -518,5 +518,5 @@ void CSearchCtrl::WrapUp(void)
         g_processingCtrl_p->SetFail();
     }
 
-    TRACEX_D("CSearchCtrl::WrapUp match:%d row:%d", m_searchSuccess, m_searchResult_TI);
+    TRACEX_D("CSearchCtrl::WrapUp match:%d row:%d", m_searchSuccess, m_searchResult_TI)
 }

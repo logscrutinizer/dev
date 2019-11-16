@@ -478,7 +478,7 @@ void CRamLog::CheckRamLogs(void)
 
             while (entry_p < endEntry_p && !stop) {
                 if (entry_p->startMarker != 0xbeefbeef) {
-                    TRACEX_E("RamLog entry overwritten\n");
+                    TRACEX_E("RamLog entry overwritten\n")
                     return;
                 }
                 ++count;
@@ -530,13 +530,13 @@ void CRamLog::TestRamLogs(void)
     int count = GetRamLog(0, pointerArray, 100);
 
     if (count != addCount) {
-        TRACEX_E("RamLog Count Wrong\n");
+        TRACEX_E("RamLog Count Wrong\n")
     }
 
     int checkCount = 0;
     while (checkCount < count) {
         if (strcmp(RamLogTestArray[checkCount], pointerArray[checkCount]) != 0) {
-            TRACEX_E("RamLog Data Wrong\n");
+            TRACEX_E("RamLog Data Wrong\n")
         }
 
         ++checkCount;

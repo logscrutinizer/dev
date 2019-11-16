@@ -46,7 +46,7 @@ void CSCZ_SetLastViewSelectionKind(CSCZ_LastViewSelectionKind_en selectionKind)
     if (selectionKind != CSCZ_Global_LastViewSelectionKind) {
         CSCZ_Global_LastViewSelectionKind = selectionKind;
 #ifdef _DEBUG
-        TRACEX_DE("CSCZ_SetLastViewSelectionKind %d", CSCZ_Global_LastViewSelectionKind);
+        TRACEX_DE("CSCZ_SetLastViewSelectionKind %d", CSCZ_Global_LastViewSelectionKind)
 #endif
     }
 }
@@ -61,7 +61,7 @@ void CSCZ_UnsetLastViewSelectionKind(CSCZ_LastViewSelectionKind_en selectionKind
         CSCZ_Global_PendingSelectionKind = selectionKind;
         CSCZ_Global_LastViewSelectionKind = CSCZ_LastViewSelectionKind_None_e;
 #ifdef _DEBUG
-        TRACEX_DE("CSCZ_UnsetLastViewSelectionKind");
+        TRACEX_DE("CSCZ_UnsetLastViewSelectionKind")
 #endif
     }
 }

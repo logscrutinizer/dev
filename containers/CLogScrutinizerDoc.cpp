@@ -97,7 +97,7 @@ CLogScrutinizerDoc::CLogScrutinizerDoc()
 
     connect(m_fileChangeTimer.get(), SIGNAL(timeout()), this, SLOT(onFileChangeTimer()));
 
-    TRACEX_I("Cache pool size: %lldMB", (m_memPool.GetTotalSize() >> 10));
+    TRACEX_I("Cache pool size: %lldMB", (m_memPool.GetTotalSize() >> 10))
 
     theDoc_p = this;
 }
@@ -121,7 +121,7 @@ ReloadStrategy_e CLogScrutinizerDoc::decideReloadStrategy(const QFileInfo& newFi
     /* Close and Reopen to prevent file caching to "destroy" the file change validation. */
     m_qFile_Log.close();
     if (!m_qFile_Log.open(QIODevice::ReadOnly)) {
-        TRACEX_W(QString("Failied to reopen log file at file validation"));
+        TRACEX_W(QString("Failied to reopen log file at file validation"))
         return RS_Full;
     }
 
@@ -377,7 +377,7 @@ void CLogScrutinizerDoc::logFileDirUpdated(const QString &path)
             PRINT_FILE_TRACKING(QString("Log file (dir) modified: %1").arg(path));
 
             if (!fileInfo.exists()) {
-                TRACEX_W(QString("Log file removed: %1").arg(path));
+                TRACEX_W(QString("Log file removed: %1").arg(path))
 
                 auto ret = QMessageBox::information(
                     MW_Parent(),
@@ -479,7 +479,7 @@ bool CLogScrutinizerDoc::isRowClipped(const int row)
 ***********************************************************************************************************************/
 void CLogScrutinizerDoc::CleanDB(bool reload, bool unloadFilters)
 {
-    TRACEX_I("Cleaning all");
+    TRACEX_I("Cleaning all")
 
     /* First thing */
     m_database.TIA.rows = 0;
@@ -514,7 +514,7 @@ void CLogScrutinizerDoc::CleanDB(bool reload, bool unloadFilters)
     memset(&m_database, 0, sizeof(DB_t)); /*  This cannot be done when filters are not reloaded ...why ?? */
 
     if (m_qFile_Log.isOpen()) {
-        TRACEX_I("Closed Log file: %s", m_qFile_Log.fileName().toLatin1().constData());
+        TRACEX_I("Closed Log file: %s", m_qFile_Log.fileName().toLatin1().constData())
         m_qFile_Log.close();
     }
 
@@ -766,7 +766,7 @@ bool CLogScrutinizerDoc::CheckAllFilters(void)
                                filterItem_p->m_filterItem_ref_p->m_size);
                         g_largeTempString[filterItem_p->m_filterItem_ref_p->m_size] = 0;
                         message += QString(g_largeTempString) + QString(" is corrupt - ") + errorString;
-                        TRACEX_W(message);
+                        TRACEX_W(message)
                         return false;
                     }
                 }
@@ -794,11 +794,11 @@ void CLogScrutinizerDoc::replaceFileSysWatcherFile(QString& fileName)
     fileInfo.refresh();
 
     if (!fileInfo.exists()) {
-        TRACEX_W(QString("File doesn't exist, cannot be tracked: %1").arg(fileName));
+        TRACEX_W(QString("File doesn't exist, cannot be tracked: %1").arg(fileName))
         return;
     }
 
-    TRACEX_I(QString("Last changed updated: %1").arg(fileName));
+    TRACEX_I(QString("Last changed updated: %1").arg(fileName))
 
     /* Add the new file watch */
     if (!m_fileSysWatcher.addPath(fileInfo.absoluteFilePath())) {
@@ -819,14 +819,14 @@ void CLogScrutinizerDoc::replaceFileSysWatcherFile(QString& fileName)
     QStringList files = m_fileSysWatcher.files();
     if (!files.empty()) {
         for (auto& file : files) {
-            TRACEX_I(QString("Tracked file: %1").arg(file));
+            TRACEX_I(QString("Tracked file: %1").arg(file))
         }
     }
 
     QStringList dirs = m_fileSysWatcher.directories();
     if (!dirs.empty()) {
         for (auto& dir : dirs) {
-            TRACEX_I(QString("Tracked dir: %1").arg(dir));
+            TRACEX_I(QString("Tracked dir: %1").arg(dir))
         }
     }
 }
@@ -875,7 +875,7 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
 
     m_delayedErrorMsg[0] = 0;
 
-    TRACEX_I(QString("Loading log file: %1").arg(fileName));
+    TRACEX_I(QString("Loading log file: %1").arg(fileName))
 
     CEditorWidget_Initialize(reload);
 
@@ -883,9 +883,9 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
 
     if (m_qFile_Log.isOpen()) {
 #ifdef _DEBUG
-        TRACEX_E("Logical error, log file is already open");
+        TRACEX_E("Logical error, log file is already open")
 #else
-        TRACEX_W("Logical error, log file is already open");
+        TRACEX_W("Logical error, log file is already open")
 #endif
         return false;
     }
@@ -918,9 +918,9 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
     if (!CanFileBeOpenedForFileReadWrite(m_TIA_FileName, CFG_MAX_FILE_NAME_SIZE, true, 0, true)) {
         CleanDB(false);  /* fallback solution */
 #ifdef _DEBUG
-        TRACEX_E(m_delayedErrorMsg);
+        TRACEX_E(m_delayedErrorMsg)
 #else
-        TRACEX_W(m_delayedErrorMsg);
+        TRACEX_W(m_delayedErrorMsg)
 #endif
         return false;
     }
@@ -931,9 +931,9 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
     if (!CanFileBeOpenedForFileReadWrite(m_FIRA_FileName, CFG_MAX_FILE_NAME_SIZE, true, 0, true)) {
         CleanDB(false);  /* fallback solution */
 #ifdef _DEBUG
-        TRACEX_E(m_delayedErrorMsg);
+        TRACEX_E(m_delayedErrorMsg)
 #else
-        TRACEX_W(m_delayedErrorMsg);
+        TRACEX_W(m_delayedErrorMsg)
 #endif
         return false;
     }
@@ -949,7 +949,7 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
         if (FileMapping::CreateFIRA_MemMapped(m_qFile_FIRA, m_database.FIRA.FIR_Array_p, m_database.TIA.rows)) {
             setNewLog(&m_qFile_Log, &m_database.TIA, &m_database.FIRA, m_database.filterItem_LUT,
                       m_memPool, fileSize);
-            TRACEX_I(QString("Fast loading successful, based on TIA file:%1").arg(m_TIA_FileName));
+            TRACEX_I(QString("Fast loading successful, based on TIA file:%1").arg(m_TIA_FileName))
             return true;  /* SUCCESS, halt here, we are DONE! */
         }
     }
@@ -992,9 +992,9 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
              * If it was a USER REQUESTED abort it is not an error, although we have to unload the current log */
             if (!g_processingCtrl_p->m_abort) {
 #ifdef _DEBUG
-                TRACEX_E(QString("CLogScrutinizerDoc::Search_TIA  Failed FileName:%1").arg(m_Log_FileName));
+                TRACEX_E(QString("CLogScrutinizerDoc::Search_TIA  Failed FileName:%1").arg(m_Log_FileName))
 #else
-                TRACEX_W(QString("CLogScrutinizerDoc::Search_TIA  Failed FileName:%1").arg(m_Log_FileName));
+                TRACEX_W(QString("CLogScrutinizerDoc::Search_TIA  Failed FileName:%1").arg(m_Log_FileName))
 #endif
             }
 
@@ -1017,7 +1017,7 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
 
     if (!g_processingCtrl_p->m_abort) {
         /* Delayed error message, prints the last */
-        TRACEX_E(m_delayedErrorMsg);
+        TRACEX_E(m_delayedErrorMsg)
     }
 
     return false;
@@ -1115,7 +1115,7 @@ void CLogScrutinizerDoc::PostProcFiltering(void)
                                QMessageBox::Ok,
                                MW_Parent());
             msgBox.exec();
-            TRACEX_I("There are no filterItems matching at all, check your filterItems");
+            TRACEX_I("There are no filterItems matching at all, check your filterItems")
         }
     }
 
@@ -1188,7 +1188,7 @@ void CLogScrutinizerDoc::ExecuteIncrementalFiltering(int startRow)
     QByteArray hash;
     CWorkspace_GetFiltersHash(hash);
     if (hash != m_filtersHash) {
-        TRACEX_I(QString("Filter items has changed, doing full filtering"));
+        TRACEX_I(QString("Filter items has changed, doing full filtering"))
         Filter();
         return;
     }
@@ -1196,7 +1196,7 @@ void CLogScrutinizerDoc::ExecuteIncrementalFiltering(int startRow)
     CWorkspace_GetBookmarks(&bookmarkList);
 
     if (nullptr == m_workMem.GetRef()) {
-        TRACEX_E(QString("%1 Internal error, WorkMem not set").arg(__FUNCTION__));
+        TRACEX_E(QString("%1 Internal error, WorkMem not set").arg(__FUNCTION__))
     }
 
     CFilterProcCtrl filterCtrl;
@@ -1580,7 +1580,7 @@ void CLogScrutinizerDoc::VerifyDB(void)
 bool CLogScrutinizerDoc::SaveRowsToFile(char *fileName_p, int startRow, int endRow)
 {
     if ((startRow < 0) && (endRow <= -startRow)) {
-        TRACEX_W("Failed to save row clipped region to file, row clips not set");
+        TRACEX_W("Failed to save row clipped region to file, row clips not set")
         return false;
     }
 
@@ -1674,7 +1674,7 @@ bool CLogScrutinizerDoc::CanFileBeOpenedForFileReadWrite(QString& fileName, int 
 
     if (!tryOtherName) {
         if (promtWarning) {
-            TRACEX_W(QString("Warning: Failed to open file: %s").arg(temp.fileName()));
+            TRACEX_W(QString("Warning: Failed to open file: %s").arg(temp.fileName()))
 
             QString message("Couldn't open file: ");
             message += fileName;
@@ -1705,7 +1705,7 @@ bool CLogScrutinizerDoc::CanFileBeOpenedForFileReadWrite(QString& fileName, int 
             fileName = fileName_tmp; /* SUCCESS */
             return true;
         } else if (promtWarning) {
-            TRACEX_W(QString("Warning: Failed to open file: %s").arg(fileName));
+            TRACEX_W(QString("Warning: Failed to open file: %s").arg(fileName))
 
             if (promtWarning) {
                 QString message("Couldn't open file: ");
@@ -1732,7 +1732,7 @@ QString CLogScrutinizerDoc::GetRecommendedPath(void)
     QString lsPath = processEnvironment.value("LS_PATH");
 
     if (!lsPath.isEmpty()) {
-        TRACEX_W(QString("Using environment variable LS_PATH (%s)").arg(lsPath));
+        TRACEX_W(QString("Using environment variable LS_PATH (%s)").arg(lsPath))
         return lsPath;
     } else {
         TRACEX_D("CLogScrutinizerDoc::CLogScrutinizerDoc    Reading environment "

@@ -455,7 +455,7 @@ void CPlotWidget::FillEmptyWindow(void)
 {
     CLogScrutinizerDoc *doc_p = GetTheDoc();
 
-    TRACEX_DE(QString("%1").arg(__FUNCTION__));
+    TRACEX_DE(QString("%1").arg(__FUNCTION__))
 
     int x_pos = static_cast<int>((m_windowRect.right() - m_windowRect.left()) * 0.1f);
     int y_pos = static_cast<int>((m_windowRect.bottom() - m_windowRect.top()) * 0.1f);
@@ -464,7 +464,7 @@ void CPlotWidget::FillEmptyWindow(void)
 
     QSize fontSize = doc_p->m_fontCtrl.GetFontSize();
     m_pDC->drawText(x_pos, y_pos, "This is a Plot View");
-    TRACEX_DE(QString("Draw text %1 %2").arg(x_pos).arg(y_pos));
+    TRACEX_DE(QString("Draw text %1 %2").arg(x_pos).arg(y_pos))
 
     y_pos += fontSize.height() * 2;
     x_pos += fontSize.width();
@@ -581,7 +581,7 @@ void CPlotWidget::SurfaceToClipBoard(const ScreenPoint_t *screenPoint_p)
 
     Q_ASSERT(surface_p != nullptr);
     if (surface_p == nullptr) {
-        TRACEX_W(QString("%1 Failed to put surface on clipbard").arg(__FUNCTION__));
+        TRACEX_W(QString("%1 Failed to put surface on clipbard").arg(__FUNCTION__))
         return;
     }
     surface_p->CreatePainter(this); /* create DC in main thread */
@@ -799,7 +799,7 @@ void CPlotWidget::wheelEvent(QWheelEvent *event)
     } else if (!numPixels.isNull()) {
         zDelta = numPixels.y();
     } else {
-        TRACEX_W(QString("%1 zDelta:%2").arg(__FUNCTION__).arg(zDelta));
+        TRACEX_W(QString("%1 zDelta:%2").arg(__FUNCTION__).arg(zDelta))
         return;
     }
 
@@ -1065,7 +1065,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
     m_zoom_right = m_offset_X + (newWidth * (1.0 - x_rel));
 
     if (almost_equal(m_zoom_left, m_zoom_right)) {
-        TRACEX_W("CPlotWidget::ZoomSubPlot_X_Axis  Zoom error");
+        TRACEX_W("CPlotWidget::ZoomSubPlot_X_Axis  Zoom error")
 
         m_zoom_right = m_zoom_left + 1;
     }
@@ -1152,7 +1152,7 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
 #endif
 
     if (almost_equal(zoom.y_min, zoom.y_max)) {
-        TRACEX_W("CPlotWidget::ZoomSubPlot_Y_Axis  Zoom error");
+        TRACEX_W("CPlotWidget::ZoomSubPlot_Y_Axis  Zoom error")
 
         zoom.y_max = zoom.y_min + 1;
     }
@@ -1297,7 +1297,7 @@ void CPlotWidget::ZoomRestore(void)
 void CPlotWidget::mousePressEvent(QMouseEvent *event)
 {
 #ifdef _DEBUG
-    TRACEX_D("%s", __FUNCTION__);
+    TRACEX_D("%s", __FUNCTION__)
 #endif
 
     if (!m_inFocus) {
@@ -1325,7 +1325,7 @@ void CPlotWidget::mousePressEvent(QMouseEvent *event)
 void CPlotWidget::mouseReleaseEvent(QMouseEvent *event)
 {
 #ifdef _DEBUG
-    TRACEX_D("%s", __FUNCTION__);
+    TRACEX_D("%s", __FUNCTION__)
 #endif
 
     if (event->button() & Qt::LeftButton) {
@@ -1350,7 +1350,7 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
     if (!m_toolTipEnabled && !m_toolTipTimer->isActive()) {
         m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
         m_toolTipState = ToolTipState_WaitForRequest;
-        TRACEX_I(QString("ToolTip timer started"));
+        TRACEX_I(QString("ToolTip timer started"))
     }
 
     if (m_lmousebutton && ((event->buttons() & Qt::LeftButton) == 0)) {
@@ -1427,7 +1427,7 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
 void CPlotWidget::OnLButtonDown(ScreenPoint_t& screenPoint)
 {
 #ifdef _DEBUG
-    TRACEX_D("%s", __FUNCTION__);
+    TRACEX_D("%s", __FUNCTION__)
 #endif
 
     m_lmousebutton = true;
@@ -1454,7 +1454,7 @@ void CPlotWidget::OnLButtonDown(ScreenPoint_t& screenPoint)
 void CPlotWidget::OnLButtonUp(void)
 {
 #ifdef _DEBUG
-    TRACEX_D("%s", __FUNCTION__);
+    TRACEX_D("%s", __FUNCTION__)
 #endif
 
     auto redraw = false;
@@ -1467,13 +1467,13 @@ void CPlotWidget::OnLButtonUp(void)
     m_lmousebutton = false;
 
     if (m_vscrollSliderGlue) {
-        TRACEX_DE("%s   m_vscrollSliderGlue OFF", __FUNCTION__);
+        TRACEX_DE("%s   m_vscrollSliderGlue OFF", __FUNCTION__)
         m_vscrollSliderGlue = false;
         redraw = true;
     }
 
     if (m_hscrollSliderGlue) {
-        TRACEX_DE("%s   m_hscrollSliderGlue OFF", __FUNCTION__);
+        TRACEX_DE("%s   m_hscrollSliderGlue OFF", __FUNCTION__)
         m_hscrollSliderGlue = false;
         redraw = true;
     }
@@ -1513,7 +1513,7 @@ bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distanc
     GraphicalObject_t *go_p = nullptr;
     GraphicalObject_t *goBest_p = nullptr;
 
-    TRACEX_D("CPlotWidget::GetClosest_GO");
+    TRACEX_D("CPlotWidget::GetClosest_GO")
 
     *distance_p = 0.0;
     *go_pp = nullptr;
@@ -1610,7 +1610,7 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
     double time = 0.0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
 
-    TRACEX_D("CPlotWidget::SetRow");
+    TRACEX_D("CPlotWidget::SetRow")
 
     setFocus();
 
@@ -1931,7 +1931,7 @@ void CPlotWidget::focusInEvent(QFocusEvent *event)
     MW_Refresh();
 
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_D(QString("%1").arg(__FUNCTION__));
+        TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
     PRINT_FOCUS(__FUNCTION__);
 }
@@ -1958,7 +1958,7 @@ void CPlotWidget::focusOutEvent(QFocusEvent *event)
     update();
 
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_D(QString("%1").arg(__FUNCTION__));
+        TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
     PRINT_FOCUS(__FUNCTION__);
 }
@@ -2169,7 +2169,7 @@ bool CPlotWidget::OpenToolTip(void)
             }
         }
         for (auto& tip : m_toolTipStrings) {
-            TRACEX_I(QString("OpenToolTip  %1").arg(tip));
+            TRACEX_I(QString("OpenToolTip  %1").arg(tip))
         }
         update();
         return true;
@@ -2184,7 +2184,7 @@ void CPlotWidget::CloseToolTip(void)
 {
     m_toolTipStrings.clear();
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_D(QString("%1").arg(__FUNCTION__));
+        TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
     update();
 }
@@ -2313,7 +2313,7 @@ bool CPlotWidget::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_p
     }
 
 #ifdef _DEBUG
-    TRACEX_DE("CPlotWidget::GetClosestGraph distance:%f", distance);
+    TRACEX_DE("CPlotWidget::GetClosestGraph distance:%f", distance)
 #endif
 
     if ((graph_Best_p != nullptr) && (distance < 10.0)) {
@@ -2529,7 +2529,7 @@ void CPlotWidget::RemoveShadowSubPlot(CSubPlotSurface *removeSubPlot_p)
 
     if (shadow_p == nullptr) {
 #ifdef _DEBUG
-        TRACEX_DE("%s not found", __FUNCTION__);
+        TRACEX_DE("%s not found", __FUNCTION__)
 #endif
         return;
     }

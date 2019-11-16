@@ -159,22 +159,22 @@ void CEditorWidget::Initialize_0(void)
 
     m_bitmap_top = QImage(":IDB_BRUSH_TOP_BMP");
     if (m_bitmap_top.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_TOP_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_TOP_BMP load FAILED")
     }
 
     m_bitmap_bottom = QImage(":IDB_BRUSH_BOTTOM_BMP");
     if (m_bitmap_bottom.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_BOTTOM_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_BOTTOM_BMP load FAILED")
     }
 
     m_bitmap_left = QImage(":IDB_BRUSH_LEFT_BMP");
     if (m_bitmap_left.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_LEFT_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_LEFT_BMP load FAILED")
     }
 
     m_bitmap_right = QImage(":IDB_BRUSH_RIGHT_BMP");
     if (m_bitmap_right.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_RIGHT_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_RIGHT_BMP load FAILED")
     }
 
     m_bitmap_left_top = QImage(":IDB_BRUSH_LEFT_TOP_BMP");
@@ -203,7 +203,7 @@ void CEditorWidget::Initialize_0(void)
 
     m_bitmap_bug = MakeTransparantImage(":IDB_BUG_BITMAP_24", Q_RGB(0x7C, 0xFC, 0x00));
     if (m_bitmap_bug.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BUG_BITMAP_24 load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BUG_BITMAP_24 load FAILED")
     }
 
     double scale = static_cast<double>(g_cfg_p->m_scrollArrowScale) / 100.0;
@@ -213,7 +213,7 @@ void CEditorWidget::Initialize_0(void)
                                      Qt::KeepAspectRatio);
 
     if (m_bitmap_bug.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_RIGHT_ARROW load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_RIGHT_ARROW load FAILED")
     }
 #if 0
     m_bitmap_bug_horiz = MakeTransparantImage(":IDB_BUG_BITMAP_HORIZ_24", Q_RGB(0x7C, 0xFC, 0x00));
@@ -221,17 +221,17 @@ void CEditorWidget::Initialize_0(void)
 
     m_bmp_bookmark_48_36 = QImage(":IDB_BOOKMARK_48_36");
     if (m_bmp_bookmark_48_36.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BOOKMARK_48_36 load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BOOKMARK_48_36 load FAILED")
     }
 
     m_colClip_Bitmap_ClipStart = MakeTransparantImage(":IDB_CLIP_START", Q_RGB(0xff, 0xff, 0xff));
     if (m_colClip_Bitmap_ClipStart.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_CLIP_START load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_CLIP_START load FAILED")
     }
 
     m_colClip_Bitmap_ClipEnd = MakeTransparantImage(":IDB_CLIP_END", Q_RGB(0xff, 0xff, 0xff));
     if (m_colClip_Bitmap_ClipEnd.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_CLIP_END load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_CLIP_END load FAILED")
     }
 
     m_bitmapsLoaded = success;
@@ -1355,7 +1355,7 @@ void CEditorWidget::DrawRows(void)
                         currentFont_p = filterItem_p->m_font_p;
                     } else {
                         currentFont_p = nullptr;
-                        TRACEX_E("Row:%d ScreenRow:%d, Font is nullptr", row, index);
+                        TRACEX_E("Row:%d ScreenRow:%d, Font is nullptr", row, index)
                     }
                 } else {
                     /* This is a fallback, there was a severe dump because screen was update at the same time as
@@ -1711,7 +1711,7 @@ void CEditorWidget::SearchNewTopLine(bool checkDisplayCache, int focusRow)
 {
     auto doc_p = GetTheDoc();
 
-    TRACEX_D("CEditorWidget::SearchNewTopLine  checkDisplayCache:%d focusRow:%d", checkDisplayCache, focusRow);
+    TRACEX_D("CEditorWidget::SearchNewTopLine  checkDisplayCache:%d focusRow:%d", checkDisplayCache, focusRow)
 
     if (focusRow == -1) {
         focusRow = SuggestedFocusRow();
@@ -1743,7 +1743,7 @@ void CEditorWidget::SearchNewTopLine(bool checkDisplayCache, int focusRow)
         }
 
         UpdateRelPosition();
-        TRACEX_D("CEditorWidget::SearchNewTopLine   New topline:%d", m_topLine);
+        TRACEX_D("CEditorWidget::SearchNewTopLine   New topline:%d", m_topLine)
         return;
     } else {
         /* if (m_presentationMode == PRESENTATION_MODE_ONLY_FILTERED_e) */
@@ -1828,13 +1828,13 @@ bool CEditorWidget::SearchFilteredRows_inScreen(int startRow, int count, bool up
                 count--;
 
                 if (count == 0) {
-                    TRACEX_DE("SearchFilteredRows_inScreen OK Row:%d", *row_p);
+                    TRACEX_DE("SearchFilteredRows_inScreen OK Row:%d", *row_p)
                     return true;
                 }
             }
         }
 
-        TRACEX_DE("SearchFilteredRows_inScreen FAILED Row:%d", *row_p);
+        TRACEX_DE("SearchFilteredRows_inScreen FAILED Row:%d", *row_p)
         return false;
     } else {
         for (index = startRow; m_screenRows[index].valid; ++index) {
@@ -1843,13 +1843,13 @@ bool CEditorWidget::SearchFilteredRows_inScreen(int startRow, int count, bool up
                 count--;
 
                 if (count == 0) {
-                    TRACEX_DE("SearchFilteredRows_inScreen OK Row:%d", *row_p);
+                    TRACEX_DE("SearchFilteredRows_inScreen OK Row:%d", *row_p)
                     return true;
                 }
             }
         }
 
-        TRACEX_DE("SearchFilteredRows_inScreen FAILED Row:%d", *row_p);
+        TRACEX_DE("SearchFilteredRows_inScreen FAILED Row:%d", *row_p)
         return false;
     }
 }
@@ -1921,12 +1921,12 @@ bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int
     }
 
     if (m_totalNumOfRows == 0) {
-        TRACEX_W("SearchFilteredRows_TIA  No filters");
+        TRACEX_W("SearchFilteredRows_TIA  No filters")
         return false;
     }
 
     if (count == 0) {
-        TRACEX_D("SearchFilteredRows_TIA  Count zero");
+        TRACEX_D("SearchFilteredRows_TIA  Count zero")
         return false;
     }
 
@@ -1940,7 +1940,7 @@ bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int
         startRow = m_maxRowIndex;
     }
 
-    TRACEX_D("SearchFilteredRows_TIA startRow:%d count:%d up:%d", startRow, count, up);
+    TRACEX_D("SearchFilteredRows_TIA startRow:%d count:%d up:%d", startRow, count, up)
 
     int start_LUT_Index;
     int new_LUT_Index;
@@ -2047,7 +2047,7 @@ void CEditorWidget::GotoTop(void)
     UpdateRelPosition();
     UpdateCursor(false, m_topLine, 0);
 
-    TRACEX_D("CEditorWidget::GotoTop Row:%d Remains:%d", m_topLine, remains);
+    TRACEX_D("CEditorWidget::GotoTop Row:%d Remains:%d", m_topLine, remains)
 
     ForceVScrollBitmap();
 
@@ -2080,7 +2080,7 @@ void CEditorWidget::GotoBottom(void)
                      doc_p->m_database.TIA.textItemArray_p[m_maxRowIndex].size);
     }
 
-    TRACEX_I("Goto bottom Row:%d max_top:%d", m_topLine, m_max_topLine);
+    TRACEX_I("Goto bottom Row:%d max_top:%d", m_topLine, m_max_topLine)
     ForceVScrollBitmap();
 
     Refresh(); /* instead of invalidate rect */
@@ -2166,7 +2166,7 @@ void CEditorWidget::OnColClipStartSet(void)
             g_cfg_p->m_Log_colClip_End = CFG_CLIP_NOT_SET;
         }
     }
-    TRACEX_D(QString("%1 %2").arg(__FUNCTION__).arg(g_cfg_p->m_Log_colClip_Start));
+    TRACEX_D(QString("%1 %2").arg(__FUNCTION__).arg(g_cfg_p->m_Log_colClip_Start))
     update();
 }
 
@@ -2175,7 +2175,7 @@ void CEditorWidget::OnColClipStartSet(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnColClipDisable(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     g_cfg_p->m_Log_colClip_Start = CFG_CLIP_NOT_SET;
     g_cfg_p->m_Log_colClip_End = CFG_CLIP_NOT_SET;
     update();
@@ -2198,7 +2198,7 @@ void CEditorWidget::OnColClipEndSet(void)
             g_cfg_p->m_Log_colClip_Start = CFG_CLIP_NOT_SET;
         }
     }
-    TRACEX_D(QString("%1 %2").arg(__FUNCTION__).arg(g_cfg_p->m_Log_colClip_End));
+    TRACEX_D(QString("%1 %2").arg(__FUNCTION__).arg(g_cfg_p->m_Log_colClip_End))
     update();
 }
 
@@ -2207,7 +2207,7 @@ void CEditorWidget::OnColClipEndSet(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnFilterItemAdd(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     AddFilterItem();
 }
 
@@ -2220,7 +2220,7 @@ void CEditorWidget::OnFilterItemProperties(void)
     CFilterItem *filterItem_p = doc_p->m_rowCache_p->GetFilterRef(m_cursorSel.row);
     if ((filterItem_p != nullptr) && (g_workspace_p != nullptr)) {
         CWorkspace_FilterItemProperties(filterItem_p->m_uniqueID, this);
-        TRACEX_D("%s %d", __FUNCTION__, filterItem_p->m_uniqueID);
+        TRACEX_D("%s %d", __FUNCTION__, filterItem_p->m_uniqueID)
     }
 }
 
@@ -2233,7 +2233,7 @@ void CEditorWidget::OnFilterItemDisable(void)
     CFilterItem *filterItem_p = doc_p->m_rowCache_p->GetFilterRef(m_cursorSel.row);
     if ((filterItem_p != nullptr) && (g_workspace_p != nullptr)) {
         CWorkspace_DisableFilterItem(filterItem_p->m_uniqueID);
-        TRACEX_D("%s %d", __FUNCTION__, filterItem_p->m_uniqueID);
+        TRACEX_D("%s %d", __FUNCTION__, filterItem_p->m_uniqueID)
     }
 }
 
@@ -2242,7 +2242,7 @@ void CEditorWidget::OnFilterItemDisable(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnBookmarkToggle(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     ToggleBookmark();
 }
 
@@ -2251,7 +2251,7 @@ void CEditorWidget::OnBookmarkToggle(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnCopy(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     SelectionsToClipboard();
 }
 
@@ -2260,7 +2260,7 @@ void CEditorWidget::OnCopy(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnSearch(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     MW_Search();
 }
 
@@ -2269,7 +2269,7 @@ void CEditorWidget::OnSearch(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnSave(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
 }
 
 /***********************************************************************************************************************
@@ -2277,7 +2277,7 @@ void CEditorWidget::OnSave(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnFilter(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     Filter();
 }
 
@@ -2286,7 +2286,7 @@ void CEditorWidget::OnFilter(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnPresentationToggle(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     TogglePresentationMode();
 }
 
@@ -2295,7 +2295,7 @@ void CEditorWidget::OnPresentationToggle(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnPlotCursorSet(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     SetPlotCursor();
 }
 
@@ -2304,7 +2304,7 @@ void CEditorWidget::OnPlotCursorSet(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnGotoRow(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     GotoRow();
 }
 
@@ -2313,7 +2313,7 @@ void CEditorWidget::OnGotoRow(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRowClipDisable(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     SetRowClip(true /*start*/, CFG_CLIP_NOT_SET);
     SetRowClip(false /*end*/, CFG_CLIP_NOT_SET);
 }
@@ -2323,7 +2323,7 @@ void CEditorWidget::OnRowClipDisable(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRowClipStartSet(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     if (m_selectionList.isEmpty()) {
         SetRowClip(true /*start*/);
     } else {
@@ -2338,7 +2338,7 @@ void CEditorWidget::OnRowClipStartSet(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRowClipEndSet(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     if (m_selectionList.isEmpty()) {
         SetRowClip(false /*end*/);
     } else {
@@ -2353,7 +2353,7 @@ void CEditorWidget::OnRowClipEndSet(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRowClipGotoStart(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     SetFocusRow(g_cfg_p->m_Log_rowClip_Start);
 }
 
@@ -2362,7 +2362,7 @@ void CEditorWidget::OnRowClipGotoStart(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnRowClipGotoEnd(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     SetFocusRow(g_cfg_p->m_Log_rowClip_End);
 }
 
@@ -2371,7 +2371,7 @@ void CEditorWidget::OnRowClipGotoEnd(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnFilterFileOpen(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     CFGCTRL_LoadFilterFile();
 }
 
@@ -2380,7 +2380,7 @@ void CEditorWidget::OnFilterFileOpen(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnPluginFileOpen(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     CFGCTRL_LoadPluginFile();
 }
 
@@ -2389,7 +2389,7 @@ void CEditorWidget::OnPluginFileOpen(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnLogFileOpen(void)
 {
-    TRACEX_D("%s ", __FUNCTION__);
+    TRACEX_D("%s ", __FUNCTION__)
     CFGCTRL_LoadLogFile();
 }
 
@@ -2690,7 +2690,7 @@ void CEditorWidget::SetPlotCursor(void)
                                   "closest row in graphs is %1 (dist:%2)")
                               .arg(newRow).arg((int)newRow - selection.row);
             }
-            TRACEX_I(message);
+            TRACEX_I(message)
         }
     }
 }
@@ -2724,7 +2724,7 @@ void CEditorWidget::SetRowClip(bool isStart, int row)
         return;
     }
 
-    TRACEX_D("CEditorWidget::SetRowClip - %d", row);
+    TRACEX_D("CEditorWidget::SetRowClip - %d", row)
 
     if (isStart) {
         g_cfg_p->m_Log_rowClip_Start = row;
@@ -2906,12 +2906,12 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
 
                     if (m_relPos < m_min_rel_pos) {
                         if (LOG_TRACE_MOUSE_COND_WARN) {
-                            TRACEX_W("%s m_relPos TOO LOW", __FUNCTION__);
+                            TRACEX_W("%s m_relPos TOO LOW", __FUNCTION__)
                         }
                         m_relPos = m_min_rel_pos;
                     } else if (m_relPos > m_max_rel_pos) {
                         if (LOG_TRACE_MOUSE_COND_WARN) {
-                            TRACEX_W("%s m_relPos TOO HIGH", __FUNCTION__);
+                            TRACEX_W("%s m_relPos TOO HIGH", __FUNCTION__)
                         }
                         m_relPos = m_max_rel_pos;
                     }
@@ -2946,7 +2946,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                             (float)(m_hscrollFrameWidth - m_hscrollSliderWidth);
 
                 if (LOG_TRACE_MOUSE_COND) {
-                    TRACEX_DE("%s  V-Glued dragging HSCROLL m_hrelPos:%f", __FUNCTION__, m_hrelPos);
+                    TRACEX_DE("%s  V-Glued dragging HSCROLL m_hrelPos:%f", __FUNCTION__, m_hrelPos)
                 }
                 invalidate = true;
             } else {
@@ -2991,7 +2991,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                 m_hrelPos = (float)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
                             (float)(m_hscrollFrameWidth - m_hscrollSliderWidth);
                 if (LOG_TRACE_MOUSE_COND) {
-                    TRACEX_DE("%s HSCROLL hrelPos:%f", __FUNCTION__, m_hrelPos);
+                    TRACEX_DE("%s HSCROLL hrelPos:%f", __FUNCTION__, m_hrelPos)
                 }
                 invalidate = true;
             }
@@ -2999,7 +2999,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
     } else {
         /* Mouse move without key selection */
         if (LOG_TRACE_MOUSE_COND) {
-            TRACEX_DE("%s  Mouse without key selection", __FUNCTION__);
+            TRACEX_DE("%s  Mouse without key selection", __FUNCTION__)
         }
 
         /* If mouse is close to vscroll bar then show bitmap */
@@ -3010,7 +3010,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
 
              ((screenPoint.mouse.y() >= m_vScrollBMP_Rect.top()) &&
               (screenPoint.mouse.y() <= m_vScrollBMP_Rect.bottom())))) {
-            TRACEX_DE("%s HIT", __FUNCTION__);
+            TRACEX_DE("%s HIT", __FUNCTION__)
             invalidate |= ForceVScrollBitmap();
         }
 
@@ -3018,7 +3018,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
             /* strange... we have lost the unset of glue */
             invalidate |= SetVScrollGlue(false);
             if (LOG_TRACE_MOUSE_COND) {
-                TRACEX_DE("%s  strange... we have lost the unset of glue", __FUNCTION__);
+                TRACEX_DE("%s  strange... we have lost the unset of glue", __FUNCTION__)
             }
         }
         m_hscrollSliderGlue = false;
@@ -3067,7 +3067,7 @@ void CEditorWidget::OnMouseWheel(QWheelEvent *event)
     } else if (!numPixels.isNull()) {
         zDelta = numPixels.y();
     } else {
-        TRACEX_W(QString("%1 zDelta:%2").arg(__FUNCTION__).arg(zDelta));
+        TRACEX_W(QString("%1 zDelta:%2").arg(__FUNCTION__).arg(zDelta))
         return;
     }
 
@@ -3190,7 +3190,7 @@ void CEditorWidget::HorizontalCursorFocus(HCursorScrollAction_e scrollAction)
 
     doc_p->GetTextItem(m_cursorSel.row, &text_p, &textSize);
 
-    TRACEX_DE("cursorFocus m_hbmpOffset:%d m_hrelPos:%f", m_hbmpOffset, m_hrelPos);
+    TRACEX_DE("cursorFocus m_hbmpOffset:%d m_hrelPos:%f", m_hbmpOffset, m_hrelPos)
 
     /* m_hbmpOffset = (long)(m_hrelPos * (m_bmpWindow.Width() - rcClient.Width())); */
 
@@ -3380,14 +3380,14 @@ void CEditorWidget::CheckRelPosition(void)
 
     if (m_relPos < m_min_rel_pos) {
 #ifdef _DEBUG
-        TRACEX_D("CEditorWidget::CheckRelPosition  Too low m_relPos  %f < %f ", m_relPos, m_min_rel_pos);
+        TRACEX_D("CEditorWidget::CheckRelPosition  Too low m_relPos  %f < %f ", m_relPos, m_min_rel_pos)
 #endif
         m_relPos = m_min_rel_pos;
     }
 
     if (m_relPos > m_max_rel_pos) {
 #ifdef _DEBUG
-        TRACEX_D("CEditorWidget::CheckRelPosition  Too low m_relPos  %f > %f ", m_relPos, m_max_rel_pos);
+        TRACEX_D("CEditorWidget::CheckRelPosition  Too low m_relPos  %f > %f ", m_relPos, m_max_rel_pos)
 #endif
         m_relPos = m_max_rel_pos;
     }
@@ -3589,7 +3589,7 @@ void CEditorWidget::OnLButtonDown(Qt::KeyboardModifiers modifiers, ScreenPoint_t
             }
         }
 
-        /*    TRACEX_DE("CEditorWidget::OnMouseMove  Above text window"); */
+        /*    TRACEX_DE("CEditorWidget::OnMouseMove  Above text window") */
     }
 
     if (invalidate) {
@@ -3670,7 +3670,7 @@ bool CEditorWidget::SetVScrollGlue(bool enabled)
         SetVScrollBitmap(enabled);
 
 #ifdef _DEBUG
-        TRACEX_DE("CEditorWidget::SetVScrollGlue  SWITCH:%d", enabled);
+        TRACEX_DE("CEditorWidget::SetVScrollGlue  SWITCH:%d", enabled)
 #endif
         return true;
     }
@@ -3686,14 +3686,14 @@ bool CEditorWidget::SetVScrollBitmap(bool enabled)
         m_vscrollTimer->start(VSCROLL_TIMER_DURATION);
     }
 #ifdef _DEBUG
-    TRACEX_DE(enabled ? "VScroll ENABLED" : "VScroll DISABLED");
+    TRACEX_DE(enabled ? "VScroll ENABLED" : "VScroll DISABLED")
 #endif
 
     if ((m_vscrollSliderGlue || m_vscrollBitmapForce) && !m_vscrollBitmapEnabled) {
         /* override, align to vscroll glue */
 #ifdef _DEBUG
 
-        /*TRACEX_DE("CEditorWidget::SetVScrollBitmap  %d", 1); */
+        /*TRACEX_DE("CEditorWidget::SetVScrollBitmap  %d", 1) */
 #endif
         m_vscrollBitmapEnabled = true;
         return true;
@@ -3714,7 +3714,7 @@ bool CEditorWidget::SetVScrollBitmap(bool enabled)
 bool CEditorWidget::ForceVScrollBitmap(void)
 {
     bool invalidate = m_vscrollBitmapEnabled ? false : true;
-    TRACEX_DE(QString("%1").arg(__FUNCTION__));
+    TRACEX_DE(QString("%1").arg(__FUNCTION__))
     m_vscrollBitmapForce = true;
     m_vscrollBitmapEnabled = true;
     m_vscrollTimer->start(VSCROLL_TIMER_DURATION);
@@ -3746,7 +3746,7 @@ void CEditorWidget::HandleVScrollBitmapTimer(void)
         m_vscrollTimer->start(VSCROLL_TIMER_DURATION);
     }
 
-    TRACEX_DE(QString("%1 glue:%2 mouseOver:%3").arg(__FUNCTION__).arg(m_vscrollSliderGlue).arg(mouseOverBitmap));
+    TRACEX_DE(QString("%1 glue:%2 mouseOver:%3").arg(__FUNCTION__).arg(m_vscrollSliderGlue).arg(mouseOverBitmap))
     update();
 }
 
@@ -3826,7 +3826,7 @@ void CEditorWidget::CursorUpDown(bool up)
 
         if (m_presentationMode == PRESENTATION_MODE_ONLY_FILTERED_e) {
             if (!SearchFilteredRows_TIA(cursorRow, 1, up, &searchRow)) {
-                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll, cursor at filtered top");
+                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll, cursor at filtered top")
 
                 /* No new filtered line could be found */
                 return;
@@ -3837,7 +3837,7 @@ void CEditorWidget::CursorUpDown(bool up)
 
             /* Is it necessary to scroll the lines on the screen */
             if (cursorRow < m_screenRows[0].row) {
-                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll, cursor at top");
+                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll, cursor at top")
 
                 /* scrolling up */
                 m_topLine = cursorRow;
@@ -3977,7 +3977,7 @@ void CEditorWidget::CursorUpDown(bool up)
                     if (m_origDragSelection.row <= cursorRow) {
                         /* moving up with orig above, must be a selection above us */
                         if (!newSelected) {
-                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection above");
+                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection above")
                             return;
                         }
 
@@ -4026,7 +4026,7 @@ void CEditorWidget::CursorUpDown(bool up)
                     oldSelected = isRowSelected(m_cursorSel.row, &selection_p);
                     if (m_origDragSelection.row == m_cursorSel.row) {
                         if (!oldSelected) {
-                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection on this row");
+                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection on this row")
                             return;
                         } /* abort */
 
@@ -4068,7 +4068,7 @@ void CEditorWidget::CursorUpDown(bool up)
 
                     if (m_origDragSelection.row >= cursorRow) {
                         if (!newSelected) {
-                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection above");
+                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection above")
                             return;
                         } /* abort */
 
@@ -4107,7 +4107,7 @@ void CEditorWidget::CursorUpDown(bool up)
                     if (m_origDragSelection.row == m_cursorSel.row) {
 #ifdef _DEBUG
                         if (!oldSelected) {
-                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection on this row");
+                            TRACEX_W("CEditorWidget::CursorUpDown There should be a selection on this row")
                             return;
                         } /* abort */
 #endif
@@ -4155,7 +4155,7 @@ void CEditorWidget::CursorUpDown(bool up)
                                 AddSelection(m_cursorSel.row, 0, endCol, true, false, false);
                             } else {
 #ifdef _DEBUG
-                                TRACEX_W("CEditorWidget::CursorUpDown There should be a selection on the row above");
+                                TRACEX_W("CEditorWidget::CursorUpDown There should be a selection on the row above")
                                 return; /* abort */
 #endif
                             }
@@ -4187,12 +4187,12 @@ void CEditorWidget::CursorUpDown(bool up)
                    (int)doc_p->m_database.FIRA.FIR_Array_p[m_topLine].index) <=
                   m_maxDisplayRows))) {
                 /* scroll down but topLine is at last possible filter for the top */
-                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible");
+                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible")
                 return;
             }
 
             if (!SearchFilteredRows_TIA(m_topLine + delta, 1, up, &searchRow)) {
-                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible, no filtered rows left");
+                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible, no filtered rows left")
                 return;
             }
 
@@ -4212,7 +4212,7 @@ void CEditorWidget::CursorUpDown(bool up)
             if ((doc_p->m_database.TIA.rows < m_maxDisplayRows) ||
                 (up && (m_topLine == m_min_topLine)) ||
                 (!up && (m_min_topLine >= m_max_topLine))) {
-                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible, at top/bottom");
+                TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible, at top/bottom")
                 return;
             }
 
@@ -4311,7 +4311,7 @@ void CEditorWidget::CursorLeftRight(bool left)
 
     /* Is it necessary to scroll the columns on the screen */
     if (cursorCol < 0) {
-        TRACEX_DE("CEditorWidget::CursorLeftRight NO scroll, cursor at 0");
+        TRACEX_DE("CEditorWidget::CursorLeftRight NO scroll, cursor at 0")
         cursorCol = 0;
     }
 
@@ -4517,7 +4517,7 @@ void CEditorWidget::SetPresentationMode(LogScrutinizerView_PresentaiontMode_t mo
     CLogScrutinizerDoc *doc_p = GetDocument();
 
     if ((mode == PRESENTATION_MODE_ONLY_FILTERED_e) && (doc_p->m_database.FIRA.filterMatches == 0)) {
-        TRACEX_I("No filter matches");
+        TRACEX_I("No filter matches")
         return;
     }
 
@@ -4576,7 +4576,7 @@ bool CEditorWidget::isRowReselected(int row, int startCol, CSelection **selectio
 
     for (auto selection_p : m_selectionList) {
         if (selection_p->row >= doc_p->m_database.TIA.rows) {
-            TRACEX_E("CEditorWidget::isRowSelected  bad seletion in listL");
+            TRACEX_E("CEditorWidget::isRowSelected  bad seletion in listL")
             return false;
         }
         if ((row == selection_p->row) &&
@@ -4585,7 +4585,7 @@ bool CEditorWidget::isRowReselected(int row, int startCol, CSelection **selectio
             if (selection_pp != nullptr) {
                 *selection_pp = selection_p;
             } else {
-                TRACEX_E("CEditorWidget::isRowSelected  called with nullptr");
+                TRACEX_E("CEditorWidget::isRowSelected  called with nullptr")
                 return false;
             }
 
@@ -4610,7 +4610,7 @@ bool CEditorWidget::isRowSelected(int row, CSelection **selection_pp)
     }
     for (auto selection_p : m_selectionList) {
         if (selection_p->row >= doc_p->m_database.TIA.rows) {
-            TRACEX_E("CEditorWidget::isRowSelected  bad seletion in listL");
+            TRACEX_E("CEditorWidget::isRowSelected  bad seletion in listL")
             return false;
         }
 
@@ -4618,7 +4618,7 @@ bool CEditorWidget::isRowSelected(int row, CSelection **selection_pp)
             if (selection_pp != nullptr) {
                 *selection_pp = selection_p;
             } else {
-                TRACEX_E("CEditorWidget::isRowSelected  called with nullptr");
+                TRACEX_E("CEditorWidget::isRowSelected  called with nullptr")
                 return false;
             }
             return true;
@@ -4725,7 +4725,7 @@ void CEditorWidget::RemoveSelection(int row)
             return;
         }
     }
-    TRACEX_E("Selection not found, Row:%d", row);
+    TRACEX_E("Selection not found, Row:%d", row)
 }
 
 /***********************************************************************************************************************
@@ -4751,12 +4751,12 @@ void CEditorWidget::AddSelection(
 
     if (TIA_Row >= doc_p->m_database.TIA.rows) {
         /*(int) rows will never be neg */
-        TRACEX_W("AddSelection failed, Row outside database, Row:%d SCol:%d ECol:%d", TIA_Row, startCol, endCol);
+        TRACEX_W("AddSelection failed, Row outside database, Row:%d SCol:%d ECol:%d", TIA_Row, startCol, endCol)
         return;
     }
 
     if ((startCol < -3) || (endCol < -3)) {
-        TRACEX_W("AddSelection failed, Bad column values, Row:%d SCol:%d ECol:%d", TIA_Row, startCol, endCol);
+        TRACEX_W("AddSelection failed, Bad column values, Row:%d SCol:%d ECol:%d", TIA_Row, startCol, endCol)
         return;
     }
 
@@ -5056,7 +5056,7 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
 
     /* Check selection */
     if (selection_p->row >= doc_p->m_database.TIA.rows) {
-        TRACEX_E("CEditorWidget::ExpandSelection  Seletion row:%d out of range", selection_p->row);
+        TRACEX_E("CEditorWidget::ExpandSelection  Seletion row:%d out of range", selection_p->row)
         return;
     }
 
@@ -5175,7 +5175,7 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
 
         /* Check selection */
         if (selection_p->row >= doc_p->m_database.TIA.rows) {
-            TRACEX_E("CEditorWidget::ExpandSelection  Seletion row:%d out of range", selection_p->row);
+            TRACEX_E("CEditorWidget::ExpandSelection  Seletion row:%d out of range", selection_p->row)
             return;
         }
 
@@ -5183,7 +5183,7 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
 
         /* Check selection */
         if (selection_p->endCol >= size) {
-            TRACEX_E("CEditorWidget::ExpandSelection  Seletion end col:%d out of range", selection_p->endCol);
+            TRACEX_E("CEditorWidget::ExpandSelection  Seletion end col:%d out of range", selection_p->endCol)
             return;
         }
     }
@@ -5270,7 +5270,7 @@ void CEditorWidget::AddMultipleSelections(const int startRow, const int endRow, 
         }
     } catch (...) {
         EmptySelectionList();
-        TRACEX_W(QString("Selecting rows from %1 to %2 failed").arg(startRow).arg(endRow));
+        TRACEX_W(QString("Selecting rows from %1 to %2 failed").arg(startRow).arg(endRow))
     }
     unsetCursor();
 }
@@ -5297,11 +5297,11 @@ void CEditorWidget::ContinueSelection(int TIA_selectedRow, int startCol, int end
 {
     CSelection startPoint;
 
-    TRACEX_D("ContinueSelection Row:%d SCol:%d ECol:%d", TIA_selectedRow, startCol, endCol);
+    TRACEX_D("ContinueSelection Row:%d SCol:%d ECol:%d", TIA_selectedRow, startCol, endCol)
 
     if (m_selectionList.isEmpty()) {
         if (m_cursorActive) {
-            TRACEX_D("ContinueSelection from cursor");
+            TRACEX_D("ContinueSelection from cursor")
             EmptySelectionList();
 
             startPoint = m_cursorSel;
@@ -5312,19 +5312,19 @@ void CEditorWidget::ContinueSelection(int TIA_selectedRow, int startCol, int end
             m_multiSelection.startCol = m_cursorSel.startCol;
             m_multiSelection.endCol = m_cursorSel.endCol;
         } else {
-            TRACEX_D("ContinueSelection Selection list empty, adding simple selection");
+            TRACEX_D("ContinueSelection Selection list empty, adding simple selection")
             AddSelection(TIA_selectedRow, startCol, endCol, true, true);
             return;
         }
     } else if (m_multiSelectionActive) {
-        TRACEX_D("ContinueSelection Multi active, empty and refill");
+        TRACEX_D("ContinueSelection Multi active, empty and refill")
         startPoint = m_multiSelection;
         EmptySelectionList();
 
         /* EmptySelectionList will clean out m_multiSelectionActive flag, reset it to true */
         m_multiSelectionActive = true;
     } else if (m_lastSelectionValid) {
-        TRACEX_D("ContinueSelection Last valid, empty and refill");
+        TRACEX_D("ContinueSelection Last valid, empty and refill")
         startPoint = m_lastSelection;
         EmptySelectionList();
 
@@ -5334,7 +5334,7 @@ void CEditorWidget::ContinueSelection(int TIA_selectedRow, int startCol, int end
         m_multiSelection.startCol = m_lastSelection.startCol;
         m_multiSelection.endCol = m_lastSelection.endCol;
     } else {
-        TRACEX_D("ContinueSelection No Multi or Last, empty and adding simple selection");
+        TRACEX_D("ContinueSelection No Multi or Last, empty and adding simple selection")
         EmptySelectionList();
         AddSelection(TIA_selectedRow, startCol, endCol, true, true);
         return;
@@ -5387,15 +5387,15 @@ void CEditorWidget::SelectionUpdated(CSelection *selection_p)
 {
 #ifdef _DEBUG
     if (selection_p == nullptr) {
-        TRACEX_DE("Selection updated nullptr");
+        TRACEX_DE("Selection updated nullptr")
     } else {
-        TRACEX_DE("Selection updated s:%d e:%d ", selection_p->startCol, selection_p->endCol);
+        TRACEX_DE("Selection updated s:%d e:%d ", selection_p->startCol, selection_p->endCol)
     }
 #endif
 
     if (m_autoHighLightTimer->isActive()) {
 #ifdef _DEBUG
-        TRACEX_D("CEditorWidget::SelectionUpdated  KillTimer - AUTO_HIGHLIGHT_TIMER_ID");
+        TRACEX_D("CEditorWidget::SelectionUpdated  KillTimer - AUTO_HIGHLIGHT_TIMER_ID")
 #endif
         m_autoHighLightTimer->stop();
     }
@@ -5404,14 +5404,14 @@ void CEditorWidget::SelectionUpdated(CSelection *selection_p)
         ((m_selectionList.first()->endCol - (m_selectionList.first()->startCol)) < 2)) {
         CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
 #ifdef _DEBUG
-        TRACEX_D("SetAutoHighlight RESET  selections:%d", m_selectionList.count());
+        TRACEX_D("SetAutoHighlight RESET  selections:%d", m_selectionList.count())
 #endif
         doc_p->m_autoHighLighter_p->SetAutoHighlight(0, nullptr);
         return;
     } else {
         m_autoHighLightTimer->start(AUTO_HIGHLIGHT_TIMER_DURATION); /* will be a single shot */
 #ifdef _DEBUG
-        TRACEX_D("AUTO_HIGHLIGHT_TIMER_ID  Activated");
+        TRACEX_D("AUTO_HIGHLIGHT_TIMER_ID  Activated")
 #endif
     }
 
@@ -5519,12 +5519,12 @@ void CEditorWidget::OnAutoHighlightTimer(void)
     CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
 
 #ifdef _DEBUG
-    TRACEX_D("CEditorWidget::OnAutoHighlightTimer  KillTimer - AUTO_HIGHLIGHT_TIMER_ID");
+    TRACEX_D("CEditorWidget::OnAutoHighlightTimer  KillTimer - AUTO_HIGHLIGHT_TIMER_ID")
 #endif
 
     if (m_selectionList.isEmpty() || (m_selectionList.count() > 1)) {
 #ifdef _DEBUG
-        TRACEX_D("OnAutoHighlightTimer RESET  selections:%d", m_selectionList.count());
+        TRACEX_D("OnAutoHighlightTimer RESET  selections:%d", m_selectionList.count())
 #endif
         doc_p->m_autoHighLighter_p->SetAutoHighlight(0, nullptr);
         return;
@@ -5539,7 +5539,7 @@ void CEditorWidget::OnAutoHighlightTimer(void)
 
     if (selectionSize >= MAX_AUTOHIGHLIGHT_LENGTH - 2) {
 #ifdef _DEBUG
-        TRACEX_D("OnAutoHighlightTimer RESET  MAX_AUTOHIGHLIGHT_LENGTH:%d", selectionSize);
+        TRACEX_D("OnAutoHighlightTimer RESET  MAX_AUTOHIGHLIGHT_LENGTH:%d", selectionSize)
 #endif
         doc_p->m_autoHighLighter_p->SetAutoHighlight(0, nullptr);
         return;
@@ -5550,7 +5550,7 @@ void CEditorWidget::OnAutoHighlightTimer(void)
 
     doc_p->m_autoHighLighter_p->SetAutoHighlight(MW_GetTick(), m_tempStr);
 
-    TRACEX_D("OnAutoHighlightTimer OK %s", m_tempStr);
+    TRACEX_D("OnAutoHighlightTimer OK %s", m_tempStr)
 }
 
 /***********************************************************************************************************************
@@ -5569,7 +5569,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
     if (LS_LG_Event & LS_LG_EVENT_MOUSE_e) {
         if ((screenPoint_p == nullptr) || !(PointToCursor(screenPoint_p, &screenRow, &screenCol, &overHalf))) {
             if (screenPoint_p == nullptr) {
-                TRACEX_E("Selection update, point_p = nullptr");
+                TRACEX_E("Selection update, point_p = nullptr")
             }
             return true;
         }
@@ -5729,7 +5729,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
             return true;
         }
     } else {
-        TRACEX_E("Unknown LS_LG_Event: %d", LS_LG_Event);
+        TRACEX_E("Unknown LS_LG_Event: %d", LS_LG_Event)
     }
 
     return true;
@@ -5766,7 +5766,7 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
     *bytesWritten_p = 0;
 
     if (m_selectionList.isEmpty()) {
-        TRACEX_D("CEditorWidget::CopySelectionsToSharedFile  Empty selection list");
+        TRACEX_D("CEditorWidget::CopySelectionsToSharedFile  Empty selection list")
         return false;
     }
 
@@ -5775,7 +5775,7 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
     tempStr_p = (char *)malloc(totalSize);
 
     if (tempStr_p == nullptr) {
-        TRACEX_D("CEditorWidget::CopySelectionsToSharedFile  tempStr_p is nullptr");
+        TRACEX_D("CEditorWidget::CopySelectionsToSharedFile  tempStr_p is nullptr")
         return false;
     }
 
@@ -5808,7 +5808,7 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
         /*    if (TRACEX_IS_ENABLED(LOG_LEVEL_DEBUG_EXT))
          *    {
          *      tempStr_p[textSize++] = 0;
-         *      TRACEX_DE("Text in Drag and Drop: %d %s", textSize, tempStr_p);
+         *      TRACEX_DE("Text in Drag and Drop: %d %s", textSize, tempStr_p)
          *    } */
     }
 
@@ -5842,7 +5842,7 @@ bool CEditorWidget::CopySelectionsToMem(char *dest_p, int *bytesWritten_p)
     *bytesWritten_p = 0;
 
     if (m_selectionList.isEmpty()) {
-        TRACEX_D("CEditorWidget::CopySelectionsToSharedFile  Empty selection list");
+        TRACEX_D("CEditorWidget::CopySelectionsToSharedFile  Empty selection list")
         return false;
     }
 
@@ -5876,7 +5876,7 @@ bool CEditorWidget::CopySelectionsToMem(char *dest_p, int *bytesWritten_p)
 
         if (TRACEX_IS_ENABLED(LOG_LEVEL_DEBUG) && (maxPrint > 0)) {
             dest_p[destIndex] = 0;
-            TRACEX_D("Text in Drag and Drop: %d %s", textSize, copiedText_p);
+            TRACEX_D("Text in Drag and Drop: %d %s", textSize, copiedText_p)
             maxPrint--;
         }
     }
@@ -5895,14 +5895,14 @@ bool CEditorWidget::SaveSelectionsToFile(QString& fileName)
     auto doc_p = GetTheDoc();
 
     if (m_selectionList.isEmpty()) {
-        TRACEX_I("SaveSelectionsToFile  Empty selection list");
+        TRACEX_I("SaveSelectionsToFile  Empty selection list")
         return false;
     }
 
     QFile file(fileName);
 
     if (!file.open(QIODevice::WriteOnly)) {
-        TRACEX_E(QString("Save selections to file failed, cannot open file:%1").arg(fileName));
+        TRACEX_E(QString("Save selections to file failed, cannot open file:%1").arg(fileName))
         return false;
     }
 
@@ -5940,13 +5940,13 @@ void CEditorWidget::SelectionsToClipboard(void)
     const QMimeData *mimeDataCopy = clipboard->mimeData();
 
     if (mimeDataCopy->hasImage()) {
-        TRACEX_I("imageData");
+        TRACEX_I("imageData")
     } else if (mimeDataCopy->hasHtml()) {
-        TRACEX_I(QString("htmlData %1").arg(mimeDataCopy->html()));
+        TRACEX_I(QString("htmlData %1").arg(mimeDataCopy->html()))
     } else if (mimeDataCopy->hasText()) {
-        TRACEX_I(QString("textData %1").arg(mimeDataCopy->text()));
+        TRACEX_I(QString("textData %1").arg(mimeDataCopy->text()))
     } else {
-        TRACEX_I(tr("Cannot display data"));
+        TRACEX_I(tr("Cannot display data"))
     }
 #endif
 
@@ -5971,7 +5971,7 @@ void CEditorWidget::SelectionsToClipboard(void)
     /*    rich_text->setHtml(str); */
     int selectionCount = (int)m_selectionList.count();
     if (selectionCount == 0) {
-        TRACEX_W("No selection to copy");
+        TRACEX_W("No selection to copy")
         return;
     }
 
@@ -6254,7 +6254,7 @@ bool CEditorWidget::RowColumnToRect(int row, int screenCol, QRect *rect_p)
 
     if (!found) {
 #ifdef _DEBUG
-        TRACEX_DE("CEditorWidget::RowColumnToRect  Line not among screen rows %d", row);
+        TRACEX_DE("CEditorWidget::RowColumnToRect  Line not among screen rows %d", row)
 #endif
         return false;
     }
@@ -6337,7 +6337,7 @@ bool CEditorWidget::PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p
                 }
             }
             alignedPoint_p->setX(x_pos_right);
-            TRACEX_DE("CEditorWidget::PointToColumn  Column:%d", *screenCol_p);
+            TRACEX_DE("CEditorWidget::PointToColumn  Column:%d", *screenCol_p)
             return true;
         }
         x_pos_left = x_pos_right;
@@ -6350,7 +6350,7 @@ bool CEditorWidget::PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p
             *screenCol_p = textSize - 1;
         }
         alignedPoint_p->setX(x_pos_left);
-        TRACEX_DE("CEditorWidget::PointToColumn  Column:%d", *screenCol_p);
+        TRACEX_DE("CEditorWidget::PointToColumn  Column:%d", *screenCol_p)
         return true;
     }
 
@@ -6373,7 +6373,7 @@ bool CEditorWidget::ColumnToPoint(int screenCol, int& x)
     Q_ASSERT(screenCol <= CFG_TEMP_STRING_MAX_SIZE);
 
     if (screenCol >= CFG_TEMP_STRING_MAX_SIZE) {
-        TRACEX_W(tr("%1 Bad input %2").arg(__FUNCTION__).arg(screenCol));
+        TRACEX_W(tr("%1 Bad input %2").arg(__FUNCTION__).arg(screenCol))
         return false;
     }
 
@@ -6398,14 +6398,14 @@ int CEditorWidget::CursorTo_TIA_Index(int screenRow)
 
     if (m_screenRows[screenRow].valid) {
         if (m_screenRows[screenRow].row >= doc_p->m_database.TIA.rows) {
-            TRACEX_E("CEditorWidget::isRowSelected  called with nullptr");
+            TRACEX_E("CEditorWidget::isRowSelected  called with nullptr")
             return 0;
         }
 
         return m_screenRows[screenRow].row;
     }
 
-    TRACEX_W("CEditorWidget::CursorTo_TIA_Index  screenRow:%d not valid", screenRow);
+    TRACEX_W("CEditorWidget::CursorTo_TIA_Index  screenRow:%d not valid", screenRow)
     return 0;
 }
 
@@ -6416,14 +6416,14 @@ void CEditorWidget::ToggleBookmark(void)
 {
     int row;
 
-    TRACEX_DE(QString("%1").arg(__FUNCTION__));
+    TRACEX_DE(QString("%1").arg(__FUNCTION__))
 
     if (m_cursorActive) {
         row = m_cursorSel.row;
     } else {
         CSelection selection;
         if (!GetActiveSelection(&selection)) {
-            TRACEX_W(QString("%1  No active selection or cursor").arg(__FUNCTION__));
+            TRACEX_W(QString("%1  No active selection or cursor").arg(__FUNCTION__))
             return;
         }
         row = selection.row;
@@ -6447,7 +6447,7 @@ void CEditorWidget::NextBookmark(bool backward)
     int row;
     bool status = false;
 
-    TRACEX_DE(QString("%1").arg(__FUNCTION__));
+    TRACEX_DE(QString("%1").arg(__FUNCTION__))
 
     if (GetActiveSelection(&selection) || GetCursorPosition(&selection)) {
         status = g_workspace_p->NextBookmark(selection.row, &row, backward);
@@ -6880,7 +6880,7 @@ void CEditorWidget::CheckRockScroll(void)
 
                 if (errorCount == 1) {
   #ifdef _DEBUG
-                    TRACEX_W("CEditorWidget::CheckRockScroll    m_rockScrollInfo.itemArray_p corrupt");
+                    TRACEX_W("CEditorWidget::CheckRockScroll    m_rockScrollInfo.itemArray_p corrupt")
   #endif
                 }
             }
@@ -7141,7 +7141,7 @@ void CEditorWidget::UpdateGrayFont(void)
         Q_RGB(g_cfg_p->m_log_GrayIntensity,
               g_cfg_p->m_log_GrayIntensity, g_cfg_p->m_log_GrayIntensity), BACKGROUND_COLOR);
 
-    TRACEX_I(QString("Update gray font - Intensity:%1").arg(g_cfg_p->m_log_GrayIntensity));
+    TRACEX_I(QString("Update gray font - Intensity:%1").arg(g_cfg_p->m_log_GrayIntensity))
     m_EraseBkGrndDisabled = true;
     update();
 }
@@ -7151,7 +7151,7 @@ void CEditorWidget::UpdateGrayFont(void)
 ***********************************************************************************************************************/
 void CEditorWidget::moveEvent(QMoveEvent *event)
 {
-    TRACEX_D("CEditorWidget::moveEvent");
+    TRACEX_D("CEditorWidget::moveEvent")
 
     if (m_cursorTimer->isActive()) {
         m_cursorTimer->stop();
@@ -7176,7 +7176,7 @@ void CEditorWidget::mainWindowIsMoving(QMoveEvent *event)
 
     /* block this print from printing more than twice per second. */
     if (filter.Check()) {
-        TRACEX_D("CEditorWidget::mainWindowIsMoving");
+        TRACEX_D("CEditorWidget::mainWindowIsMoving")
     }
 
     if (m_cursorTimer->isActive()) {
@@ -7190,7 +7190,7 @@ void CEditorWidget::mainWindowIsMoving(QMoveEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::mousePressEvent(QMouseEvent *event)
 {
-    TRACEX_D("CEditorWidget::mousePressEvent");
+    TRACEX_D("CEditorWidget::mousePressEvent")
 
     m_CTRL_Pressed = QApplication::keyboardModifiers() & Qt::ControlModifier ? true : false;
     m_SHIFT_Pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier ? true : false;
@@ -7239,7 +7239,7 @@ void CEditorWidget::mouseMoveEvent(QMouseEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    TRACEX_D("CEditorWidget::mouseReleaseEvent");
+    TRACEX_D("CEditorWidget::mouseReleaseEvent")
 
     ScreenPoint_t screenPoint = MakeScreenPoint(event, m_hbmpOffset, m_vbmpOffset);
 
@@ -7346,21 +7346,21 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
 
         case Qt::Key_G:
             if (m_CTRL_Pressed) {
-                TRACEX_D("CEditorWidget::keyPressEvent  CTRL-G  Go to Row");
+                TRACEX_D("CEditorWidget::keyPressEvent  CTRL-G  Go to Row")
                 GotoRow();
             }
             break;
 
         case Qt::Key_F2:
             if (m_CTRL_Pressed) {
-                TRACEX_D("CEditorWidget::keyPressEvent  CTRL-F2  Add bookmark");
+                TRACEX_D("CEditorWidget::keyPressEvent  CTRL-F2  Add bookmark")
                 ToggleBookmark();
                 update();
             } else if (m_SHIFT_Pressed) {
-                TRACEX_D("CEditorWidget::keyPressEvent  SHIFT-F2  Previous bookmark");
+                TRACEX_D("CEditorWidget::keyPressEvent  SHIFT-F2  Previous bookmark")
                 NextBookmark(true);
             } else {
-                TRACEX_D("CEditorWidget::keyPressEvent  F2  Next bookmark");
+                TRACEX_D("CEditorWidget::keyPressEvent  F2  Next bookmark")
                 NextBookmark();
             }
             break;
@@ -7407,7 +7407,7 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
                                              tr("Row clip end not set"),
                                              tr("Row clip end not set, (use Ctrl-F9)", "LogScrutinizer - Row Clip"),
                                              QMessageBox::Ok);
-                    TRACEX_I("Row clip end not set, (use Ctrl-F9)");
+                    TRACEX_I("Row clip end not set, (use Ctrl-F9)")
                 }
             }
             break;
@@ -7425,7 +7425,7 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
 ***********************************************************************************************************************/
 void CEditorWidget::keyReleaseEvent(QKeyEvent *e)
 {
-    /*TRACEX_D("CEditorWidget::keyReleaseEvent %d", e->key()); */
+    /*TRACEX_D("CEditorWidget::keyReleaseEvent %d", e->key()) */
     int index = e->key();
     if (index < 256) {
         m_keys[e->key()] = false;

@@ -21,7 +21,7 @@ bool CWorkMem::Operation(WorkMem_Operation_t operation)
         qulonglong free, total, avail;
 
         if (!VirtualMem::GetMemoryStatus(free, total, avail)) {
-            TRACEX_E("WorkMem failure, internal, couldn't stat memory");
+            TRACEX_E("WorkMem failure, internal, couldn't stat memory")
             return false;
         }
 
@@ -31,7 +31,7 @@ bool CWorkMem::Operation(WorkMem_Operation_t operation)
         /* Override */
         if (g_cfg_p->m_workMemSize != 0) {
             m_size = g_cfg_p->m_workMemSize;
-            TRACEX_I("WorkMem reservation OVERRIDE  size:%dMB", m_size >> 20);
+            TRACEX_I("WorkMem reservation OVERRIDE  size:%dMB", m_size >> 20)
         } else if (m_size > DEFAULT_MAX_MEM_SIZE) {
             /* if not overriden, limit the memory alloc to DEFAULT_MAX_MEM_SIZE */
             m_size = DEFAULT_MAX_MEM_SIZE;
@@ -42,13 +42,13 @@ bool CWorkMem::Operation(WorkMem_Operation_t operation)
             m_mem_p = (char *)VirtualMem::Alloc(m_size);
 
             if (m_mem_p == nullptr) {
-                TRACEX_D("Failed to allocated Work Memory, size:%dMB", m_size >> 20);
+                TRACEX_D("Failed to allocated Work Memory, size:%dMB", m_size >> 20)
                 m_size -= (int)(m_size * 0.10);
             }
         }
 
         if (m_mem_p == nullptr) {
-            TRACEX_E("Failed to allocated Work Memory");
+            TRACEX_E("Failed to allocated Work Memory")
             return false;
         }
 
@@ -61,10 +61,10 @@ bool CWorkMem::Operation(WorkMem_Operation_t operation)
 
         m_mem_p = nullptr;
         m_status = WORK_MEM_OPERATION_FREE;
-        TRACEX_D("Released work memory");
+        TRACEX_D("Released work memory")
         return true;
     } else {
-        TRACEX_E("CLogScrutinizerDoc::WorkMem, Unknown operation - %d", operation);
+        TRACEX_E("CLogScrutinizerDoc::WorkMem, Unknown operation - %d", operation)
         return false;
     }
 }

@@ -159,7 +159,7 @@ public:
             m_bins_p[index] = new CMemPoolItemBin(minSize, m_config.ranges[index], m_config.startNumPerRange[index]);
 
             if (m_bins_p[index] == nullptr) {
-                TRACEX_E("CMemPool::CMemPool    m_bins_p[index] is nullptr");
+                TRACEX_E("CMemPool::CMemPool    m_bins_p[index] is nullptr")
             }
         }
 
@@ -186,11 +186,11 @@ public:
 
         if ((m_numOfRanges > 0) && (m_numOfRanges <= MEMPOOL_MAX_NUM_OF_BINS) &&
             (m_bins_p[m_numOfRanges - 1] != nullptr)) {
-            TRACEX_E(QString("CMemPool::AllocMem    size outside range %1 -> memory nullptr").arg(minimumSize));
+            TRACEX_E(QString("CMemPool::AllocMem    size outside range %1 -> memory nullptr").arg(minimumSize))
             return nullptr;
         }
 
-        TRACEX_E("CMemPool::AllocMem    Memory corruption, ranges badly setup");
+        TRACEX_E("CMemPool::AllocMem    Memory corruption, ranges badly setup")
         return nullptr;
     }
 
@@ -198,7 +198,7 @@ public:
     inline void ReturnMem(CMemPoolItem **poolItem_pp)
     {
         if ((nullptr == poolItem_pp) || (nullptr == *poolItem_pp)) {
-            TRACEX_E("CMemPool::ReturnMem   nullptr");
+            TRACEX_E("CMemPool::ReturnMem   nullptr")
             return;
         }
 
@@ -244,7 +244,7 @@ public:
         voidPtr = VirtualAlloc(nullptr, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
         if (voidPtr == nullptr) {
             DWORD error = GetLastError();
-            TRACEX_E("VirtualMem    allocation failed code:%d", error);
+            TRACEX_E("VirtualMem    allocation failed code:%d", error)
             return nullptr;
         }
 #else
@@ -252,7 +252,7 @@ public:
         /* void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset); */
         voidPtr = mmap(nullptr, static_cast<size_t>(size), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
         if ((voidPtr == MAP_FAILED) || (voidPtr == nullptr)) {
-            TRACEX_E("VirtualMem    allocation failed code:%d", errno);
+            TRACEX_E("VirtualMem    allocation failed code:%d", errno)
             return nullptr;
         }
 #endif
@@ -267,11 +267,11 @@ public:
         VirtualQuery(voidPtr, &info, sizeof(info));
 
         if ((info.State & MEM_COMMIT) == 0) {
-            TRACEX_E("VirtualMem    allocation, memory not commit status");
+            TRACEX_E("VirtualMem    allocation, memory not commit status")
         }
 
         if (info.Protect != PAGE_READWRITE) {
-            TRACEX_E("VirtualMem    allocation, memory protection wrong");
+            TRACEX_E("VirtualMem    allocation, memory protection wrong")
         }
  #endif
 #endif
@@ -294,7 +294,7 @@ public:
         uint64_t *headPtr = (reinterpret_cast<uint64_t *>(mem_p)) - 2;
 
         if (*headPtr != 0x5555555555555555) {
-            TRACEX_E("VirtualMem    Free - header wrong");
+            TRACEX_E("VirtualMem    Free - header wrong")
         }
 
         *headPtr = 0; /* to trap double free */
@@ -303,7 +303,7 @@ public:
         uint64_t *footerPtr = headPtr + ((*sizePtr) >> 3) - 1;
 
         if (*footerPtr != 0x5555555555555555) {
-            TRACEX_E("VirtualMem    Free - footer wrong");
+            TRACEX_E("VirtualMem    Free - footer wrong")
         }
 
 #ifdef _WIN32
@@ -314,7 +314,7 @@ public:
             MEMORY_BASIC_INFORMATION info;
             VirtualQuery(headPtr, &info, sizeof(info));
 
-            TRACEX_E("VirtualMem    free failed code:%d size:%llu", dwError, *sizePtr);
+            TRACEX_E("VirtualMem    free failed code:%d size:%llu", dwError, *sizePtr)
         }
         return result;
 #else
@@ -328,7 +328,7 @@ public:
         uint64_t *headPtr = (reinterpret_cast<uint64_t *>(mem_p)) - 2;
 
         if (*headPtr != 0x5555555555555555) {
-            TRACEX_E("VirtualMem  CheckMem    - header wrong");
+            TRACEX_E("VirtualMem  CheckMem    - header wrong")
             return false;
         }
 
@@ -336,7 +336,7 @@ public:
         uint64_t *footerPtr = headPtr + ((*sizePtr) >> 3) - 1;
 
         if (*footerPtr != 0x5555555555555555) {
-            TRACEX_E("VirtualMem  CheckMeme   - footer wrong");
+            TRACEX_E("VirtualMem  CheckMeme   - footer wrong")
             return false;
         }
 
@@ -391,7 +391,7 @@ public:
         }
 
         if (!memInfo.isOpen()) {
-            TRACEX_W("VirtualMem  Failed to open /proc/meminfo");
+            TRACEX_W("VirtualMem  Failed to open /proc/meminfo")
             return false;
         }
 
@@ -454,7 +454,7 @@ public:
     ~CWorkMem()
     {
         if (m_mem_p != nullptr) {
-            TRACEX_E("CWorkMem destructor, not freed");
+            TRACEX_E("CWorkMem destructor, not freed")
         }
     }
 

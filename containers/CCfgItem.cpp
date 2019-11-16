@@ -119,7 +119,7 @@ bool CCfgItem::WriteTagToFile(QTextStream& fileStream, const QString& tag)
     try {
         fileStream << tag;
     } catch (...) {
-        TRACEX_E("CCfgItem::WriteTagToFile  Failed to write item to file Tag:%s", tag.toLatin1().constData());
+        TRACEX_E("CCfgItem::WriteTagToFile  Failed to write item to file Tag:%s", tag.toLatin1().constData())
         return false;
     }
     return true;
@@ -249,9 +249,9 @@ void CCfgItem::InsertItem(bool select, bool expand, bool insert, CCfgItem *itemB
 
             if (!found) {
                 /* Emergency forced addition... */
-                TRACEX_E("CCfgItem::InsertItem  Item before not found");
+                TRACEX_E("CCfgItem::InsertItem  Item before not found")
                 if (insert) {
-                    TRACEX_E("CCfgItem::InsertItem   malloc failed");
+                    TRACEX_E("CCfgItem::InsertItem   malloc failed")
                     m_itemParent_p->m_cfgChildItems.append(this);
                 }
             }
@@ -286,7 +286,7 @@ void CCfgItem::TakeChildFromList(CCfgItem *cfgItem_p)
     /* Only take the child from the list, do not delete it, as this function might be called from the childs destructor
      * */
     if (!m_cfgChildItems.removeOne(cfgItem_p)) {
-        TRACEX_W("CCfgItem::TakeChildFromList  Not found in list");
+        TRACEX_W("CCfgItem::TakeChildFromList  Not found in list")
     }
 }
 
@@ -357,7 +357,7 @@ void CCfgItem_Root::UpdateName(void)
 
         if (m_workspaceShortName.isEmpty()) {
             m_workspaceShortName = m_workspaceFileName;
-            TRACEX_W("CCfgItem_Root::UpdateName - Workspace file name is not a valid path");
+            TRACEX_W("CCfgItem_Root::UpdateName - Workspace file name is not a valid path")
         }
 
         QString treeName = QString("Workspace - ") + m_workspaceShortName;
@@ -378,12 +378,12 @@ int CCfgItem_Root::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *tr
     CLogScrutinizerDoc *doc_p = GetTheDoc();
 
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_Root) {
-        TRACEX_W("%s Internal error, selection not Root", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not Root", __FUNCTION__)
         return 0;
     }
 
@@ -508,12 +508,12 @@ CCfgItem_Plots::CCfgItem_Plots(
 int CCfgItem_Plots::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_PlotRoot) {
-        TRACEX_W("%s Internal error, selection not Root", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not Root", __FUNCTION__)
         return 0;
     }
 
@@ -547,7 +547,7 @@ CCfgItem_Plot::CCfgItem_Plot(
 
     Set(QString(plotName_p), 0, CFG_ITEM_KIND_Plot);
 
-    TRACEX_D("  Plot: %s", plotName_p);
+    TRACEX_D("  Plot: %s", plotName_p)
     m_plotWidget_p = MW_AttachPlot(m_plot_ref_p);
 }
 
@@ -556,7 +556,7 @@ CCfgItem_Plot::CCfgItem_Plot(
 ***********************************************************************************************************************/
 void CCfgItem_Plot::PrepareDelete(void)
 {
-    TRACEX_DE("CCfgItem_Plot::PrepareDelete");
+    TRACEX_DE("CCfgItem_Plot::PrepareDelete")
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
         MW_DetachPlot(m_plot_ref_p);
     }
@@ -569,12 +569,12 @@ void CCfgItem_Plot::PrepareDelete(void)
 int CCfgItem_Plot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_Plot) {
-        TRACEX_W("%s Internal error, selection not a plot item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a plot item", __FUNCTION__)
         return 0;
     }
 
@@ -726,7 +726,7 @@ CCfgItem_Bookmark::CCfgItem_Bookmark(
 ***********************************************************************************************************************/
 void CCfgItem_Bookmark::PrepareDelete(void)
 {
-    TRACEX_DE("CCfgItem_Bookmark::PrepareDelete");
+    TRACEX_DE("CCfgItem_Bookmark::PrepareDelete")
 
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
         /* check this flag, since doing BookmarkDecorateFIRA takes a lot of time */
@@ -758,7 +758,7 @@ bool CCfgItem_Bookmark::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_
 ***********************************************************************************************************************/
 void CCfgItem_Bookmark::OnDblClick(QWidget *parent)
 {
-    TRACEX_D("CCfgItem_Bookmark::OnDblClick");
+    TRACEX_D("CCfgItem_Bookmark::OnDblClick")
 
     extern void CEditorWidget_SetFocusRow(int row);
     CEditorWidget_SetFocusRow(m_row);
@@ -772,12 +772,12 @@ void CCfgItem_Bookmark::OnDblClick(QWidget *parent)
 int CCfgItem_Bookmark::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_Bookmark) {
-        TRACEX_W("%s Internal error, selection not a bookmark item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a bookmark item", __FUNCTION__)
         return 0;
     }
 
@@ -873,12 +873,12 @@ bool CCfgItem_Plugins::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t
 int CCfgItem_Plugins::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_PlugInRoot) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -949,7 +949,7 @@ CCfgItem_Plugin::CCfgItem_Plugin(
     m_info = *(dll_api_p->GetInfo());
 
     QString info = GetInfo();
-    TRACEX_D(info);
+    TRACEX_D(info)
 
     if (dll_api_p->GetDecoders(&list_p) && !list_p->isEmpty()) {
         CCfgItem_Decoders *CfgDecoders_p = new CCfgItem_Decoders(this);
@@ -1002,7 +1002,7 @@ CCfgItem_Plugin::CCfgItem_Plugin(
 ***********************************************************************************************************************/
 void CCfgItem_Plugin::PrepareDelete(void)
 {
-    TRACEX_DE("CCfgItem_Plugin::PrepareDelete %s", m_itemText.toLatin1().constData());
+    TRACEX_DE("CCfgItem_Plugin::PrepareDelete %s", m_itemText.toLatin1().constData())
     CCfgItem::PrepareDelete(); /* Remove all children */
 
     typedef void (*QT_LIB_API_DeletePlugin_t)(CPlugin_DLL_API *plugIn_p);                 /* Implemented in
@@ -1082,12 +1082,12 @@ QString CCfgItem_Plugin::GetInfo(void)
 int CCfgItem_Plugin::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_PlugIn) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -1098,7 +1098,7 @@ int CCfgItem_Plugin::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
         action_p->setEnabled(true);
         treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
             QString info = GetInfo();
-            TRACEX_I(info);
+            TRACEX_I(info)
             QMessageBox msgBox(QMessageBox::Information, QString("Pluin information"), info, QMessageBox::Ok);
             msgBox.exec();
         });
@@ -1168,7 +1168,7 @@ CCfgItem_SubPlot::CCfgItem_SubPlot(
 
     subPlot_ref_p->GetTitle(&subPlotName_p, &y_axis_p);
 
-    TRACEX_D("    Subplot: %s", subPlotName_p);
+    TRACEX_D("    Subplot: %s", subPlotName_p)
 
     Set(QString(subPlotName_p), 0, CFG_ITEM_KIND_SubPlot);
 }
@@ -1182,12 +1182,12 @@ int CCfgItem_SubPlot::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView 
     CList_LSZ *list_p;
 
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_SubPlot) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -1315,12 +1315,12 @@ CCfgItem_Graph::CCfgItem_Graph(
 int CCfgItem_Graph::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_Graph) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -1377,12 +1377,12 @@ CCfgItem_SequenceDiagram::CCfgItem_SequenceDiagram(
 int CCfgItem_SequenceDiagram::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_Graph) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -1444,7 +1444,7 @@ CCfgItem_Decoder::CCfgItem_Decoder(
     m_decoder_ref_p = decoder_ref_p;
 
     Set(QString(match_p), 0, CFG_ITEM_KIND_Decoder);
-    TRACEX_D("  Decoder: %s", match_p);
+    TRACEX_D("  Decoder: %s", match_p)
 }
 
 /***********************************************************************************************************************
@@ -1452,7 +1452,7 @@ CCfgItem_Decoder::CCfgItem_Decoder(
 ***********************************************************************************************************************/
 void CCfgItem_Decoder::PrepareDelete(void)
 {
-    TRACEX_DE("CCfgItem_Decoder::PrepareDelete %s", m_itemText.toLatin1().constData());
+    TRACEX_DE("CCfgItem_Decoder::PrepareDelete %s", m_itemText.toLatin1().constData())
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
         /* check this flag, since doing BookmarkDecorateFIRA takes a lot of time */
         CLogScrutinizerDoc *doc_p = GetTheDoc();
@@ -1502,12 +1502,12 @@ bool CCfgItem_Logs::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t op
 int CCfgItem_Logs::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_LogRoot) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -1561,7 +1561,7 @@ bool CCfgItem_Log::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t opt
 ***********************************************************************************************************************/
 void CCfgItem_Log::PrepareDelete(void)
 {
-    TRACEX_DE("%s", __FUNCTION__);
+    TRACEX_DE("%s", __FUNCTION__)
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
         /* check this flag, since doing BookmarkDecorateFIRA takes a lot of time */
         GetTheDoc()->CleanDB(false);
@@ -1575,12 +1575,12 @@ void CCfgItem_Log::PrepareDelete(void)
 int CCfgItem_Log::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_Log) {
-        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a log item", __FUNCTION__)
         return 0;
     }
 
@@ -1657,12 +1657,12 @@ bool CCfgItem_Filters::WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t
 int CCfgItem_Filters::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_FilterRoot) {
-        TRACEX_W("%s Internal error, selection not a filter root", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a filter root", __FUNCTION__)
         return 0;
     }
 
@@ -1729,12 +1729,12 @@ CCfgItem_FilterItem::~CCfgItem_FilterItem(void)
 int CCfgItem_FilterItem::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p)
 {
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count());
+        TRACEX_W("%s No selections %d", __FUNCTION__, selectionList_p->count())
         return 0;
     }
 
     if (selectionList_p->first()->m_itemKind != CFG_ITEM_KIND_FilterItem) {
-        TRACEX_W("%s Internal error, selection not a filter item", __FUNCTION__);
+        TRACEX_W("%s Internal error, selection not a filter item", __FUNCTION__)
         return 0;
     }
 
@@ -1948,7 +1948,7 @@ int CCfgItem_Filter::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
 {
     CCfgItem_Filter *cfgItem_p = static_cast<CCfgItem_Filter *>(selectionList_p->first());
     if (selectionList_p->count() <= 0) {
-        TRACEX_W("CCfgItem_Filter::OnPopupMenu No selections %d", selectionList_p->count());
+        TRACEX_W("CCfgItem_Filter::OnPopupMenu No selections %d", selectionList_p->count())
         return 0;
     }
 
@@ -2034,7 +2034,7 @@ int CCfgItem_Filter::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
             });
         }
     } else {
-        TRACEX_W(QString("%1 Selection not a filter").arg(__FUNCTION__));
+        TRACEX_W(QString("%1 Selection not a filter").arg(__FUNCTION__))
     }
 
     return 0;

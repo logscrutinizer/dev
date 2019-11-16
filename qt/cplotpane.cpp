@@ -55,7 +55,7 @@ void CPlotPane_ResetPlotFocus(void)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -70,7 +70,7 @@ void CPlotPane_Align_X_Zoom(double x_min, double x_max)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -85,7 +85,7 @@ void CPlotPane_Align_Reset_Zoom(void)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -100,7 +100,7 @@ void CPlotPane_Align_X_Cursor(double cursorTime, double x_min, double x_max)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -115,7 +115,7 @@ void CPlotPane_RemoveRelatedShadowSubPlots(CPlotWidgetInterface *plotWidgetSrc_p
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -130,7 +130,7 @@ void CPlotPane_SetPlotFocus(CPlot *plot_p)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -145,7 +145,7 @@ void CPlotPane_SetSubPlotFocus(CSubPlot *subPlot_p)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -175,7 +175,7 @@ CPlot *CPlotPane_GetPlotFocus(void)
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 
@@ -201,13 +201,13 @@ void CPlotPane_ZoomSubPlotInFocus(bool in  /*or out*/, bool horizontal)
         } else {
             Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
             if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-                TRACEX_W(QString("%1  plotWidget_p nullptr").arg(__FUNCTION__));
+                TRACEX_W(QString("%1  plotWidget_p nullptr").arg(__FUNCTION__))
             }
         }
     } else {
         Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
         if (CSCZ_SystemState == SYSTEM_STATE_RUNNING) {
-            TRACEX_W(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__));
+            TRACEX_W(QString("%1  g_CPlotPane nullptr").arg(__FUNCTION__))
         }
     }
 }
@@ -223,13 +223,13 @@ void CPlotPane_ResizeSubPlotInFocus(bool increase)
     if (g_CPlotPane != nullptr) {
         g_CPlotPane->getPlotFocus(&plotWnd_p, &plot_p);
     } else {
-        TRACEX_E(QString("%1   g_CPlotPane nullptr").arg(__FUNCTION__));
+        TRACEX_E(QString("%1   g_CPlotPane nullptr").arg(__FUNCTION__))
     }
 
     if (plotWnd_p != nullptr) {
         plotWnd_p->ResizeSubPlotInFocus(increase);
     } else {
-        TRACEX_E(QString("%1 plot_p nullptr").arg(__FUNCTION__));
+        TRACEX_E(QString("%1 plot_p nullptr").arg(__FUNCTION__))
     }
 }
 
@@ -244,13 +244,13 @@ void CPlotPane_RestoreSubPlotSizes(void)
     if (g_CPlotPane != nullptr) {
         g_CPlotPane->getPlotFocus(&plotWnd_p, &plot_p);
     } else {
-        TRACEX_E(QString("%1    g_CPlotPane nullptr").arg(__FUNCTION__));
+        TRACEX_E(QString("%1    g_CPlotPane nullptr").arg(__FUNCTION__))
     }
 
     if (plotWnd_p != nullptr) {
         plotWnd_p->RestoreSubPlotSizes();
     } else {
-        TRACEX_E(QString("%1    plotWnd_p nullptr").arg(__FUNCTION__));
+        TRACEX_E(QString("%1    plotWnd_p nullptr").arg(__FUNCTION__))
     }
 }
 
@@ -450,7 +450,7 @@ CPlotWidgetInterface *CPlotPane::addPlot(const char *plotName_p, CPlot *plot_p)
 void CPlotPane::removePlot(CPlot *plot_p)
 {
     if (m_plotWnds.isEmpty()) {
-        TRACEX_W("CPlotPane::RemovePlot  Failed part");
+        TRACEX_W("CPlotPane::RemovePlot  Failed part")
         return;
     }
 
@@ -458,7 +458,7 @@ void CPlotPane::removePlot(CPlot *plot_p)
         char *title, *axis;
         plot_p->GetTitle(&title, &axis);
         if (plotWidget_p->GetPlotRef() == plot_p) {
-            TRACEX_I(QString("%1 %2").arg(__FUNCTION__).arg(title));
+            TRACEX_I(QString("%1 %2").arg(__FUNCTION__).arg(title))
 
             /*Detach all shadow subplots from other plotWnds */
             removeRelatedShadowSubPlots(plotWidget_p);
@@ -499,7 +499,7 @@ void CPlotPane::setPlotFocus(CPlot *plot_p)
     int index = 0;
 
     if (m_plotWnds.isEmpty()) {
-        TRACEX_W("CPlotPane::SetPlotFocus  Failed part-1");
+        TRACEX_W("CPlotPane::SetPlotFocus  Failed part-1")
         return;
     }
 
@@ -509,7 +509,7 @@ void CPlotPane::setPlotFocus(CPlot *plot_p)
             Q_ASSERT(index != -1);
             if (index != -1) {
                 auto title = plotWidget_p->GetTitle();
-                TRACEX_I(QString("%1 Index:%2 %3").arg(__FUNCTION__).arg(index).arg(title));
+                TRACEX_I(QString("%1 Index:%2 %3").arg(__FUNCTION__).arg(index).arg(title))
                 setCurrentIndex(index);
                 return;
             }
@@ -525,7 +525,7 @@ void CPlotPane::setSubPlotFocus(CSubPlot *subPlotFocus_p)
     int index = 0;
 
     if (m_plotWnds.isEmpty()) {
-        TRACEX_W(QString("%1 Failed part-1").arg(__FUNCTION__));
+        TRACEX_W(QString("%1 Failed part-1").arg(__FUNCTION__))
         return;
     }
 
@@ -576,7 +576,7 @@ void CPlotPane::getPlotFocus(CPlotWidgetInterface **plotWidget_pp, CPlot **plot_
     }
 
     if (m_plotWnds.isEmpty()) {
-        TRACEX_W(QString("%1   Failed, no plots").arg(__FUNCTION__));
+        TRACEX_W(QString("%1   Failed, no plots").arg(__FUNCTION__))
         return;
     }
 

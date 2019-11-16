@@ -60,7 +60,7 @@ void CEditorWidget_SetRowClip(bool start, int row)
     }
 
     if (g_editorWidget_p != nullptr) {
-        TRACEX_D("CEditorWidget_SetClipStart - start:%d row:%d", static_cast<int>(start), row);
+        TRACEX_D("CEditorWidget_SetClipStart - start:%d row:%d", static_cast<int>(start), row)
 
         CSelection selection;
         int selectionRow = 0;
@@ -71,7 +71,7 @@ void CEditorWidget_SetRowClip(bool start, int row)
             if (g_editorWidget_p->GetActiveSelection(&selection) || g_editorWidget_p->GetCursorPosition(&selection)) {
                 selectionRow = selection.row;
             } else {
-                TRACEX_I("There was no selection to create a rowClip");
+                TRACEX_I("There was no selection to create a rowClip")
                 return;
             }
         } else {

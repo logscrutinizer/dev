@@ -112,7 +112,7 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, QRect
     m_X_Label_len = (int)strlen(m_X_Label);
 
     if (g_cfg_p->m_pluginDebugBitmask != 0) {
-        TRACEX_I("Adding subPlot:%s to the plot:%s ", m_subPlotTitle, m_parentPlotTitle);
+        TRACEX_I("Adding subPlot:%s to the plot:%s ", m_subPlotTitle, m_parentPlotTitle)
     }
 
     /* Setup the label array for quick access */
@@ -134,7 +134,7 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, QRect
     }
 
     if (g_cfg_p->m_pluginDebugBitmask != 0) {
-        TRACEX_I("   NumOfLabels:%d", labelList_p->count());
+        TRACEX_I("   NumOfLabels:%d", labelList_p->count())
     }
 
     Initialize();
@@ -418,22 +418,22 @@ bool CSubPlotSurface::LoadResources(void)
 
     m_bitmap_top = QImage(":IDB_BRUSH_TOP_BMP");
     if (m_bitmap_top.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_TOP_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_TOP_BMP load FAILED")
     }
 
     m_bitmap_bottom = QImage(":IDB_BRUSH_BOTTOM_BMP");
     if (m_bitmap_bottom.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_BOTTOM_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_BOTTOM_BMP load FAILED")
     }
 
     m_bitmap_left = QImage(":IDB_BRUSH_LEFT_BMP");
     if (m_bitmap_left.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_LEFT_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_LEFT_BMP load FAILED")
     }
 
     m_bitmap_right = QImage(":IDB_BRUSH_RIGHT_BMP");
     if (m_bitmap_right.isNull()) {
-        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_RIGHT_BMP load FAILED");
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_RIGHT_BMP load FAILED")
     }
 
     m_bitmap_left_top = QImage(":IDB_BRUSH_LEFT_TOP_BMP");
@@ -521,7 +521,7 @@ void CSubPlotSurface::SetupGraphPens(void)
     m_graphPenArray_p = (PendDescription_t *)malloc(m_graphColors * sizeof(PendDescription_t) * MAX_GRAPH_TYPES);
 
     if (m_graphPenArray_p == nullptr) {
-        TRACEX_E("CSubPlotSurface::SetupGraphPens  Out of memory when allocating pens");
+        TRACEX_E("CSubPlotSurface::SetupGraphPens  Out of memory when allocating pens")
         return;
     }
 
@@ -627,7 +627,7 @@ QPen *CSubPlotSurface::GetUserDefinedPen(Q_COLORREF color, GraphLinePattern_e pa
     m_graphPenArrayUser[m_numOfGraphUserColors].color = color;
     m_graphPenArrayUser[m_numOfGraphUserColors].pattern = pattern;
 
-    TRACEX_I(QString("Added graph line type, color:%1 pattern:%2").arg(color).arg(pattern));
+    TRACEX_I(QString("Added graph line type, color:%1 pattern:%2").arg(color).arg(pattern))
 
     QPen *pen_p = m_graphPenArrayUser[m_numOfGraphUserColors].pen_p;
 
@@ -760,7 +760,7 @@ void CSubPlotSurface::OnPaint_2(void)
         DrawDecorators(true);   /* over */
         DrawAxis_Over();
     } else {
-        TRACEX_W("CSubPlotSurface::OnPaint  FAILED WINDOW TOO SMALL");
+        TRACEX_W("CSubPlotSurface::OnPaint  FAILED WINDOW TOO SMALL")
     }
 
     DrawBoarders();
@@ -1371,7 +1371,7 @@ void CSubPlotSurface::DrawGraphs(void)
 
                 if (selectedPen_p != dgraph_p->m_pen_p) {
                     if (nullptr == dgraph_p->m_pen_p) {
-                        TRACEX_E("Missing pen");
+                        TRACEX_E("Missing pen")
                     }
                     m_painter_p->setPen(*dgraph_p->m_pen_p);
 
@@ -1444,7 +1444,7 @@ void CSubPlotSurface::DrawGraphs(void)
                                         m_painter_p->setPen(*selectedPen_p);
                                         color = lineExColor;
                                     } else {
-                                        TRACEX_E(QString("SetPen null"));
+                                        TRACEX_E(QString("SetPen null"))
                                     }
                                 }
                             }
@@ -2011,7 +2011,7 @@ bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_
         case PL_YC_XR_en:
         case PL_YB_XR_en:
         default:
-            TRACEX_W("CSubPlotSurface::Intersection_LINE_Out2In  INPUT WARNING");
+            TRACEX_W("CSubPlotSurface::Intersection_LINE_Out2In  INPUT WARNING")
             return false;
     }
 
@@ -2097,7 +2097,7 @@ bool CSubPlotSurface::Intersection_LINE_In2Out(int pl_0, int pl_1, double *p0_x_
         case PL_YC_XL_en:
         case PL_YB_XL_en:
         default:
-            TRACEX_W("CSubPlotSurface::Intersection_LINE_In2Out  INPUT WARNING");
+            TRACEX_W("CSubPlotSurface::Intersection_LINE_In2Out  INPUT WARNING")
             return false;
     }
 
@@ -2191,7 +2191,7 @@ bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, int pl_1,
         case PL_YC_XR_en:
         case PL_YB_XR_en:
         default:
-            TRACEX_W("CSubPlotSurface::Intersection_BOX_Out2In  INPUT WARNING");
+            TRACEX_W("CSubPlotSurface::Intersection_BOX_Out2In  INPUT WARNING")
             return false;
     }
 
@@ -2245,7 +2245,7 @@ bool CSubPlotSurface::Intersection_BOX_In2Out(int pl_0, int pl_1, double *p0_x_p
         case PL_YC_XL_en:
         case PL_YB_XL_en:
         default:
-            TRACEX_D("CSubPlotSurface::Intersection_BOX_In2Out  INPUT WARNING");
+            TRACEX_D("CSubPlotSurface::Intersection_BOX_In2Out  INPUT WARNING")
             return false;
     }
 
@@ -2723,7 +2723,7 @@ const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *r
 bool CSubPlotSurface::GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double *distance_p, GraphicalObject_t **go_pp)
 {
     if ((graph_pp == nullptr) || (go_pp == nullptr)) {
-        TRACEX_E("CSubPlotSurface::GetGraph  INPUT ERROR");
+        TRACEX_E("CSubPlotSurface::GetGraph  INPUT ERROR")
         return false;
     }
 
@@ -2764,7 +2764,7 @@ bool CSubPlotSurface::GetClosestGraph(int row, CGraph **graph_pp, int *distance_
                                       GraphicalObject_t **go_pp)
 {
     if ((graph_pp == nullptr) || (go_pp == nullptr)) {
-        TRACEX_E("CSubPlotSurface::GetGraph  INPUT ERROR");
+        TRACEX_E("CSubPlotSurface::GetGraph  INPUT ERROR")
         return false;
     }
 

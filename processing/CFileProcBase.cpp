@@ -181,12 +181,12 @@ void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int64_t workMemSize, 
     /*Check some input parameters */
 
     if (workMem_p == nullptr) {
-        TRACEX_E(" CFileProcBase::Start  BAD INPUT   workMem_p nullptr");
+        TRACEX_E(" CFileProcBase::Start  BAD INPUT   workMem_p nullptr")
         return;
     }
 
     if (TIA_p == nullptr) {
-        TRACEX_E(" CFileProcBase::Start  BAD INPUT   TIA_p nullptr");
+        TRACEX_E(" CFileProcBase::Start  BAD INPUT   TIA_p nullptr")
         return;
     }
 
@@ -358,7 +358,7 @@ bool CFileProcBase::LoadNextChunk(void)
 
                 /* Advance the file offset */
                 m_chunkDescr.temp_offset += read;
-                TRACEX_D("CFileProcBase::LoadNextChunk, additional read of %d required ?? Error??", toRead);
+                TRACEX_D("CFileProcBase::LoadNextChunk, additional read of %d required ?? Error??", toRead)
             }
         }
     } else {
@@ -421,7 +421,7 @@ bool CFileProcBase::LoadNextChunk(void)
                 m_chunkDescr.numOfRows = m_chunkDescr.TIA_startRow - topMostIndex + 1;
                 stop = true;
             } else if (topMostIndex < 0) {
-                TRACEX_E("Internal Error when searching for next chunk start in upward search");
+                TRACEX_E("Internal Error when searching for next chunk start in upward search")
                 g_processingCtrl_p->SetFileOperationOngoing(false);
                 m_qfile_p->close();
                 return false;
@@ -479,7 +479,7 @@ bool CFileProcBase::LoadNextChunk(void)
 
                 /* Advance the file offset */
                 m_chunkDescr.temp_offset += read;
-                TRACEX_D("CFileProcBase::LoadNextChunk, additional read of %d required ??", toRead);
+                TRACEX_D("CFileProcBase::LoadNextChunk, additional read of %d required ??", toRead)
             }
         }
     }
@@ -487,7 +487,7 @@ bool CFileProcBase::LoadNextChunk(void)
     QString time = GetTheDoc()->timeToString(execTime.ms());
     g_processingCtrl_p->AddProgressInfo(QString("  Loading complete, %1").arg(time));
     g_processingCtrl_p->SetFileOperationOngoing(false);
-    TRACEX_D("CFileProcBase::LoadNextChunk, Read:%d", totalRead);
+    TRACEX_D("CFileProcBase::LoadNextChunk, Read:%d", totalRead)
 
     return true;
 }
@@ -683,7 +683,7 @@ void CFileProcBase::Process(void)
 
             if (!m_configurationList.empty()) {
                 /* Safety, make sure that all configurtion objects has been processed */
-                TRACEX_E("Internal error, the thread sequenced processing has failed. Job aborted");
+                TRACEX_E("Internal error, the thread sequenced processing has failed. Job aborted")
                 continueProcessing = false;
                 g_processingCtrl_p->m_abort = false;
                 return;

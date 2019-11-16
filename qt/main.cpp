@@ -133,44 +133,44 @@ int main(int argc, char *argv[])
         g_cfg_p->m_fontRes_Italic = QString(":dvsm_i_font");
         g_cfg_p->m_fontRes_Bold = QString(":dvsm_b_font");
         g_cfg_p->m_fontRes_BoldItalic = QString(":dvsm_bi_font");
-        TRACEX_I(QString("Font: ") + QString("Deja Vu Sans"));
+        TRACEX_I(QString("Font: ") + QString("Deja Vu Sans"))
     } else if (g_cfg_p->m_default_Font == QString("Courier New")) {
         g_cfg_p->m_fontRes = QString(":cn_font");
         g_cfg_p->m_fontRes_Italic = QString(":cn_i_font");
         g_cfg_p->m_fontRes_Bold = QString(":cn_b_font");
         g_cfg_p->m_fontRes_BoldItalic = QString(":cn_bi_font");
-        TRACEX_I(QString("Font: ") + QString("Courier New"));
+        TRACEX_I(QString("Font: ") + QString("Courier New"))
     } else if (g_cfg_p->m_default_Font == QString("Ubuntu Mono")) {
         g_cfg_p->m_fontRes = QString(":um_font");
         g_cfg_p->m_fontRes_Italic = QString(":um_i_font");
         g_cfg_p->m_fontRes_Bold = QString(":um_b_font");
         g_cfg_p->m_fontRes_BoldItalic = QString(":um_bi_font");
-        TRACEX_I(QString("Font: ") + QString("Courier New"));
+        TRACEX_I(QString("Font: ") + QString("Courier New"))
     } else {
-        TRACEX_I(QString("Unsupported font ") + g_cfg_p->m_default_Font);
+        TRACEX_I(QString("Unsupported font ") + g_cfg_p->m_default_Font)
     }
 
     if (-1 == QFontDatabase::addApplicationFont(g_cfg_p->m_fontRes)) {
-        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes);
+        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes)
     }
 
     if (-1 == QFontDatabase::addApplicationFont(g_cfg_p->m_fontRes_Italic)) {
-        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes_Italic);
+        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes_Italic)
     }
 
     if (-1 == QFontDatabase::addApplicationFont(g_cfg_p->m_fontRes_Bold)) {
-        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes_Bold);
+        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes_Bold)
     }
 
     if (-1 == QFontDatabase::addApplicationFont(g_cfg_p->m_fontRes_BoldItalic)) {
-        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes_BoldItalic);
+        TRACEX_I(QString("Failed to load font: ") + g_cfg_p->m_fontRes_BoldItalic)
     }
 
 #ifdef _WIN32
 
     /* Not sure if this is really needed */
     if (!AllowSetForegroundWindow(QCoreApplication::applicationPid())) {
-        TRACEX_I(QString("Failed to allow LS to set Focus"));
+        TRACEX_I(QString("Failed to allow LS to set Focus"))
     }
 #endif
 
@@ -197,8 +197,8 @@ int main(int argc, char *argv[])
 #endif
 
     g_cfg_p->GetAppInfo(title, version, buildDate, configuration);
-    TRACEX_I(QString("%1 %2  Build:%3").arg(title).arg(version).arg(buildDate)); /*   xxx QT */
-    TRACEX_I(QString("%1").arg(configuration));
+    TRACEX_I(QString("%1 %2  Build:%3").arg(title).arg(version).arg(buildDate)) /*   xxx QT */
+    TRACEX_I(QString("%1").arg(configuration))
 
     QCommandLineParser parser;
     parser.setApplicationDescription("LogScrutinizer text analysis tool");
@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
     g_RamLog->UnregisterThread();
 
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
-        TRACEX_I(QString("\n\nSystem shutdown\n\n"));
+        TRACEX_I(QString("\n\nSystem shutdown\n\n"))
         CSCZ_SystemState = SYSTEM_STATE_SHUTDOWN;
     }
 

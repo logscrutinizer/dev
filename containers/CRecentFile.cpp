@@ -38,13 +38,13 @@ void CRecentFile::Test(void)
 
     if (testFile.exists()) {
         if (!testFile.remove()) {
-            TRACEX_E("Failed to remove testrecent.rcnt, test aborted");
+            TRACEX_E("Failed to remove testrecent.rcnt, test aborted")
             return;
         }
     }
 
     if (!testFile.open(QIODevice::ReadWrite)) {
-        TRACEX_E("Failed to open testrecent.rcnt, test aborted");
+        TRACEX_E("Failed to open testrecent.rcnt, test aborted")
         return;
     }
 
@@ -71,7 +71,7 @@ void CRecentFile::Test(void)
     fileInfoVerify_p = m_recentFileList.first();
 
     if (fileInfoVerify_p->lastAccessed != 30) {
-        TRACEX_E("CRecentFile::Test   SORT ERROR");
+        TRACEX_E("CRecentFile::Test   SORT ERROR")
     }
 
     int recentFileHistory = g_cfg_p->m_recentFile_MaxHistory;   /* temporarily modify the max count */
@@ -82,7 +82,7 @@ void CRecentFile::Test(void)
     WriteToFile(false);
 
     if (m_recentFileList.count() != 1) {
-        TRACEX_E("CRecentFile::Test   ERROR   Trim failed");
+        TRACEX_E("CRecentFile::Test   ERROR   Trim failed")
     }
 
     g_cfg_p->m_recentFile_MaxHistory = recentFileHistory;
@@ -90,7 +90,7 @@ void CRecentFile::Test(void)
     Clean();
 
     if (!m_recentFileList.isEmpty()) {
-        TRACEX_E("CRecentFile::Test   ERROR   DB not empty after test");
+        TRACEX_E("CRecentFile::Test   ERROR   DB not empty after test")
     }
 
     g_cfg_p->m_defaultRecentFileDB = temp;
@@ -264,7 +264,7 @@ bool CRecentFile::QualifyFileInfo(RecentFileInfo_t *fileInfo_p)
         if (qfileInfo.exists() && !fileInfo_p->fileName.isEmpty() && !fileInfo_p->filePath.isEmpty()) {
             return true;
         } else {
-            TRACEX_I(QString("Recent file doesn't exist any more: %1").arg(fileInfo_p->filePath));
+            TRACEX_I(QString("Recent file doesn't exist any more: %1").arg(fileInfo_p->filePath))
         }
     }
     return false;
@@ -277,13 +277,13 @@ void CRecentFile::DumpDatabase(void)
 {
 #if 0
     if (m_recentFileList.isEmpty()) {
-        TRACEX_I("CRecentFile::DumpDatabase   EMPTY");
+        TRACEX_I("CRecentFile::DumpDatabase   EMPTY")
         return;
     }
 
     RecentFileInfo_t *fileInfo_p;
 
-    TRACEX_I(QString("Recent files"));
+    TRACEX_I(QString("Recent files"))
     for (int index = 0; index < m_recentFileList.count(); ++index) {
         fileInfo_p = m_recentFileList[index];
         TRACEX_I(
@@ -299,7 +299,7 @@ void CRecentFile::DumpDatabase(void)
 void CRecentFile::RemoveFileInfo(RecentFileInfo_t *removeFileInfo_p)
 {
     if (m_recentFileList.isEmpty()) {
-        TRACEX_W("Internal Warning, fileInfo not found in recentFile list (EMPTY)");
+        TRACEX_W("Internal Warning, fileInfo not found in recentFile list (EMPTY)")
         return;
     }
 
@@ -314,7 +314,7 @@ void CRecentFile::RemoveFileInfo(RecentFileInfo_t *removeFileInfo_p)
         }
     }
 
-    TRACEX_W("Internal Warning, fileInfo not found in recentFile list");
+    TRACEX_W("Internal Warning, fileInfo not found in recentFile list")
 }
 
 /***********************************************************************************************************************
@@ -323,7 +323,7 @@ void CRecentFile::RemoveFileInfo(RecentFileInfo_t *removeFileInfo_p)
 void CRecentFile::RemoveFile(QString *filePath_p)
 {
     if (m_recentFileList.isEmpty()) {
-        TRACEX_W("Internal Warning, filePath not found in recentFile list (EMPTY)");
+        TRACEX_W("Internal Warning, filePath not found in recentFile list (EMPTY)")
         return;
     }
 
@@ -342,7 +342,7 @@ void CRecentFile::RemoveFile(QString *filePath_p)
         }
     }
 
-    TRACEX_W("Internal Warning, filePath not found in recentFile list");
+    TRACEX_W("Internal Warning, filePath not found in recentFile list")
 }
 
 /***********************************************************************************************************************
@@ -423,7 +423,7 @@ void CRecentFile::ReadFromFile(void)
             msgStream << "Could not open recent file database, " << recentFileName << ", it DO NOT exist" << endl;
         }
 
-        TRACEX_W(&msg);
+        TRACEX_W(&msg)
 
         return;
     }
@@ -463,7 +463,7 @@ void CRecentFile::WriteToFile(bool sync)
             msgStream << "Could not open recent file database, " << recentFileName
                       << ", it DO NOT exist" << endl;
         }
-        TRACEX_W(&msg);
+        TRACEX_W(&msg)
         return;
     }
 

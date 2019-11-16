@@ -74,7 +74,7 @@ void CGraphicsSubplotSurface::Populate(void)
     }
 
     if (g_cfg_p->m_pluginDebugBitmask != 0) {
-        TRACEX_I("   NumOfLabels:%d", labelList_p->count());
+        TRACEX_I("   NumOfLabels:%d", labelList_p->count())
     }
 
     /* Transfer graphicalObject data to m_displayGraphs_a */
@@ -303,7 +303,7 @@ void CPlotWidgetGraphics::FillEmptyWindow(QPainter *painter)
         static_cast<int>(static_cast<float>(br.bottom() - m_viewRect.top()) * static_cast<float>(0.1));
 
     painter->drawText(x_pos, y_pos, "This is a Plot View");
-    TRACEX_DE(QString("Draw text %1 %2").arg(x_pos).arg(y_pos));
+    TRACEX_DE(QString("Draw text %1 %2").arg(x_pos).arg(y_pos))
 
     y_pos += fontSize.height() * 2;
     x_pos += fontSize.width();
@@ -514,7 +514,7 @@ void CPlotWidgetGraphics::wheelEvent(QWheelEvent *event)
     } else if (!numPixels.isNull()) {
         zDelta = numPixels.y();
     } else {
-        TRACEX_W(QString("%1 zDelta:%2").arg(__FUNCTION__).arg(zDelta));
+        TRACEX_W(QString("%1 zDelta:%2").arg(__FUNCTION__).arg(zDelta))
         return;
     }
 
@@ -651,7 +651,7 @@ void CPlotWidgetGraphics::ZoomRestore(void)
 void CPlotWidgetGraphics::mousePressEvent(QMouseEvent *event)
 {
 #ifdef _DEBUG
-    TRACEX_D("%s", __FUNCTION__);
+    TRACEX_D("%s", __FUNCTION__)
 #endif
 
     QFrame::mousePressEvent(event);
@@ -671,7 +671,7 @@ void CPlotWidgetGraphics::mousePressEvent(QMouseEvent *event)
 void CPlotWidgetGraphics::mouseReleaseEvent(QMouseEvent *event)
 {
 #ifdef _DEBUG
-    TRACEX_D("%s", __FUNCTION__);
+    TRACEX_D("%s", __FUNCTION__)
 #endif
     QFrame::mouseReleaseEvent(event);
 }
@@ -890,7 +890,7 @@ void CPlotWidgetGraphics::focusInEvent(QFocusEvent *event)
     MW_Refresh();
 
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_D(QString("%1").arg(__FUNCTION__));
+        TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
     PRINT_FOCUS(__FUNCTION__);
 }
@@ -916,7 +916,7 @@ void CPlotWidgetGraphics::focusOutEvent(QFocusEvent *event)
     update();
 
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_D(QString("%1").arg(__FUNCTION__));
+        TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
     PRINT_FOCUS(__FUNCTION__);
 }
@@ -1127,7 +1127,7 @@ bool CPlotWidgetGraphics::OpenToolTip(void)
             }
         }
         for (auto& tip : m_toolTipStrings) {
-            TRACEX_I(QString("OpenToolTip  %1").arg(tip));
+            TRACEX_I(QString("OpenToolTip  %1").arg(tip))
         }
         update();
         return true;
@@ -1142,7 +1142,7 @@ void CPlotWidgetGraphics::CloseToolTip(void)
 {
     m_toolTipStrings.clear();
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_D(QString("%1").arg(__FUNCTION__));
+        TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
     update();
 }

@@ -96,7 +96,7 @@ void MW_DO_SHOW(void)
 ***********************************************************************************************************************/
 void MW_PlaySystemSound(MW_SystemSound sound)
 {
-    TRACEX_I("MW_PlaySystemSound Playing %d", sound);
+    TRACEX_I("MW_PlaySystemSound Playing %d", sound)
 #ifdef USE_SOUND
     switch (sound)
     {
@@ -124,7 +124,7 @@ void MW_PlaySystemSound(MW_SystemSound sound)
         case SYSTEM_SOUND_START:
         case SYSTEM_SOUND_PING:
         default:
-            TRACEX_I("MW_PlaySystemSound SOUND DISABLED");
+            TRACEX_I("MW_PlaySystemSound SOUND DISABLED")
             break;
     }
 #endif
@@ -258,7 +258,7 @@ void MW_Search(bool forward)
 void MW_ModifyFontSize(int increase)
 {
     if (g_mainWindow_p == nullptr) {
-        TRACEX_W("Internal error");
+        TRACEX_W("Internal error")
         return;
     }
     g_mainWindow_p->modifyFontSize(increase);
@@ -307,21 +307,21 @@ bool MW_GeneralKeyHandler(int key, bool ctrl, bool shift)
 
         case Qt::Key_0:
             if (ctrl) {
-                TRACEX_I("Set default font size");
+                TRACEX_I("Set default font size")
                 MW_ModifyFontSize(0);
             }
             break;
 
         case Qt::Key_Plus:
             if (ctrl) {
-                TRACEX_I("Increase font size");
+                TRACEX_I("Increase font size")
                 MW_ModifyFontSize(+1);
             }
             break;
 
         case Qt::Key_Minus:
             if (ctrl) {
-                TRACEX_I("Decrease font size");
+                TRACEX_I("Decrease font size")
                 MW_ModifyFontSize(-1);
             }
             break;
@@ -332,40 +332,40 @@ bool MW_GeneralKeyHandler(int key, bool ctrl, bool shift)
 
         case Qt::Key_F2:
             if (ctrl) {
-                TRACEX_I("F2  Set bookmark FAILED -- JUST MUST SELECT A ROW FIRST");
+                TRACEX_I("F2  Set bookmark FAILED -- JUST MUST SELECT A ROW FIRST")
             }
 
             if (shift) {
-                TRACEX_I("F2  Previous bookmark");
+                TRACEX_I("F2  Previous bookmark")
                 CEditorWidget_NextBookmark(true);
             } else {
-                TRACEX_I("F2  Next bookmark");
+                TRACEX_I("F2  Next bookmark")
                 CEditorWidget_NextBookmark(false);
             }
             break;
 
         case Qt::Key_F3:
             if (shift) {
-                TRACEX_I("F3  Search up");
+                TRACEX_I("F3  Search up")
                 MW_Search(false);
             } else {
-                TRACEX_I("F3  Search Forward");
+                TRACEX_I("F3  Search Forward")
                 MW_Search(true);
             }
             break;
 
         case Qt::Key_F5:
-            TRACEX_I("F5  Filter");
+            TRACEX_I("F5  Filter")
             CEditorWidget_Filter();
             break;
 
         case Qt::Key_F4:
-            TRACEX_I("F4  Toggle presentation mode");
+            TRACEX_I("F4  Toggle presentation mode")
             CEditorWidget_TogglePresentationMode();
             break;
 
         default:
-            TRACEX_D(QString("Unsupported key ctrl:%1 shift:%2").arg(ctrl).arg(shift));
+            TRACEX_D(QString("Unsupported key ctrl:%1 shift:%2").arg(ctrl).arg(shift))
             return false;
     }
     return true;
@@ -644,7 +644,7 @@ void MainWindow::detachPlot(CPlot *plot_p)
     Q_ASSERT(hasPlotPane());
     Q_ASSERT(plot_p);
     if (!hasPlotPane()) {
-        TRACEX_W(QString("%1 bad input, no plotPane"));
+        TRACEX_W(QString("%1 bad input, no plotPane"))
         return;
     }
     m_plotPane_p->removePlot(plot_p);
@@ -661,7 +661,7 @@ void MainWindow::setSubPlotUpdated(CSubPlot *subPlot_p)
 {
     Q_ASSERT(subPlot_p);
     if (!m_plotPane_p->plotExists() || (subPlot_p == nullptr)) {
-        TRACEX_W(QString("%1 bad input"));
+        TRACEX_W(QString("%1 bad input"))
     }
     m_plotPane_p->setSubPlotUpdated(subPlot_p);
 }
@@ -673,7 +673,7 @@ void MainWindow::redrawPlot(CPlot *plot_p)
 {
     if (hasPlotPane()) {
         if (!m_plotPane_p->plotExists()) {
-            TRACEX_W(QString("%1 bad input"));
+            TRACEX_W(QString("%1 bad input"))
         } else {
             m_plotPane_p->redrawPlot(plot_p);
         }
@@ -751,9 +751,9 @@ MainWindow::MainWindow(QWidget *parent) :
     /* Print all the stored settings */
     QSettings settings;
     QStringList stringList = settings.allKeys();
-    TRACEX_I(QString("Setting keys in Qt registry"));
+    TRACEX_I(QString("Setting keys in Qt registry"))
     for (auto& item : stringList) {
-        TRACEX_I(QString("Key %1").arg(item));
+        TRACEX_I(QString("Key %1").arg(item))
     }
 
 /*    if (!isExitStateMaximized()) { */
@@ -790,7 +790,7 @@ void MainWindow::showEvent(QShowEvent *e)
         CSCZ_SystemState = SYSTEM_STATE_RUNNING;
         setupRecentFiles();
 
-        TRACEX_I(QString("Ready"));
+        TRACEX_I(QString("Ready"))
 
 #ifdef _WIN32
         QWinTaskbarButton *button = new QWinTaskbarButton(this);
@@ -944,7 +944,7 @@ void MainWindow::updatePendingStateGeometry(void)
             [ = ] ()
     {
         if (m_activeState != windowState()) {
-            TRACEX_I("Window update ignored, state change pending");
+            TRACEX_I("Window update ignored, state change pending")
             return;
         }
 
@@ -1024,7 +1024,7 @@ void MainWindow::savePendingStateGeometry(Qt::WindowStates previousState)
                          .arg(gs.editor.width()).arg(gs.editor.height()));
         }
     }
-    TRACEX_I(QString("MW Geometry - Failure, pending Geometry state:%1 not saved, empty data").arg(previousState));
+    TRACEX_I(QString("MW Geometry - Failure, pending Geometry state:%1 not saved, empty data").arg(previousState))
 }
 
 /***********************************************************************************************************************
@@ -1040,7 +1040,7 @@ void MainWindow::saveExitState(void)
     stream << GEOMETRY_VERSION;
     stream << state;
     settings.setValue("exit_state", ba);
-    TRACEX_I(QString("MW Exit State maximized(%1)").arg(state));
+    TRACEX_I(QString("MW Exit State maximized(%1)").arg(state))
 }
 
 /***********************************************************************************************************************
@@ -1080,7 +1080,7 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
     QString state_key;
     getSettingKeys(geometry_key, state_key);
 
-    TRACEX_I(QString("MW Geometry Restore  %1").arg(geometry_key));
+    TRACEX_I(QString("MW Geometry Restore  %1").arg(geometry_key))
 
     QByteArray geometry = settings.value(geometry_key, QByteArray()).toByteArray();
     QDataStream stream(&geometry, QIODevice::ReadOnly);
@@ -1114,11 +1114,11 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
 
         CSCZ_AdaptWindowSizes = false;
 
-        TRACEX_I(QString("MW Geometry Restore ended"));
+        TRACEX_I(QString("MW Geometry Restore ended"))
     });
 
     if (geometry.isEmpty()) {
-        TRACEX_I(QString("MW Geometry - Failure, no geometry state info for %1").arg(geometry_key));
+        TRACEX_I(QString("MW Geometry - Failure, no geometry state info for %1").arg(geometry_key))
         goto fallback;
     }
 
@@ -1177,7 +1177,7 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
 
 fallback:
     if (enable_fallback) {
-        TRACEX_I(QString("MW Geometry - Failure - No window settings, activating adaptWindowSizes"));
+        TRACEX_I(QString("MW Geometry - Failure - No window settings, activating adaptWindowSizes"))
         setupPredefinedWindowSizes();
     }
 }
@@ -1185,7 +1185,7 @@ fallback:
 MainWindow::~MainWindow()
 {
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
-        TRACEX_I(QString("\n\nSystem shutdown\n\n"));
+        TRACEX_I(QString("\n\nSystem shutdown\n\n"))
         CSCZ_SystemState = SYSTEM_STATE_SHUTDOWN;
     }
 }
@@ -1335,9 +1335,9 @@ void MainWindow::createActions(void)
         {
             QSettings settings;
             QStringList stringList = settings.allKeys();
-            TRACEX_I(QString("Setting keys in Qt registry"));
+            TRACEX_I(QString("Setting keys in Qt registry"))
             for (auto& item : stringList) {
-                TRACEX_I(QString("Setting key: %1").arg(item));
+                TRACEX_I(QString("Setting key: %1").arg(item))
             }
         });
     }
@@ -1523,7 +1523,7 @@ void MainWindow::setupRecentFiles(void)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (CSCZ_SystemState != SYSTEM_STATE_SHUTDOWN) {
-        TRACEX_I(QString("\n\nSystem shutdown\n\n"));
+        TRACEX_I(QString("\n\nSystem shutdown\n\n"))
         CSCZ_SystemState = SYSTEM_STATE_SHUTDOWN;
     }
 
@@ -2080,7 +2080,7 @@ bool MainWindow::handleSearch(bool forward)
     }
 
     if (searchResult) {
-        TRACEX_I("Search OK, Row:%d\n", searchResultSelection.row);
+        TRACEX_I("Search OK, Row:%d\n", searchResultSelection.row)
 
         /* Prevent the autohighlight to be updated */
         doc_p->m_autoHighLighter_p->EnableAutoHighlightAutomaticUpdates(false);
@@ -2103,7 +2103,7 @@ bool MainWindow::handleSearch(bool forward)
         CEditorWidget_SearchNewTopLine(searchResultSelection.row);
         update();
     } else {
-        TRACEX_I("Search Failed\n");
+        TRACEX_I("Search Failed\n")
         MW_PlaySystemSound(SYSTEM_SOUND_FAILURE);
     }
 
@@ -2139,7 +2139,7 @@ void MainWindow::changeEvent(QEvent *event)
         /*setupAdaptWindowSizes(false); */
         PRINT_SIZE(QString("MW after restore, active state %1").arg(m_activeState));
         if (newState != m_activeState) {
-            TRACEX_W(QString("Restore messed up the window state %1 %2").arg(m_activeState).arg(newState));
+            TRACEX_W(QString("Restore messed up the window state %1 %2").arg(m_activeState).arg(newState))
         }
     }
     QMainWindow::changeEvent(event);

@@ -37,7 +37,7 @@ public:
     {
         if (m_setup) {m_setup = false; return true;}
 
-        TRACEX_E("CParseTest_Base::CheckSetup  Test class not reinitialized\n");
+        TRACEX_E("CParseTest_Base::CheckSetup  Test class not reinitialized\n")
         return false;
     }
 

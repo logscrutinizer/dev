@@ -107,7 +107,7 @@ void CFontCtrl::SetFont(LS_Painter *painter_p, FontItem_t *font_p)
     m_fontLetterHeight = metrics.height();
 
     if ((m_fontLetterHeight == 0) || (m_fontLetterWidth == 0)) {
-        TRACEX_E("Failed to get correct measurement on font size");
+        TRACEX_E("Failed to get correct measurement on font size")
     }
 }
 
@@ -123,7 +123,7 @@ void CFontCtrl::ChangeFontSize(int size)
     m_size = size;
     g_cfg_p->m_default_FontSize = m_size;
 
-    TRACEX_I(QString("Font size change: %1").arg(size));
+    TRACEX_I(QString("Font size change: %1").arg(size))
     UpdateAllFonts();
 }
 

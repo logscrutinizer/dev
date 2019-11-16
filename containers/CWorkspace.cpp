@@ -635,7 +635,7 @@ CCfgItem_Plot *CWorkspace_GetSelectedPlot(void)
 
     if ((itemPlot_p != nullptr) && (itemPlot_p->m_itemKind != CFG_ITEM_KIND_Plot)) {
         /* Capture that the hierachy doesn't match */
-        TRACEX_W("Error in CWorkspace_GetSelectedPlot");
+        TRACEX_W("Error in CWorkspace_GetSelectedPlot")
         return nullptr;
     }
 
@@ -705,7 +705,7 @@ CCfgItem_Plugin *CWorkspace_GetSelectedPlugin(CCfgItem *selection_p)
     }
 
     if ((plugin_p != nullptr) && (plugin_p->m_itemKind != CFG_ITEM_KIND_PlugIn)) {
-        TRACEX_W("Error in CWorkspace_GetSelectedPlugin");
+        TRACEX_W("Error in CWorkspace_GetSelectedPlugin")
         return nullptr;
     }
 
@@ -732,7 +732,7 @@ void CWorkspace_PlugInPlotRunSelected(CPlot *plot_p)
     if ((plotSelected_p != nullptr) && (plotSelected_p->m_itemKind == CFG_ITEM_KIND_Plot)) {
         plotSelected_p->PlotAllChildren(nullptr, nullptr);
     } else {
-        TRACEX_W("Couldn't run plot, not found");
+        TRACEX_W("Couldn't run plot, not found")
     }
 }
 
@@ -1319,14 +1319,14 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
         filterItem_p = new CFilterItem(&text);
 
         if (nullptr == filterItem_p) {
-            TRACEX_E(QString("%1 filterItem_p is nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1 filterItem_p is nullptr").arg(__FUNCTION__))
             return nullptr;
         }
 
         if (filterItem_p->m_start_p == nullptr) {
             delete filterItem_p;
             filterItem_p = nullptr;
-            TRACEX_E(QString("%1 filterItem_p->m_start_p is nullptr").arg(__FUNCTION__));
+            TRACEX_E(QString("%1 filterItem_p->m_start_p is nullptr").arg(__FUNCTION__))
             return nullptr;
         }
 
@@ -1366,7 +1366,7 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
 
     if (dlg.exec() == QDialog::Accepted) {
         MW_SetWorkspaceWidgetFocus();
-        TRACEX_DE(QString("%1 SetFocus").arg(__FUNCTION__));
+        TRACEX_DE(QString("%1 SetFocus").arg(__FUNCTION__))
 
         /* Copy the filter string (text) as it could have been changed in the Dlg */
         if (filterItem_p->m_start_p != nullptr) {
@@ -1380,13 +1380,13 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
             memcpy(filterItem_p->m_start_p, text.toLatin1().constData(), filterItem_p->m_size);
             filterItem_p->m_start_p[filterItem_p->m_size] = 0;
         } else {
-            TRACEX_E("CCfgItem_FilterItem::PropertiesDlg    m_filterItem_ref_p->m_start_p  nullptr");
+            TRACEX_E("CCfgItem_FilterItem::PropertiesDlg    m_filterItem_ref_p->m_start_p  nullptr")
         }
 
         if (nullptr == cfgFilterItem_p) {
             cfgFilterItem_p = new CCfgItem_FilterItem(cfgFilter_p->m_filter_ref_p, filterItem_p, cfgFilter_p);
             if (nullptr == cfgFilterItem_p) {
-                TRACEX_E(QString("%1 memory allocation of CCfgItem_FilterItem failed").arg(__FUNCTION__));
+                TRACEX_E(QString("%1 memory allocation of CCfgItem_FilterItem failed").arg(__FUNCTION__))
                 return nullptr;
             }
             cfgFilterItem_p->InsertItem(false, true, true);  /*Will add the object to the tail (no auto focus) */
@@ -1595,7 +1595,7 @@ void CWorkspace::ToggleBookmark(QWidget *parent, QString *comment_p, int row)
         return;
     }
 
-    TRACEX_D("CWorkspace::ToggleBookmark");
+    TRACEX_D("CWorkspace::ToggleBookmark")
 
     /* If a bookmark already exist at this row then it shall be removed
      * Based on row, find bookmark that is before and after */
@@ -1652,7 +1652,7 @@ void CWorkspace::AddBookmark(const QString& comment, int row)
                  "max:%d row:%d", doc_p->m_database.TIA.rows, row);
         return;
     }
-    TRACEX_D("CWorkspace::AddBookmark");
+    TRACEX_D("CWorkspace::AddBookmark")
 
     /* If a bookmark already exist at this row then nothing shall be done (cannot add twice)
      * Based on row, find bookmark that is before and after */
@@ -1797,7 +1797,7 @@ void CWorkspace::RemoveAllBookmarks(void)
 ***********************************************************************************************************************/
 void CWorkspace::CloseAllPlugins(void)
 {
-    TRACEX_I("Close all plugins");
+    TRACEX_I("Close all plugins")
 
     if ((m_plugins_p == nullptr) || m_plugins_p->m_cfgChildItems.isEmpty()) {
         return;
@@ -1818,7 +1818,7 @@ void CWorkspace::CloseAllPlugins(void)
 ***********************************************************************************************************************/
 void CWorkspace::CloseAllSelectedPlugins(void)
 {
-    TRACEX_I("Close all selected Plugins");
+    TRACEX_I("Close all selected Plugins")
 
     QList<CCfgItem *> selectionList;
     if (!CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_PlugIn, selectionList)) {
@@ -1846,7 +1846,7 @@ void CWorkspace::CloseAllSelectedPlugins(void)
 void CWorkspace::TakeFocus(void)
 {
     MW_SetWorkspaceWidgetFocus();
-    TRACEX_DE(QString("%1 SetFocus").arg(__FUNCTION__));
+    TRACEX_DE(QString("%1 SetFocus").arg(__FUNCTION__))
 }
 
 /***********************************************************************************************************************
@@ -1949,7 +1949,7 @@ int Model::rowCount(const QModelIndex &parent) const
     int rowCount = 0;
 #ifdef _DEBUG
 
-    /*TRACEX_D(QString("rowCount")); */
+    /*TRACEX_D(QString("rowCount")) */
 #endif
     if (parent.isValid()) {
         /* return the number childs of the parent of the parentIndex */
@@ -1967,7 +1967,7 @@ int Model::rowCount(const QModelIndex &parent) const
             rowCount = 1;
 #ifdef _DEBUG
 
-            /*  TRACEX_D(QString("    ERROR current:nullptr rowCount:%1").arg(rowCount)); */
+            /*  TRACEX_D(QString("    ERROR current:nullptr rowCount:%1").arg(rowCount)) */
 #endif
         }
     } else {
@@ -1975,7 +1975,7 @@ int Model::rowCount(const QModelIndex &parent) const
         rowCount = g_workspace_p->m_root_p->m_cfgChildItems.count();
 #ifdef _DEBUG
 
-        /*TRACEX_D(QString("    root rowCount:%1").arg(rowCount)); */
+        /*TRACEX_D(QString("    root rowCount:%1").arg(rowCount)) */
 #endif
     }
     return rowCount;
@@ -2315,7 +2315,7 @@ QMimeData *Model::mimeData(const QModelIndexList &indexes) const
     QModelIndexList selectionList;
     CWorkspace_TreeView_GetSelectionIndexes(selectionList);
     for (auto& index : selectionList) {
-        TRACEX_DE(QString("selection row:%1").arg(index.row()));
+        TRACEX_DE(QString("selection row:%1").arg(index.row()))
     }
 #endif
 
@@ -2325,7 +2325,7 @@ QMimeData *Model::mimeData(const QModelIndexList &indexes) const
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
     stream << MIME_STREAM_START_TAG; /* start tag */
     for (auto& index : sorted_list) {
-        TRACEX_DE(QString("mime row:%1").arg(index.row()));
+        TRACEX_DE(QString("mime row:%1").arg(index.row()))
         if (index.isValid()) {
             CCfgItem *cfgItem_p = reinterpret_cast<CCfgItem *>(index.internalPointer());
             stream << MIME_ITEM_START_TAG;
@@ -2450,7 +2450,7 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
             stream >> kind;
 
             if ((kind & 0xffff00) != 0xfeed00) {
-                TRACEX_W(QString("Bad kind tag in dropped data"));
+                TRACEX_W(QString("Bad kind tag in dropped data"))
                 return false;
             }
 
@@ -2466,7 +2466,7 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
                     CCfgItem_FilterItem *filterItem_p =
                         new CCfgItem_FilterItem(filter_p->m_filter_ref_p, nullptr, filter_p);
                     filterItem_p->Serialize(stream, false);
-                    TRACEX_DE(QString("Begin insert row %1").arg(row));
+                    TRACEX_DE(QString("Begin insert row %1").arg(row))
                     filter_p->m_cfgChildItems.insert(row, filterItem_p);
 
                     endInsertRows();
@@ -2514,10 +2514,10 @@ void Model::itemUpdated(CCfgItem *item_p)
     }
 
     QModelIndex qindex = createIndex(item_p->index(), 0, item_p);
-    TRACEX_D("IN %s", __FUNCTION__);
+    TRACEX_D("IN %s", __FUNCTION__)
 
     emit dataChanged(qindex, qindex);
-    TRACEX_D("OUT %s", __FUNCTION__);
+    TRACEX_D("OUT %s", __FUNCTION__)
 }
 
 /***********************************************************************************************************************
@@ -2554,7 +2554,7 @@ void Model::startInsertRows(CCfgItem *parent, const CCfgItem *before, int count)
     }
 #ifdef _DEBUG
     if (lastInsertParent != nullptr) {
-        TRACEX_E("stopInsert ROW not called");
+        TRACEX_E("stopInsert ROW not called")
     }
 #endif
 
@@ -2562,7 +2562,7 @@ void Model::startInsertRows(CCfgItem *parent, const CCfgItem *before, int count)
 
     if (parent == nullptr) {
 #ifdef _DEBUG
-        TRACEX_E("Internal error, parent is nullptr");
+        TRACEX_E("Internal error, parent is nullptr")
 #endif
         return;
     }
@@ -2575,7 +2575,7 @@ void Model::startInsertRows(CCfgItem *parent, const CCfgItem *before, int count)
     }
 #ifdef _DEBUG
     else {
-        TRACEX_E("Internal error, before index couldn't be found");
+        TRACEX_E("Internal error, before index couldn't be found")
     }
 #endif
 }
@@ -2620,7 +2620,7 @@ bool Model::moveRows(const QModelIndex &sourceParent, int sourceRow, int count,
     QModelIndexList selectionList;
     CWorkspace_TreeView_GetSelectionIndexes(selectionList);
     for (auto& index : selectionList) {
-        TRACEX_DE(QString("selection row:%1").arg(index.row()));
+        TRACEX_DE(QString("selection row:%1").arg(index.row()))
     }
 #endif
 
@@ -2637,7 +2637,7 @@ void Model::startRemoveRows(CCfgItem *parent, const CCfgItem *item, int count)
     }
     if (parent == nullptr) {
 #ifdef _DEBUG
-        TRACEX_E("Internal error, parent is nullptr");
+        TRACEX_E("Internal error, parent is nullptr")
 #endif
         return;
     }

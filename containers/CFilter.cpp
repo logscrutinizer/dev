@@ -110,7 +110,7 @@ namespace FilterMgr
         packedFIR_base_p = (packed_FIR_t *)VirtualMem::Alloc(sizeof(packed_FIR_t) * FIRA.filterMatches);
 
         if (packedFIR_base_p == nullptr) {
-            TRACEX_E("CLogScrutinizerDoc::CreatePackedFIRA    packedFIRA_p nullptr, out of memory?");
+            TRACEX_E("CLogScrutinizerDoc::CreatePackedFIRA    packedFIRA_p nullptr, out of memory?")
             FIRA.filterMatches = 0;
             return nullptr;
         }

@@ -124,13 +124,13 @@ protected:
         /* To delete an CCfgItem the RemoveAllChildren must be called first, and then the object can be deleted. */
         if (!m_cfgChildItems.isEmpty()) {
 #ifdef DEBUG
-            TRACEX_E("Internal: Child not empty");
+            TRACEX_E("Internal: Child not empty")
 #endif
         }
 
         if (!m_prepareDeleteCalled) {
 #ifdef DEBUG
-            TRACEX_E("Internal: !m_prepareDeleteCalled");
+            TRACEX_E("Internal: !m_prepareDeleteCalled")
 #endif
         }
     }
@@ -160,7 +160,7 @@ public:
                 ++index;
             }
 #ifdef _DEBUG
-            TRACEX_E(QString("Internal error, item not found in parent list when getting items index"));
+            TRACEX_E(QString("Internal error, item not found in parent list when getting items index"))
 #endif
             return 0;
         }
@@ -308,7 +308,7 @@ class CCfgItem_Filters : public CCfgItem
 {
 public:
     CCfgItem_Filters(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Filters() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Filters() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
@@ -326,7 +326,7 @@ class CCfgItem_Root : public CCfgItem
 {
 public:
     CCfgItem_Root(CCfgItem *headerRoot = nullptr);
-    virtual ~CCfgItem_Root() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Root() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
     virtual void UpdateName(void) override;
@@ -343,7 +343,7 @@ class CCfgItem_Logs : public CCfgItem
 {
 public:
     CCfgItem_Logs(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Logs() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Logs() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
@@ -356,7 +356,7 @@ class CCfgItem_Log : public CCfgItem
 {
 public:
     CCfgItem_Log(char *path_p, CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Log() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Log() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
@@ -373,7 +373,7 @@ class CCfgItem_Decoders : public CCfgItem
 {
 public:
     CCfgItem_Decoders(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Decoders() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Decoders() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 };
 
 /***********************************************************************************************************************
@@ -383,7 +383,7 @@ class CCfgItem_Decoder : public CCfgItem
 {
 public:
     CCfgItem_Decoder(CDecoder *decoder_ref_p, CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Decoder() {TRACEX_DE(QString("%1 %2").arg(__FUNCTION__).arg(m_itemText));}
+    virtual ~CCfgItem_Decoder() {TRACEX_DE(QString("%1 %2").arg(__FUNCTION__).arg(m_itemText))}
 
     virtual void PrepareDelete(void) override;
 
@@ -399,7 +399,7 @@ class CCfgItem_Plugins : public CCfgItem
 {
 public:
     CCfgItem_Plugins(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Plugins() {TRACEX_DE("Destructor CCfgItem_Plugins");}
+    virtual ~CCfgItem_Plugins() {TRACEX_DE("Destructor CCfgItem_Plugins")}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
@@ -417,7 +417,7 @@ public:
         CCfgItem *itemParent_p);
 
     virtual ~CCfgItem_Plugin() {
-        TRACEX_DE(QString("%1 %2").arg(__FUNCTION__).arg(m_itemText));
+        TRACEX_DE(QString("%1 %2").arg(__FUNCTION__).arg(m_itemText))
     }
 
     virtual void PrepareDelete(void) override;
@@ -441,7 +441,7 @@ class CCfgItem_Bookmarks : public CCfgItem
 {
 public:
     CCfgItem_Bookmarks(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Bookmarks() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Bookmarks() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
 };
@@ -453,7 +453,7 @@ class CCfgItem_Bookmark : public CCfgItem
 {
 public:
     CCfgItem_Bookmark(const QString& comment, int row, CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Bookmark() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Bookmark() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
     virtual void OnDblClick(QWidget *parent) override;
@@ -473,7 +473,7 @@ class CCfgItem_Plots : public CCfgItem
 {
 public:
     CCfgItem_Plots(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Plots() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Plots() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
     int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 };
 
@@ -484,7 +484,7 @@ class CCfgItem_Plot : public CCfgItem
 {
 public:
     CCfgItem_Plot(CPlot *plot_ref_p, CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Plot() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Plot() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual void PrepareDelete(void) override;
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
@@ -514,7 +514,7 @@ class CCfgItem_SubPlot : public CCfgItem
 {
 public:
     CCfgItem_SubPlot(CSubPlot *subPlot_ref_p, CCfgItem *itemParent_p);
-    virtual ~CCfgItem_SubPlot() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_SubPlot() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 
@@ -532,7 +532,7 @@ class CCfgItem_Graph : public CCfgItem
 {
 public:
     CCfgItem_Graph(CGraph *graph_ref_p, CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Graph() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Graph() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 
@@ -556,7 +556,7 @@ public:
         CSequenceDiagram *sequenceDiagram_ref_p,
         CCfgItem *itemParent_p);
 
-    virtual ~CCfgItem_SequenceDiagram() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_SequenceDiagram() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual int OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *treeview_p, QMenu *menu_p) override;
 
@@ -577,7 +577,7 @@ class CCfgItem_Comments : public CCfgItem
 {
 public:
     CCfgItem_Comments(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Comments() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Comments() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
 };
@@ -589,7 +589,7 @@ class CCfgItem_Comment : public CCfgItem
 {
 public:
     CCfgItem_Comment(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Comment() {TRACEX_DE(QString("%1").arg(__FUNCTION__));}
+    virtual ~CCfgItem_Comment() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
 
     virtual bool WriteToFile(QTextStream& fileStream, CfgItemSaveOptions_t options) override;
 

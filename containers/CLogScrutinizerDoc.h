@@ -107,7 +107,7 @@ public:
     void SetWorkspaceFileName(const QString& fileName) {
         m_workspaceFileName_revert = m_workspaceFileName;
         m_workspaceFileName = fileName;
-        TRACEX_D(QString("Current workspace file: %1\n").arg(fileName));
+        TRACEX_D(QString("Current workspace file: %1\n").arg(fileName))
     }
 
     /****/

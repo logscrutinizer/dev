@@ -153,7 +153,7 @@ void CFilterThreadConfiguration::FilterInit(FIR_t *FIRA_p, packedFilterItem_t *p
                                              nullptr, /*platform*/
                                              &database,
                                              &compile_err) != HS_SUCCESS) {
-                        TRACEX_I(QString("RegExp failed %1").arg(compile_err->message));
+                        TRACEX_I(QString("RegExp failed %1").arg(compile_err->message))
                         g_processingCtrl_p->AddProgressInfo(QString("Regular expression contains error: %1")
                                                                 .arg(packedFilter_p->start_p));
                         g_processingCtrl_p->m_abort = true;
@@ -329,14 +329,14 @@ void CFilterProcCtrl::StartOneLine(TIA_t *TIA_p, FIR_t *FIRA_p, int row, char *t
 
                 matchDescr.filterLength = packedFilterItem_p->length;
 
-                TRACEX_I(QString("-pf %1").arg(packedFilterItem_p->start_p));
+                TRACEX_I(QString("-pf %1").arg(packedFilterItem_p->start_p))
                 if (hs_compile(packedFilterItem_p->start_p,
                                REGEXP_HYPERSCAN_FLAGS,
                                HS_MODE_BLOCK,
                                nullptr,
                                &database,
                                &compile_err) != HS_SUCCESS) {
-                    TRACEX_I(QString("RegExp failed %1").arg(compile_err->message));
+                    TRACEX_I(QString("RegExp failed %1").arg(compile_err->message))
                     g_processingCtrl_p->AddProgressInfo(QString("Regular expression contains error: %1")
                                                             .arg(packedFilterItem_p->start_p));
                     g_processingCtrl_p->m_abort = true;
@@ -344,7 +344,7 @@ void CFilterProcCtrl::StartOneLine(TIA_t *TIA_p, FIR_t *FIRA_p, int row, char *t
                 }
 
                 if (hs_alloc_scratch(database, &scratch) != HS_SUCCESS) {
-                    TRACEX_I(QString("ERROR: Unable to allocate scratch space. Exiting."));
+                    TRACEX_I(QString("ERROR: Unable to allocate scratch space. Exiting."))
                     fprintf(stderr, "ERROR: Unable to allocate scratch space. Exiting.");
                 }
 
@@ -513,7 +513,7 @@ void CFilterProcCtrl::PackFilters(void)
 
         if (filterItem_p != m_filterItem_LUT_p[filterIndex++]) {
             /* Ensure that the packed filters match the LUT */
-            TRACEX_E("Filter packing doesn't match Filter LUT");
+            TRACEX_E("Filter packing doesn't match Filter LUT")
         }
     }
 
@@ -523,7 +523,7 @@ void CFilterProcCtrl::PackFilters(void)
     }
 
     if (!VirtualMem::CheckMem(m_filterStrings_p)) {
-        TRACEX_E("Check mem failure");
+        TRACEX_E("Check mem failure")
     }
 
     if (m_execTimes_p != nullptr) {

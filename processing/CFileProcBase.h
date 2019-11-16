@@ -166,7 +166,7 @@ public:
         m_configurationListPool_p(configurationListPool_p)
     {
 #ifdef THREAD_DEBUGGING
-        TRACEX_DE("Thread Created");
+        TRACEX_DE("Thread Created")
 #endif
     }
 
@@ -207,7 +207,7 @@ public:
                     PRINT_PROGRESS_DBG("Thread %d processing start %d", m_threadIndex, loops);
                     thread_Process(m_configuration_p);
                 } else {
-                    TRACEX_E("Thread was allowed to start, but there was no configuration");
+                    TRACEX_E("Thread was allowed to start, but there was no configuration")
                     m_stop = true; /* error */
                 }
 
@@ -221,7 +221,7 @@ public:
             } else {
                 m_readySem_p->release(1);
 #ifdef THREAD_DEBUGGING
-                TRACEX_DE("Thread exiting, just release the ready sem");
+                TRACEX_DE("Thread exiting, just release the ready sem")
 #endif
             }
         }

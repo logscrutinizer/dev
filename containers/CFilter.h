@@ -60,7 +60,7 @@ public:
         if (m_start_p != nullptr) {
             memcpy(m_start_p, from_p->m_start_p, m_size + 1);
         } else {
-            TRACEX_E("CFilterItem::CFilterItem  m_start_p nullptr");
+            TRACEX_E("CFilterItem::CFilterItem  m_start_p nullptr")
         }
 
         m_color = from_p->m_color;

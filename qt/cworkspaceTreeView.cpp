@@ -107,7 +107,7 @@ void CWorkspaceTreeView::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QList<CCfgItem *> selectionList;
     if (GetSelections(CFG_ITEM_KIND_None, selectionList)) {
-        TRACEX_DE(QString("CWorkspaceTreeView::mouseDoubleClickEvent"));
+        TRACEX_DE(QString("CWorkspaceTreeView::mouseDoubleClickEvent"))
 
         CCfgItem *cfgItem_p = selectionList.last();
         cfgItem_p->OnDblClick(this);
@@ -301,7 +301,7 @@ void CWorkspaceTreeView::resizeText(bool increase)
         g_cfg_p->m_workspace_FontSize = fontSize < 7 ? 6 : fontSize - 1;
     }
 
-    TRACEX_I("Workspace font size %d", g_cfg_p->m_workspace_FontSize);
+    TRACEX_I("Workspace font size %d", g_cfg_p->m_workspace_FontSize)
     collapseAll();
     expandAll();
 }
@@ -317,7 +317,7 @@ void CWorkspaceTreeView::contextMenuEvent(QContextMenuEvent *event)
         CCfgItem *cfgItem_p = static_cast<CCfgItem *>(index.internalPointer());
         QList<CCfgItem *> list;
         if (GetSelections(CFG_ITEM_KIND_None, list)) {
-            TRACEX_I(QString("%1 first_kind:%2").arg(__FUNCTION__).arg(list.first()->m_itemKind));
+            TRACEX_I(QString("%1 first_kind:%2").arg(__FUNCTION__).arg(list.first()->m_itemKind))
             cfgItem_p->OnPopupMenu(&list, this, &contextMenu);
         }
         contextMenu.exec(mapToGlobal(event->pos()));

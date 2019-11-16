@@ -42,7 +42,7 @@ public:
     virtual void select(const QModelIndex &index, QItemSelectionModel::SelectionFlags command) override
     {
 #ifdef _DEBUG
-        TRACEX_DE(QString("set Selection %1").arg(index.row()));
+        TRACEX_DE(QString("set Selection %1").arg(index.row()))
 #endif
         QItemSelectionModel::select(index, command);
     }
@@ -63,7 +63,7 @@ public:
     virtual void setCurrentIndex(const QModelIndex &index, QItemSelectionModel::SelectionFlags command) override
     {
 #ifdef _DEBUG
-        TRACEX_DE(QString("set Selection %1").arg(index.row()));
+        TRACEX_DE(QString("set Selection %1").arg(index.row()))
 #endif
         QItemSelectionModel::setCurrentIndex(index, command);
     }

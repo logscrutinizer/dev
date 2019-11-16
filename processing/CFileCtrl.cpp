@@ -45,7 +45,7 @@ void CTIA_Thread::run()
     TI_t *TIA_p;
 
 #ifdef DEBUG_TIA_PARSING
-    TRACEX_D("Thread 0x%llx started", this);
+    TRACEX_D("Thread 0x%llx started", this)
 #endif
 
     g_RamLog->RegisterThread();
@@ -64,7 +64,7 @@ void CTIA_Thread::run()
     CTIA_p = new CTIA_Chunk(m_maxNumOf_TI_estimated);
 
     if (CTIA_p == nullptr) {
-        TRACEX_E("ThreadMain_CTIA  out of memory");
+        TRACEX_E("ThreadMain_CTIA  out of memory")
         return;
     }
 
@@ -108,7 +108,7 @@ void CTIA_Thread::run()
 
             if (g_processingCtrl_p->m_abort) {
 #ifdef DEBUG_TIA_PARSING
-                TRACEX_D("Thread 0x%llx early exit", this);
+                TRACEX_D("Thread 0x%llx early exit", this)
 #endif
                 return;
             }
@@ -130,7 +130,7 @@ void CTIA_Thread::run()
                 CTIA_p = new CTIA_Chunk(m_maxNumOf_TI_estimated);
 
                 if ((CTIA_p == nullptr) || (CTIA_p->m_TIA_p == nullptr)) {
-                    TRACEX_E("ThreadMain_CTIA  out of memory");
+                    TRACEX_E("ThreadMain_CTIA  out of memory")
                     return;
                 }
 
@@ -163,7 +163,7 @@ void CTIA_Thread::run()
     execTime.Trigger();
 
 #ifdef TIME_MEASURE_TIA_PARSING
-    TRACEX_DE("Thread 0x%llx done time:%e ms", this, execTime.ms());
+    TRACEX_DE("Thread 0x%llx done time:%e ms", this, execTime.ms())
 #endif
 }
 
@@ -311,9 +311,9 @@ void CParseCmd::Setup(CFileCtrl_FileHandle_t *fileHandle_p, int64_t file_StartOf
                 if (!(seekStatus = Seek_EOL(fileHandle_p->qFile_p, workMem_p,
                                             file_SeekEnd_StartIndex, m_fileSize, &EOL_Offset))) {
                     if (seekStatus == SEEK_EOL_ERROR) {
-                        TRACEX_E("CParseCmd::Setup  SeekError");
+                        TRACEX_E("CParseCmd::Setup  SeekError")
                     } else if (seekStatus == SEEK_EOL_FILE_END) {
-                        TRACEX_E("CParseCmd::Setup  SeekError Reached EOL during seek");
+                        TRACEX_E("CParseCmd::Setup  SeekError Reached EOL during seek")
                     }
 
                     return;
@@ -413,7 +413,7 @@ void CParseCmd::Execute(void)
     g_processingCtrl_p->AddProgressInfo(QString("   Processing, threads:%1").arg(g_totalNumOfThreads));
 
 #ifdef DEBUG_TIA_PARSING
-    TRACEX_D("Starting ParseCmd:0x%llx threads", this);
+    TRACEX_D("Starting ParseCmd:0x%llx threads", this)
 #endif
 
     QList <CTIA_Thread *>::iterator iter;
@@ -429,7 +429,7 @@ void CParseCmd::Execute(void)
     }
 
 #ifdef DEBUG_TIA_PARSING
-    TRACEX_D("ParseCmd:0x%llx Waiting for threads", this);
+    TRACEX_D("ParseCmd:0x%llx Waiting for threads", this)
 #endif
 
     for (iter = m_threadList.begin(); iter != m_threadList.end(); ++iter) {
@@ -439,7 +439,7 @@ void CParseCmd::Execute(void)
     m_processTime = execTime.ms();
 
 #ifdef DEBUG_TIA_PARSING
-    TRACEX_D("All ParseCmd:0x%llx thread DONE time:%e", this, m_processTime);
+    TRACEX_D("All ParseCmd:0x%llx thread DONE time:%e", this, m_processTime)
 #endif
 }
 
@@ -459,7 +459,7 @@ void CParseCmd::PrintExecTimes(void)
     }
 
     execTimeString += QString("");
-    TRACEX_D(execTimeString);
+    TRACEX_D(execTimeString)
 }
 
 /***********************************************************************************************************************
@@ -625,7 +625,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
             seekIndex = fileIndex + CMD_size;
 
             if (Seek_EOL(m_LogFile.qFile_p, work_mem_p, seekIndex, fileSize, &EOL_Offset) == SEEK_EOL_ERROR) {
-                TRACEX_E("CTIA_FileStorage::Search_TIA  Failed to find a line ending");
+                TRACEX_E("CTIA_FileStorage::Search_TIA  Failed to find a line ending")
                 return false;
             }
 
@@ -662,7 +662,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
     }
 
 #ifdef DEBUG_TIA_PARSING
-    TRACEX_D("Number of Parse commands = %d", numOf_CMDs);
+    TRACEX_D("Number of Parse commands = %d", numOf_CMDs)
 #endif
     g_processingCtrl_p->AddProgressInfo(QString("   File will be loaded in %1 segments").arg(numOf_CMDs));
 
@@ -701,7 +701,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
         m_numOf_TI += parseCmd_p->GetNumOf_TI();
 
 #ifdef DEBUG_TIA_PARSING
-        TRACEX_D("CFileCtrl::Search_TIA  TIs %d", parseCmd_p->GetNumOf_TI());
+        TRACEX_D("CFileCtrl::Search_TIA  TIs %d", parseCmd_p->GetNumOf_TI())
 #endif
 
         parseCmd_p->FileStore(m_TIA_File);
@@ -717,7 +717,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
     if (!g_processingCtrl_p->m_abort) {
         g_processingCtrl_p->AddProgressInfo("  EOL parsing done");
         TRACEX_ENABLE_WINDOW();
-        TRACEX_D("CFileCtrl::Search_TIA  Number of TextItems = %d", m_numOf_TI);
+        TRACEX_D("CFileCtrl::Search_TIA  Number of TextItems = %d", m_numOf_TI)
 
         m_TIA_File.flush();
         Write_TIA_Header();
@@ -758,7 +758,7 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
         logFile.close();
     }
     if (!logFile.open(QIODevice::ReadOnly)) {
-        TRACEX_W(QString("Failied to reopen log file at file validation"));
+        TRACEX_W(QString("Failied to reopen log file at file validation"))
         return false;
     }
 
@@ -821,7 +821,7 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
     CTIA_p = new CTIA_Chunk(NUM_TI_IN_CHUNK);
 
     if (CTIA_p == nullptr) {
-        TRACEX_E("ThreadMain_CTIA  out of memory");
+        TRACEX_E("ThreadMain_CTIA  out of memory")
         return false;
     }
 
@@ -869,7 +869,7 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
                 CTIA_p = new CTIA_Chunk(NUM_TI_IN_CHUNK);
 
                 if ((CTIA_p == nullptr) || (CTIA_p->m_TIA_p == nullptr)) {
-                    TRACEX_E("ThreadMain_CTIA  out of memory");
+                    TRACEX_E("ThreadMain_CTIA  out of memory")
                     return false;
                 }
 
@@ -991,7 +991,7 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
         }
 
         if (header.fileSize != m_LogFile.qFile_p->size()) {
-            TRACEX_I("Size of log file has increased size TIA parsing started");
+            TRACEX_I("Size of log file has increased size TIA parsing started")
         }
     }
 
@@ -1090,7 +1090,7 @@ void TestSeek()
     char workMem_p[4096 * 10];
 
     if (!GenerateSeekLog(fileName, repetitionPattern, numOfRows, lineEndingCount)) {
-        TRACEX_E("GenerateSeekLog Failed");
+        TRACEX_E("GenerateSeekLog Failed")
         return;
     }
 
@@ -1105,7 +1105,7 @@ void TestSeek()
     int64_t fileSize = LogFile.size();
 
     if (fileSize != (repetitionPattern.size() + lineEndingCount) * numOfRows) {
-        TRACEX_E("TestSeek Failed - Generated Log wrong size");
+        TRACEX_E("TestSeek Failed - Generated Log wrong size")
         return;
     }
 
@@ -1116,12 +1116,12 @@ void TestSeek()
         int64_t fileStartIndex = row * lineLength + row % lineLength; /* continously shift start position */
 
         if (Seek_EOL(&LogFile, workMem_p, fileStartIndex, fileSize, &offset_EOL /*In/out*/) == SEEK_EOL_ERROR) {
-            TRACEX_E("TestSeek Failed - Seek_EOL failed");
+            TRACEX_E("TestSeek Failed - Seek_EOL failed")
             return;
         }
 
         if (((fileStartIndex + offset_EOL) != (row + 1) * lineLength - 1)) {
-            TRACEX_E("TestSeek Failed - Seek_EOL found wrong line ending");
+            TRACEX_E("TestSeek Failed - Seek_EOL found wrong line ending")
             return;
         }
     }
@@ -1157,10 +1157,10 @@ bool GenerateSeekLog(const QString& fileName, const QString& repetitionPattern, 
             }
         } /* for */
     } catch (std::exception &e) {
-        TRACEX_E(QString("GenerateTestLog Failed - ASSERT %1 ").arg(e.what()));
+        TRACEX_E(QString("GenerateTestLog Failed - ASSERT %1 ").arg(e.what()))
         qFatal("  ");
     } catch (...) {
-        TRACEX_E("GenerateTestLog Failed - ASSERT");
+        TRACEX_E("GenerateTestLog Failed - ASSERT")
         qFatal("  ");
     }
 

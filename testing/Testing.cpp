@@ -71,16 +71,16 @@ void MainTest()
 {
     g_RamLog->fileDump(false);
 
-    TRACEX_I("----------- Test memory ----------\n");
+    TRACEX_I("----------- Test memory ----------\n")
     TestMemory();
 
-    TRACEX_I("----------- Test workspace ----------\n");
+    TRACEX_I("----------- Test workspace ----------\n")
     TestWorkspace();
 
-    TRACEX_I("\n\n----------- TestRowCache ----------\n");
+    TRACEX_I("\n\n----------- TestRowCache ----------\n")
     TestRowCacheAndAutoHighlight();
 
-    TRACEX_I("----------- Test Load and Filter --------\n");
+    TRACEX_I("----------- Test Load and Filter --------\n")
     TestLoadAndFilter();
 
     /*
@@ -88,14 +88,14 @@ void MainTest()
      *  dlg.setModal(true);
      *  dlg.exec();
      */
-    TRACEX_I("----------- Test Parsing ----------\n");
+    TRACEX_I("----------- Test Parsing ----------\n")
     {
         /* Plugin text parse testing */
         CParseTesting parseTesting;
         parseTesting.ParseTest();
     }
 
-    TRACEX_I("----------- Test Document ----------\n");
+    TRACEX_I("----------- Test Document ----------\n")
     if (!TestDocument()) {
         g_DebugLib->ErrorHook("TestDocument settings failed");
     }
@@ -115,39 +115,39 @@ void MainTest()
     file_p->flush();
     file_p->close();
 
-    TRACEX_I("----------- VirtualMem::test ----------\n");
+    TRACEX_I("----------- VirtualMem::test ----------\n")
 
     if (!VirtualMem::test()) {
-        TRACEX_E("VirtualMem::test() failed\n");
+        TRACEX_E("VirtualMem::test() failed\n")
     }
 
-    TRACEX_I("----------- myRecentFile ----------\n");
+    TRACEX_I("----------- myRecentFile ----------\n")
 
     CRecentFile myRecentFile;
 
     myRecentFile.Test();
 
-    TRACEX_I("\n\n----------- TestSeek ----------\n");
+    TRACEX_I("\n\n----------- TestSeek ----------\n")
 
     TestSeek();
 
-    TRACEX_I("\n\n----------- MultiTestFiltering ----------\n\n\n");
+    TRACEX_I("\n\n----------- MultiTestFiltering ----------\n\n\n")
 
     MultiTestFiltering();
 
-    TRACEX_I("\n\n----------- TestFileCtrl ----------\n\n\n");
+    TRACEX_I("\n\n----------- TestFileCtrl ----------\n\n\n")
 
     TestFileCtrl();
 
-    TRACEX_I("\n\n----------- TestSearch ----------\n\n\n");
+    TRACEX_I("\n\n----------- TestSearch ----------\n\n\n")
 
     TestSearch(true);
 
-    TRACEX_I("\n\n----------- TestFiltering ----------\n\n\n");
+    TRACEX_I("\n\n----------- TestFiltering ----------\n\n\n")
 
     (void)TestFiltering();
 
-    TRACEX_I(QString("TEST SUCCESS"));
+    TRACEX_I(QString("TEST SUCCESS"))
 }
 
 /***********************************************************************************************************************
@@ -171,12 +171,12 @@ void TestLoadAndFilter(void)
     QStringList logFiles = dir.entryList(nameLogFilter);
 
     if ((logFiles.count() == 0) || (fltFiles.count() == 0)) {
-        TRACEX_E("Files missing for tests");
+        TRACEX_E("Files missing for tests")
     }
 
-    TRACEX_I(QString("   Filter file:%1").arg(fltFiles.first()));
+    TRACEX_I(QString("   Filter file:%1").arg(fltFiles.first()))
     for (auto& logFile : logFiles) {
-        TRACEX_I(QString("   Log file:%1").arg(logFile));
+        TRACEX_I(QString("   Log file:%1").arg(logFile))
     }
 
     QStringList oneFilter;
@@ -192,7 +192,7 @@ void TestLoadAndFilter(void)
             doc_p->Filter();
             doc_p->Filter();
         }
-        TRACEX_I(QString("   %1").arg(i));
+        TRACEX_I(QString("   %1").arg(i))
     }
 
     doc_p->CleanDB();
@@ -208,7 +208,7 @@ void MultiTestFiltering(void)
     for (int index = 0; index < 4; index++) {
         /*if (!TestFiltering(index != 0 ? true : false)) { */
         if (!TestFiltering(true)) {
-            TRACEX_E("MultiTestFilter Failed\n");
+            TRACEX_E("MultiTestFilter Failed\n")
             return;
         }
     }
@@ -226,7 +226,7 @@ bool TestFiltering(bool useIfExist)
     char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_FILTER_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
-        TRACEX_E("TestFiltering - Virtual Alloc failed\n");
+        TRACEX_E("TestFiltering - Virtual Alloc failed\n")
         return false;
     }
 
@@ -241,27 +241,27 @@ bool TestFiltering(bool useIfExist)
     QFile Log_File, TIA_File, FIRA_File;
 
     if (!GenerateFilterTestLog(logFileName, repetitionPattern, matchPattern, totalNumOfRows, modulus, useIfExist)) {
-        TRACEX_E("TestFiltering - Test file couldn't be generated\n");
+        TRACEX_E("TestFiltering - Test file couldn't be generated\n")
         return false;
     }
 
     if (!LoadMapTIAandFIRA_filemapping(logFileName, Log_File, TIA_File, FIRA_File, TIA, FIRA, mem_p, totalNumOfRows)) {
-        TRACEX_E("TestFiltering - LoadMapTIAandFIRA\n");
+        TRACEX_E("TestFiltering - LoadMapTIAandFIRA\n")
         return false;
     }
 
     if (!Filter(Log_File, totalNumOfRows, TIA, FIRA, mem_p, myFilters, 1, container)) {
-        TRACEX_E("TestFiltering - Filter\n");
+        TRACEX_E("TestFiltering - Filter\n")
         return false;
     }
 
     if (!VerifyTIA(TIA, repetitionPattern, matchPattern, totalNumOfRows, modulus)) {
-        TRACEX_E("TestFiltering - VerifyTIA\n");
+        TRACEX_E("TestFiltering - VerifyTIA\n")
         return false;
     }
 
     if (!VerifyFIRA(FIRA, TIA, totalNumOfRows, modulus)) {
-        TRACEX_E("TestFiltering - VerifyFIRA\n");
+        TRACEX_E("TestFiltering - VerifyFIRA\n")
         return false;
     }
 
@@ -282,7 +282,7 @@ bool TestRowCacheAndAutoHighlight(void)
     char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_ROW_CACHE_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
-        TRACEX_E("TestRowCacheAndAutoHighlight - Virtual Alloc failed\n");
+        TRACEX_E("TestRowCacheAndAutoHighlight - Virtual Alloc failed\n")
         return false;
     }
 
@@ -298,28 +298,28 @@ bool TestRowCacheAndAutoHighlight(void)
     QFile Log_File, TIA_File, FIRA_File;
 
     if (!GenerateFilterTestLog(logFileName, repetitionPattern, matchPattern, totalNumOfRows, modulus, true)) {
-        TRACEX_E("TestRowCacheAndAutoHighlight - Test file couldn't be generated\n");
+        TRACEX_E("TestRowCacheAndAutoHighlight - Test file couldn't be generated\n")
         return false;
     }
 
     if (!LoadMapTIAandFIRA(logFileName, Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p, TIA, FIRA,
                            mem_p /*input*/, totalNumOfRows)) {
-        TRACEX_E("TestRowCacheAndAutoHighlight - LoadMapTIAandFIRA\n");
+        TRACEX_E("TestRowCacheAndAutoHighlight - LoadMapTIAandFIRA\n")
         return false;
     }
 
     if (!Filter(Log_File, totalNumOfRows, TIA, FIRA, mem_p, myFilters, 1, container)) {
-        TRACEX_E("TestRowCacheAndAutoHighlight - Filter\n");
+        TRACEX_E("TestRowCacheAndAutoHighlight - Filter\n")
         return false;
     }
 
     if (!VerifyTIA(TIA, repetitionPattern, matchPattern, totalNumOfRows, modulus)) {
-        TRACEX_E("TestRowCacheAndAutoHighlight - VerifyTIA\n");
+        TRACEX_E("TestRowCacheAndAutoHighlight - VerifyTIA\n")
         return false;
     }
 
     if (!VerifyFIRA(FIRA, TIA, totalNumOfRows, modulus)) {
-        TRACEX_E("TestRowCacheAndAutoHighlight - VerifyFIRA\n");
+        TRACEX_E("TestRowCacheAndAutoHighlight - VerifyFIRA\n")
         return false;
     }
 
@@ -345,12 +345,12 @@ bool TestRowCacheAndAutoHighlight(void)
 
         if ((index % modulus) == 0) {
             if (matchPatLength != size) {
-                TRACEX_E("TestRowCacheAndAutoHighlight  VerifyTIA Failed - Line not matching");
+                TRACEX_E("TestRowCacheAndAutoHighlight  VerifyTIA Failed - Line not matching")
                 return false;
             }
         } else {
             if (repPatLength != size) {
-                TRACEX_E("TestRowCacheAndAutoHighlight  VerifyTIA Failed - Line not matching");
+                TRACEX_E("TestRowCacheAndAutoHighlight  VerifyTIA Failed - Line not matching")
                 return false;
             }
         }
@@ -382,7 +382,7 @@ bool TestSearch(bool useIfExist)
     char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_FILTER_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
-        TRACEX_E("TestFiltering - Virtual Alloc failed\n");
+        TRACEX_E("TestFiltering - Virtual Alloc failed\n")
         return false;
     }
 
@@ -397,18 +397,18 @@ bool TestSearch(bool useIfExist)
     QFile Log_File, TIA_File, FIRA_File;
 
     if (!GenerateFilterTestLog(logFileName, repetitionPattern, matchPattern, totalNumOfRows, modulus, useIfExist)) {
-        TRACEX_E("TestSearch - Test file couldn't be generated\n");
+        TRACEX_E("TestSearch - Test file couldn't be generated\n")
         return false;
     }
 
     if (!LoadMapTIAandFIRA(logFileName, Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p, TIA, FIRA,
                            mem_p /*input*/, totalNumOfRows)) {
-        TRACEX_E("TestSearch - LoadMapTIAandFIRA\n");
+        TRACEX_E("TestSearch - LoadMapTIAandFIRA\n")
         return false;
     }
 
     if (!VerifyTIA(TIA, repetitionPattern, matchPattern, totalNumOfRows, modulus)) {
-        TRACEX_E("TestSearch - VerifyTIA\n");
+        TRACEX_E("TestSearch - VerifyTIA\n")
         return false;
     }
 
@@ -431,12 +431,12 @@ bool TestSearch(bool useIfExist)
                           backward,
                           regExp);
         if (matchRow == -1) {
-            TRACEX_E("TestSearch - Filter\n");
+            TRACEX_E("TestSearch - Filter\n")
             return false;
         }
 
         if (matchRow != nextMatchRow) {
-            TRACEX_E("TestSearch - Filter\n");
+            TRACEX_E("TestSearch - Filter\n")
             return false;
         }
 
@@ -455,12 +455,12 @@ bool TestSearch(bool useIfExist)
         matchRow =
             Search(Log_File, TIA, FIRA, mem_p, matchPattern, currentRow, 0, backward, regExp);
         if (matchRow == -1) {
-            TRACEX_E("TestSearch - Filter\n");
+            TRACEX_E("TestSearch - Filter\n")
             return false;
         }
 
         if (matchRow != nextMatchRow) {
-            TRACEX_E("TestSearch - Filter\n");
+            TRACEX_E("TestSearch - Filter\n")
             return false;
         }
 
@@ -493,19 +493,19 @@ bool LoadMapTIAandFIRA(QString& LogFileName, QFile& Log_File, QFile& TIA_File, Q
     FIRA_File.setFileName(FIRA_FileName);
 
     if (!Log_File.exists()) {
-        TRACEX_E("TestFilterProcCtrl Failed - Log File doesn't exist");
+        TRACEX_E("TestFilterProcCtrl Failed - Log File doesn't exist")
         return false;
     }
 
     if (!Log_File.open(QIODevice::ReadWrite)) {
-        TRACEX_E("TestFilterProcCtrl Failed - Log couldn't be open");
+        TRACEX_E("TestFilterProcCtrl Failed - Log couldn't be open")
         return false;
     }
 
     FIRA_File.remove();
 
     if (FIRA_File.exists()) {
-        TRACEX_E("TestFilterProcCtrl Failed - FIRA File still exists");
+        TRACEX_E("TestFilterProcCtrl Failed - FIRA File still exists")
         return false;
     }
 
@@ -515,29 +515,29 @@ bool LoadMapTIAandFIRA(QString& LogFileName, QFile& Log_File, QFile& TIA_File, Q
     fileCtrl.Search_TIA(&Log_File, TIA_File.fileName(), mem_p, TEST_FILTER_PROC_MEM_SIZE, &tempRows);
 
     if (rows != tempRows) {
-        TRACEX_E("TestFilterProcCtrl Failed - Wrong number of rows");
+        TRACEX_E("TestFilterProcCtrl Failed - Wrong number of rows")
         return false;
     }
 
     if (!TIA_File.exists()) {
-        TRACEX_E("TestFilterProcCtrl Failed - TIA File doesn't exist");
+        TRACEX_E("TestFilterProcCtrl Failed - TIA File doesn't exist")
         return false;
     }
 
     if (!TIA_File.open(QIODevice::ReadWrite)) {
-        TRACEX_E("TestFilterProcCtrl Failed - TIA file couldn't be opened");
+        TRACEX_E("TestFilterProcCtrl Failed - TIA file couldn't be opened")
         return false;
     }
 
     TIA_mem_p = TIA_File.map(0, TIA_File.size());
 
     if (TIA_mem_p == nullptr) {
-        TRACEX_E("TestFilterProcCtrl Failed - TIA file couldn't be mapped");
+        TRACEX_E("TestFilterProcCtrl Failed - TIA file couldn't be mapped")
         return false;
     }
 
     if (reinterpret_cast<TIA_FileHeader_t *>(TIA_mem_p)->numOfRows != rows) {
-        TRACEX_E("TestFilterProcCtrl Failed - TIA header doesn't match");
+        TRACEX_E("TestFilterProcCtrl Failed - TIA header doesn't match")
         return false;
     }
 
@@ -546,19 +546,19 @@ bool LoadMapTIAandFIRA(QString& LogFileName, QFile& Log_File, QFile& TIA_File, Q
     TIA.textItemArray_p = reinterpret_cast<TI_t *>(TIA_mem_p);
 
     if (!FIRA_File.open(QIODevice::ReadWrite)) {
-        TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be open/created");
+        TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be open/created")
         return false;
     }
 
     if (!FIRA_File.resize(static_cast<int64_t>(sizeof(FIR_t) * static_cast<uint64_t>(rows)))) {
-        TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be resized");
+        TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be resized")
         return false;
     }
 
     FIRA_mem_p = FIRA_File.map(0, static_cast<int64_t>(sizeof(FIR_t)) * rows);
 
     if (FIRA_mem_p == nullptr) {
-        TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be mapped");
+        TRACEX_E("TestFilterProcCtrl Failed - FIRA file couldn't be mapped")
         return false;
     }
 
@@ -584,19 +584,19 @@ bool LoadMapTIAandFIRA_filemapping(QString& LogFileName, QFile& Log_File, QFile&
     FIRA_File.setFileName(FIRA_FileName);
 
     if (!Log_File.exists()) {
-        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - Log File doesn't exist");
+        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - Log File doesn't exist")
         return false;
     }
 
     if (!Log_File.open(QIODevice::ReadWrite)) {
-        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - Log couldn't be open");
+        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - Log couldn't be open")
         return false;
     }
 
     FIRA_File.remove();
 
     if (FIRA_File.exists()) {
-        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - FIRA File still exists");
+        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - FIRA File still exists")
         return false;
     }
 
@@ -611,7 +611,7 @@ bool LoadMapTIAandFIRA_filemapping(QString& LogFileName, QFile& Log_File, QFile&
     bool status = FileMapping::CreateTIA_MemMapped(Log_File, TIA_File, &TIA.rows, TIA.textItemArray_p, &fileSize);
 
     if (tempRows != TIA.rows) {
-        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - Number of TIA rows doesn't match\n");
+        TRACEX_E("LoadMapTIAandFIRA_filemapping Failed - Number of TIA rows doesn't match\n")
         return false;
     }
 
@@ -673,7 +673,7 @@ bool TestDocument()
     char *mem_p = reinterpret_cast<char *>(VirtualMem::Alloc(TEST_DOC_PROC_MEM_SIZE));
 
     if (mem_p == nullptr) {
-        TRACEX_E("TestDocument - Virtual Alloc failed\n");
+        TRACEX_E("TestDocument - Virtual Alloc failed\n")
         return false;
     }
 
@@ -692,14 +692,14 @@ bool TestDocument()
     QFile Log_File, TIA_File, FIRA_File;
 
     if (!GenerateFilterTestLog(logFileName, repetitionPattern, matchPattern, totalNumOfRows, modulus, true)) {
-        TRACEX_E("TestDocument - Test file couldn't be generated\n");
+        TRACEX_E("TestDocument - Test file couldn't be generated\n")
         return false;
     }
 
     CLogScrutinizerDoc *doc = GetTheDoc();
 
     if (!doc->LoadLogFile(logFileName)) {
-        TRACEX_E("TestDocument - Failed to open test log\n");
+        TRACEX_E("TestDocument - Failed to open test log\n")
         return false;
     }
 
@@ -803,7 +803,7 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
 
     if (LogFile.exists()) {
         if (useIfExist) {
-            TRACEX_I(QString("GenerateFilterTestLog, file exists %1").arg(QFileInfo(LogFile).absoluteFilePath()));
+            TRACEX_I(QString("GenerateFilterTestLog, file exists %1").arg(QFileInfo(LogFile).absoluteFilePath()))
             return true;
         } else {
             LogFile.remove();
@@ -811,7 +811,7 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
     }
 
     if (!LogFile.open(QIODevice::ReadWrite)) {
-        TRACEX_E("GenerateFilterTestLog Failed - Log couldn't be open");
+        TRACEX_E("GenerateFilterTestLog Failed - Log couldn't be open")
         return false;
     }
 
@@ -826,14 +826,14 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
             }
         } /* for */
     } catch (std::exception &e) {
-        TRACEX_E(QString("GenerateFilterTestLog Failed - ASSERT %1").arg(e.what()));
+        TRACEX_E(QString("GenerateFilterTestLog Failed - ASSERT %1").arg(e.what()))
         qFatal("  ");
     } catch (...) {
-        TRACEX_E("GenerateFilterTestLog Failed - ASSERT");
+        TRACEX_E("GenerateFilterTestLog Failed - ASSERT")
         qFatal("  ");
     }
 
-    TRACEX_I(QString("Generated file %1").arg(QFileInfo(LogFile).absoluteFilePath()));
+    TRACEX_I(QString("Generated file %1").arg(QFileInfo(LogFile).absoluteFilePath()))
 
     LogFile.close();
 
@@ -847,7 +847,7 @@ bool VerifyTIA(TIA_t& TIA, const QString& repetitionPattern, const QString& matc
                int modulus)
 {
     if (TIA.rows != totalNumOfRows) {
-        TRACEX_E("VerifyTIA Failed - Number of rows");
+        TRACEX_E("VerifyTIA Failed - Number of rows")
         return false;
     }
 
@@ -857,12 +857,12 @@ bool VerifyTIA(TIA_t& TIA, const QString& repetitionPattern, const QString& matc
     for (int index = 0; index < totalNumOfRows; ++index) {
         if ((index % modulus) == 0) {
             if (matchPatLength != TIA.textItemArray_p[index].size) {
-                TRACEX_E("VerifyTIA Failed - Line not matching");
+                TRACEX_E("VerifyTIA Failed - Line not matching")
                 return false;
             }
         } else {
             if (repPatLength != TIA.textItemArray_p[index].size) {
-                TRACEX_E("VerifyTIA Failed - Line not matching");
+                TRACEX_E("VerifyTIA Failed - Line not matching")
                 return false;
             }
         }
@@ -880,13 +880,13 @@ bool VerifyFIRA(FIRA_t& FIRA, TIA_t& TIA, int totalNumOfRows, int modulus)
     for (int index = 0; index < totalNumOfRows; ++index) {
         if ((index % modulus) == 0) {
             if ((FIRA.FIR_Array_p[index].LUT_index <= 0) || (FIRA.FIR_Array_p[index].index != filterIndex)) {
-                TRACEX_E("VerifyFIRA - Bad FIRA table, TIA is %d", TIA.textItemArray_p[index].size);
+                TRACEX_E("VerifyFIRA - Bad FIRA table, TIA is %d", TIA.textItemArray_p[index].size)
                 return false;
             }
             ++filterIndex;
         } else {
             if ((FIRA.FIR_Array_p[index].LUT_index != 0) || (FIRA.FIR_Array_p[index].index != 0)) {
-                TRACEX_E("VerifyFIRA - Bad FIRA table");
+                TRACEX_E("VerifyFIRA - Bad FIRA table")
                 return false;
             }
         }

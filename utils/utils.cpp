@@ -116,7 +116,7 @@ QImage MakeTransparantImage(QString resource, QRgb transparencyColor)
         return temp;
     }
 
-    TRACEX_D(QString("MakeTransparantImage  %1 not alpha channel").arg(resource));
+    TRACEX_D(QString("MakeTransparantImage  %1 not alpha channel").arg(resource))
 
     QImage temp2 = temp.convertToFormat(QImage::Format_ARGB32);
 

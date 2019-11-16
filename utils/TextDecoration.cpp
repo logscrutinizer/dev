@@ -81,21 +81,21 @@ int FindTextElements(QList<TextRectElement_t *> *elementRefs_p, const char *text
                            nullptr,
                            &database,
                            &compile_err) != HS_SUCCESS) {
-                TRACEX_W(QString("RegExp failed %1").arg(compile_err->message));
+                TRACEX_W(QString("RegExp failed %1").arg(compile_err->message))
                 hs_free_compile_error(compile_err);
                 return 0;
             }
 
             hs_scratch_t *scratch = nullptr;
             if (hs_alloc_scratch(database, &scratch) != HS_SUCCESS) {
-                TRACEX_W(QString("ERROR: Unable to allocate scratch space"));
+                TRACEX_W(QString("ERROR: Unable to allocate scratch space"))
                 hs_free_database(database);
                 return 0;
             }
 
             if (hs_scan(database, text_p, static_cast<unsigned int>(textSize), 0, scratch, eventHandler,
                         &data) != HS_SUCCESS) {
-                TRACEX_W(QString("ERROR: Unable to scan input buffer"));
+                TRACEX_W(QString("ERROR: Unable to scan input buffer"))
                 hs_free_scratch(scratch);
                 hs_free_database(database);
                 return 0;
@@ -238,7 +238,7 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char *autoHighl
 {
     if (!m_autoHighLight_AutomaticUpdate) {
 #ifdef _DEBUG
-        TRACEX_D("SetAutoHighlight m_autoHighLight_AutomaticUpdate  -- OFF --");
+        TRACEX_D("SetAutoHighlight m_autoHighLight_AutomaticUpdate  -- OFF --")
 #endif
         return;
     }
@@ -256,14 +256,14 @@ void CAutoHighLight::SetAutoHighlight(uint64_t matchStamp, const char *autoHighl
             TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update, length:%d",
                      static_cast<int>(strlen(autoHighlight_p)));
         } else {
-            TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update");
+            TRACEX_D("SetAutoHighlight    SetAutoHighlight  No match setup, no update")
         }
 #endif
         return;
     }
 
 #ifdef _DEBUG
-    TRACEX_D("SetAutoHighlight OK");
+    TRACEX_D("SetAutoHighlight OK")
 #endif
 
     m_autoHighligthMatchStamp = matchStamp;
@@ -354,17 +354,17 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength,
                          true /*CS*/, false /*regExp*/, &factory) != 2) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.first();
     if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(1);
     if ((element_p->startCol != 18) || (element_p->endCol != 22)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     while (!elementRefs.isEmpty()) {
@@ -379,27 +379,27 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, false /*regExp*/,
                          &factory) != 4) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(0);
     if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(1);
     if ((element_p->startCol != 5) || (element_p->endCol != 9)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(2);
     if ((element_p->startCol != 10) || (element_p->endCol != 14)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(3);
     if ((element_p->startCol != 15) || (element_p->endCol != 19)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     while (!elementRefs.isEmpty()) {
@@ -414,7 +414,7 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, false /*regExp*/,
                          &factory) != 1) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     /*------------------------------------------------------------------------------------------------------------------
@@ -425,7 +425,7 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, m_autoHighLight_CS, m_autoHighLight_RegExp,
                          &factory) != 1) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     while (!elementRefs.isEmpty()) {
@@ -443,22 +443,22 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, true /*regExp*/,
                          &factory) != 3) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(0);
     if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(1);
     if ((element_p->startCol != 6) || (element_p->endCol != 10)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(2);
     if ((element_p->startCol != 12) || (element_p->endCol != 16)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     while (!elementRefs.isEmpty()) {
@@ -477,12 +477,12 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, true /*CS*/, true /*regExp*/,
                          &factory) != 1) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(0);
     if ((element_p->startCol != 0) || (element_p->endCol != 16)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     while (!elementRefs.isEmpty()) {
@@ -500,17 +500,17 @@ void CAutoHighLight::AutoHighlightTest(void)
     if (FindTextElements(&elementRefs, testString, static_cast<int>(strlen(testString)),
                          m_autoHighLightMatch, m_autoHighLightMatchLength, false /*CS*/, false /*regExp*/,
                          &factory) != 2) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(0);
     if ((element_p->startCol != 0) || (element_p->endCol != 4)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     element_p = elementRefs.at(1);
     if ((element_p->startCol != 6) || (element_p->endCol != 10)) {
-        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed");
+        TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    AutoHighlightTest failed")
     }
 
     while (!elementRefs.isEmpty()) {
@@ -528,7 +528,7 @@ bool CFontModification::GetFontModRowInfo(const int row,
     *rowInfo_pp = nullptr;
 
     if (filterItem_p == nullptr) {
-        TRACEX_W("GetFontModRowInfo  filterItem_p is nullptr");
+        TRACEX_W("GetFontModRowInfo  filterItem_p is nullptr")
         return false;
     }
 
@@ -544,7 +544,7 @@ bool CFontModification::GetFontModRowInfo(const int row,
 
     cacheRow_p = m_rowCache_p->GetCacheRow(cacheIndex);
     if (cacheRow_p->row != row) {
-        TRACEX_W("GetFontModRowInfo  row not found");
+        TRACEX_W("GetFontModRowInfo  row not found")
         return false;
     }
 

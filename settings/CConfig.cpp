@@ -296,7 +296,7 @@ void CConfig::readDefaultSettings(void)
     if (xmlFile.open(QIODevice::ReadOnly)) {
         QXmlStreamReader xmlReader(&xmlFile);
 
-        TRACEX_I(QString("Settings file read: %1").arg(QFileInfo(xmlFile).absoluteFilePath()));
+        TRACEX_I(QString("Settings file read: %1").arg(QFileInfo(xmlFile).absoluteFilePath()))
         while (!xmlReader.atEnd() && xmlReader.readNext()) {
             if (xmlReader.isStartElement() && xmlReader.name().contains("setting")) {
                 auto attributes = xmlReader.attributes();
@@ -322,7 +322,7 @@ void CConfig::writeDefaultSettings(void)
     QFile xmlFile("settings.xml");
 
     if (xmlFile.open(QIODevice::WriteOnly)) {
-        TRACEX_I(QString("Settings file write: %1").arg(QFileInfo(xmlFile).absoluteFilePath()));
+        TRACEX_I(QString("Settings file write: %1").arg(QFileInfo(xmlFile).absoluteFilePath()))
 
         QTextStream fileStream(&xmlFile);
 
@@ -389,7 +389,7 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
             return false;
         } catch (...) {
             qFatal("Unknown Error writting settings to file");
-            TRACEX_E("CConfig::WriteSettings  Failed to write setting header to settings file,  Unknown error");
+            TRACEX_E("CConfig::WriteSettings  Failed to write setting header to settings file,  Unknown error")
             return false;
         }
 
@@ -408,7 +408,7 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
                     return false;
                 } catch (...) {
                     qFatal("Unknown Error writting settings to file");
-                    TRACEX_E("CConfig::WriteSettings  Failed to write settings to file,  Unknown error");
+                    TRACEX_E("CConfig::WriteSettings  Failed to write settings to file,  Unknown error")
                     return false;
                 }
             }
@@ -423,7 +423,7 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
             return false;
         } catch (...) {
             qFatal("Unknown Error writting settings to file");
-            TRACEX_E("CConfig::WriteSettings  Failed to write setting footer to settings file,  Unknown error");
+            TRACEX_E("CConfig::WriteSettings  Failed to write setting footer to settings file,  Unknown error")
             return false;
         }
 
@@ -641,17 +641,17 @@ bool CConfig::RemoveSetting(QString *identity_p)
             setting_p = m_settingsList[index];
 
             if (setting_p->m_name == *identity_p) {
-                TRACEX_I(QString("RemoveSetting    %1  %1").arg(setting_p->m_name).arg(setting_p->m_parseTag));
+                TRACEX_I(QString("RemoveSetting    %1  %1").arg(setting_p->m_name).arg(setting_p->m_parseTag))
                 setting_p->RestoreDefaultValue();
                 m_settingsList.removeAt(index);
                 delete (setting_p);
                 return true;
             }
 
-            TRACEX_W("CConfig::RemoveSetting    Failed to find  %s", identity_p->toLatin1().constData());
+            TRACEX_W("CConfig::RemoveSetting    Failed to find  %s", identity_p->toLatin1().constData())
         }
     } else {
-        TRACEX_W("CConfig::RemoveSetting    parameter error");
+        TRACEX_W("CConfig::RemoveSetting    parameter error")
     }
     return false;
 }
@@ -677,7 +677,7 @@ bool CConfig::SetSetting(QString *parseTag_p, QString *value_p)
         TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  %s",
                  parseTag_p->toLatin1().constData());
     }
-    TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  setting");
+    TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  setting")
     return false;
 }
 
@@ -816,17 +816,17 @@ void CSCZ_CfgSettingColorTable::ReplaceColorInTable(int index, Q_COLORREF color,
         /* Add a new color to the end */
         index = m_currentNumColors;
         ++(m_currentNumColors);
-        TRACEX_I("ReplaceColor  ADD Index:%d", index);
+        TRACEX_I("ReplaceColor  ADD Index:%d", index)
     } else if (index > MAX_COLOR_TABLE) {
-        TRACEX_E("ReplaceColor  Index:%d to large", index);
+        TRACEX_E("ReplaceColor  Index:%d to large", index)
         return;
     } else {
         /* Replace an existing color */
-        TRACEX_I("ReplaceColor  Index:%d Color:%d name:%s ", index, color, name_p);
+        TRACEX_I("ReplaceColor  Index:%d Color:%d name:%s ", index, color, name_p)
     }
 
     if (color > 0xffffff) {
-        TRACEX_E("ReplaceColor  Color:%d invalid", color);
+        TRACEX_E("ReplaceColor  Color:%d invalid", color)
         return;
     }
 
@@ -834,7 +834,7 @@ void CSCZ_CfgSettingColorTable::ReplaceColorInTable(int index, Q_COLORREF color,
         m_colorTable[index].color = color;
         strcpy(m_colorTable[index].name, name_p);
     } else {
-        TRACEX_W("ReplaceColorInTable  index error");
+        TRACEX_W("ReplaceColorInTable  index error")
     }
 }
 

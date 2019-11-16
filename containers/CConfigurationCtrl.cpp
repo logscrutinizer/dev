@@ -146,7 +146,7 @@ QStringList CFGCTRL_GetUserPickedFileNames(const QString& proposedFileName,
 {
     CLogScrutinizerDoc *doc_p = GetTheDoc();
 
-    TRACEX_D(QString("%1 proposedFileName:%2 defaultDir:%3").arg(__FUNCTION__).arg(proposedFileName).arg(defaultDIR));
+    TRACEX_D(QString("%1 proposedFileName:%2 defaultDir:%3").arg(__FUNCTION__).arg(proposedFileName).arg(defaultDIR))
 
     QFileDialog fileDialog(nullptr);
     fileDialog.setFileMode(QFileDialog::AnyFile);
@@ -250,7 +250,7 @@ bool CFGCTRL_LoadDefaultWorkspace(void)
         return false;
     }
 
-    TRACEX_I(QString("Load default workspace, path:%1").arg(workspacePath));
+    TRACEX_I(QString("Load default workspace, path:%1").arg(workspacePath))
 
     QList<QString> fileList;
     fileList.push_front(workspacePath);
@@ -352,7 +352,7 @@ bool CFGCTRL_ReloadFilterFile(QString& fileName, CCfgItem_Filter *filterItem_p)
     if (g_cfg_ctrl_p == nullptr) {
         return false;
     }
-    TRACEX_I(QString("Reloading TAT File  %1").arg(fileName));
+    TRACEX_I(QString("Reloading TAT File  %1").arg(fileName))
     g_cfg_ctrl_p->Reload_TAT_File(fileName, filterItem_p);
     return true;
 }
@@ -415,14 +415,14 @@ bool CConfigurationView::CheckPluginArchitecture(char *fileName_p)
                               nullptr);
 
     if (hFile == INVALID_HANDLE_VALUE) {
-        TRACEX_W("Loading plugin failed at file open, code:%d", GetLastError());
+        TRACEX_W("Loading plugin failed at file open, code:%d", GetLastError())
         return false;
     }
 
     HANDLE hMapping = CreateFileMapping(hFile, nullptr, PAGE_READONLY | SEC_IMAGE, 0, 0, nullptr);
 
     if ((hMapping == INVALID_HANDLE_VALUE) || (hMapping == 0)) {
-        TRACEX_W("Loading plugin failed at file mapping, code:%d", GetLastError());
+        TRACEX_W("Loading plugin failed at file mapping, code:%d", GetLastError())
         return false;
     }
 
@@ -430,7 +430,7 @@ bool CConfigurationView::CheckPluginArchitecture(char *fileName_p)
 
     if (addrHeader == nullptr) {
         CloseHandle(hFile);
-        TRACEX_W("Loading plugin failed at mapping view of file, code:%d", GetLastError());
+        TRACEX_W("Loading plugin failed at mapping view of file, code:%d", GetLastError())
         return false;
     }
 
@@ -441,7 +441,7 @@ bool CConfigurationView::CheckPluginArchitecture(char *fileName_p)
         UnmapViewOfFile(addrHeader);
         CloseHandle(hFile);
 
-        TRACEX_W("Loading plugin failed at getting NT Headers, code:%d", GetLastError());
+        TRACEX_W("Loading plugin failed at getting NT Headers, code:%d", GetLastError())
         return false;
     }
 
@@ -562,7 +562,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
             tr("so-file platform and version checks was ok, but loading it failed {%1} error:%2 dl_error:%3").arg(
                 absoluteFileName).arg(errno).arg(library_p->errorString());
 #endif
-        TRACEX_W(description);
+        TRACEX_W(description)
 
         QMessageBox msgBox(QMessageBox::Critical, title, description, QMessageBox::Ok);
         MW_DO_SHOW();
@@ -581,7 +581,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
         QString description = tr(
             "Could not find {%1} in library {%2}, the library is probarbly not a valid LogScrutinizer plugin").arg(
             __DLL_API_GetPluginAPIVersion__).arg(absoluteFileName);
-        TRACEX_W(description);
+        TRACEX_W(description)
 
         QMessageBox msgBox(QMessageBox::Critical, title, description, QMessageBox::Ok);
         MW_DO_SHOW();
@@ -625,7 +625,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
             "The versions between LogScrutinizer and the plugin {%1} are not matching\nPlugin version=%2, "
             "LogScrutinzer version=%3\n Please either get matching versions")
                                   .arg(absoluteFileName).arg(DLL_API_Version.version).arg(DLL_API_VERSION);
-        TRACEX_W(description);
+        TRACEX_W(description)
 
         QMessageBox msgBox(QMessageBox::Critical, title, description, QMessageBox::Ok);
         MW_DO_SHOW();
@@ -642,7 +642,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
 bool CConfigurationCtrl::Save_WorkspaceFile(void)
 {
     CLogScrutinizerDoc *doc_p = GetTheDoc();
-    TRACEX_D(QString("%1").arg(__FUNCTION__));
+    TRACEX_D(QString("%1").arg(__FUNCTION__))
 
     if (doc_p->GetWorkspaceFileName().isEmpty()) {
         return Save_WorkspaceFileAs();
@@ -656,7 +656,7 @@ bool CConfigurationCtrl::Save_WorkspaceFile(void)
 ***********************************************************************************************************************/
 bool CConfigurationCtrl::Save_WorkspaceFileAs(void)
 {
-    TRACEX_D(QString("%1").arg(__FUNCTION__));
+    TRACEX_D(QString("%1").arg(__FUNCTION__))
 
     CLogScrutinizerDoc *doc_p = GetTheDoc();
     QStringList filters;
@@ -689,7 +689,7 @@ bool CConfigurationCtrl::Save_WorkspaceFileAs(void)
 ***********************************************************************************************************************/
 bool CConfigurationCtrl::Save_FilterAs(const QString *originalFileName, CCfgItem_Filter *filterItem_p)
 {
-    TRACEX_D(QString("%1").arg(__FUNCTION__));
+    TRACEX_D(QString("%1").arg(__FUNCTION__))
 
     QStringList filters;
     filters << "Filter file (*.flt)";
@@ -730,14 +730,14 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
     auto resetTreeViewSelectionEnableScopeGuard =
         makeMyScopeGuard([&] () {CSCZ_TreeViewSelectionEnabled = beforeValue;});
 
-    TRACEX_D(QString("%1").arg(__FUNCTION__));
+    TRACEX_D(QString("%1").arg(__FUNCTION__))
 
     QString fileName;
     QString fileName_temp;
     QString ext;
 
     if (fileList.isEmpty()) {
-        TRACEX_D("CConfigurationCtrl::LoadFileList  - Empty file list");
+        TRACEX_D("CConfigurationCtrl::LoadFileList  - Empty file list")
         return true;
     }
 
@@ -769,7 +769,7 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
             /* Lets check if there is a log file in the *.lsz file. Otherwise we do not need to clear everything... just
              * add ontop */
             m_inWorkspace = true;
-            TRACEX_I(QString("Loaded workspace file: %1").arg(fileName));
+            TRACEX_I(QString("Loaded workspace file: %1").arg(fileName))
             doc_p->SetWorkspaceFileName(fileName);
 
             if (LoadFile(fileName)) {
@@ -829,7 +829,7 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
             g_processingCtrl_p->Processing_StartReport();
 
             if (LoadFile(fileName)) {
-                TRACEX_I(QString("Loaded filter: %1").arg(fileName));
+                TRACEX_I(QString("Loaded filter: %1").arg(fileName))
                 ProcessData();
             }
 
@@ -839,14 +839,14 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
         } else if (ext == DLL_EXT) {
             if (CanFileBeOpenedForFileRead(fileName) && !isDuplicate(fileName)) {
                 LoadPlugin(fileName);
-                TRACEX_I(QString("Loaded plugin file: %1").arg(fileName));
+                TRACEX_I(QString("Loaded plugin file: %1").arg(fileName))
                 doc_p->m_recentFiles.WriteToFile();
             }
         } else if (ext == "rcnt") {
             if (CanFileBeOpenedForFileRead(fileName, false)) {
                 if (LoadFile(fileName)) {
                     ProcessData();
-                    TRACEX_I(QString("Loaded RecentFile DB: %1").arg(fileName));
+                    TRACEX_I(QString("Loaded RecentFile DB: %1").arg(fileName))
                     MW_RebuildRecentFileMenu();
                 }
             }
@@ -923,7 +923,7 @@ void CConfigurationCtrl::CleanAll(void)
             g_workspace_p->m_logs_p->RemoveAllChildren();
         }
     }
-    TRACEX_D("Clean all");
+    TRACEX_D("Clean all")
 }
 
 /***********************************************************************************************************************
@@ -940,7 +940,7 @@ bool CConfigurationCtrl::Save_WorkspaceFile(const QString& fileName, bool asDefa
 #endif
 
     if (!file.open(QIODevice::WriteOnly)) {
-        TRACEX_E(QString("CConfig::Save_WorkspaceFile  Failed to create settings file, FileName:%1").arg(fileName));
+        TRACEX_E(QString("CConfig::Save_WorkspaceFile  Failed to create settings file, FileName:%1").arg(fileName))
         return false;
     }
 
@@ -1038,7 +1038,7 @@ bool CConfigurationCtrl::Save_WorkspaceFile(const QString& fileName, bool asDefa
         }
     }
 
-    TRACEX_I(QString("Saved workspace to: %1").arg(fileName));
+    TRACEX_I(QString("Saved workspace to: %1").arg(fileName))
     doc_p->m_recentFiles.AddFile(fileName);
     doc_p->m_recentFiles.WriteToFile();
     fileStream.flush();
@@ -1053,7 +1053,7 @@ bool CConfigurationCtrl::WriteHeader(QTextStream& fileStream)
     try {
         fileStream << XML_FILE_HEADER << "\n" << LCZ_HEADER << "\n";
     } catch (...) {
-        TRACEX_E("CConfigurationCtrl::WriteHeader  Failed to write header to settings file");
+        TRACEX_E("CConfigurationCtrl::WriteHeader  Failed to write header to settings file")
         return false;
     }
     return true;
@@ -1067,7 +1067,7 @@ bool CConfigurationCtrl::WriteFooter(QTextStream& fileStream)
     try {
         fileStream << LCZ_FOOTER << "\n";
     } catch (...) {
-        TRACEX_E("CConfigurationCtrl::WriteFooter  Failed to write footer to settings file");
+        TRACEX_E("CConfigurationCtrl::WriteFooter  Failed to write footer to settings file")
         return false;
     }
     return true;
@@ -1081,7 +1081,7 @@ bool CConfigurationCtrl::Save_TAT_File(const QString& fileName, CCfgItem_Filter 
     CLogScrutinizerDoc *doc_p = GetTheDoc();
     QFile file(fileName);
     if (!file.open(QIODevice::WriteOnly)) {
-        TRACEX_E(QString("CConfigurationCtrl::Save_TAT_File  Failed to open TAT file %1 for save").arg(fileName));
+        TRACEX_E(QString("CConfigurationCtrl::Save_TAT_File  Failed to open TAT file %1 for save").arg(fileName))
         return false;
     }
 
@@ -1095,10 +1095,10 @@ bool CConfigurationCtrl::Save_TAT_File(const QString& fileName, CCfgItem_Filter 
         doc_p->m_recentFiles.AddFile(fileName);
         doc_p->m_recentFiles.WriteToFile();
     } catch (...) {
-        TRACEX_E(QString("CConfigurationCtrl::Save_TAT_File  Failed to write filter data to TAT file %1").arg(fileName));
+        TRACEX_E(QString("CConfigurationCtrl::Save_TAT_File  Failed to write filter data to TAT file %1").arg(fileName))
     }
     cfgFilter_p->UpdateTreeName(*(cfgFilter_p->m_filter_ref_p->GetShortFileName()));
-    TRACEX_I(QString("Saved filter file: %1").arg(fileName));
+    TRACEX_I(QString("Saved filter file: %1").arg(fileName))
     return true;
 }
 
@@ -1111,12 +1111,12 @@ bool CConfigurationCtrl::Reload_TAT_File(const QString& fileName, CCfgItem_Filte
     bool status = false;
 
     if (!CanFileBeOpenedForFileRead(fileName)) {
-        TRACEX_E(QString("Reloading filter file failed, couldn't open file: %1").arg(fileName));
+        TRACEX_E(QString("Reloading filter file failed, couldn't open file: %1").arg(fileName))
         return false;
     }
 
     if ((cfgFilter_p == nullptr) || (cfgFilter_p->m_filter_ref_p == nullptr)) {
-        TRACEX_E("Reloading filter file failed, internal error");
+        TRACEX_E("Reloading filter file failed, internal error")
         return false;
     }
 
@@ -1139,7 +1139,7 @@ bool CConfigurationCtrl::Reload_TAT_File(const QString& fileName, CCfgItem_Filte
     m_reloadingFilter = false;
     m_cfgFilterReload_p = nullptr;
 
-    TRACEX_I(QString("Reloaded filter file: %1").arg(fileName));
+    TRACEX_I(QString("Reloaded filter file: %1").arg(fileName))
 
     return status;
 }
@@ -1169,7 +1169,7 @@ bool CConfigurationCtrl::LoadFile(const QString& fileName)
     m_file.setFileName(absoluteFileName);
 
     if (!m_file.open(QIODevice::ReadOnly)) {
-        TRACEX_E(QString("CConfigurationCtrl::LoadFile  Failed to open file %1").arg(fileName));
+        TRACEX_E(QString("CConfigurationCtrl::LoadFile  Failed to open file %1").arg(fileName))
         return false;
     } else {
         QFileInfo fileInfo(absoluteFileName);
@@ -1212,13 +1212,13 @@ bool CConfigurationCtrl::ProcessData()
 
     if (m_file.isOpen()) {
 #ifdef _DEBUG
-        TRACEX_E(QString("Internal error, file is still open"));
+        TRACEX_E(QString("Internal error, file is still open"))
 #endif
         m_file.close();
     }
 
     if ((m_fileRef_p == nullptr) || (m_fileSize == 0) || (m_memPoolItem_p == nullptr) || (m_numOfBytesRead == 0)) {
-        TRACEX_E(QString("Internal error detected when processing file"));
+        TRACEX_E(QString("Internal error detected when processing file"))
         return false;
     }
 
@@ -1264,7 +1264,7 @@ bool CConfigurationCtrl::CanFileBeOpenedForFileRead(const QString& fileName, boo
         doc_p->GetAbsoluteFileName(fileName, absouteFileName);
     }
 
-    TRACEX_D(QString("Checking if possible to open: %1").arg(absouteFileName));
+    TRACEX_D(QString("Checking if possible to open: %1").arg(absouteFileName))
 
     QFile testFile(absouteFileName);
 
@@ -1337,7 +1337,7 @@ void CConfigurationCtrl::ElementStart(char *name_p)
         } else if (strcmp(name_p, "recentfiles") == 0) {
             m_inElement_L1 = inElement_recentfiles_e;
         } else {
-            TRACEX_E(QString("CConfigurationCtrl::ElementStart  Unknown L1 tag %1").arg(name_p));
+            TRACEX_E(QString("CConfigurationCtrl::ElementStart  Unknown L1 tag %1").arg(name_p))
             XML_Error();
             return;
         }
@@ -1469,7 +1469,7 @@ void CConfigurationCtrl::ElementEnd(void)
                 break;
 
             default:
-                TRACEX_E("CConfigurationCtrl::ElementEnd   Parse Error   L1:%d L2:%d", m_inElement_L1, m_inElement_L2);
+                TRACEX_E("CConfigurationCtrl::ElementEnd   Parse Error   L1:%d L2:%d", m_inElement_L1, m_inElement_L2)
                 XML_Error();
                 return;
         }
@@ -1537,7 +1537,7 @@ void CConfigurationCtrl::ElementEnd(void)
                 break;
 
             default:
-                TRACEX_E("CConfigurationCtrl::ElementEnd   Parse Error   L1:%d L2:%d", m_inElement_L1, m_inElement_L2);
+                TRACEX_E("CConfigurationCtrl::ElementEnd   Parse Error   L1:%d L2:%d", m_inElement_L1, m_inElement_L2)
                 XML_Error();
                 return;
         }
@@ -1558,7 +1558,7 @@ void CConfigurationCtrl::ElementEnd(void)
 void CConfigurationCtrl::Element_Attribute(char *name_p, char *value_p)
 {
     if (m_inElement_L2 != inElement_none_e) {
-        TRACEX_D("Element_Attribute  name:%-16s value:%s", name_p, value_p);
+        TRACEX_D("Element_Attribute  name:%-16s value:%s", name_p, value_p)
 
         switch (m_inElement_L2)
         {
@@ -1726,7 +1726,7 @@ void CConfigurationCtrl::Element_Attribute_FilterItem(char *name_p, char *value_
         }
     }
 
-    TRACEX_D("Element_Attribute_FilterItem %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_FilterItem %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1737,7 +1737,7 @@ void CConfigurationCtrl::Element_Attribute_Log(char *name_p, char *value_p)
     if (strcmp(name_p, "path") == 0) {
         strcpy_s(m_tempText, CFG_TEMP_STRING_MAX_SIZE, value_p);
     }
-    TRACEX_D("Element_Attribute_Log %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_Log %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1752,7 +1752,7 @@ void CConfigurationCtrl::Element_Attribute_Bookmark(char *name_p, char *value_p)
         m_tempRow = atoi(m_tempStr);
     }
 
-    TRACEX_D("Element_Attribute_Bookmark %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_Bookmark %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1764,7 +1764,7 @@ void CConfigurationCtrl::Element_Attribute_Plugin(char *name_p, char *value_p)
         strcpy_s(m_tempText, CFG_TEMP_STRING_MAX_SIZE, value_p);
     }
 
-    TRACEX_D("Element_Attribute_Plugin %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_Plugin %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1805,7 +1805,7 @@ void CConfigurationCtrl::Element_Attribute_Setting(char *name_p, char *value_p)
             }
             break;
     }
-    TRACEX_D("Element_Attribute_Setting %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_Setting %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1829,7 +1829,7 @@ void CConfigurationCtrl::Element_Attribute_RecentFile(char *name_p, char *value_
         reader >> m_recentFile.lastAccessed;
     }
 
-    TRACEX_D("Element_Attribute_RecentFile %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_RecentFile %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1864,7 +1864,7 @@ void CConfigurationCtrl::ElementEnd_RecentFile(void)
 ***********************************************************************************************************************/
 void CConfigurationCtrl::Element_Attribute_Comment(char *name_p, char *value_p)
 {
-    TRACEX_D("Element_Attribute_Comment %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_Comment %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1872,7 +1872,7 @@ void CConfigurationCtrl::Element_Attribute_Comment(char *name_p, char *value_p)
 ***********************************************************************************************************************/
 void CConfigurationCtrl::Element_Attribute_Search(char *name_p, char *value_p)
 {
-    TRACEX_D("Element_Attribute_Search %s=%s", name_p, value_p);
+    TRACEX_D("Element_Attribute_Search %s=%s", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -1880,5 +1880,5 @@ void CConfigurationCtrl::Element_Attribute_Search(char *name_p, char *value_p)
 ***********************************************************************************************************************/
 void CConfigurationCtrl::Element_Value(char *value_p)
 {
-    TRACEX_D("(Value=%s)", value_p);
+    TRACEX_D("(Value=%s)", value_p)
 }

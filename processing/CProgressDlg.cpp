@@ -69,7 +69,7 @@ CProgressDlg::CProgressDlg(QString title, ProgressCmd_t cmd, bool autoCloseOverr
     m_fail_pixmap_p = new QPixmap(QPixmap::fromImage(MakeTransparantImage(":fail_64.bmp", Q_RGB(0xf9, 0xf4, 0xf4))));
 
     if ((m_hdd_pixmap_p == nullptr) || (m_ok_pixmap_p == nullptr) || (m_fail_pixmap_p == nullptr)) {
-        TRACEX_E("Internal error: Failed to load progress bitmaps");
+        TRACEX_E("Internal error: Failed to load progress bitmaps")
     }
 
     m_clear_hdd_pixmap_p = new QPixmap(*m_hdd_pixmap_p);
@@ -150,7 +150,7 @@ void CProgressDlg::UpdateProgressInfo(void)
             moreToRead = g_processingCtrl_p->GetProgressInfo(info);
             if (!info.isEmpty() /* && m_logWindow_p->isVisible()*/) {
                 m_logWindow_p->appendPlainText(info);
-                TRACEX_I(info);
+                TRACEX_I(info)
             }
         } while (moreToRead);
 
@@ -285,7 +285,7 @@ void CProgressDlg::ExecThread(void)
 void CProgressDlg::OnProcessingDone()
 {
     m_done = true;
-    TRACEX_I("Processing Done!");
+    TRACEX_I("Processing Done!")
 
     g_processingCtrl_p->Processing_StopReport();
 
@@ -314,7 +314,7 @@ uint32_t CProgressThread::Progress_ThreadMain()
     CLogScrutinizerDoc *doc_p = GetTheDoc();
 
 #ifdef _DEBUG
-    TRACEX_DE("Progress_ThreadMain:0x%llx Cmd:%d", m_threadCfg_p, m_threadCfg_p->cmd);
+    TRACEX_DE("Progress_ThreadMain:0x%llx Cmd:%d", m_threadCfg_p, m_threadCfg_p->cmd)
 #endif
 
     switch (m_threadCfg_p->cmd)

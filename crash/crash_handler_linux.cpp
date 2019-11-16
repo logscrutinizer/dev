@@ -46,7 +46,7 @@ void CCrashHandler::SetProcessExceptionHandlers()
     /* Catch a termination request */
     signal(SIGTERM, SigtermHandler);
 
-    TRACEX_I("Error handling is configured\n");
+    TRACEX_I("Error handling is configured\n")
 }
 
 /***********************************************************************************************************************

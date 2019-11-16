@@ -126,7 +126,7 @@ bool CXMLBase::ReadXMLHeader(void)
     /*<?xml version="1.0" encoding="utf-8" standalone="yes"?> */
 
     if (m_documentSize < static_cast<int>(strlen("<?xml version=\"1.0\"?>")) + 1) {
-        TRACEX_W("XML start marker <?xml not found");
+        TRACEX_W("XML start marker <?xml not found")
         return false;
     }
 
@@ -149,10 +149,10 @@ bool CXMLBase::ReadXMLHeader(void)
             }
         }
 
-        TRACEX_W("XML end marker ?> not found");
+        TRACEX_W("XML end marker ?> not found")
         return false;
     } else {
-        TRACEX_W("XML start marker <?xml not found");
+        TRACEX_W("XML start marker <?xml not found")
         return false;
     }
 }
@@ -364,7 +364,7 @@ bool CXMLBase::SearchNextToken(XML_Token_t *token_p)
 ***********************************************************************************************************************/
 void CXMLBase::XML_Error(void)
 {
-    TRACEX_W("XML ERROR, end marker ?> not found");
+    TRACEX_W("XML ERROR, end marker ?> not found")
 
     m_error = true;
 }
@@ -392,7 +392,7 @@ void CXMLBase_Test::Start(void)
 
     if (SearchElementAttribute("TextAnalysisTool.NET", "version", tempi, 256)) {
         if (strcmp(tempi, "2006-12-04") != 0) {
-            TRACEX_E("XML ERROR");
+            TRACEX_E("XML ERROR")
         }
     }
 
@@ -403,7 +403,7 @@ void CXMLBase_Test::Start(void)
     }
 
     if (!found) {
-        TRACEX_E("XML ERROR");
+        TRACEX_E("XML ERROR")
     }
 }
 
@@ -412,7 +412,7 @@ void CXMLBase_Test::Start(void)
 ***********************************************************************************************************************/
 void CXMLBase_Test::ElementStart(char *name_p)
 {
-    TRACEX_DE("Enter - %s Level:%d", name_p, m_elementLevel);
+    TRACEX_DE("Enter - %s Level:%d", name_p, m_elementLevel)
 }
 
 /***********************************************************************************************************************
@@ -420,7 +420,7 @@ void CXMLBase_Test::ElementStart(char *name_p)
 ***********************************************************************************************************************/
 void CXMLBase_Test::ElementEnd(void)
 {
-    TRACEX_DE("\nLeave");
+    TRACEX_DE("\nLeave")
 }
 
 /***********************************************************************************************************************
@@ -428,7 +428,7 @@ void CXMLBase_Test::ElementEnd(void)
 ***********************************************************************************************************************/
 void CXMLBase_Test::Element_Attribute(char *name_p, char *value_p)
 {
-    TRACEX_DE("%s = %s   ", name_p, value_p);
+    TRACEX_DE("%s = %s   ", name_p, value_p)
 }
 
 /***********************************************************************************************************************
@@ -436,7 +436,7 @@ void CXMLBase_Test::Element_Attribute(char *name_p, char *value_p)
 ***********************************************************************************************************************/
 void CXMLBase_Test::Element_Value(char *value_p)
 {
-    TRACEX_DE("(Value=%s)", value_p);
+    TRACEX_DE("(Value=%s)", value_p)
 }
 
 #endif

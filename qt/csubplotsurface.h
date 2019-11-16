@@ -202,7 +202,7 @@ public:
     QImage& getImage(void) {return m_double_buffer_image;}
 
 private:
-    CSubPlotSurface() {TRACEX_E("CSubPlotSurface::CSubPlotSurface  Default constructor not supported");}
+    CSubPlotSurface() {TRACEX_E("CSubPlotSurface::CSubPlotSurface  Default constructor not supported")}
 
     const displayItem_t *FindClosest_GO(const int x, const int y,
                                         double *distance_p, CGraph **graph_pp = nullptr);

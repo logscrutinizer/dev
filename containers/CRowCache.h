@@ -68,7 +68,7 @@ public:
             m_cache_memMap[index].poolItem_p = m_memPool.AllocMem(FILECTRL_ROW_SIZE_ESTIMATE);
 
             if (m_cache_memMap[index].poolItem_p == nullptr) {
-                TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    m_cache_memMap[index].poolItem_p nullptr");
+                TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    m_cache_memMap[index].poolItem_p nullptr")
             }
         }
     }
@@ -82,7 +82,7 @@ public:
             m_cache_memMap[index].poolItem_p = m_memPool.AllocMem(FILECTRL_ROW_SIZE_ESTIMATE);
 
             if (m_cache_memMap[index].poolItem_p == nullptr) {
-                TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    m_cache_memMap[index].poolItem_p nullptr");
+                TRACEX_E("CLogScrutinizerDoc::CLogScrutinizerDoc    m_cache_memMap[index].poolItem_p nullptr")
             }
         }
     }
