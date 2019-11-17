@@ -70,10 +70,10 @@ typedef struct
 {
     double x_min;
     double x_max;
-    float y_min;
-    float y_max;
+    double y_min;
+    double y_max;
     double x_offset;
-    float y_offset;
+    double y_offset;
 }SurfaceZoom_t;
 
 typedef struct {
@@ -243,29 +243,29 @@ private:
      * the intersection needs to be against one of the axises. */
 
     bool Intersection_LINE_Out2In(int pl_1, int pl_2, /* POINT LOCATION - which square */
-                                  double *p0_x_p, float *p0_y_p, /* p0 is outside, need to be adjusted */
-                                  double p1_x, float p1_y); /* p1 is inside */
+                                  double *p0_x_p, double *p0_y_p, /* p0 is outside, need to be adjusted */
+                                  double p1_x, double p1_y); /* p1 is inside */
 
     bool Intersection_LINE_In2Out(int pl_0, int pl_1, /* POINT LOCATION - which square */
-                                  double *p0_x_p, float *p0_y_p,   /* p0 is inside */
-                                  double p1_x, float p1_y); /* p1 is outside, need to be adjusted */
+                                  double *p0_x_p, double *p0_y_p,   /* p0 is inside */
+                                  double p1_x, double p1_y); /* p1 is outside, need to be adjusted */
 
-    bool Intersection_LINE(double p0_x, float p0_y, double p1_x, float p1_y, /* Line 1:   p0 -> p1 */
-                           double p2_x, float p2_y, double p3_x, float p3_y, /* Line 2:   p2 -> p2 */
-                           double *i_x, float *i_y); /* Intersection */
+    bool Intersection_LINE(double p0_x, double p0_y, double p1_x, double p1_y, /* Line 1:   p0 -> p1 */
+                           double p2_x, double p2_y, double p3_x, double p3_y, /* Line 2:   p2 -> p2 */
+                           double *i_x, double *i_y); /* Intersection */
 
     bool Intersection_BOX_Out2In(int pl_1,
                                  int pl_2,
                                  double *p0_x_p,
-                                 float *p0_y_p,
+                                 double *p0_y_p,
                                  double p1_x,
-                                 float p1_y);
+                                 double p1_y);
     bool Intersection_BOX_In2Out(int pl_0,
                                  int pl_1,
                                  double *p0_x_p,
-                                 float *p0_y_p,
+                                 double *p0_y_p,
                                  double p1_x,
-                                 float p1_y);
+                                 double p1_y);
 
 public:
     QRect m_deactivedIconPos; /* when the subplot is deativated its icon is shown somewhere */
@@ -333,9 +333,9 @@ private:
     double m_unitsPerPixel_X_inv; /* 1 / m_horizUnitPerPixel */
     double m_unitsPerPixel_Y_inv; /* 1 / m_vertUnitPerPixel */
     double m_viewPort_Width; /* Initially m_plotExtents.x_max - m_plotExtents.x_min / 2 */
-    float m_viewPort_Height; /* Initially m_plotExtents.y_max - m_plotExtents.y_min / 2 */
+    double m_viewPort_Height; /* Initially m_plotExtents.y_max - m_plotExtents.y_min / 2 */
     double m_viewPort_X_Center;
-    float m_viewPort_Y_Center;
+    double m_viewPort_Y_Center;
     QBrush *m_bgBrush_p;
     QPen *m_bgPen_p;
     PendDescription_t *m_graphPenArray_p;
@@ -360,10 +360,10 @@ private:
     CGO_Label **m_label_refs_a;
     int m_numOfLabelRefs;
     QSize m_lineSize; /*updated each time when drawing axis            = m_pDC->GetTextExtent("X", 1); */
-    int m_halfLineHeight;     /*updated each time when drawing axis            = (int)((float)lineSize.cy /
-                               * (float)2.0); */
+    int m_halfLineHeight;     /*updated each time when drawing axis            = (int)((double)lineSize.cy /
+                               * (double)2.0); */
     int m_subplot_properties; /*updated each time when drawing axis = * m_subPlot_p->GetProperties(); */
-    float m_avgPixPerLetter;
-    float m_avgPixPerLetterHeight;
+    double m_avgPixPerLetter;
+    double m_avgPixPerLetterHeight;
     bool m_hasFocus;
 };

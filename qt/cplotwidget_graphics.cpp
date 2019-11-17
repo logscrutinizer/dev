@@ -290,13 +290,13 @@ void CPlotWidgetGraphics::FillEmptyWindow(QPainter *painter)
 {
     QSize fontSize = GetTheDoc()->m_fontCtrl.GetFontSize();
     auto br = rect();
-    auto const y_pos_offset = static_cast<int>(static_cast<float>(fontSize.height() * 1.1f));
-    auto const y_pos_offset_extra = static_cast<int>(static_cast<float>(fontSize.height() * 1.5f));
-    auto const y_pos_offset_extra_extra = static_cast<int>(static_cast<float>(fontSize.height() * 2.0f));
+    auto const y_pos_offset = static_cast<int>(static_cast<double>(fontSize.height() * 1.1f));
+    auto const y_pos_offset_extra = static_cast<int>(static_cast<double>(fontSize.height() * 1.5f));
+    auto const y_pos_offset_extra_extra = static_cast<int>(static_cast<double>(fontSize.height() * 2.0f));
     int x_pos =
-        static_cast<int>(static_cast<float>(br.right() - m_viewRect.left()) * static_cast<float>(0.1));
+        static_cast<int>(static_cast<double>(br.right() - m_viewRect.left()) * static_cast<double>(0.1));
     int y_pos =
-        static_cast<int>(static_cast<float>(br.bottom() - m_viewRect.top()) * static_cast<float>(0.1));
+        static_cast<int>(static_cast<double>(br.bottom() - m_viewRect.top()) * static_cast<double>(0.1));
 
     painter->drawText(x_pos, y_pos, "This is a Plot View");
     TRACEX_DE(QString("Draw text %1 %2").arg(x_pos).arg(y_pos))
@@ -1044,7 +1044,7 @@ void CPlotWidgetGraphics::DrawToolTip(void)
         QSize size = doc_p->m_fontCtrl.GetFontSize();
         QPoint point(m_lastCursorPos.DCBMP.x() + 5, m_lastCursorPos.DCBMP.y() - 5);
         auto delta = size.height() * 1.2f;
-        auto y = static_cast<float>(point.y());
+        auto y = static_cast<double>(point.y());
 
         for (auto& string : m_toolTipStrings) {
             m_pDC->drawText(point, string);

@@ -120,9 +120,9 @@ void CProgressDlg::OnTimer()
 void CProgressDlg::UpdateProgressInfo(void)
 {
     if ((g_processingCtrl_p != nullptr) && m_visible) {
-        float *progressCounters_p;
+        double *progressCounters_p;
         int numOfProgressCounters;
-        float progress;
+        double progress;
 
         g_processingCtrl_p->GetProgressCounter(&progressCounters_p, &numOfProgressCounters);
 
@@ -359,8 +359,8 @@ uint32_t CProgressThread::TestProgress()
      *  dlg.exec();*/
 
     /* g_processingCtrl_p->SetupProgessCounter(currentStep);
-    * g_processingCtrl_p->SetProgressCounter((float)(m_chunkDescr.TIA_startRow - m_startRow) /
-    * (float)m_totalNumOfRows);
+    * g_processingCtrl_p->SetProgressCounter((double)(m_chunkDescr.TIA_startRow - m_startRow) /
+    * (double)m_totalNumOfRows);
     * g_processingCtrl_p->AddProgressInfo(m_tempString, strlen(m_tempString));
     * g_processingCtrl_p->m_abort = false;
     * g_processingCtrl_p->SetFileOperationOngoing(false); */

@@ -86,7 +86,7 @@ public:
     CParseTest_Float(void) {}
 
     /****/
-    virtual void Reset(const char *testInput, float expectedResult)
+    virtual void Reset(const char *testInput, double expectedResult)
     {
         CParseTest_Base::BaseReset(testInput);
         m_expectedResult = expectedResult;
@@ -95,7 +95,7 @@ public:
     virtual void Execute(void) override;
 
 private:
-    float m_expectedResult;
+    double m_expectedResult;
 };
 
 /***********************************************************************************************************************

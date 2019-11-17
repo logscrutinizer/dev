@@ -131,11 +131,11 @@ void CPlot_Example_6::pvPlotRow(const char *row_p, const int *length_p, int rowI
 
         if (line) {
             /* Add a line to the graph (x1,Y1) -> (x2,y2) */
-            m_valueGraph_lines_p->AddLine(static_cast<double>(x1), static_cast<float>(y1),
-                                          static_cast<double>(x2), static_cast<float>(y2), rowIndex);
+            m_valueGraph_lines_p->AddLine(static_cast<double>(x1), static_cast<double>(y1),
+                                          static_cast<double>(x2), static_cast<double>(y2), rowIndex);
         } else {
-            m_valueGraph_boxes_p->AddBox(static_cast<double>(x1), static_cast<float>(y1), rowIndex,
-                                         static_cast<double>(x2), static_cast<float>(y2), rowIndex);
+            m_valueGraph_boxes_p->AddBox(static_cast<double>(x1), static_cast<double>(y1), rowIndex,
+                                         static_cast<double>(x2), static_cast<double>(y2), rowIndex);
         }
     }
 }

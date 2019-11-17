@@ -228,7 +228,7 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                 if (status) {
                     /* If this was the first value we need to initialize the first point of the graph */
                     if (m_lines_a[index].prevX == -1) {
-                        m_lines_a[index].prevY = (float)value;
+                        m_lines_a[index].prevY = (double)value;
                         m_lines_a[index].prevX = (double)time;
                     }
 
@@ -255,32 +255,32 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
                             static_cast<double>(time),
-                            static_cast<float>(value),
+                            static_cast<double>(value),
                             rowIndex,
                             temp,
                             static_cast<uint8_t>(strlen(temp)),
                             Q_RGB(150, 255 - time * 20, time * 20),
-                            0.1f * (float)time);
+                            0.1f * (double)time);
 
                         m_graph_OverrideColor_1_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
                             (double)time,
-                            (float)value,
+                            (double)value,
                             rowIndex);
 
                         m_graph_OverridePattern_1_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
                             (double)time,
-                            (float)value,
+                            (double)value,
                             rowIndex);
                     } else {
                         m_lines_a[index].graph_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
                             (double)time,
-                            (float)value,
+                            (double)value,
                             rowIndex,
                             m_subPlot_Lines_labelIndex_0,
                             -1,
@@ -290,18 +290,18 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
                             (double)time,
-                            (float)value,
+                            (double)value,
                             rowIndex);
 
                         m_graph_OverridePattern_2_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
                             (double)time,
-                            (float)value,
+                            (double)value,
                             rowIndex);
                     }
 
-                    m_lines_a[index].prevY = (float)value;
+                    m_lines_a[index].prevY = (double)value;
                     m_lines_a[index].prevX = (double)time;
                 }
 

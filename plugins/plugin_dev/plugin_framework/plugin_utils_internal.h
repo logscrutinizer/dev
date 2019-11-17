@@ -112,8 +112,8 @@ typedef struct
 {
     double x1; /* Filled by plugin (in seconds) */
     double x2; /* -"- -"-          (in seconds) */
-    float y1; /* -"- -"- */
-    float y2; /* -"- -"- */
+    double y1; /* -"- -"- */
+    double y2; /* -"- -"- */
     int row; /* -"- -"- */
     int16_t properties;       /* Filled by plugin */
 }GraphicalObject_t;
@@ -147,7 +147,7 @@ typedef struct
 {
     GraphicalObject_t go;
     int lineColorRGB; /* In-case LogScrutinizer should enumerate the colors */
-    float relative_X; /* 0.0, or in case the label should not be located in the middle of the line this parameter
+    double relative_X; /* 0.0, or in case the label should not be located in the middle of the line this parameter
                        *  shall be used to relatively offset.  0.1 means 10% from the left/start, and 0.6 means 60%
                        * from the left.. that is slightly offset from the middle. */
     GO_Label_t label; /* The label, must be placed last in the structure */
@@ -175,11 +175,11 @@ typedef struct
 typedef struct
 {
     GraphicalObject_t go;
-    float y_center;
-    float y_execTop; /* Used to determine exec box size */
-    float y_execBottom; /* Used to determine exec box size */
+    double y_center;
+    double y_execTop; /* Used to determine exec box size */
+    double y_execBottom; /* Used to determine exec box size */
     int fillColorRGB; /* -"- -"-  Use Q_RGB(x,x,x) macro */
-    float relative_X; /* 0.0, or in case the label should not be located in the middle of
+    double relative_X; /* 0.0, or in case the label should not be located in the middle of
                        * the line this parameter shall be used to relatively offset */
     GO_Label_t label; /* The label, must be placed last in the structure */
 }GraphicalObject_LifeLine_Box_t;
@@ -189,7 +189,7 @@ typedef struct
 {
     GraphicalObject_t go;
     int lineColorRGB;     /* -"- -"-  Use Q_RGB(x,x,x) macro */
-    float relative_X;       /* 0.0, or in case the label should not be located in the middle of
+    double relative_X;       /* 0.0, or in case the label should not be located in the middle of
                              * the line this parameter shall be used to relatively offset */
     GO_Label_t label;            /* The label, must be placed last in the structure */
 }GraphicalObject_LifeLine_Line_t;
@@ -199,8 +199,8 @@ typedef struct
 {
     double x_min;    /* in seconds */
     double x_max;    /* in seconds */
-    float y_min;
-    float y_max;
+    double y_min;
+    double y_max;
 }GraphicalObject_Extents_t;
 
 /* Description: A variant of the simple line where you may set the line color and a label on the line */

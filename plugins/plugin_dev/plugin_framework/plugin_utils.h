@@ -55,7 +55,7 @@ public:
      *  Input:         row            Specifies the row in the log where this box was extracted from.
      *                                  Used for getting to and from log and plot
      */
-    bool AddLine(double x1, float y1, double x2, float y2, int row);
+    bool AddLine(double x1, double y1, double x2, double y2, int row);
 
     /* Function: AddLine
      *  Description: Draws a line from x1,y1 to x2,y2 with specified label and color.
@@ -79,8 +79,8 @@ public:
      *                              PROPERTIES_BITMASK_LINE_ARROW_SOLID_START,
      *                                  PROPERTIES_BITMASK_LINE_ARROW_OPEN_END PROPERTIES_BITMASK_LINE_ARROW_SOLID_END
      */
-    bool AddLine(double x1, float y1, double x2, float y2, int row, const char *label_p,
-                 int labelLength, int lineColorRGB, float relative_X, int lineEnds = 0);
+    bool AddLine(double x1, double y1, double x2, double y2, int row, const char *label_p,
+                 int labelLength, int lineColorRGB, double relative_X, int lineEnds = 0);
 
     /* Function: AddLine
      *
@@ -103,8 +103,8 @@ public:
      *                              PROPERTIES_BITMASK_LINE_ARROW_SOLID_START,
      *                                  PROPERTIES_BITMASK_LINE_ARROW_OPEN_END PROPERTIES_BITMASK_LINE_ARROW_SOLID_END
      */
-    bool AddLine(double x1, float y1, double x2, float y2, int row, int labelIndex, int lineColorRGB,
-                 float relative_X, int lineEnds = 0);
+    bool AddLine(double x1, double y1, double x2, double y2, int row, int labelIndex, int lineColorRGB,
+                 double relative_X, int lineEnds = 0);
 
     /* Function: AddBox
      *  Description:   LogScrutinizer decides fill and line color. No label
@@ -117,7 +117,7 @@ public:
      *  Input:         row2           As for row but for x2,y2
      *  NOTE: if x2,y2 isn't the upper right corner the box might not be displayed.
      */
-    bool AddBox(double x1, float y1, int row, double x2, float y2, int row2);
+    bool AddBox(double x1, double y1, int row, double x2, double y2, int row2);
 
     /* Function: AddBox
      *
@@ -138,7 +138,7 @@ public:
      *
      *  NOTE: if x2,y2 isn't the upper right corner the box might not be displayed.
      */
-    bool AddBox(double x1, float y1, int row, double x2, float y2, int row2, const char *label_p,
+    bool AddBox(double x1, double y1, int row, double x2, double y2, int row2, const char *label_p,
                 int labelLength, int fillColorRGB);
 
     /* Function: AddBox
@@ -158,7 +158,7 @@ public:
      *
      *  NOTE: if x2,y2 isn't the upper right corner the box might not be displayed.
      */
-    bool AddBox(double x1, float y1, int row, double x2, float y2, int row2, int labelIndex, int fillColorRGB);
+    bool AddBox(double x1, double y1, int row, double x2, double y2, int row2, int labelIndex, int fillColorRGB);
 
     /* Function: SetGraphColor
      *
@@ -263,7 +263,7 @@ public:
      *  Returns:       lifeLine_h      A handle to a lifeLine that shall typically be supplied in many of the
      *                               CSequenceDiagram functions to add graphical objects
      */
-    lifeLine_h AddLifeLine(float y1, float y2, const char *label_p, int labelLength, int colorRGB);
+    lifeLine_h AddLifeLine(double y1, double y2, const char *label_p, int labelLength, int colorRGB);
 
     /* Function: AddMessage
      *  Description: This function adds a message from lifeLine1 to lifeLine2, it will result in a line with open arrow

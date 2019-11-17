@@ -120,8 +120,8 @@ void CPlot_Example_4::pvPlotRow(const char *row_p, const int *length_p, int rowI
         sprintf(lifeLineName, "LifeLine:%d", lifeLineDest);
 
         m_lifeLines_a[lifeLineDest] =
-            m_sequenceDiagram_p->AddLifeLine((float)lifeLineDest - 0.25f,
-                                             (float)lifeLineDest + 0.25f,
+            m_sequenceDiagram_p->AddLifeLine((double)lifeLineDest - 0.25f,
+                                             (double)lifeLineDest + 0.25f,
                                              lifeLineName,
                                              static_cast<uint8_t>(strlen(lifeLineName)),
                                              Q_RGB(85, 20 + 20 * lifeLineDest, 20 + 20 * lifeLineDest));

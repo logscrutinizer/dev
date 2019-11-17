@@ -346,7 +346,7 @@ void CSubPlotSurface::SetZoom(double x_min, double x_max, bool reset_Y_Zoom)
     }
 
     if (reset_Y_Zoom) {
-        float zoom_out = (extents.y_max - extents.y_min) * 0.2f;
+        double zoom_out = (extents.y_max - extents.y_min) * 0.2f;
 
         m_surfaceZoom.y_max = extents.y_max + zoom_out;
         m_surfaceZoom.y_min = extents.y_min - zoom_out;
@@ -674,12 +674,12 @@ void CSubPlotSurface::OnPaint_Empty(void)
 
     doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
 
-    const int textRowHeight = lineSize.height() + static_cast<int>(static_cast<float>(lineSize.height()) * 0.05f);
+    const int textRowHeight = lineSize.height() + static_cast<int>(static_cast<double>(lineSize.height()) * 0.05f);
     const int textBoxHeight = textRowHeight * NUM_OF_NO_SUBPLOT_STRINGS;
     int x;
     int y;
 
-    x = static_cast<int>(static_cast<float>(m_windowRect.width()) * 0.1f);
+    x = static_cast<int>(static_cast<double>(m_windowRect.width()) * 0.1f);
     y = 15;
 
     const int totalHeight = m_windowRect.height();
@@ -708,9 +708,9 @@ void CSubPlotSurface::OnPaint_1(void)
 
     if (m_setupGraphs) {
         m_lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, g_avg_str);
-        m_avgPixPerLetter = static_cast<float>(m_lineSize.width()) / static_cast<float>(g_avg_str.length());
-        m_avgPixPerLetterHeight = static_cast<float>(m_lineSize.height());
-        m_halfLineHeight = static_cast<int>(static_cast<float>(m_lineSize.height()) / static_cast<float>(2.0));
+        m_avgPixPerLetter = static_cast<double>(m_lineSize.width()) / static_cast<double>(g_avg_str.length());
+        m_avgPixPerLetterHeight = static_cast<double>(m_lineSize.height());
+        m_halfLineHeight = static_cast<int>(static_cast<double>(m_lineSize.height()) / static_cast<double>(2.0));
         PRINT_SUBPLOTSURFACE(QString("m_avgPixPerLetter %1 %2").arg(m_lineSize.width()).arg(m_lineSize.height()));
 
         if (m_renderMode == RenderMode_Maximized_en) {
@@ -829,15 +829,15 @@ void CSubPlotSurface::Reconfigure(QRect *rect_p)
         m_viewPortRect.setBottom(m_windowRect.bottom() - BOARDER_HEIGHT);
     }
 
-    m_viewPort_Width = (double)(float)(m_surfaceZoom.x_max - m_surfaceZoom.x_min);
-    m_viewPort_Height = (float)(m_surfaceZoom.y_max - m_surfaceZoom.y_min);
+    m_viewPort_Width = (double)(double)(m_surfaceZoom.x_max - m_surfaceZoom.x_min);
+    m_viewPort_Height = (double)(m_surfaceZoom.y_max - m_surfaceZoom.y_min);
 
     m_viewPort_X_Center = (double)(m_surfaceZoom.x_min + (double)((double)(m_surfaceZoom.x_max
                                                                            - m_surfaceZoom.x_min) / (double)2.0));
-    m_viewPort_Y_Center = m_surfaceZoom.y_min + (m_surfaceZoom.y_max - m_surfaceZoom.y_min) / (float)2.0;
+    m_viewPort_Y_Center = m_surfaceZoom.y_min + (m_surfaceZoom.y_max - m_surfaceZoom.y_min) / (double)2.0;
 
     m_unitsPerPixel_X = (double)((double)m_viewPort_Width / (double)m_viewPortRect.width());
-    m_unitsPerPixel_Y = (float)(m_viewPort_Height / m_viewPortRect.height());
+    m_unitsPerPixel_Y = (double)(m_viewPort_Height / m_viewPortRect.height());
 
     m_unitsPerPixel_X_inv = (double)1.0 / m_unitsPerPixel_X;
     m_unitsPerPixel_Y_inv = (double)1.0 / m_unitsPerPixel_Y;
@@ -993,7 +993,7 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
                     GraphicalObject_Extents_t extents;
                     graph_p->GetExtents(&extents);
 
-                    float center = extents.y_min + (extents.y_max - extents.y_min) / (float)2;
+                    double center = extents.y_min + (extents.y_max - extents.y_min) / (double)2;
                     int y_pix = m_viewPortRect.bottom()
                                 - (int)((center - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv)
                                 - halfLineHeight;
@@ -1142,7 +1142,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
                 m_painter_p->drawLine(startPoint, endPoint);
                 m_painter_p->drawText(QPoint(startPoint.x() + (int)(m_viewPortRect.width() * 0.3),
                                              startPoint.y() + halfLineHeight),
-                                      QString("%1").arg((float)m_lines_Y[index]));
+                                      QString("%1").arg((double)m_lines_Y[index]));
             }
             ++index;
         }
@@ -1195,8 +1195,8 @@ void CSubPlotSurface::Draw_X_Axis(void)
                 longStartPoint.setY(longStartPoint.y() - oneNumberSize.height());
                 m_painter_p->drawLine(longStartPoint, endPoint);
 
-                /* temp = QString("+%.2e(s)", (float)(m_lines_X[index] - m_lines_X[0])); */
-                temp = QString("%1(s)").arg((float)(m_lines_X[index]), 0, 'E', 2);
+                /* temp = QString("+%.2e(s)", (double)(m_lines_X[index] - m_lines_X[0])); */
+                temp = QString("%1(s)").arg((double)(m_lines_X[index]), 0, 'E', 2);
                 lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, temp);
                 m_painter_p->drawText(QPoint(startPoint.x() - lineSize.width() / 2, xaxis_label_y), temp);
             } else {
@@ -1292,7 +1292,7 @@ void CSubPlotSurface::Setup_X_Lines(void)
         m_numOf_X_Lines = 0;
     }
 
-    auto numLinesEstimate = static_cast<int>(static_cast<float>(m_viewPortRect.width()) / m_avgPixPerLetter);
+    auto numLinesEstimate = static_cast<int>(static_cast<double>(m_viewPortRect.width()) / m_avgPixPerLetter);
     double x_diff_per_line = abs(x_diff) / numLinesEstimate;
     double base;
     double step = pow(10, floor(log10(x_diff_per_line)));
@@ -1347,7 +1347,7 @@ void CSubPlotSurface::DrawGraphs(void)
     const int lineEnds = g_cfg_p->m_plot_lineEnds;
     const int minPixelDist = g_cfg_p->m_plot_LineEnds_MinPixelDist;
     const int maxPixelDist = g_cfg_p->m_plot_LineEnds_MaxCombinePixelDist;
-    float label_relative_from_top = 0.2f; /* to enable labels not overlapping entirely */
+    double label_relative_from_top = 0.2f; /* to enable labels not overlapping entirely */
 
     /* In-case lines and boxes are labelled */
     m_painter_p->setBackgroundMode(Qt::TransparentMode);
@@ -1404,7 +1404,7 @@ void CSubPlotSurface::DrawGraphs(void)
                         const int x_2 = di_p->x2_pix;
                         const int y_2 = di_p->y2_pix;
                         const short properties = di_p->properties;
-                        float relative_X = 0.0f;  /* Some graphical object may offset the label */
+                        double relative_X = 0.0f;  /* Some graphical object may offset the label */
                         int x_len = 0;
                         int y_len = 0;
                         int x_dist = 0;
@@ -1712,17 +1712,18 @@ void CSubPlotSurface::DrawGraphs(void)
 
                                 int label_x_start;
 
-                                if (relative_X == static_cast<float>(0.0)) {
+                                if (relative_X == static_cast<double>(0.0)) {
                                     label_x_start = x_1 +
-                                                    static_cast<int>(static_cast<float>(x_2 - x_1) / 2.0f -
-                                                                     static_cast<float>(di_p->label_pix_length) / 2.0f);
+                                                    static_cast<int>(static_cast<double>(x_2 - x_1) / 2.0f -
+                                                                     static_cast<double>(di_p->label_pix_length) /
+                                                                     2.0f);
                                 } else {
-                                    label_x_start = x_1 + static_cast<int>(static_cast<float>(x_2 - x_1) * relative_X);
+                                    label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
                                 }
 
-                                float y_text;
-                                const float y_1_temp = static_cast<float>(y_1 > y_2 ? y_1 : y_2);
-                                const float y_2_temp = static_cast<float>(y_1 > y_2 ? y_2 : y_1);
+                                double y_text;
+                                const double y_1_temp = static_cast<double>(y_1 > y_2 ? y_1 : y_2);
+                                const double y_2_temp = static_cast<double>(y_1 > y_2 ? y_2 : y_1);
 
                                 if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK &&
                                     (di_p->x2_pix - di_p->x1_pix < 2)) {
@@ -1815,7 +1816,7 @@ void CSubPlotSurface::DrawDecorators(bool over)
             const int y_2 = di_p->y2_pix;
             const short properties = di_p->properties;
             bool checkLabel = false;            /* true if go was painted */
-            float relative_X = (float)0.0;      /* Some graphical object may offset the label */
+            double relative_X = (double)0.0;      /* Some graphical object may offset the label */
 
             if (properties & (PROPERTIES_BITMASK_VISIBLE | PROPERTIES_BITMASK_VISIBLE_INTERSECT)) {
                 if ((properties & GRAPHICAL_OBJECT_KIND_DECORATOR_LIFELINE)) {
@@ -1897,7 +1898,6 @@ void CSubPlotSurface::DrawDecorators(bool over)
                     if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                         (void)m_painter_p->setPen(QRgb(0x0));
                     }
-
                     /* lighter colors require a black label */
                     else if (totalColor > (0x85 * 3)) {
                         (void)m_painter_p->setPen(QRgb(0x0));
@@ -1910,17 +1910,17 @@ void CSubPlotSurface::DrawDecorators(bool over)
                     if (relative_X == 0.0f) {
                         label_x_start = x_1 + ((x_2 - x_1) >> 1) - (di_p->label_pix_length >> 1);
                     } else {
-                        label_x_start = x_1 + static_cast<int>(static_cast<float>(x_2 - x_1) * relative_X);
+                        label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
                     }
 
-                    const int y_text = y_1 - static_cast<int>(static_cast<float>((y_1 - y_2) >> 1) -
+                    const int y_text = y_1 - static_cast<int>(static_cast<double>((y_1 - y_2) >> 1) -
                                                               m_avgPixPerLetterHeight / 2.0f);
 
                     if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                         /* Erase a small box where the label should be, mainly covering just the own line */
                         rect = QRect(QPoint(label_x_start, y_text - 2),
                                      QPoint(label_x_start + di_p->label_pix_length,
-                                            static_cast<int>(static_cast<float>(y_text) -
+                                            static_cast<int>(static_cast<double>(y_text) -
                                                              m_avgPixPerLetterHeight + 2.0f)));
 
                         m_painter_p->fillRect(rect, BACKGROUND_COLOR);
@@ -1937,15 +1937,15 @@ void CSubPlotSurface::DrawDecorators(bool over)
 *   Intersection_LINE_Out2In
 ***********************************************************************************************************************/
 bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_p,
-                                               float *p0_y_p, double p1_x, float p1_y)
+                                               double *p0_y_p, double p1_x, double p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_min = m_surfaceZoom.x_min;
     const double x_max = m_surfaceZoom.x_max;
-    const float y_min = m_surfaceZoom.y_min;
-    const float y_max = m_surfaceZoom.y_max;
+    const double y_min = m_surfaceZoom.y_min;
+    const double y_max = m_surfaceZoom.y_max;
     double x_intersect;
-    float y_intersect;
+    double y_intersect;
 
     switch (pl_0)
     {
@@ -2025,15 +2025,15 @@ bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_
 *   Intersection_LINE_In2Out
 ***********************************************************************************************************************/
 bool CSubPlotSurface::Intersection_LINE_In2Out(int pl_0, int pl_1, double *p0_x_p,
-                                               float *p0_y_p, double p1_x, float p1_y)
+                                               double *p0_y_p, double p1_x, double p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_min = m_surfaceZoom.x_min;
     const double x_max = m_surfaceZoom.x_max;
-    const float y_min = m_surfaceZoom.y_min;
-    const float y_max = m_surfaceZoom.y_max;
+    const double y_min = m_surfaceZoom.y_min;
+    const double y_max = m_surfaceZoom.y_max;
     double x_intersect;
-    float y_intersect;
+    double y_intersect;
 
     /* The right point is outside the viewport/surface, check which
      * axis it crosses, base it against where the right point is located. */
@@ -2111,9 +2111,9 @@ bool CSubPlotSurface::Intersection_LINE_In2Out(int pl_0, int pl_1, double *p0_x_
 *   Intersection_LINE
 ***********************************************************************************************************************/
 bool CSubPlotSurface::Intersection_LINE(
-    double p0_x, float p0_y, double p1_x, float p1_y,   /* Line 1 */
-    double p2_x, float p2_y, double p3_x, float p3_y,   /* Line 2 */
-    double *i_x, float *i_y)
+    double p0_x, double p0_y, double p1_x, double p1_y,   /* Line 1 */
+    double p2_x, double p2_y, double p3_x, double p3_y,   /* Line 2 */
+    double *i_x, double *i_y)
 {
     /* Returns 1 if the lines intersect, otherwise 0. In addition, if the lines
      * intersect the intersection point may be stored in the floats i_x and i_y. */
@@ -2136,7 +2136,7 @@ bool CSubPlotSurface::Intersection_LINE(
         }
 
         if (i_y != nullptr) {
-            *i_y = p0_y + (float)(t * s1_y);
+            *i_y = p0_y + (double)(t * s1_y);
         }
 
         return true;
@@ -2149,12 +2149,12 @@ bool CSubPlotSurface::Intersection_LINE(
 *   Intersection_BOX_Out2In
 ***********************************************************************************************************************/
 bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, int pl_1,
-                                              double *p0_x_p, float *p0_y_p, double p1_x, float p1_y)
+                                              double *p0_x_p, double *p0_y_p, double p1_x, double p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_min = m_surfaceZoom.x_min;
-    const float y_min = m_surfaceZoom.y_min;
-    const float y_max = m_surfaceZoom.y_max;
+    const double y_min = m_surfaceZoom.y_min;
+    const double y_max = m_surfaceZoom.y_max;
 
     /* Only modify p0_x and P0_y if needed */
 
@@ -2202,12 +2202,12 @@ bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, int pl_1,
 *   Intersection_BOX_In2Out
 ***********************************************************************************************************************/
 bool CSubPlotSurface::Intersection_BOX_In2Out(int pl_0, int pl_1, double *p0_x_p,
-                                              float *p0_y_p, double p1_x, float p1_y)
+                                              double *p0_y_p, double p1_x, double p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_max = m_surfaceZoom.x_max;
-    const float y_min = m_surfaceZoom.y_min;
-    const float y_max = m_surfaceZoom.y_max;
+    const double y_min = m_surfaceZoom.y_min;
+    const double y_max = m_surfaceZoom.y_max;
 
     /* The right point is outside the viewport/surface, check which axis it crosses, base it against
      * where the right point is located. */
@@ -2264,6 +2264,7 @@ void CSubPlotSurface::SetupGraphs(void)
     int threadIndex = 0;
 
 #ifdef _DEBUG
+
     CTimeMeas execTime;
 #endif
 
@@ -2360,6 +2361,7 @@ void CSubPlotSurface::SetupGraphs(void)
 #endif
 
 #ifdef _DEBUG
+
     double time = execTime.ms();
     PRINT_SUBPLOTSURFACE("CSubPlotSurface::SetupGraphs  Time:%f", time);
 #endif
@@ -2394,8 +2396,8 @@ void CSubPlotSurface::SetupDecorators(void)
                         GO_Label_t *label_p = &((GraphicalObject_LifeLine_Box_t *)
                                                 m_displayDecorator.m_items_a[itemIndex].go_p)->label;
                         int pix_length =
-                            (int)((float)label_p->labelKind.textLabel.length * m_avgPixPerLetter);
-                        pix_length = (int)((float)pix_length * 1.1f);
+                            (int)((double)label_p->labelKind.textLabel.length * m_avgPixPerLetter);
+                        pix_length = (int)((double)pix_length * 1.1f);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2404,10 +2406,10 @@ void CSubPlotSurface::SetupDecorators(void)
                         GO_Label_t *label_p =
                             &((GraphicalObject_LifeLine_Box_t *)m_displayDecorator.m_items_a[itemIndex].go_p)->label;
                         int pix_length =
-                            (int)((float)(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength)
+                            (int)((double)(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength)
                                   * m_avgPixPerLetter);
 
-                        pix_length = (int)((float)pix_length * 1.1f);
+                        pix_length = (int)((double)pix_length * 1.1f);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2442,7 +2444,7 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
 {
     /* This function setup the graph elements, and decides which ones that shall be displayed and which that shall not.
      * Used for setting up labels */
-    const float avgPixPerLetter = m_avgPixPerLetter;
+    const double avgPixPerLetter = m_avgPixPerLetter;
 
     if (cfgStopIndex == -1) {
         cfgStopIndex = dgraph_p->m_numOfItems - 1;
@@ -2476,9 +2478,9 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
         } /* for */
 
         double x1_intersect;
-        float y1_intersect;
+        double y1_intersect;
         double x2_intersect;
-        float y2_intersect;
+        double y2_intersect;
 
         if (g_cfg_p->m_pluginDebugBitmask > 10) {
             TRACEX_I("Setting up graph:%s  GraphicalItems:%d->%d",
@@ -2596,7 +2598,7 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
                                       GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_STR)) {
                         di_p->label_p = &label_p->labelKind.textLabel.label_a;
                         di_p->label_pix_length =
-                            static_cast<int16_t>(static_cast<float>(label_p->labelKind.textLabel.length) *
+                            static_cast<int16_t>(static_cast<double>(label_p->labelKind.textLabel.length) *
                                                  avgPixPerLetter);
                         di_p->labelLength = label_p->labelKind.textLabel.length;
                     } else if (properties &
@@ -2604,7 +2606,7 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
                         di_p->label_p = m_label_refs_a[label_p->labelKind.labelIndex]->m_label_p;
                         di_p->label_pix_length =
                             static_cast<int16_t>(
-                                static_cast<float>(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength) *
+                                static_cast<double>(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength) *
                                 avgPixPerLetter);
                         di_p->labelLength =
                             static_cast<int16_t>(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength);

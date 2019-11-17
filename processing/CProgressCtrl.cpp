@@ -100,7 +100,7 @@ bool CProgressMgr::GetProgressInfo(QString& info)  /* return true if more to rea
 /***********************************************************************************************************************
 *   SetProgressCounter
 ***********************************************************************************************************************/
-void CProgressMgr::SetProgressCounter(float value)
+void CProgressMgr::SetProgressCounter(double value)
 {
     const int COUNT = m_numOfProgressCounters;
 

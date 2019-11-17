@@ -21,7 +21,7 @@ inline bool isDigit(uint8_t ch)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-inline bool isFloatDigit(uint8_t ch)
+inline bool isDoubleDigit(uint8_t ch)
 {
     if (((ch >= '0') && (ch <= '9')) ||
         (ch == '-') ||
@@ -154,14 +154,14 @@ bool CTextParser::Parse_INT64(int64_t *value_p)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CTextParser::ParseFloat(float *value_p)
+bool CTextParser::ParseDouble(double *value_p)
 {
     char value[25] = "";
     const char *loopText_p = &m_text_p[m_parseIndex];
     const char *loopTextEnd_p = &m_text_p[m_textLength];
     const char *startpoint_p = loopText_p;
 
-    while (loopText_p < loopTextEnd_p && !isFloatDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && !isDoubleDigit(*loopText_p)) {
         ++loopText_p;
     }
 
@@ -170,7 +170,7 @@ bool CTextParser::ParseFloat(float *value_p)
     }
 
     int index = 0;
-    while (loopText_p < loopTextEnd_p && index < (MAX_INT64_STRING - 1) && isFloatDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && index < (MAX_INT64_STRING - 1) && isDoubleDigit(*loopText_p)) {
         value[index] = *loopText_p;
         ++loopText_p;
         ++index;

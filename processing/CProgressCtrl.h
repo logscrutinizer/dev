@@ -41,10 +41,10 @@ public:
 
     /* The count step is a  precentile  of 100%. Each call to StepProgress will increase the
      *  counter until reaching * 1.0 */
-    void SetupProgessCounter(float countStep) {m_progressStep = countStep;}
+    void SetupProgessCounter(double countStep) {m_progressStep = countStep;}
 
     /****/
-    void GetProgressCounter(float **progressCounters_pp, int *count_p) {
+    void GetProgressCounter(double **progressCounters_pp, int *count_p) {
         *progressCounters_pp = &m_progressCounter[0];
         *count_p = m_numOfProgressCounters;
     }
@@ -56,7 +56,7 @@ public:
     bool GetProgressInfo(QString& info);  /* Returns true if there are more strings to fetch */
     void InitProgressCounter(void);
     void SetNumOfProgressCounters(int numOfProgressCounters) {m_numOfProgressCounters = numOfProgressCounters;}
-    void SetProgressCounter(float value); /* To align the * progress * this could * be used to * "jump" * forward */
+    void SetProgressCounter(double value); /* To align the * progress * this could * be used to * "jump" * forward */
     void StepProgressCounter(int counterIndex = 0);
     void SetSuccess(void) {m_success = 1; SetProgressCounter(1.0f);}
     void SetFail(void) {m_success = 0; SetProgressCounter(1.0f);}
@@ -76,8 +76,8 @@ private:
     int m_processingLevel = 0; /* Used to indicate how many that has reported them being processing */
     int m_numOfProgressCounters = 0;
     QBasicMutex m_mutex;
-    float m_progressStep = 0; /* Each call to StepProgress will increase m_progressCounter with this value */
-    float m_progressCounter[MAX_NUM_OF_THREADS];  /* Keeping count of the current progress..  1.0 means done */
+    double m_progressStep = 0; /* Each call to StepProgress will increase m_progressCounter with this value */
+    double m_progressCounter[MAX_NUM_OF_THREADS];  /* Keeping count of the current progress..  1.0 means done */
     QList<QString> m_progressInfo;
     QElapsedTimer m_timer;
 };

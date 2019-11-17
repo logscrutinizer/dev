@@ -129,15 +129,15 @@ public:
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------
-     * Function: ParseFloat
+     * Function: ParseDouble
      * Description: The function parses the text string from the current index, it will skip any character that are not
      * in the
-     *              "float set"   0-9 or - or .
-     *              It will stop parsing characters when characters are not in the "float set"
+     *              "double set"   0-9 or - or .
+     *              It will stop parsing characters when characters are not in the "double set"
      * Parameters
-     *    Input/Ouput:  value_p,  the destination for the parsed float value
+     *    Input/Ouput:  value_p,  the destination for the parsed double value
      *    Returns:      true,     if successfull */
-    bool ParseFloat(float *value_p);
+    bool ParseDouble(double *value_p);
 
     /*
      * ----------------------------------------------------------------------------------------------------------------------

@@ -600,22 +600,22 @@ void CFileProcBase::Process(void)
             }
         }
 
-        float currentStep;
+        double currentStep;
 
         if (m_threadTI_Split) {
-            currentStep = (PROGRESS_COUNTER_STEP * m_numberOfChunkThreads) / static_cast<float>(m_totalNumOfRows);
+            currentStep = (PROGRESS_COUNTER_STEP * m_numberOfChunkThreads) / static_cast<double>(m_totalNumOfRows);
         } else {
-            currentStep = (PROGRESS_COUNTER_STEP) / static_cast<float>(m_totalNumOfRows);
+            currentStep = (PROGRESS_COUNTER_STEP) / static_cast<double>(m_totalNumOfRows);
         }
 
         g_processingCtrl_p->SetupProgessCounter(currentStep);
 
         if (!m_backward) {
             g_processingCtrl_p->SetProgressCounter(
-                (m_chunkDescr.TIA_startRow - m_startRow) / static_cast<float>(m_totalNumOfRows));
+                (m_chunkDescr.TIA_startRow - m_startRow) / static_cast<double>(m_totalNumOfRows));
         } else {
             g_processingCtrl_p->SetProgressCounter(
-                (m_startRow - m_chunkDescr.TIA_startRow) / static_cast<float>(m_totalNumOfRows));
+                (m_startRow - m_chunkDescr.TIA_startRow) / static_cast<double>(m_totalNumOfRows));
         }
         g_processingCtrl_p->AddProgressInfo(QString("Processing, threads:%1").arg(m_numberOfChunkThreads));
 

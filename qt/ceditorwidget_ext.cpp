@@ -40,7 +40,7 @@ typedef enum {
 
 struct info_text_elem {
     char text[256];
-    float y_rel;
+    double y_rel;
 };
 const struct info_text_elem welcome[] =
 {
@@ -137,7 +137,7 @@ const struct info_text_elem log_file_empty[] =
  * The macro RELPOS_NORMALIZED translates m_relPos to 0-1, compensating for the start and end point of m_relPos.
  * (m_max_rel_pos - m_min_rel_pos) ... seems to be 1.0 ???
  * normalized m_relPos to 0-1 */
-#define RELPOS_NORMALIZED   ((float)((m_relPos - m_min_rel_pos) / (m_max_rel_pos - m_min_rel_pos)))
+#define RELPOS_NORMALIZED   ((double)((m_relPos - m_min_rel_pos) / (m_max_rel_pos - m_min_rel_pos)))
 
 /***********************************************************************************************************************
 *   Initialize_0
@@ -468,8 +468,8 @@ void CEditorWidget::SetupScreenProperties_Step0(void)
 
     m_vscrollSlider = m_vscrollFrame; /* top / bottom is setup later */
 
-    m_rowHeigth = m_fontHeigth + (int32_t)((float)m_fontHeigth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.top) +
-                  ((int32_t)((float)m_fontHeigth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.bottom));
+    m_rowHeigth = m_fontHeigth + static_cast<int>(m_fontHeigth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.top +
+                                                  m_fontHeigth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.bottom);
 
     m_windowCfgChanged = true;
 
@@ -499,13 +499,13 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
 
     QSize oneLetter = doc_p->m_fontCtrl.GetFontSize();
     QSize rowCount_lineSize = GetTabbedSize(testString, m_blackFont_p->font_p);
-    double hightRate = (double)m_rowHeigth / (double)m_bmp_bookmark_48_36.height();
+    auto hightRate = m_rowHeigth / static_cast<double>(m_bmp_bookmark_48_36.height());
 
-    m_bookmarkWidth = (int)((double)m_bmp_bookmark_48_36.width() * hightRate);
+    m_bookmarkWidth = static_cast<int>(m_bmp_bookmark_48_36.width() * hightRate);
     m_decodedRectWidth = m_rowHeigth / 2;
 
-    m_textRow_Head_X.setLeft(m_textWindow.left()
-                             + (int32_t)((float)m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.left));
+    m_textRow_Head_X.setLeft(static_cast<int>(m_textWindow.left() + m_fontWidth *
+                                              CFG_SCREEN_TEXT_ROW_PADDING_persistent.left));
 
     m_textRow_Head_X.setRight(m_textRow_Head_X.left()
                               + rowCount_lineSize.width() + 2 /*bookmark spacing */
@@ -514,14 +514,14 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
                               + m_decodedRectWidth);
 
     m_textRow_X.setLeft(m_textRow_Head_X.right()
-                        + (int32_t)((float)m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.left));
+                        + (int32_t)(m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.left));
 
     m_beam_left_padding = oneLetter.width();
 
     m_rowAdjustment = 1;
     m_numOf_1_PixelBonus = 0;
 
-    m_maxDisplayRows = (int)((float)(m_textWindow.bottom() - m_textWindow.top()) / (float)m_rowHeigth);
+    m_maxDisplayRows = (int)((double)(m_textWindow.bottom() - m_textWindow.top()) / (double)m_rowHeigth);
 
     if (m_maxDisplayRows > m_totalNumOfRows) {
         m_maxDisplayRows = m_totalNumOfRows;
@@ -532,7 +532,7 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
 
         if (requiredRowAdjustment > m_maxDisplayRows) {
             /* Not enough to adjust one pixel per row */
-            m_rowAdjustment = (int)(((float)requiredRowAdjustment / (float)m_maxDisplayRows));
+            m_rowAdjustment = (int)(((double)requiredRowAdjustment / (double)m_maxDisplayRows));
             m_numOfRowAdjustments = m_maxDisplayRows;
             m_numOf_1_PixelBonus = requiredRowAdjustment - m_rowAdjustment * m_maxDisplayRows;
         }
@@ -583,7 +583,7 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
 
     m_textRow_X.setRight(m_textRow_X.left() + lineSize.width());
     m_textWindow.setRight(m_textRow_X.right() +
-                          (int32_t)((float)m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.right));
+                          (int32_t)((double)m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.right));
     m_rcBoarder.setRight(m_textWindow.right());
 
     m_textRectOffset_Y = (m_rowHeigth / 2) - (m_fontHeigth / 2);
@@ -607,24 +607,24 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
     if (m_maxDisplayRows > m_totalNumOfRows) {
         temp_scrollSliderHeight = m_vscrollFrameHeigth;
     } else if (m_vscrollFrameHeigth > 0) {
-        temp_scrollSliderHeight = (int)((float)m_vscrollFrameHeigth *
-                                        (float)((float)m_maxDisplayRows / (float)(m_totalNumOfRows)));
+        temp_scrollSliderHeight = (int)((double)m_vscrollFrameHeigth *
+                                        (double)((double)m_maxDisplayRows / (double)(m_totalNumOfRows)));
     }
 
     if (temp_scrollSliderHeight < 1) {
         temp_scrollSliderHeight = 1;
     }
 
-    m_min_vslider_center_pos = (int)((float)m_vscrollFrame.top() + ((float)temp_scrollSliderHeight / 2.0f) - 0.5f);
-    m_max_vslider_center_pos = (int)((float)m_vscrollFrame.bottom() - ((float)temp_scrollSliderHeight / 2.0f) + 0.5f);
+    m_min_vslider_center_pos = (int)((double)m_vscrollFrame.top() + ((double)temp_scrollSliderHeight / 2.0f) - 0.5f);
+    m_max_vslider_center_pos = (int)((double)m_vscrollFrame.bottom() - ((double)temp_scrollSliderHeight / 2.0f) + 0.5f);
 
     /* Setup the size of the horizontal scroll slider */
 
     if (m_hscrollFrameWidth > m_textWindow.width()) {
         m_hscrollSliderWidth = m_hscrollFrameWidth;
     } else {
-        m_hscrollSliderWidth = (int)((float)m_hscrollFrameWidth *
-                                     (float)((float)m_hscrollFrameWidth / (m_textWindow.width())));
+        m_hscrollSliderWidth = (int)((double)m_hscrollFrameWidth *
+                                     (double)((double)m_hscrollFrameWidth / (m_textWindow.width())));
     }
 
     LimitTopLine();
@@ -642,8 +642,8 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
      * compensation for min and max), it should be enough to take the size of the slider bar and multiply it
      * with m_relPos and then subtract half of the slider size */
     m_vscrollSlider.setTop(m_min_vslider_center_pos
-                           + (int)(((float)(m_max_vslider_center_pos - m_min_vslider_center_pos) * RELPOS_NORMALIZED) -
-                                   ((float)temp_scrollSliderHeight / 2.0f) + 0.5f));
+                           + (int)(((double)(m_max_vslider_center_pos - m_min_vslider_center_pos) * RELPOS_NORMALIZED) -
+                                   ((double)temp_scrollSliderHeight / 2.0f) + 0.5f));
 
     if (m_vscrollSlider.top() < 0) {
         m_vscrollSlider.setTop(0);
@@ -651,8 +651,8 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
 
     m_vscrollSlider.setBottom(m_vscrollSlider.top() + temp_scrollSliderHeight);
 
-    m_hscrollSlider.setLeft((int)((float)m_hscrollFrame.left() +
-                                  m_hrelPos * ((float)m_hscrollFrameWidth - (float)m_hscrollSliderWidth)));
+    m_hscrollSlider.setLeft((int)((double)m_hscrollFrame.left() +
+                                  m_hrelPos * ((double)m_hscrollFrameWidth - (double)m_hscrollSliderWidth)));
     m_hscrollSlider.setRight(m_hscrollSlider.left() + m_hscrollSliderWidth);
 }
 
@@ -902,14 +902,14 @@ void CEditorWidget::OnDraw(void)
         int index;
 
         /* Left side */
-        int count = (int)((((float)m_rcBoarder.height()) / (float)m_bitmap_left.height()) + 1.0f);
+        int count = (int)((((double)m_rcBoarder.height()) / (double)m_bitmap_left.height()) + 1.0f);
         for (index = 0; index < count; ++index) {
             m_painter_p->drawImage(m_rcBoarder.left(),
                                    m_rcBoarder.top() + index * m_bitmap_left.height(), m_bitmap_left);
         }
 
         /* Right side */
-        count = (int)((((float)m_rcBoarder.height()) / (float)m_bitmap_right.height()) + 1.0f);
+        count = (int)((((double)m_rcBoarder.height()) / (double)m_bitmap_right.height()) + 1.0f);
         for (index = 0; index < count; ++index) {
             m_painter_p->drawImage(m_rcBoarder.right(), m_rcBoarder.top() +
                                    index * m_bitmap_right.height(), m_bitmap_right);
@@ -1078,8 +1078,8 @@ void CEditorWidget::DrawTextWindow(void)
 ***********************************************************************************************************************/
 void CEditorWidget::FillWindowWithConstData(const struct info_text_elem *text_elems, const int byte_size)
 {
-    int x_pos = (int)((float)(m_rcClient.right() - m_rcClient.left()) * (float)0.1);
-    int y_pos = (int)((float)(m_rcClient.bottom() - m_rcClient.top()) * (float)0.1);
+    int x_pos = (int)((double)(m_rcClient.right() - m_rcClient.left()) * (double)0.1);
+    int y_pos = (int)((double)(m_rcClient.bottom() - m_rcClient.top()) * (double)0.1);
 
     m_painter_p->fillRect(m_rcClient, QColor(BOARDER_BACKGROUND_COLOR));
     m_painter_p->setFont(m_FontEmptyWindow);
@@ -2920,9 +2920,9 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                 UpdateRelTopLinePosition();
 
                 int evalRaster =
-                    (int)((float)m_min_vslider_center_pos
-                          + (((float)m_max_vslider_center_pos - (float)m_min_vslider_center_pos) * RELPOS_NORMALIZED)
-                          - (float)(((float)m_vscrollSlider.height() / 2.0f)) + (float)0.5f);
+                    (int)((double)m_min_vslider_center_pos
+                          + (((double)m_max_vslider_center_pos - (double)m_min_vslider_center_pos) * RELPOS_NORMALIZED)
+                          - (double)(((double)m_vscrollSlider.height() / 2.0f)) + (double)0.5f);
 
                 AlignRelPosToRockScroll(evalRaster);
 
@@ -2932,7 +2932,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                               "g-offset:%d offset-mouse:%d sliderHeight:%d frameHeight:%d",
                               __FUNCTION__, vscrollSlider_top, evalRaster, m_relPos,
                               temp_relPos - m_relPos,
-                              (temp_relPos - m_relPos) * (float)m_totalNumOfRows,
+                              (temp_relPos - m_relPos) * (double)m_totalNumOfRows,
                               m_topLine, m_vscrollSliderGlueOffset,
                               screenPoint.mouse.y() - vscrollSlider_top,
                               m_vscrollSlider.height(), m_vscrollFrame.height());
@@ -2942,8 +2942,8 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
             } /* if (m_vscrollSliderGlue) */
             else if (m_hscrollSliderGlue) {
                 m_hscrollSlider.setLeft(screenPoint.mouse.x() - m_hscrollSliderGlueOffset);
-                m_hrelPos = (float)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
-                            (float)(m_hscrollFrameWidth - m_hscrollSliderWidth);
+                m_hrelPos = (double)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
+                            (double)(m_hscrollFrameWidth - m_hscrollSliderWidth);
 
                 if (LOG_TRACE_MOUSE_COND) {
                     TRACEX_DE("%s  V-Glued dragging HSCROLL m_hrelPos:%f", __FUNCTION__, m_hrelPos)
@@ -2988,8 +2988,8 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                 if (m_hscrollSlider.left() < 0) {
                     m_hscrollSlider.setLeft(0);
                 }
-                m_hrelPos = (float)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
-                            (float)(m_hscrollFrameWidth - m_hscrollSliderWidth);
+                m_hrelPos = (double)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
+                            (double)(m_hscrollFrameWidth - m_hscrollSliderWidth);
                 if (LOG_TRACE_MOUSE_COND) {
                     TRACEX_DE("%s HSCROLL hrelPos:%f", __FUNCTION__, m_hrelPos)
                 }
@@ -3337,7 +3337,7 @@ void CEditorWidget::UpdateRelPosition(void)
 *   UpdateRelTopLinePosition
 *
 * The topLine is used to locate which row should be displayed first on the screen, at index 0. topLine is used
-* throughout the editorWidget as a reference point. m_relPos is a float that exactly describes where the middle of
+* throughout the editorWidget as a reference point. m_relPos is a double that exactly describes where the middle of
 * the screen is from the entire log view point, considering the presentation mode as well.
 * This function uses the current relPos to locate the row thats in the middle of the screen, and then move from there
 * a half number of screen rows up to locate the topRow.

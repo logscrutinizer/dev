@@ -159,7 +159,7 @@ void CList_LSZ::DeleteAll(void)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row)
+bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row)
 {
     GraphicalObject_Line_t *newLine_p =
         (GraphicalObject_Line_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_t));
@@ -204,8 +204,8 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row, const char *label_p,
-                     int labelLength, int lineColorRGB, float relative_X, int lineEnds)
+bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, const char *label_p,
+                     int labelLength, int lineColorRGB, double relative_X, int lineEnds)
 {
     int totalObjectSize = sizeof(GraphicalObject_Line_Ex_t) + labelLength + 1;  /* +1 for EOL */
     GraphicalObject_Line_Ex_t *newLine_p =
@@ -261,8 +261,8 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row, const ch
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row, int labelIndex,
-                     int lineColorRGB, float relative_X, int lineEnds)
+bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, int labelIndex,
+                     int lineColorRGB, double relative_X, int lineEnds)
 {
     GraphicalObject_Line_Ex_t *newLine_p =
         (GraphicalObject_Line_Ex_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_Ex_t));
@@ -303,7 +303,7 @@ bool CGraph::AddLine(double x1, float y1, double x2, float y2, int row, int labe
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2)
+bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2)
 {
     GraphicalObject_Box_t *newBox_p =
         (GraphicalObject_Box_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_t));
@@ -357,7 +357,7 @@ bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2, const char *label_p,
+bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2, const char *label_p,
                     int labelLength, int fillColorRGB)
 {
     int totalObjectSize = sizeof(GraphicalObject_Box_Ex_t) + labelLength + 1; /* +1 for EOL */
@@ -418,7 +418,7 @@ bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2,
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddBox(double x1, float y1, int row, double x2, float y2, int row2, int labelIndex, int fillColorRGB)
+bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2, int labelIndex, int fillColorRGB)
 {
     GraphicalObject_Box_Ex_t *newBox_p =
         (GraphicalObject_Box_Ex_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_Ex_t));
@@ -489,7 +489,7 @@ void CGraph::SetLinePattern(GraphLinePattern_e pattern)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char *label_p, int labelLength,
+lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label_p, int labelLength,
                                          int colorRGB)
 {
     /* 1. Add the life line box
@@ -508,7 +508,7 @@ lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char *label_p
 
 #ifdef _DEBUG
     if (y1 > y2) {
-        float temp_y = y2;
+        double temp_y = y2;
         y2 = y1;
         y1 = temp_y;
 
@@ -525,7 +525,7 @@ lifeLine_h CSequenceDiagram::AddLifeLine(float y1, float y2, const char *label_p
     go_p->x2 = 0.0;
     go_p->y2 = y2;
 
-    const float halfHeigth = (y2 - y1) / 2.0f;
+    const double halfHeigth = (y2 - y1) / 2.0f;
 
     newLifeLine_Box_p->y_center = y1 + halfHeigth;
     newLifeLine_Box_p->y_execTop = newLifeLine_Box_p->y_center + halfHeigth * 0.3f;
@@ -597,7 +597,7 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
         ErrorHook("%s x (%f) is less than 0.0", __FUNCTION__, x);
     }
 
-    float y_dest = lifeLine2_p->y_center;
+    double y_dest = lifeLine2_p->y_center;
 
     if (startsExecution) {
         /* Check if the line goes up or down, in-case down then use the
@@ -630,7 +630,7 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
         lineEnds = PROPERTIES_BITMASK_LINE_ARROW_SOLID_END;
     }
 
-    float y_dest = lifeLine2_p->y_center;
+    double y_dest = lifeLine2_p->y_center;
 
     if (startsExecution) {
         /* Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low */
@@ -655,8 +655,8 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
     GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
     GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-    float y_src = lifeLine1_p->y_center;
-    float y_dest = lifeLine2_p->y_center;
+    double y_src = lifeLine1_p->y_center;
+    double y_dest = lifeLine2_p->y_center;
 
     if (fromExecution) {
         /* Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low */
@@ -689,8 +689,8 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
     GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
     GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-    float y_src = lifeLine1_p->y_center;
-    float y_dest = lifeLine2_p->y_center;
+    double y_src = lifeLine1_p->y_center;
+    double y_dest = lifeLine2_p->y_center;
 
     if (fromExecution) {
         /* Check if the line goes up or down, in-case down then use the top y coord of lifeline2, otherwise the low */
@@ -721,7 +721,7 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, int labe
 {
     GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-    const float start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
+    const double start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
     AddLine(x, start, x, lifeLine_p->y_center, row, labelIndex, colorRGB, 0.5f, lineEnds);
 
@@ -735,7 +735,7 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, const ch
 {
     GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
-    const float start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
+    const double start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
     AddLine(x, start, x, lifeLine_p->y_center, row, label_p, labelLength, colorRGB, 0.5f, lineEnds);
 

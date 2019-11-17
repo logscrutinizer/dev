@@ -161,10 +161,10 @@
 
 /* The padding is % based, e.g. 30% of the text size */
 typedef struct {
-    float left;
-    float right;
-    float top;
-    float bottom;
+    double left;
+    double right;
+    double top;
+    double bottom;
 }CFG_PADDING_t;
 
 #define MAX_NUM_OF_RECENT_FILES 30

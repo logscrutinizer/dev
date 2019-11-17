@@ -17,7 +17,7 @@ public:
 typedef struct
 {
     double prevX;
-    float prevY;
+    double prevY;
     CGraph *graph_p;
 }graphInfo_t;
 

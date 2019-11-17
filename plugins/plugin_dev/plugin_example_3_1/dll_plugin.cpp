@@ -148,7 +148,7 @@ void CPlot_Example_3_1::pvPlotRow(const char *row_p, const int *length_p, int ro
         char temp[128];
         sprintf(temp, "t:(%d-%d) v:(%d-%d)", time1, time2, value1, value2);
 
-        m_line.graph_p->AddLine((double)time1, (float)value1, (double)time2, (float)value2, rowIndex, temp,
+        m_line.graph_p->AddLine((double)time1, (double)value1, (double)time2, (double)value2, rowIndex, temp,
                                 static_cast<uint8_t>(strlen(temp)), Q_RGB(0xcc, 0xcc, 0xcc), 0.5f);
         return;
     }

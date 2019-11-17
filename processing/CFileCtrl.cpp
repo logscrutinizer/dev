@@ -99,10 +99,10 @@ void CTIA_Thread::run()
                 --progressCount;
                 if (progressCount == 0) {
                     progressCount = PROGRESS_COUNTER_STEP;
-                    g_processingCtrl_p->SetProgressCounter(static_cast<float>(m_fileStartIndex +
-                                                                              ((ref_p - m_start_p) *
-                                                                               g_totalNumOfThreads))
-                                                           / static_cast<float>(g_totalFileSize));
+                    g_processingCtrl_p->SetProgressCounter(static_cast<double>(m_fileStartIndex +
+                                                                               ((ref_p - m_start_p) *
+                                                                                g_totalNumOfThreads))
+                                                           / static_cast<double>(g_totalFileSize));
                 }
             }
 
@@ -693,7 +693,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
     while (iterCmd != m_parseCmdList.end() && !g_processingCtrl_p->m_abort) {
         parseCmd_p = *iterCmd;
         g_processingCtrl_p->SetProgressCounter(
-            static_cast<float>(parseCmd_p->m_fileStart) / static_cast<float>(fileSize));
+            static_cast<double>(parseCmd_p->m_fileStart) / static_cast<double>(fileSize));
 
         parseCmd_p->Execute();
 

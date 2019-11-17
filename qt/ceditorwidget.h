@@ -54,8 +54,8 @@
 
 #define TEXT_SCROLL_SLIDER_SIZE_X 20
 
-#define TAB_WINDOW_FRACTION_X         ((float)0.3)
-#define TAB_WINDOW_FRACTION_Y         ((float)0.7)
+#define TAB_WINDOW_FRACTION_X         ((double)0.3)
+#define TAB_WINDOW_FRACTION_Y         ((double)0.7)
 
 #define MAX_BMP_STORAGE_INDEX       8
 

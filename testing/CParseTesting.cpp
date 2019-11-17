@@ -25,17 +25,17 @@ void CParseTesting::ParseTest(void)
 
     CParseTest_Float floatTest;
 
-    floatTest.Reset("1.23399997", 1.23399997f);
+    floatTest.Reset("1.23399997", 1.23399997);
     floatTest.Execute();
-    floatTest.Reset("0.000123399997", 0.000123399997f);
+    floatTest.Reset("0.000123399997", 0.000123399997);
     floatTest.Execute();
-    floatTest.Reset("123.399997", 123.399997f);
+    floatTest.Reset("123.399997", 123.399997);
     floatTest.Execute();
-    floatTest.Reset("   123.399997", 123.399997f);
+    floatTest.Reset("   123.399997", 123.399997);
     floatTest.Execute();
-    floatTest.Reset(" 123.399997   ", 123.399997f);
+    floatTest.Reset(" 123.399997   ", 123.399997);
     floatTest.Execute();
-    floatTest.Reset(" -123.399997   ", -123.399997f);
+    floatTest.Reset(" -123.399997   ", -123.399997);
     floatTest.Execute();
 
     CParseTest_x64 x64Test;
@@ -98,9 +98,9 @@ void CParseTest_Float::Execute(void)
 {
     CheckSetup();
 
-    float value;
+    double value;
 
-    m_parser.ParseFloat(&value);
+    m_parser.ParseDouble(&value);
 
     if (!almost_equal(value, m_expectedResult)) {
         TRACEX_E(QString("CParseTest_Float::Execute  test ERROR  Expected:%1 Result:%2")

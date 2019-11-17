@@ -1128,9 +1128,9 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
         newHeight = maxHeight / currentZoom;
     }
 
-    zoom.y_min = static_cast<float>(y_offset - (newHeight * (1.0 - y_rel)));             /* Maintain the center of zoom
-                                                                                          * */
-    zoom.y_max = static_cast<float>(y_offset + (newHeight * y_rel));
+    zoom.y_min = static_cast<double>(y_offset - (newHeight * (1.0 - y_rel)));             /* Maintain the center of zoom
+                                                                                           * */
+    zoom.y_max = static_cast<double>(y_offset + (newHeight * y_rel));
 
 #ifdef PREVENT_Y_AXIS_OUTOF_MAXEXT
     zoom.y_min = zoom.y_min < maxExtents.y_min ? maxExtents.y_min : zoom.y_min;
@@ -1195,8 +1195,8 @@ void CPlotWidget::ZoomSubPlot_Move(const ScreenPoint_t *screenPoint_p, bool *inv
 
     auto new_zoom = zoom;
 
-    new_zoom.y_min += static_cast<float>(y_diff);
-    new_zoom.y_max += static_cast<float>(y_diff);
+    new_zoom.y_min += static_cast<double>(y_diff);
+    new_zoom.y_max += static_cast<double>(y_diff);
     new_zoom.x_min += x_diff;
     new_zoom.x_max += x_diff;
 
@@ -2069,8 +2069,8 @@ void CPlotWidget::DrawToolTip(void)
 
         QSize size = doc_p->m_fontCtrl.GetFontSize();
         QPoint point(m_lastCursorPos.DCBMP.x() + 5, m_lastCursorPos.DCBMP.y() - 5);
-        float delta = size.height() * 1.2f;
-        float y = static_cast<float>(point.y());
+        double delta = size.height() * 1.2f;
+        double y = static_cast<double>(point.y());
 
         for (auto& string : m_toolTipStrings) {
             m_pDC->drawText(point, string);

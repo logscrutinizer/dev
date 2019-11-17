@@ -115,9 +115,9 @@ void CPlot_Example_5::pvPlotRow(const char *row_p, const int *length_p, int rowI
 
                 /* Add a line to the graph (x1,Y1) -> (x2,y2) */
                 m_valueGraph_p->AddLine(static_cast<double>(m_prevTime),
-                                        static_cast<float>(m_prevValue),
+                                        static_cast<double>(m_prevValue),
                                         static_cast<double>(time),
-                                        static_cast<float>(value),
+                                        static_cast<double>(value),
                                         rowIndex);
 
                 m_prevValue = value;
