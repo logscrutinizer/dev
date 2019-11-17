@@ -133,6 +133,7 @@ void CSearchWidget::getSearchParameters(QString& searchString, bool *caseSensiti
 ***********************************************************************************************************************/
 void CSearchWidget::showEvent(QShowEvent *event)
 {
+    Q_UNUSED(event)
     activate();
 }
 

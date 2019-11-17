@@ -61,12 +61,12 @@ typedef struct {
     int stopIndex;
 } SetupGraph_Data_t;
 
-SetupGraph_Data_t g_setupGraph_WorkData[MAX_NUM_OF_THREADS];
+static SetupGraph_Data_t g_setupGraph_WorkData[MAX_NUM_OF_THREADS];
 void SetupGraph_ThreadAction(volatile void *data_p);
 
 const QString g_avg_str("XXXXXXxxxxxZZZZzzzzz");   /* used to calculate size of text in a box/line */
 
-CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, QRect *rect_p, bool shadow)
+CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool shadow)
     :
     m_deactivedIconPos(0, 0, 0, 0), m_subPlot_p(subPlot_p), m_parentPlot_p(parentPlot_p), m_subPlotTitle_len(0),
     m_subPlotTitle_Size(0, 0), m_parentPlotTitle_len(0), m_parentPlotTitle_Size(0, 0), m_Y_Label_len(0),

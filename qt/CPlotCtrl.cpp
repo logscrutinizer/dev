@@ -24,10 +24,7 @@ void CPlotThread::thread_Process(CThreadConfiguration *config_p)
 {
     TRACEX_DE(
         "CPlotThread::thread_Process  0x%x   m_start_TIA_index:%d m_stop_TIA_Index:%d m_TIA_step:%d",
-        this,
-        config_p->m_start_TIA_index,
-        config_p->m_stop_TIA_Index,
-        config_p->m_TIA_step);
+        this, config_p->m_start_TIA_index, config_p->m_stop_TIA_Index, config_p->m_TIA_step)
 
     int TIA_Index = config_p->m_start_TIA_index;    /* use local variable for quicker access */
     const int stop_TIA_Index = config_p->m_stop_TIA_Index;

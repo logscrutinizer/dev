@@ -163,7 +163,7 @@ void CFilterThreadConfiguration::FilterInit(FIR_t *FIRA_p, packedFilterItem_t *p
                     hs_error_t error;
                     if ((error = hs_alloc_scratch(database, &scratch)) != HS_SUCCESS) {
                         TRACEX_I(QString("ERROR: Unable to allocate scratch space. "
-                                         "Exiting. Code:%1").arg(error));
+                                         "Exiting. Code:%1").arg(error))
                     }
                     m_regexp_database_array[packedFilter_p->m_regExpLUTIndex] = database;
                     m_regexp_scratch_array[packedFilter_p->m_regExpLUTIndex] = scratch;
@@ -428,7 +428,7 @@ void CFilterProcCtrl::WrapUp(void)
         m_totalExcludeFilterMatches = 0;
     }
 
-    TRACEX_ENABLE_WINDOW();
+    TRACEX_ENABLE_WINDOW()
 
     if (m_filterStrings_p != nullptr) {
         VirtualMem::Free(m_filterStrings_p);
@@ -470,7 +470,7 @@ void CFilterProcCtrl::PackFilters(void)
     for (auto& filterItem_p : *m_filterItems_p) {
         TRACEX_D(QString("Filter: %1 regexp:%2 case:%3")
                      .arg(filterItem_p->m_start_p).arg(filterItem_p->m_regexpr)
-                     .arg(filterItem_p->m_caseSensitive));
+                     .arg(filterItem_p->m_caseSensitive))
         totalFilterTextSize += static_cast<uint64_t>(filterItem_p->m_size) + 1;  /* +1 for zero terminating strings */
         ++m_numOfFilterItems;
     }
@@ -519,7 +519,7 @@ void CFilterProcCtrl::PackFilters(void)
 
     if ((destMem_p - m_filterStrings_p - 1) > totalFilterTextSize) {
         TRACEX_E("Filter packing wrong in size %d != %d",
-                 totalFilterTextSize, destMem_p - m_filterStrings_p - 1);
+                 totalFilterTextSize, destMem_p - m_filterStrings_p - 1)
     }
 
     if (!VirtualMem::CheckMem(m_filterStrings_p)) {
@@ -539,7 +539,7 @@ void CFilterProcCtrl::PackFilters(void)
                    static_cast<size_t>(m_packedFilterItems_p[index].length));
             tempString[m_packedFilterItems_p[index].length] = 0;
             TRACEX_D("CFilterProcCtrl::Filter[%d] Length:%-5d Text:%s",
-                     index, m_packedFilterItems_p[index].length, tempString);
+                     index, m_packedFilterItems_p[index].length, tempString)
         }
     }
 #endif

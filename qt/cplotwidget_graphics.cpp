@@ -98,8 +98,7 @@ void CGraphicsSubplotSurface::Populate(void)
         while (graph_p != nullptr) {
 #ifdef _DEBUG
             if (graphIndex >= numOfDisplayGraphs) {
-                TRACEX_E("CSubPlotSurface::CSubPlotSurface  Graph object corrupt, "
-                         "numOfItems doesn't match");
+                TRACEX_E("CSubPlotSurface::CSubPlotSurface  Graph object corrupt, numOfItems doesn't match")
             }
 #endif
 
@@ -131,8 +130,7 @@ void CGraphicsSubplotSurface::Populate(void)
 
 #ifdef _DEBUG
                 if (itemIndex > numOfItems) {
-                    TRACEX_E("CSubPlotSurface::CSubPlotSurface  Graph object corrupt, "
-                             "numOfItems doesn't match");
+                    TRACEX_E("CSubPlotSurface::CSubPlotSurface  Graph object corrupt, numOfItems doesn't match")
                 }
 #endif
             }
@@ -142,11 +140,9 @@ void CGraphicsSubplotSurface::Populate(void)
 
                 graph_p->GetExtents(&go_extents);
 
-                TRACEX_I("   Graph(%d) Items:%d CO:%d OP:%d\n xmin:%f xmax:%f "
-                         "ymin:%f ymax:%f",
-                         graphIndex, numOfItems, overrideColor, overrideLinePattern,
-                         go_extents.x_min, go_extents.x_max,
-                         static_cast<double>(go_extents.y_min), static_cast<double>(go_extents.y_max));
+                TRACEX_I("   Graph(%d) Items:%d CO:%d OP:%d\n xmin:%f xmax:%f ymin:%f ymax:%f",
+                         graphIndex, numOfItems, overrideColor, overrideLinePattern, go_extents.x_min, go_extents.x_max,
+                         static_cast<double>(go_extents.y_min), static_cast<double>(go_extents.y_max))
             }
 
             graph_p = reinterpret_cast<CGraph *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
@@ -467,8 +463,7 @@ void CPlotWidgetGraphics::keyPressEvent(QKeyEvent *e)
     m_keyPressedList.append(key);
 
 #ifdef _DEBUG
-    TRACEX_DE(QString("%1 Key:%2  keyList:%3")
-                  .arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()));
+    TRACEX_DE(QString("%1 Key:%2  keyList:%3").arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()))
 #endif
 
     if (!HandleKeyDown(e)) {
@@ -491,7 +486,7 @@ void CPlotWidgetGraphics::keyReleaseEvent(QKeyEvent *e)
         m_keyPressedList.removeAt(index);
 #ifdef _DEBUG
         TRACEX_DE(QString("%1 Key:%2 keyList:%3")
-                      .arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()));
+                      .arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()))
 #endif
     }
     QWidget::keyReleaseEvent(e);
@@ -727,7 +722,7 @@ bool CPlotWidgetGraphics::HandleKeyDown(QKeyEvent *e)
     bool ALT_Pressed = QApplication::keyboardModifiers() & Qt::AltModifier ? true : false;
 
     TRACEX_D(QString("%1 ctrl:%2 shift:%3 alt:%4").arg(__FUNCTION__).arg(CTRL_Pressed)
-                 .arg(SHIFT_Pressed).arg(ALT_Pressed));
+                 .arg(SHIFT_Pressed).arg(ALT_Pressed))
 
     QPoint point = mapFromGlobal(QCursor::pos());
     bool updateNeeded = false;
@@ -892,7 +887,7 @@ void CPlotWidgetGraphics::focusInEvent(QFocusEvent *event)
     if (CSCZ_ToolTipDebugEnabled) {
         TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
-    PRINT_FOCUS(__FUNCTION__);
+    PRINT_FOCUS(__FUNCTION__)
 }
 
 /***********************************************************************************************************************
@@ -918,7 +913,7 @@ void CPlotWidgetGraphics::focusOutEvent(QFocusEvent *event)
     if (CSCZ_ToolTipDebugEnabled) {
         TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
-    PRINT_FOCUS(__FUNCTION__);
+    PRINT_FOCUS(__FUNCTION__)
 }
 
 /***********************************************************************************************************************
@@ -937,7 +932,7 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
     if (CSCZ_ToolTipDebugEnabled) {
         TRACEX_I(QString("%1  (x%2,y%3)")
                      .arg(__FUNCTION__).arg(screenCoordPoint.x())
-                     .arg(screenCoordPoint.y()));
+                     .arg(screenCoordPoint.y()))
     }
 
     if (!m_viewRect.contains(screenCoordPoint)) {
@@ -947,7 +942,7 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
                          .arg(__FUNCTION__).arg(screenCoordPoint.x())
                          .arg(screenCoordPoint.y()).arg(m_viewRect.left())
                          .arg(m_viewRect.top()).arg(m_viewRect.right())
-                         .arg(m_viewRect.bottom()));
+                         .arg(m_viewRect.bottom()))
         }
         CloseToolTip();
         m_toolTipEnabled = false;
@@ -962,7 +957,7 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
             TRACEX_I(QString("%1 mouse:%2 %3 box: %4 %5 %6 %7 Still").arg(__FUNCTION__)
                          .arg(screenPoint.mouse.x()).arg(screenPoint.mouse.y())
                          .arg(lastPosBox.left()).arg(lastPosBox.top())
-                         .arg(lastPosBox.right()).arg(lastPosBox.bottom()));
+                         .arg(lastPosBox.right()).arg(lastPosBox.bottom()))
         }
         still = true;
     }
@@ -975,7 +970,7 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
             if (CSCZ_ToolTipDebugEnabled) {
                 TRACEX_I(QString("%1  ToolTipState_Closing -> "
                                  "ToolTipState_WaitForRequest")
-                             .arg(__FUNCTION__));
+                             .arg(__FUNCTION__))
             }
 
             m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
@@ -985,16 +980,14 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
             m_lastCursorPos = screenPoint;
             if (still) {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> "
-                                     "ToolTipState_Pending").arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> ToolTipState_Pending").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_PENDING);
                 m_toolTipState = ToolTipState_Pending;
             } else {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> "
-                                     "ToolTipState_WaitForRequest")
-                                 .arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> ToolTipState_WaitForRequest")
+                                 .arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
                 m_toolTipState = ToolTipState_WaitForRequest;
@@ -1005,18 +998,14 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
             m_lastCursorPos = screenPoint;
             if (still && OpenToolTip()) {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_Pending "
-                                     "-> ToolTipState_Running")
-                                 .arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_Pending -> ToolTipState_Running").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_RUNNING);
                 m_toolTipState = ToolTipState_Running;
             } else {
                 if (CSCZ_ToolTipDebugEnabled) {
                     TRACEX_I(
-                        QString("%1  ToolTipState_Pending -> "
-                                "ToolTipState_WaitForRequest")
-                            .arg(__FUNCTION__));
+                        QString("%1  ToolTipState_Pending -> ToolTipState_WaitForRequest").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
                 m_toolTipState = ToolTipState_WaitForRequest;
@@ -1026,8 +1015,7 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
         case ToolTipState_Running:
             if (still) {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_Running -> "
-                                     "ToolTipState_Running").arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_Running -> ToolTipState_Running").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_RUNNING);
                 m_toolTipState = ToolTipState_Running;
@@ -1036,8 +1024,7 @@ void CPlotWidgetGraphics::onToolTipTimer(void)
                 m_toolTipTimer->start(TO_TT_CLOSE);
                 m_toolTipState = ToolTipState_Closing;
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_Running -> "
-                                     "ToolTipState_Closing").arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_Running -> ToolTipState_Closing").arg(__FUNCTION__))
                 }
             }
             break;

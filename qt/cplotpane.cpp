@@ -260,7 +260,7 @@ CPlotPane::CPlotPane(QWidget *parent) : QTabWidget(parent)
                                       Q_RGB(g_cfg_p->m_plot_GrayIntensity,
                                             g_cfg_p->m_plot_GrayIntensity,
                                             g_cfg_p->m_plot_GrayIntensity) :
-                                      g_cfg_p->m_plot_GraphAxisLineColor);
+                                      static_cast<QRgb>(g_cfg_p->m_plot_GraphAxisLineColor));
 
     g_plotWnd_defaultPen_p->setStyle(Qt::SolidLine);
     g_plotWnd_defaultPen_p->setWidth(static_cast<int>(g_cfg_p->m_plot_GraphAxisLineSize));
@@ -269,7 +269,7 @@ CPlotPane::CPlotPane(QWidget *parent) : QTabWidget(parent)
                                          Q_RGB(g_cfg_p->m_plot_GrayIntensity,
                                                g_cfg_p->m_plot_GrayIntensity,
                                                g_cfg_p->m_plot_GrayIntensity) :
-                                         g_cfg_p->m_plot_GraphAxisLineColor);
+                                         static_cast<QRgb>(g_cfg_p->m_plot_GraphAxisLineColor));
     g_plotWnd_defaultDotPen_p->setStyle(Qt::DotLine);
     g_plotWnd_defaultDotPen_p->setWidth(static_cast<int>(g_cfg_p->m_plot_GraphAxisLineSize));
 
@@ -280,11 +280,11 @@ CPlotPane::CPlotPane(QWidget *parent) : QTabWidget(parent)
 
     g_plotWnd_BlackFont_p = doc_p->m_fontCtrl.RegisterFont(0, BACKGROUND_COLOR);
 
-    g_plotWnd_focusPen_p = new QPen(g_cfg_p->m_plot_FocusLineColor);
+    g_plotWnd_focusPen_p = new QPen(static_cast<QRgb>(g_cfg_p->m_plot_FocusLineColor));
     g_plotWnd_focusPen_p->setStyle(Qt::SolidLine);
     g_plotWnd_focusPen_p->setWidth(static_cast<int>(g_cfg_p->m_plot_FocusLineSize));
 
-    g_plotWnd_passiveFocusPen_p = new QPen(g_cfg_p->m_plot_PassiveFocusLineColor);
+    g_plotWnd_passiveFocusPen_p = new QPen(static_cast<QRgb>(g_cfg_p->m_plot_PassiveFocusLineColor));
     g_plotWnd_passiveFocusPen_p->setStyle(Qt::SolidLine);
     g_plotWnd_passiveFocusPen_p->setWidth(static_cast<int>(g_cfg_p->m_plot_FocusLineSize));
 
@@ -298,10 +298,10 @@ CPlotPane::~CPlotPane()
      * shutdown closeEvent is never received */
     m_threadManager.PrepareDelete();
 
-    DELETE_AND_CLEAR(g_plotWnd_defaultPen_p);
-    DELETE_AND_CLEAR(g_plotWnd_defaultDotPen_p);
-    DELETE_AND_CLEAR(g_plotWnd_focusPen_p);
-    DELETE_AND_CLEAR(g_plotWnd_passiveFocusPen_p);
+    IF_NOT_NULL_DELETE_AND_SET_NULL(g_plotWnd_defaultPen_p)
+    IF_NOT_NULL_DELETE_AND_SET_NULL(g_plotWnd_defaultDotPen_p)
+    IF_NOT_NULL_DELETE_AND_SET_NULL(g_plotWnd_focusPen_p)
+    IF_NOT_NULL_DELETE_AND_SET_NULL(g_plotWnd_passiveFocusPen_p)
 
     g_CPlotPane = nullptr;
 
@@ -402,13 +402,13 @@ QSize CPlotPane::sizeHint() const
 {
     static QSize windowSize;
     auto refreshEditorWindow = makeMyScopeGuard([&] () {
-        PRINT_SIZE(QString("PlotPane sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+        PRINT_SIZE(QString("PlotPane sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()))
     });
     windowSize = QTabWidget::sizeHint();
 
     if (CSCZ_AdaptWindowSizes) {
         windowSize = m_adaptWindowSize;
-        PRINT_SIZE(QString("PlotPane adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+        PRINT_SIZE(QString("PlotPane adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
     }
 
     return windowSize;
@@ -422,6 +422,7 @@ CPlotWidgetInterface *CPlotPane::addPlot(const char *plotName_p, CPlot *plot_p)
     Q_UNUSED(plotName_p)
 
     CPlotWidgetInterface *pwi_p;
+
     CList_LSZ *list_p;
     if (plot_p->GetSubPlots(&list_p)) {
         auto subPlot_p = reinterpret_cast<CSubPlot *>(list_p->first());
@@ -795,7 +796,7 @@ void CPlotPane::setPlotCursor(int row, int *cursorRow_p)
         bestPlotWidget_p->SetFocusTime(time); /* this will result in a callback to the plotPane to align the X zoom */
     } else {
         TRACEX_W(QString("%1   Warning: Failed to set plot cursor, couldn't "
-                         "find matching ro").arg(__FUNCTION__));
+                         "find matching ro").arg(__FUNCTION__))
 
         /* MessageBox("Couldn't find a proper row in the
          * plot to set the cursor", "Failed to set cursor", MB_OK | MB_TOPMOST); */

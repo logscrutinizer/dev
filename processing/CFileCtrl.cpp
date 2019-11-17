@@ -206,14 +206,14 @@ static int Seek_EOL(QFile *qFile_p, char *workMem_p, int64_t fileStartIndex, int
         if (status) {
             readBytes = qFile_p->read(&workMem_p[0], to_readBytes);
         } else {
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to seek in file, file locked or removed ?", qFile_p);
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to seek in file, file locked or removed ?", qFile_p)
             return SEEK_EOL_ERROR;
         }
 
         if (readBytes < 0) {
             TRACEX_QFILE(LOG_LEVEL_ERROR,
                          "Failed to read log file data, Failed to set the file to the beginning, "
-                         "file locked or removed ?", qFile_p);
+                         "file locked or removed ?", qFile_p)
             return SEEK_EOL_ERROR;
         }
 
@@ -262,7 +262,7 @@ void CParseCmd::AddThread(char *start_p, int64_t size, int64_t fileStartIndex)
 
     if (thread_p == nullptr) {
         TRACEX_E("ParseCmd AddThread Failed, out of mem, start:0x%llx size:%d fileIndex:%lld", start_p,
-                 size, fileStartIndex);
+                 size, fileStartIndex)
         return;
     }
 
@@ -371,7 +371,7 @@ void CParseCmd::Execute(void)
         if (m_fileHandle_p->qFile_p->error() != QFile::NoError) {
             TRACEX_QFILE(LOG_LEVEL_ERROR,
                          "Failed to read log file data, failed to seek in "
-                         "the file, file locked or removed ?", m_fileHandle_p->qFile_p);
+                         "the file, file locked or removed ?", m_fileHandle_p->qFile_p)
             return;
         }
     }
@@ -382,7 +382,7 @@ void CParseCmd::Execute(void)
         read = m_fileHandle_p->qFile_p->read(m_workMem_p, m_size);
 
         if (read == -1) {
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data", m_fileHandle_p->qFile_p);
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data", m_fileHandle_p->qFile_p)
             return;
         }
 
@@ -394,7 +394,7 @@ void CParseCmd::Execute(void)
     m_fileHandle_p->filePos += totalRead;
 
     if (m_size != totalRead) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data", m_fileHandle_p->qFile_p);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data", m_fileHandle_p->qFile_p)
         return;
     }
 
@@ -561,13 +561,13 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
     if (!qfile_p->reset()) {
         /* Make sure that file point is at the beginning */
         TRACEX_QFILE(LOG_LEVEL_ERROR,
-                     "Failed to set the file to the beginning, file locked or removed ?", qfile_p);
+                     "Failed to set the file to the beginning, file locked or removed ?", qfile_p)
         return false;
     }
 
     fileSize = qfile_p->size();
 
-    PRINT_FILE_TRACKING(QString("Search TIA, file:%1").arg(fileSize));
+    PRINT_FILE_TRACKING(QString("Search TIA, file:%1").arg(fileSize))
 
     g_totalFileSize = fileSize;
 
@@ -578,7 +578,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
     m_TIA_File.setFileName(m_TIA_FileName);
 
     if (!m_TIA_File.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open TIA file, file locked?", qfile_p);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open TIA file, file locked?", qfile_p)
         return false;
     }
 
@@ -604,7 +604,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
         if (parseCmd_p == nullptr) {
             TRACEX_E(
                 QString("CTIA_FileStorage::Search_TIA  new CParseCmd (1), Out of memory FileName:%1")
-                    .arg(m_TIA_FileName));
+                    .arg(m_TIA_FileName))
             return false;
         }
 
@@ -637,7 +637,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
                 TRACEX_E(
                     QString("CTIA_FileStorage::Search_TIA  new CParseCmd, "
                             "<INDEX.%1> Out of memory FileName:%2")
-                        .arg(index).arg(m_TIA_FileName));
+                        .arg(index).arg(m_TIA_FileName))
                 return false;
             }
 
@@ -653,7 +653,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
             TRACEX_E(
                 QString("CTIA_FileStorage::Search_TIA  new CParseCmd,"
                         " <FINAL> Out of memory FileName:%1").
-                    arg(m_TIA_FileName));
+                    arg(m_TIA_FileName))
             return false;
         }
 
@@ -676,12 +676,11 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
 
     /* Make sure that file point is at the beginning */
     if (!m_LogFile.qFile_p->reset()) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "CFileCtrl::Search_TIA  Failed to Set file start at Exec ?",
-                     m_LogFile.qFile_p);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "CFileCtrl::Search_TIA  Failed to Set file start at Exec ?", m_LogFile.qFile_p)
         return false;
     }
 
-    TRACEX_DISABLE_WINDOW();
+    TRACEX_DISABLE_WINDOW()
 
     m_numOf_TI = 0;
 
@@ -716,7 +715,7 @@ bool CFileCtrl::Search_TIA(QFile *qfile_p, const QString& TIA_fileName, char *wo
 
     if (!g_processingCtrl_p->m_abort) {
         g_processingCtrl_p->AddProgressInfo("  EOL parsing done");
-        TRACEX_ENABLE_WINDOW();
+        TRACEX_ENABLE_WINDOW()
         TRACEX_D("CFileCtrl::Search_TIA  Number of TextItems = %d", m_numOf_TI)
 
         m_TIA_File.flush();
@@ -771,11 +770,10 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
     fileInfo.refresh();
     fileSize = fileInfo.size();
 
-    PRINT_FILE_TRACKING(QString("Incremental: start_index:%1 start_pos:%2")
-                            .arg(fromRowIndex).arg(startFromIndex));
+    PRINT_FILE_TRACKING(QString("Incremental: start_index:%1 start_pos:%2").arg(fromRowIndex).arg(startFromIndex))
 
     if (!m_TIA_File.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open TIA file, file locked?", &logFile);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open TIA file, file locked?", &logFile)
         return false;
     }
 
@@ -790,25 +788,23 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
 
     if (!logFile.seek(startFromIndex)) {
         /* Step forward to the previous end of file */
-        TRACEX_QFILE(LOG_LEVEL_ERROR,
-                     "Failed to set the file to the beginning, file locked or removed ?", &logFile);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to set the file to the beginning, file locked or removed ?", &logFile)
         return false;
     }
 
     auto incrementalSize = fileSize - startFromIndex;
     if (incrementalSize > workMemSize) {
-        TRACEX_QFILE(LOG_LEVEL_INFO,
-                     "File increment to large, go for full load of entire file", &logFile);
+        TRACEX_QFILE(LOG_LEVEL_INFO, "File increment to large, go for full load of entire file", &logFile)
         return false;
     }
     readBytes = logFile.read(work_mem_p, workMemSize);
 
     if ((readBytes == 0) || (readBytes < incrementalSize)) {
         PRINT_FILE_TRACKING(QString("Failed to read %1 inc bytes from file, got %2")
-                                .arg(incrementalSize).arg(readBytes));
+                                .arg(incrementalSize).arg(readBytes))
     }
 
-    PRINT_FILE_TRACKING(QString("Incremental size:%1 file:%2").arg(incrementalSize).arg(fileSize));
+    PRINT_FILE_TRACKING(QString("Incremental size:%1 file:%2").arg(incrementalSize).arg(fileSize))
 
     int currentItemIndex = 0;
     char *ref_p;
@@ -917,7 +913,7 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
 
         if (bytesToWrite != bytesWritten) {
             TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to save TIA data to the TIA file, "
-                                          "file locked or removed ?", &m_TIA_File);
+                                          "file locked or removed ?", &m_TIA_File)
             return false;
         }
     }
@@ -956,16 +952,15 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
         if (!m_TIA_File.seek(static_cast<int64_t>(last_ti_entry_pos))) {
             TRACEX_E(QString("Failed to seek to last TI in TIA file size:%1 seek:%2")
                          .arg(m_TIA_File.size()).arg(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) *
-                                                     (m_numOf_TI - 1)));
+                                                     (m_numOf_TI - 1)))
         }
 
         auto readBytes = m_TIA_File.read(reinterpret_cast<char *>(&ti), sizeof(TI_t));
         if (readBytes != sizeof(TI_t)) {
             TRACEX_E(QString("Failed to read last entry in TIA file, "
-                             "size:%1 seek:%2 toRead:%3")
-                         .arg(TIAFileInfo.size())
+                             "size:%1 seek:%2 toRead:%3").arg(TIAFileInfo.size())
                          .arg(static_cast<int64_t>(sizeof(header) + sizeof(TI_t)) * (m_numOf_TI - 1))
-                         .arg(sizeof(TI_t)));
+                         .arg(sizeof(TI_t)))
         }
 
         header.fileSize = ti.fileIndex + ti.size;
@@ -1002,12 +997,12 @@ bool CFileCtrl::Write_TIA_Header(bool empty)
             m_TIA_File.flush();
             return true;
         } else {
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to write TIA file", &m_TIA_File);
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to write TIA file", &m_TIA_File)
         }
     }
 
     TRACEX_QFILE(LOG_LEVEL_ERROR,
-                 "CFileCtrl::Write_TIA_Header  Failed to write TIA header", &m_TIA_File);
+                 "CFileCtrl::Write_TIA_Header  Failed to write TIA header", &m_TIA_File)
 
     return false;
 }
@@ -1036,7 +1031,7 @@ bool CTIA_FileStorage::Store_CTIA(QFile& qfile)
 
         if (bytesToWrite != bytesWritten) {
             TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to save TIA data to the TIA file, "
-                                          "file locked or removed ?", &qfile);
+                                          "file locked or removed ?", &qfile)
             return false;
         }
 
@@ -1047,7 +1042,7 @@ bool CTIA_FileStorage::Store_CTIA(QFile& qfile)
 
     if (TRACEX_IS_ENABLED(LOG_LEVEL_DEBUG) && (m_StorageSize % static_cast<int64_t>(sizeof(TI_t)) != 0)) {
         TRACEX_E("CTIA_FileStorage::Store_CTIA  Total number of SAVE is not equal to "
-                 "mod of TI size Size:%d mod:%d", m_StorageSize, sizeof(TI_t));
+                 "mod of TI size Size:%d mod:%d", m_StorageSize, sizeof(TI_t))
     }
 
     qfile.flush();
@@ -1067,7 +1062,7 @@ void TestFileCtrl(void)
     int rows;
 
     if (!logFile.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open test log", &logFile);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open test log", &logFile)
     }
 
     fileCtrl.Search_TIA(&logFile, tia_name, mem_p, 1024 * 1000, &rows);
@@ -1098,7 +1093,7 @@ void TestSeek()
     QFile LogFile(fileName);
 
     if (!LogFile.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "TestSeek Failed - Log couldn't be open", &LogFile);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "TestSeek Failed - Log couldn't be open", &LogFile)
         return;
     }
 
@@ -1136,13 +1131,13 @@ bool GenerateSeekLog(const QString& fileName, const QString& repetitionPattern, 
 
     if (LogFile.exists()) {
         if (!LogFile.remove()) {
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be removed", &LogFile);
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be removed", &LogFile)
             return false;
         }
     }
 
     if (!LogFile.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be open", &LogFile);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be open", &LogFile)
         return false;
     }
 

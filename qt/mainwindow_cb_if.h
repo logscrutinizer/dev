@@ -21,6 +21,7 @@ typedef enum {
 } MW_SystemSound;
 
 QItemSelectionModel *MW_selectionModel(void);
+QApplication *MW_getApp(void);
 
 void MW_SetWorkspaceWidgetFocus(void);
 void MW_updateLogFileTrackState(bool track);
@@ -32,8 +33,6 @@ void MW_updatePendingStateGeometry(void);
 
 void MW_PlaySystemSound(MW_SystemSound sound);
 QSize MW_Size(void);
-
-void MW_KillMenuFocus(QWidget *newWindow_p); /* Required to get the menu release its focus... */
 
 QWidget *MW_Parent(void);
 void MW_RebuildRecentFileMenu(void);
@@ -53,7 +52,7 @@ void MW_SetApplicationName(QString *name);
 bool MW_AppendLogMsg(const QString& message);
 void MW_StartWebPage(const QString& url);
 
-uint64_t MW_GetTick(void);
+int64_t MW_GetTick(void);
 
 void MW_Search(bool forward = true);
 void MW_ActivateSearch(const QString& searchText, bool caseSensitive = false, bool regExp = false);

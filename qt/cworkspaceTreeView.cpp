@@ -15,7 +15,7 @@
 #include <QSettings>
 #include <algorithm>
 
-CWorkspaceTreeView *g_treeView = nullptr;
+static CWorkspaceTreeView *g_treeView = nullptr;
 
 /***********************************************************************************************************************
 *   CWorkspace_TreeView_GetSelections
@@ -91,10 +91,10 @@ void CWorkspaceTreeView::selectionChanged(const QItemSelection& selected, const 
                                   filterItem->m_filterItem_ref_p->m_regexpr);
     }
     PRINT_SELECTION(QString("%1 selected:%2 deselected:%3")
-                        .arg(__FUNCTION__).arg(selected.indexes().count()).arg(deselected.indexes().count()));
+                        .arg(__FUNCTION__).arg(selected.indexes().count()).arg(deselected.indexes().count()))
     for (auto& modelIndex : selected.indexes()) {
         CCfgItem *cfgItem_p = static_cast<CCfgItem *>(modelIndex.internalPointer());
-        PRINT_SELECTION(QString("  %1").arg(cfgItem_p->m_itemText));
+        PRINT_SELECTION(QString("  %1").arg(cfgItem_p->m_itemText))
     }
 
     QTreeView::selectionChanged(selected, deselected);
@@ -134,7 +134,7 @@ QSize CWorkspaceTreeView::sizeHint() const
     static QSize windowSize;
     auto refreshEditorWindow = makeMyScopeGuard([&] () {
         PRINT_SIZE(QString("Workspace sizeHint %1,%2 policy:%3")
-                       .arg(windowSize.width()).arg(windowSize.height()).arg(sizeAdjustPolicy()));
+                       .arg(windowSize.width()).arg(windowSize.height()).arg(sizeAdjustPolicy()))
     });
 
     windowSize = m_lastResize; /*QSize(); */
@@ -143,7 +143,7 @@ QSize CWorkspaceTreeView::sizeHint() const
 
     if (CSCZ_AdaptWindowSizes) {
         windowSize = m_adaptWindowSize;
-        PRINT_SIZE(QString("Workspace adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+        PRINT_SIZE(QString("Workspace adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
     }
 
     return windowSize;
@@ -157,7 +157,7 @@ void CWorkspaceTreeView::resizeEvent(QResizeEvent *event)
     PRINT_SIZE(QString("Workspace resize %1,%2 -> %3,%4  state:%5")
                    .arg(event->oldSize().width()).arg(event->oldSize().height())
                    .arg(event->size().width()).arg(event->size().height())
-                   .arg(windowState()));
+                   .arg(windowState()))
     MW_updatePendingStateGeometry();
 
     /* This prevents continous sliding of workspace. It apread as Qt was resizing the windows until editor
@@ -220,7 +220,7 @@ void CWorkspaceTreeView::keyPressEvent(QKeyEvent *event)
     bool alt = QApplication::keyboardModifiers() & Qt::AltModifier ? true : false;
 
     PRINT_KEYPRESS(QString("%1 key:%2 ctrl:%3 shift:%4 alt:%5").arg(__FUNCTION__).arg(index).arg(ctrl).arg(shift).arg(
-                       alt));
+                       alt))
 
     switch (index)
     {
@@ -273,6 +273,7 @@ void CWorkspaceTreeView::keyPressEvent(QKeyEvent *event)
                     return;
                 }
             }
+            break;
 
         default:
             if (ctrl) {
@@ -395,7 +396,7 @@ void CWorkspaceTreeView::UnselectAll(void)
     if (g_treeView == nullptr) {
         return;
     }
-    PRINT_SELECTION(QString("%1").arg(__FUNCTION__));
+    PRINT_SELECTION(QString("%1").arg(__FUNCTION__))
 
     QItemSelectionModel *selectionModel_p = g_treeView->selectionModel();
     selectionModel_p->clear();
@@ -413,9 +414,10 @@ void CWorkspaceTreeView::Unselect(CCfgItem *cfgItem_p)
         return;
     }
 
-    PRINT_SELECTION(QString("%1 - %2").arg(__FUNCTION__).arg(cfgItem_p->m_itemText));
+    PRINT_SELECTION(QString("%1 - %2").arg(__FUNCTION__).arg(cfgItem_p->m_itemText))
 
     QItemSelectionModel *selectionModel_p = g_treeView->selectionModel();
+
     QModelIndex index = g_workspace_p->toModelIndex(cfgItem_p);
     selectionModel_p->select(index, QItemSelectionModel::Deselect);
 }
@@ -431,9 +433,10 @@ void CWorkspaceTreeView::Select(CCfgItem *cfgItem_p)
     if (g_treeView == nullptr) {
         return;
     }
-    PRINT_SELECTION(QString("%1 - %2").arg(__FUNCTION__).arg(cfgItem_p->m_itemText));
+    PRINT_SELECTION(QString("%1 - %2").arg(__FUNCTION__).arg(cfgItem_p->m_itemText))
 
     QItemSelectionModel *selectionModel_p = g_treeView->selectionModel();
+
     QModelIndex index = g_workspace_p->toModelIndex(cfgItem_p);
     selectionModel_p->select(index, QItemSelectionModel::Select);
     cfgItem_p->OnSelection();

@@ -57,7 +57,7 @@ void CProgressMgr::Processing_StartReport(void)
 {
     SetInit();
     ++m_processingLevel;
-    PRINT_PROGRESS(QString("Processing - start, level %1").arg(m_processingLevel));
+    PRINT_PROGRESS(QString("Processing - start, level %1").arg(m_processingLevel))
 }
 
 /***********************************************************************************************************************
@@ -66,12 +66,12 @@ void CProgressMgr::Processing_StartReport(void)
 void CProgressMgr::Processing_StopReport(void)
 {
     if (m_processingLevel <= 1) {
-        PRINT_CURSOR(QString("Restore cursor"));
+        PRINT_CURSOR(QString("Restore cursor"))
         m_processingLevel = 0;
     } else {
         --m_processingLevel;
     }
-    PRINT_PROGRESS(QString("Processing - stop, level %1").arg(m_processingLevel));
+    PRINT_PROGRESS(QString("Processing - stop, level %1").arg(m_processingLevel))
 }
 
 /***********************************************************************************************************************
@@ -115,7 +115,7 @@ void CProgressMgr::SetProgressCounter(float value)
 void CProgressMgr::StepProgressCounter(int counterIndex)
 {
     if (counterIndex >= m_numOfProgressCounters) {
-        TRACEX_ERROR("CProgressMgr::StepProgressCounter  Counter out of range");
+        TRACEX_ERROR("CProgressMgr::StepProgressCounter  Counter out of range")
         counterIndex = 0;
     }
 

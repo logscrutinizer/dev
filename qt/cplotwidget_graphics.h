@@ -26,7 +26,7 @@
 /***********************************************************************************************************************
 *   CGraphicsSubplotSurface
 ***********************************************************************************************************************/
-class CGraphicsSubplotSurface
+class CGraphicsSubplotSurface final
 {
 public:
     CGraphicsSubplotSurface(QWidget *parent, CSubPlot *subPlot_p)
@@ -41,7 +41,6 @@ public:
     }
 
     CGraphicsSubplotSurface() = delete;
-    virtual ~CGraphicsSubplotSurface() {}
 
     /****/
     void OptimumScale(void)

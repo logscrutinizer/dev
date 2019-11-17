@@ -123,7 +123,6 @@ void MW_PlaySystemSound(MW_SystemSound sound)
         case SYSTEM_SOUND_EXIT:
         case SYSTEM_SOUND_START:
         case SYSTEM_SOUND_PING:
-        default:
             TRACEX_I("MW_PlaySystemSound SOUND DISABLED")
             break;
     }
@@ -148,19 +147,6 @@ QSize MW_Size(void)
 QWidget *MW_Parent(void)
 {
     return g_mainWindow_p;
-}
-
-/***********************************************************************************************************************
-*   MW_KillMenuFocus
-***********************************************************************************************************************/
-void MW_KillMenuFocus(QWidget *newWindow_p) /* Required to get the menu release its focus... */
-{
-#if QT_TODO
-    if (g_mainFrame_p != nullptr) {
-        g_mainFrame_p->KillMenuFocus(newWindow_p, pMsg);
-    }
-#endif
-    Q_ASSERT(false);
 }
 
 /***********************************************************************************************************************
@@ -374,12 +360,17 @@ bool MW_GeneralKeyHandler(int key, bool ctrl, bool shift)
 /***********************************************************************************************************************
 *   MW_QuickSearch
 ***********************************************************************************************************************/
+
+/* TODO */
 void MW_QuickSearch(char *searchString, bool searchDown, bool caseSensitive, bool regExpr)
 {
+    Q_UNUSED(searchString)
+    Q_UNUSED(searchDown)
+    Q_UNUSED(caseSensitive)
+    Q_UNUSED(regExpr)
 #ifdef QT_TODO
     g_mainFrame_p->HandleQuickSearch(searchString, searchDown, caseSensitive, regExpr);
 #endif
-    Q_ASSERT(false);
 }
 
 /***********************************************************************************************************************
@@ -406,8 +397,6 @@ void MW_SetApplicationName(QString *name)
     }
 }
 
-QStringList string_queue;
-
 /***********************************************************************************************************************
 *   MW_AppendLogMsg
 ***********************************************************************************************************************/
@@ -417,6 +406,11 @@ bool MW_AppendLogMsg(const QString& message)
     Q_ASSERT(g_mainWindow_p != nullptr);
     Q_ASSERT(g_mainWindow_p->m_logWindow_p != nullptr);
 #endif
+
+    /* Scope is locked from TRACEX */
+
+    static QStringList string_queue;
+
     if ((CSCZ_SystemState == SYSTEM_STATE_RUNNING) &&
         (g_mainWindow_p != nullptr) &&
         (g_mainWindow_p->m_logWindow_p != nullptr)) {
@@ -438,7 +432,7 @@ bool MW_AppendLogMsg(const QString& message)
 /***********************************************************************************************************************
 *   MW_GetTick
 ***********************************************************************************************************************/
-uint64_t MW_GetTick(void)
+int64_t MW_GetTick(void)
 {
     return g_system_tick.ms();
 }
@@ -530,7 +524,7 @@ void CLogWindow::storeSettings(void)
 ***********************************************************************************************************************/
 void MainWindow::appStateChanged(Qt::ApplicationState state)
 {
-    PRINT_SIZE(QString("AppState %1").arg(state));
+    PRINT_SIZE(QString("AppState %1").arg(state))
 }
 
 /***********************************************************************************************************************
@@ -625,15 +619,18 @@ CPlotWidgetInterface *MainWindow::attachPlot(CPlot *plot_p)
 
     char *name_p;
     char *x_axis_p;
+    CPlotWidgetInterface *widgetInterface;
     plot_p->GetTitle(&name_p, &x_axis_p);
     if (name_p != nullptr) {
-        return m_plotPane_p->addPlot(name_p, plot_p);
+        widgetInterface = m_plotPane_p->addPlot(name_p, plot_p);
     } else {
-        return m_plotPane_p->addPlot("No name", plot_p);
+        widgetInterface = m_plotPane_p->addPlot("No name", plot_p);
     }
     m_tabPlotPaneDock_p->show();
     m_tabPlotPaneDock_p->raise();
     update();
+
+    return widgetInterface;
 }
 
 /***********************************************************************************************************************
@@ -726,7 +723,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     m_logWindow_p = new CLogWindow();
     m_tabWidget_p->addTab(m_logWindow_p, mainIcon, "Log window");
-    m_searchWidget_p = new CSearchWidget(nullptr /*m_tabWidget_p*/);
+    m_searchWidget_p = new CSearchWidget();
     ui.setupUi(m_searchWidget_p);
 
     /*Qt::WindowFlags flags = m_searchWidget_p->windowFlags(); */
@@ -1276,8 +1273,7 @@ void MainWindow::createActions(void)
     });
     trackingBar->addWidget(m_checkBox_p);
 
-    extern QApplication *g_app;
-    connect(g_app, &QApplication::applicationStateChanged, this, &MainWindow::appStateChanged);
+    connect(MW_getApp(), &QApplication::applicationStateChanged, this, &MainWindow::appStateChanged);
 
 #ifdef _DEBUG
     QPixmap pixmap(100, 100);

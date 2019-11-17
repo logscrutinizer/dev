@@ -53,7 +53,7 @@ protected:
     /****/
     virtual void focusOutEvent(QFocusEvent *event) Q_DECL_OVERRIDE {
         CSCZ_UnsetLastViewSelectionKind(CSCZ_LastViewSelectionKind_Workspace_e);
-        PRINT_FOCUS(QString("Workspace focus out"));
+        PRINT_FOCUS(QString("Workspace focus out"))
         QTreeView::focusOutEvent(event);
     }
 
@@ -61,14 +61,14 @@ protected:
     virtual void focusInEvent(QFocusEvent *event) Q_DECL_OVERRIDE
     {
         CSCZ_SetLastViewSelectionKind(CSCZ_LastViewSelectionKind_Workspace_e);
-        PRINT_FOCUS(QString("Workspace focus in"));
+        PRINT_FOCUS(QString("Workspace focus in"))
         QTreeView::focusInEvent(event);
     }
 
     /****/
     virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE
     {
-        PRINT_FOCUS(QString("Workspace mouse move"));
+        PRINT_FOCUS(QString("Workspace mouse move"))
         QTreeView::mouseMoveEvent(event);
     }
 

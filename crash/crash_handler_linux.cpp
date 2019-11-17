@@ -70,7 +70,7 @@ void CCrashHandler::SetThreadExceptionHandlers()
 
     /* Catch a floating point error */
     typedef void (*sigh)(int);
-    signal(SIGFPE, (sigh)SigfpeHandler);
+    signal(SIGFPE, reinterpret_cast<sigh>(SigfpeHandler));
 
     /* Catch an illegal instruction */
     signal(SIGILL, SigillHandler);
@@ -246,6 +246,8 @@ void CCrashHandler::InvalidParameterHandler(
 ***********************************************************************************************************************/
 [[ noreturn ]] void CCrashHandler::SigfpeHandler(int /*code*/, int subcode)
 {
+    Q_UNUSED(subcode)
+
     /* CRT SIGFPE signal handler */
     TerminateHandler();
 }

@@ -141,7 +141,7 @@ public:
 class CSubPlotSurface
 {
 public:
-    CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, QRect *rect_p, bool shadow = false);
+    explicit CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool shadow = false);
     virtual ~CSubPlotSurface();
 
     bool isPaintable(void);

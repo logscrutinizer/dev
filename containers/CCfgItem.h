@@ -22,8 +22,6 @@
 
 #define MakeEnumStringItem(A) {A, # A}
 
-#pragma warning( disable : 4507 34 )
-
 typedef enum {
     CFG_ITEM_KIND_None = 0,
     CFG_ITEM_KIND_Root = 1,
@@ -399,7 +397,7 @@ class CCfgItem_Decoders : public CCfgItem
 {
 public:
     CCfgItem_Decoders(CCfgItem *itemParent_p);
-    virtual ~CCfgItem_Decoders() {TRACEX_DE(QString("%1").arg(__FUNCTION__))}
+    virtual ~CCfgItem_Decoders() override;
 };
 
 /***********************************************************************************************************************

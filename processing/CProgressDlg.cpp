@@ -162,14 +162,14 @@ void CProgressDlg::UpdateProgressInfo(void)
         m_bitmapLabel_p->setPixmap(*m_fail_pixmap_p);
         PRINT_PROGRESS(QString("Progress abort or fail %1 %2\n")
                            .arg(g_processingCtrl_p->m_abort)
-                           .arg(g_processingCtrl_p->m_success));
+                           .arg(g_processingCtrl_p->m_success))
         m_timer_p->stop();
     } else if (g_processingCtrl_p->m_success == 1) {
         m_bitmapLabel_p->setPixmap(*m_ok_pixmap_p);
-        PRINT_PROGRESS(QString("Progress Success\n"));
+        PRINT_PROGRESS(QString("Progress Success\n"))
         m_timer_p->stop();
     } else if (g_processingCtrl_p->m_fileOperationOngoing) {
-        PRINT_PROGRESS(QString("Progress HDD active:%1\n").arg(m_HDD_Active));
+        PRINT_PROGRESS(QString("Progress HDD active:%1\n").arg(m_HDD_Active))
         if (!m_HDD_Active) {
             m_HDD_Active = true;
             m_bitmapLabel_p->setPixmap(*m_hdd_pixmap_p);

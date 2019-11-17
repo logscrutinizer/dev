@@ -24,7 +24,7 @@ class CFilterThreadConfiguration : public CThreadConfiguration
 {
 public:
     CFilterThreadConfiguration() : CThreadConfiguration() {}
-    ~CFilterThreadConfiguration();
+    virtual ~CFilterThreadConfiguration() override;
 
     void FilterInit(FIR_t *FIRA_p, packedFilterItem_t *packedFilters_p, int numOfFilterItems);
 
@@ -163,7 +163,6 @@ private:
     bool m_colClip_EndEnabled = false;
     int m_colClip_End = false;
     FilterExecTimes_t *m_execTimes_p;
-    int m_priority = 0;
     int m_numOfRegExpFilters = 0;
     int m_totalFilterMatches = 0;
     int m_totalExcludeFilterMatches = 0;

@@ -25,8 +25,8 @@ class CSearchWidget : public QWidget
     Q_OBJECT
 
 public:
-    CSearchWidget(QWidget *parent_p) {}
-    virtual ~CSearchWidget() {}
+    CSearchWidget() {}
+    virtual ~CSearchWidget() override {}
 
 #if 0
     virtual void showEvent(QShowEvent *event) Q_DECL_OVERRIDE;
@@ -50,13 +50,13 @@ public:
     {
         static QSize windowSize;
         auto refreshEditorWindow = makeMyScopeGuard([&] () {
-            PRINT_SIZE(QString("Search sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+            PRINT_SIZE(QString("Search sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()))
         });
         windowSize = QWidget::sizeHint();
 
         if (CSCZ_AdaptWindowSizes) {
             windowSize = m_adaptWindowSize;
-            PRINT_SIZE(QString("Search adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+            PRINT_SIZE(QString("Search adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
         }
 
         return windowSize;
@@ -72,7 +72,6 @@ private slots:
     void on_pushButton_Forward_clicked(void);
 
 private:
-    CSearchWidget() = delete;
     QCompleter completer;
 
 public:

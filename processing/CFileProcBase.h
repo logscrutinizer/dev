@@ -204,7 +204,7 @@ public:
 
             if (!m_stop) {
                 if (GetConfiguration()) {
-                    PRINT_PROGRESS_DBG("Thread %d processing start %d", m_threadIndex, loops);
+                    PRINT_PROGRESS_DBG("Thread %d processing start %d", m_threadIndex, loops)
                     thread_Process(m_configuration_p);
                 } else {
                     TRACEX_E("Thread was allowed to start, but there was no configuration")

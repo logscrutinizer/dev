@@ -1,5 +1,5 @@
-#ifndef _CRASH_HANDLER_H
-#define _CRASH_HANDLER_H
+#ifndef CRASH_HANDLER_H
+#define CRASH_HANDLER_H
 
 #pragma once
 
@@ -73,5 +73,5 @@ int ReportingHookFunction( int reportType, char *userMessage, int *retVal );
 void se_translator( int, EXCEPTION_POINTERS* );
 #endif
 
-#endif // _CRASH_HANDLER_H
+#endif // CRASH_HANDLER_H
 

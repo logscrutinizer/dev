@@ -193,14 +193,14 @@ void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int64_t workMemSize, 
     /* (int) rows will never be neg. */
     if (!backward && ((TIA_p->rows <= endRow) || (startRow > endRow))) {
         TRACEX_E(" CFileProcBase::Start BAD INPUT  parameters workMem_p:0x%llx TIA_rows:%d "
-                 "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward);
+                 "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward)
         return;
     }
 
     /* (int) rows will never be neg */
     if (backward && ((TIA_p->rows <= startRow) || (endRow > startRow))) {
         TRACEX_E(" CFileProcBase::Start BAD INPUT  BACKWARD parameters workMem_p:0x%llx TIA_rows:%d "
-                 "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward);
+                 "startRow:%d endRow:%d backward:%d", workMem_p, TIA_p->rows, startRow, endRow, backward)
         return;
     }
 
@@ -211,11 +211,11 @@ void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int64_t workMemSize, 
 
     m_fileSize = m_qfile_p->size();
 
-    TRACEX_DISABLE_WINDOW();
+    TRACEX_DISABLE_WINDOW()
 
     Process();
 
-    TRACEX_ENABLE_WINDOW();
+    TRACEX_ENABLE_WINDOW()
 
     m_execTime = m_timeExec.ms();
 }
@@ -313,11 +313,7 @@ bool CFileProcBase::LoadNextChunk(void)
         }
 
         TRACEX_D("CFileProcBase::LoadNextChunk - StartRow:%d FileIndex:%lld Rows:%d workMem_Max:%lld Last:%d",
-                 m_chunkDescr.TIA_startRow,
-                 m_chunkDescr.fileIndex,
-                 m_chunkDescr.numOfRows,
-                 workMem_Max,
-                 !stop);
+                 m_chunkDescr.TIA_startRow, m_chunkDescr.fileIndex, m_chunkDescr.numOfRows, workMem_Max, !stop)
 
         m_chunkDescr.temp_offset = m_chunkDescr.fileIndex;
 
@@ -340,7 +336,7 @@ bool CFileProcBase::LoadNextChunk(void)
             read = m_qfile_p->read(tempWorkMem_p, toRead);
 
             if (read < 0) {
-                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data, file locked or removed??", m_qfile_p);
+                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data, file locked or removed??", m_qfile_p)
                 g_processingCtrl_p->SetFileOperationOngoing(false);
                 m_qfile_p->close();
                 return false;
@@ -429,11 +425,7 @@ bool CFileProcBase::LoadNextChunk(void)
         }
 
         TRACEX_I("CFileProcBase::LoadNextChunk Backward - StartRow:%d FileIndex:%lld Rows:%d workMem_Max:%lld Last:%d",
-                 topMostIndex,
-                 m_chunkDescr.fileIndex,
-                 m_chunkDescr.numOfRows,
-                 workMem_Max,
-                 !stop);
+                 topMostIndex, m_chunkDescr.fileIndex, m_chunkDescr.numOfRows, workMem_Max, !stop)
 
         /* fileIndex is where the this chunk shall be start read from */
         m_chunkDescr.fileIndex = m_TIA_p->textItemArray_p[topMostIndex].fileIndex;
@@ -452,7 +444,7 @@ bool CFileProcBase::LoadNextChunk(void)
 
         while (!isAllRead) {
             if (!m_qfile_p->seek(m_chunkDescr.temp_offset)) {
-                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data, file locked or removed?", m_qfile_p);
+                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data, file locked or removed?", m_qfile_p)
                 g_processingCtrl_p->SetFileOperationOngoing(false);
                 m_qfile_p->close();
                 return false;
@@ -461,7 +453,7 @@ bool CFileProcBase::LoadNextChunk(void)
             read = m_qfile_p->read(tempWorkMem_p, toRead);
 
             if (read < 0) {
-                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data, file locked or removed?", m_qfile_p);
+                TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to read log file data, file locked or removed?", m_qfile_p)
                 g_processingCtrl_p->SetFileOperationOngoing(false);
                 m_qfile_p->close();
                 return false;
@@ -598,13 +590,13 @@ void CFileProcBase::Process(void)
         if (m_threadTI_Split) {
             if (allocatedLines != m_chunkDescr.numOfRows) {
                 TRACEX_E("CFileProcBase::Process - All rows in chunk was not allocated "
-                         "to the threads total:%d allocated:%d", m_chunkDescr.numOfRows, allocatedLines);
+                         "to the threads total:%d allocated:%d", m_chunkDescr.numOfRows, allocatedLines)
             }
         } else {
             if (allocatedLines != m_chunkDescr.numOfRows * m_numberOfChunkThreads) {
                 TRACEX_E("CFileProcBase::Process - All rows in chunk was not allocated for "
                          "each thread,  rows:%d allocated:%d expected:%d", m_chunkDescr.numOfRows, allocatedLines,
-                         m_chunkDescr.numOfRows * m_numberOfChunkThreads);
+                         m_chunkDescr.numOfRows * m_numberOfChunkThreads)
             }
         }
 
@@ -628,7 +620,7 @@ void CFileProcBase::Process(void)
         g_processingCtrl_p->AddProgressInfo(QString("Processing, threads:%1").arg(m_numberOfChunkThreads));
 
         PRINT_PROGRESS_DBG("Waiting for %d threads to get ready, %d configs for processing",
-                           m_numberOfChunkThreads, m_configurationList.count());
+                           m_numberOfChunkThreads, m_configurationList.count())
 
         /* Wait for all threads to be waiting for the start sem, they have grabbed their ready sem, and will not
          * release it until done */
@@ -636,44 +628,44 @@ void CFileProcBase::Process(void)
             Sleeper::usleep(10);
         }
 
-        PRINT_PROGRESS_DBG("All threads ready");
+        PRINT_PROGRESS_DBG("All threads ready")
 
         /* We only process the abort handling when we know that all threads has taken their ready sem and is
          * waiting for the start signal */
 
         if (g_processingCtrl_p->m_abort) {
             continueProcessing = false;
-            PRINT_PROGRESS_DBG("Processing aborted");
+            PRINT_PROGRESS_DBG("Processing aborted")
         } else {
             /* Reload the holdup SEM, make sure that all threads has entered STARTING */
             m_holdupSem_p->acquire(m_numberOfChunkThreads);
-            PRINT_PROGRESS_DBG("Holdup sems taken");
+            PRINT_PROGRESS_DBG("Holdup sems taken")
 
             /* Threads are in STARTING
              * Start/Release the threads */
             for (int index = 0; index < m_numberOfChunkThreads; ++index) {
                 m_startSem_pp[index]->release(1);
-                PRINT_PROGRESS_DBG("Starting %d, release of startSem", index);
+                PRINT_PROGRESS_DBG("Starting %d, release of startSem", index)
             }
 
-            PRINT_PROGRESS_DBG("Start waiting for %d threads", m_numberOfChunkThreads);
+            PRINT_PROGRESS_DBG("Start waiting for %d threads", m_numberOfChunkThreads)
 
             /* Threads are processing, PROC is waiting for them to get info HOLD-UP (releasing their Ready sem)
              * Wait for all threads to release their ready SEM, which they took before started. */
             m_readySem_p->acquire(m_numberOfChunkThreads);
-            PRINT_PROGRESS_DBG("All threads ready with processing");
+            PRINT_PROGRESS_DBG("All threads ready with processing")
 
-            PRINT_PROGRESS_DBG("Releasing ready sems");
+            PRINT_PROGRESS_DBG("Releasing ready sems")
             m_readySem_p->release(m_numberOfChunkThreads);  /* "Reload" the ready Sem such that the threads can take
                                                              * them */
 
             for (int index = 0; index < m_numberOfChunkThreads; ++index) {
                 /* "Reload" the start Sems */
                 m_startSem_pp[index]->acquire(1);
-                PRINT_PROGRESS_DBG("Took back startSem  %d", index);
+                PRINT_PROGRESS_DBG("Took back startSem  %d", index)
             }
 
-            PRINT_PROGRESS_DBG("Releasing all holdupSems");
+            PRINT_PROGRESS_DBG("Releasing all holdupSems")
             m_holdupSem_p->release(m_numberOfChunkThreads); /* Let the threads continue and acquire their ready sems */
 
             if (continueProcessing) {
@@ -695,7 +687,7 @@ void CFileProcBase::Process(void)
         }
     } /* while continueProcessing */
 
-    PRINT_PROGRESS("Finishing stopping threads and release start threads");
+    PRINT_PROGRESS("Finishing stopping threads and release start threads")
     for (threadIndex = 0; threadIndex < g_cfg_p->m_numOfThreads; ++threadIndex) {
         m_threadInstances[threadIndex]->Stop();
         m_startSem_pp[threadIndex]->release(1);
@@ -703,7 +695,7 @@ void CFileProcBase::Process(void)
 
     /* Wait for all threads to complete */
 
-    PRINT_PROGRESS("Wait for all threads to exit");
+    PRINT_PROGRESS("Wait for all threads to exit")
     for (threadIndex = 0; threadIndex < g_cfg_p->m_numOfThreads; ++threadIndex) {
         m_threadInstances[threadIndex]->wait();
     }

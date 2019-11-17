@@ -20,8 +20,7 @@ class CSubPlotSurface;
 class CPlotWidgetInterface
 {
 public:
-    CPlotWidgetInterface();
-    virtual ~CPlotWidgetInterface(void) {}
+    virtual ~CPlotWidgetInterface();
 
     virtual void RemoveSurfaces(void) = 0;
     virtual CPlot *GetPlotRef(void) = 0;

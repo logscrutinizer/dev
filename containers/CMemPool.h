@@ -6,7 +6,6 @@
 #pragma once
 
 #include "CDebug.h"
-#include "CMemPool.h"
 #include "errno.h"
 
 #ifdef _WIN32
@@ -152,9 +151,7 @@ public:
             }
 
             TRACEX_D("CMemPool::CMemPool    Range %6d - %6d NumOfItems:%-4d",
-                     minSize,
-                     m_config.ranges[index],
-                     m_config.startNumPerRange[index]);
+                     minSize, m_config.ranges[index], m_config.startNumPerRange[index])
 
             m_bins_p[index] = new CMemPoolItemBin(minSize, m_config.ranges[index], m_config.startNumPerRange[index]);
 

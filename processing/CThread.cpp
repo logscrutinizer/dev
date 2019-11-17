@@ -78,10 +78,10 @@ CThreadManager::~CThreadManager()
     Q_ASSERT(m_numOfThreads == 0);  /* KillThreads must be called before destructor */
 
     for (int threadIndex = 0; threadIndex < m_numOfThreads; ++threadIndex) {
-        DELETE_AND_CLEAR(m_threadInstanceArray[threadIndex].cmdSync_sem_p);
-        DELETE_AND_CLEAR(m_threadInstanceArray[threadIndex].doneSync_sem_p);
-        DELETE_AND_CLEAR(m_threadInstanceArray[threadIndex].killed_sem_p);
-        DELETE_AND_CLEAR(m_hThreadArray_pp[threadIndex]);
+        IF_NOT_NULL_DELETE_AND_SET_NULL(m_threadInstanceArray[threadIndex].cmdSync_sem_p);
+        IF_NOT_NULL_DELETE_AND_SET_NULL(m_threadInstanceArray[threadIndex].doneSync_sem_p);
+        IF_NOT_NULL_DELETE_AND_SET_NULL(m_threadInstanceArray[threadIndex].killed_sem_p);
+        IF_NOT_NULL_DELETE_AND_SET_NULL(m_hThreadArray_pp[threadIndex]);
     }
 
     if (m_threadInstanceArray != nullptr) {

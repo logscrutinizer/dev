@@ -32,7 +32,7 @@ public:
 
     virtual void RemoveSurfaces(void) override;
     virtual CPlot *GetPlotRef(void) override {return m_plot_p;}
-    virtual int GetMinSize_Y(void) override {return ((int)(m_surfaces.count() * MIN_WINDOW_HEIGHT));}
+    virtual int GetMinSize_Y(void) override {return (m_surfaces.count() * MIN_WINDOW_HEIGHT);}
 
     /****/
     virtual QRectF GetMinMax(void) override {

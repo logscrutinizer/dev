@@ -239,7 +239,7 @@ void CSearchCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t workM
 {
     TRACEX_I("Search started  text:%s backward:%d regExp:%d startRow:%d endRow:%d  %s",
              searchText_p->toLatin1().constData(), backward ? 1 : 0, regExp ? 1 : 0, startRow, endRow,
-             FIRA_p == nullptr ? "Full search" : "Filtered search");
+             FIRA_p == nullptr ? "Full search" : "Filtered search")
 
 #ifdef TEST_HS
     test();
@@ -266,7 +266,7 @@ bool CSearchCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Descript
 
     CFileProcBase::ConfigureThread(config_p, chunkDescription_p, threadIndex); /* Use the default initialization */
     SAFE_STR_MEMCPY(searchConfig_p->m_searchText, CFG_TEMP_STRING_MAX_SIZE, m_searchText_p->toLatin1().constData(),
-                    static_cast<size_t>(m_searchText_p->size()));
+                    static_cast<size_t>(m_searchText_p->size()))
 
     searchConfig_p->m_searchStop_p = &m_searchStop;
     searchConfig_p->m_backward = m_backward;
@@ -375,7 +375,7 @@ void CSearchCtrl::WrapUp(void)
     char searchText[4096];
 
     SAFE_STR_MEMCPY(searchText, CFG_TEMP_STRING_MAX_SIZE, m_searchText_p->toLatin1().constData(),
-                    static_cast<size_t>(m_searchText_p->size()));
+                    static_cast<size_t>(m_searchText_p->size()))
 
     m_searchResult_TI = 0;
     m_searchSuccess = false;
@@ -414,7 +414,7 @@ void CSearchCtrl::WrapUp(void)
         }
 
         TRACEX_D("CSearchCtrl::WrapUp found:%d low:%d high:%d total:%d",
-                 m_searchStop, low_TI_Index, high_TI_Index, m_TIA_p->rows);
+                 m_searchStop, low_TI_Index, high_TI_Index, m_TIA_p->rows)
 
         if (low_TI_Index == high_TI_Index) {
             m_searchSuccess = true;

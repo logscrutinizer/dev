@@ -36,18 +36,19 @@ typedef struct {
 }FontModification_Element_t;
 
 typedef struct {
-    int pixelStamp;      /* high 8-bit  fontSize, low 24-bit start_X (Decorated by View) */
     QList<FontModification_Element_t *> elementRefs;
+    char unused_padding[4]; /* Suppress padding warning */
+    int pixelStamp;      /* high 8-bit  fontSize, low 24-bit start_X (Decorated by View) */
 } FontModification_RowInfo_t;
 
 typedef struct {
+    AutoHightlight_RowInfo_t autoHighligth;
+    FontModification_RowInfo_t fontModification;
+    CMemPoolItem *poolItem_p;
     int size;
     int tabbedSize; /* Same as size, however compensated for the fact that a TAB shall be replaced with 4 spaces */
     int row;
-    CMemPoolItem *poolItem_p;
     FIR_t FIR; /*  Copy of the FIRA table, to have less lookup in the memory file (causing cache misses) */
-    AutoHightlight_RowInfo_t autoHighligth;
-    FontModification_RowInfo_t fontModification;
     int properties; /* TIA_CACHE_MEMMAP_PROPERTY_DECODED */
 }TIA_Cache_MemMap_t;
 

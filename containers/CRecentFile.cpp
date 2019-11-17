@@ -391,7 +391,7 @@ void CRecentFile::Trim(void)
     }
 
     TRACEX_D("CRecentFile::Trim   Remove %d items from recent file history",
-             (m_recentFileList.count() - g_cfg_p->m_recentFile_MaxHistory));
+             (m_recentFileList.count() - g_cfg_p->m_recentFile_MaxHistory))
 
     while (m_recentFileList.count() > g_cfg_p->m_recentFile_MaxHistory) {
         auto item = m_recentFileList.takeLast();
@@ -491,13 +491,11 @@ void CRecentFile::WriteToFile(bool sync)
         fileStream << LCZ_FOOTER << endl; /* </LogScrutinizer> */
     } catch (std::exception &e) {
         qFatal("Error %s writing recent file database to file", e.what());
-        TRACEX_E(
-            "CRecentFile::WriteToFile  Failed to write recent file database to file,  Err:%s", e.what());
+        TRACEX_E("CRecentFile::WriteToFile  Failed to write recent file database to file,  Err:%s", e.what())
         return;
     } catch (...) {
         qFatal("Unknown Error writing recent file database to file");
-        TRACEX_E(
-            "CRecentFile::WriteToFile  Failed to write recent file database to file,  Unknown error");
+        TRACEX_E("CRecentFile::WriteToFile  Failed to write recent file database to file,  Unknown error")
         return;
     }
 

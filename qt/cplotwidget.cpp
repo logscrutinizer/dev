@@ -50,7 +50,7 @@ typedef struct {
 static OnPaint_Data_t g_onPaint_WorkData[MAX_NUM_OF_THREADS];
 void OnPaint_ThreadAction(volatile void *data_p);
 
-CPlotWidgetInterface::CPlotWidgetInterface() {} /* for vtable impl. */
+CPlotWidgetInterface::~CPlotWidgetInterface() {} /* for vtable impl. */
 
 /***********************************************************************************************************************
 *   CZoomRect
@@ -184,7 +184,7 @@ bool CPlotWidget::SetupWindowSizes(void)
         PRINT_SIZE(QString("%1 rect old:%2,%3,%4,%5 new:%6,%7,%8,%9")
                        .arg(__FUNCTION__).arg(m_windowRect.left()).arg(m_windowRect.top()).arg(m_windowRect.right())
                        .arg(m_windowRect.bottom()).arg(rcClient.left()).arg(rcClient.top()).arg(rcClient.right())
-                       .arg(rcClient.bottom()));
+                       .arg(rcClient.bottom()))
 
         m_windowRect = rcClient;
         m_plotWindowRect = m_windowRect;
@@ -203,7 +203,7 @@ bool CPlotWidget::SetupWindowSizes(void)
 
         PRINT_SIZE(QString("%1 plot:%10,%11,%12,%13")
                        .arg(__FUNCTION__).arg(m_plotWindowRect.left()).arg(m_plotWindowRect.top())
-                       .arg(m_plotWindowRect.right()).arg(m_plotWindowRect.bottom()));
+                       .arg(m_plotWindowRect.right()).arg(m_plotWindowRect.bottom()))
 
         return true;
     }
@@ -277,7 +277,7 @@ void CPlotWidget::paintEvent(QPaintEvent *event)
     m_pDC->fillRect(m_windowRect, BOARDER_BACKGROUND_COLOR);
 
     if (!m_surfacesInitialized) {
-        PRINT_SUBPLOTSURFACE("Empty window - not initialized");
+        PRINT_SUBPLOTSURFACE("Empty window - not initialized")
         FillEmptyWindow();
         originalPainter.drawImage(
             m_windowRect.left(), m_windowRect.top(),                   /* Destination point */
@@ -314,8 +314,7 @@ void CPlotWidget::paintEvent(QPaintEvent *event)
                              .arg(m_hscrollFrame.width())
                              .arg(m_hscrollFrame.height())
                              .arg(m_hscrollSlider.width())
-                             .arg(m_hscrollSlider.height())
-                         );
+                             .arg(m_hscrollSlider.height()))
 
     if ((m_surfaces.count() != 0) &&
         ((m_windowRect.width() > 10) &&
@@ -336,7 +335,7 @@ void CPlotWidget::paintEvent(QPaintEvent *event)
         DrawScrollbar();
         DrawToolTip();
     } else {
-        PRINT_SUBPLOTSURFACE("Empty window - bad parameters");
+        PRINT_SUBPLOTSURFACE("Empty window - bad parameters")
         FillEmptyWindow();
     }
 
@@ -394,8 +393,7 @@ void CPlotWidget::DrawScrollbar(void)
         m_hrelPos = (zoom.x_min - maxExtents.x_min) / max_window;
         PRINT_SUBPLOTSURFACE(QString("hscrollSlider:%1 zoomWindow:%2 m_hrelPos:%3 zmax:%4 zmin:%5 max:%6 min:%7")
                                  .arg(m_hscrollSlider_Width).arg(zoomWindow).arg(m_hrelPos)
-                                 .arg(zoom.x_max).arg(zoom.x_min).arg(maxExtents.x_max).arg(maxExtents.x_min)
-                             );
+                                 .arg(zoom.x_max).arg(zoom.x_min).arg(maxExtents.x_max).arg(maxExtents.x_min))
     }
 
     m_vscrollSlider_Height = (m_windowRect.height() * m_vscrollFrame.height()) / m_totalDQRect.height();
@@ -445,7 +443,7 @@ void CPlotWidget::DrawScrollbar(void)
                     color);
 
     PRINT_SCROLL_INFO(QString("hscrollActive:%1 vscrollActive:%2").arg(m_hscrollSliderActive)
-                          .arg(m_vscrollSliderActive));
+                          .arg(m_vscrollSliderActive))
 }
 
 /***********************************************************************************************************************
@@ -714,7 +712,7 @@ void CPlotWidget::InitilizeSubPlots(void)
             subPlotRect.setBottom(m_plotWindowRect.bottom());
         }
 
-        subPlotSurface_p = new CSubPlotSurface(subPlot_p, m_plot_p, &subPlotRect);
+        subPlotSurface_p = new CSubPlotSurface(subPlot_p, m_plot_p);
         m_surfaces.append(subPlotSurface_p);
         subPlot_p->GetExtents(&extents);
 
@@ -752,8 +750,7 @@ void CPlotWidget::keyPressEvent(QKeyEvent *e)
     m_keyPressedList.append(key);
 
 #ifdef _DEBUG
-    TRACEX_DE(QString("%1 Key:%2  keyList:%3")
-                  .arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()));
+    TRACEX_DE(QString("%1 Key:%2  keyList:%3").arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()))
 #endif
 
     if (!HandleKeyDown(e)) {
@@ -775,8 +772,7 @@ void CPlotWidget::keyReleaseEvent(QKeyEvent *e)
     if (index > -1) {
         m_keyPressedList.removeAt(index);
 #ifdef _DEBUG
-        TRACEX_DE(QString("%1 Key:%2 keyList:%3")
-                      .arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()));
+        TRACEX_DE(QString("%1 Key:%2 keyList:%3").arg(__FUNCTION__).arg(e->key()).arg(m_keyPressedList.count()))
 #endif
     }
     QWidget::keyReleaseEvent(e);
@@ -841,8 +837,7 @@ void CPlotWidget::wheelEvent(QWheelEvent *event)
             m_vrelPos = 1.0;
         }
 
-        PRINT_SCROLL_INFO(QString("%1 zDelta:%2 m_vrelPos:%3").arg(__FUNCTION__).arg(zDelta).arg(m_vrelPos));
-
+        PRINT_SCROLL_INFO(QString("%1 zDelta:%2 m_vrelPos:%3").arg(__FUNCTION__).arg(zDelta).arg(m_vrelPos))
         updateNeeded = true;
     }
 
@@ -866,7 +861,7 @@ void CPlotWidget::RealignSubPlots(void)
         return;
     }
 
-    PRINT_SIZE(QString("%1").arg(__FUNCTION__));
+    PRINT_SIZE(QString("%1").arg(__FUNCTION__))
 
     /* First check if each surface needs some additional pixels to cover the entire window */
     int y_top = 0;
@@ -879,7 +874,7 @@ void CPlotWidget::RealignSubPlots(void)
         surface_p->GetWindowRect(&rect);
 #ifdef _DEBUG
         PRINT_SIZE(QString("(%1,%2) (%3,%4) h:%5 count:%6").arg(rect.left()).arg(rect.top()).arg(rect.right())
-                       .arg(rect.bottom()).arg(rect.height()).arg(count++));
+                       .arg(rect.bottom()).arg(rect.height()).arg(count++))
 #endif
         sum_Y_Size += rect.height();
     }
@@ -888,7 +883,7 @@ void CPlotWidget::RealignSubPlots(void)
     y_bias = y_bias > 0 ? y_bias : 0;
 
     PRINT_SIZE(QString("%1 y_bias:%2 sum_Y_size:%3 winRectHeight:%4")
-                   .arg(__FUNCTION__).arg(y_bias).arg(sum_Y_Size).arg(m_windowRect.height()));
+                   .arg(__FUNCTION__).arg(y_bias).arg(sum_Y_Size).arg(m_windowRect.height()))
 
     QRect subPlotRect = m_plotWindowRect;
 #ifdef _DEBUG
@@ -904,7 +899,7 @@ void CPlotWidget::RealignSubPlots(void)
 #ifdef _DEBUG
         surface_p->GetWindowRect(&rect);
         PRINT_SIZE(QString("U (%1,%2) (%3,%4) count:%5").arg(rect.left()).arg(rect.top()).arg(rect.right())
-                       .arg(rect.bottom()).arg(count++));
+                       .arg(rect.bottom()).arg(count++))
 #endif
         y_top = subPlotRect.bottom();
     } /* for */
@@ -933,7 +928,7 @@ void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint
         return;
     }
 
-    PRINT_SIZE(QString("%1").arg(__FUNCTION__));
+    PRINT_SIZE(QString("%1").arg(__FUNCTION__))
 
     for (auto& surface_p : m_surfaces) {
         QRect rect;
@@ -990,7 +985,7 @@ void CPlotWidget::RestoreSubPlotWindows(void)
         return;
     }
 
-    PRINT_SIZE(QString("%1").arg(__FUNCTION__));
+    PRINT_SIZE(QString("%1").arg(__FUNCTION__))
 
     QRect surfaceRect = m_plotWindowRect;
     int subPlotIndex = 0;
@@ -1038,9 +1033,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
     m_offset_X = m_zoom_left + (m_zoom_right - m_zoom_left) * x_rel;
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  pt.x:%d rel:%f curr offset:%e",
-             screenPoint_p->DCBMP.x(),
-             x_rel,
-             m_offset_X);
+             screenPoint_p->DCBMP.x(), x_rel, m_offset_X)
 
     if (zDelta < 0) {
         /* zoom out */
@@ -1081,12 +1074,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  zoom:%4.2f zoom_left:%f "
              "zoom_right:%f min:%e max:%e offset:%e",
-             currentZoom,
-             m_zoom_left,
-             m_zoom_right,
-             m_min_X,
-             m_max_X,
-             m_offset_X);
+             currentZoom, m_zoom_left, m_zoom_right, m_min_X, m_max_X, m_offset_X)
 
     extern void CPlotPane_Align_X_Zoom(double x_min, double x_max);
 
@@ -1129,9 +1117,7 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
     double y_offset = static_cast<double>(zoom.y_min + (zoom.y_max - zoom.y_min)) * (1.0 - y_rel);
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  pt.y:%d rel:%f curr offset:%e",
-             screenPoint_p->DCBMP.y(),
-             y_rel,
-             y_offset);
+             screenPoint_p->DCBMP.y(), y_rel, y_offset)
 
     if (zDelta < 0) {
         /* zoom out */
@@ -1153,7 +1139,6 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
 
     if (almost_equal(zoom.y_min, zoom.y_max)) {
         TRACEX_W("CPlotWidget::ZoomSubPlot_Y_Axis  Zoom error")
-
         zoom.y_max = zoom.y_min + 1;
     }
 
@@ -1162,10 +1147,7 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
     }
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  zoom:%4.2f min:%e max:%e offset:%e",
-             currentZoom,
-             static_cast<double>(zoom.y_min),
-             static_cast<double>(zoom.y_max),
-             y_offset);
+             currentZoom, static_cast<double>(zoom.y_min), static_cast<double>(zoom.y_max), y_offset)
 
     subPlot_p->SetSurfaceZoom(&zoom);
 }
@@ -1269,7 +1251,7 @@ CSubPlotSurface *CPlotWidget::GetSurfaceFromPoint(const ScreenPoint_t *screenPoi
 
         TRACEX_D(QString("GetSubPLotFromPoint %1 x:%2 y:%3 w:%4 h:%5")
                      .arg(surface_p->m_subPlotTitle).arg(rect.x()).arg(rect.y())
-                     .arg(rect.width()).arg(rect.height()));
+                     .arg(rect.width()).arg(rect.height()))
     }
 #endif
 
@@ -1371,7 +1353,7 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
             } else if (m_vrelPos > 1.0) {
                 m_vrelPos = 1.0;
             }
-            PRINT_SCROLL_INFO("%s m_vrelPos: %f", __FUNCTION__, m_vrelPos);
+            PRINT_SCROLL_INFO("%s m_vrelPos: %f", __FUNCTION__, m_vrelPos)
         } else if (m_hscrollSliderGlue) {
             updateNeeded = true;
             m_hrelPos = static_cast<double>(screenPoint.mouse.x() - m_hscrollSliderGlueOffset) /
@@ -1397,7 +1379,7 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
             zoom.x_min = maxExtents.x_min + (maxExtents.x_max - maxExtents.x_min) * m_hrelPos;
             zoom.x_max = zoom.x_min + zoom_win;
 
-            PRINT_SCROLL_INFO(QString("%1 zxmin:%2 zxmax:%3").arg(__FUNCTION__).arg(zoom.x_min).arg(zoom.x_max));
+            PRINT_SCROLL_INFO(QString("%1 zxmin:%2 zxmax:%3").arg(__FUNCTION__).arg(zoom.x_min).arg(zoom.x_max))
 
             if (zoom.x_min < maxExtents.x_min) {
                 zoom.x_min = maxExtents.x_min;
@@ -1410,7 +1392,7 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
 
             extern void CPlotPane_Align_X_Zoom(double x_min, double x_max);
             CPlotPane_Align_X_Zoom(zoom.x_min, zoom.x_max);
-            PRINT_SCROLL_INFO("%s m_vrelPos: %f", __FUNCTION__, m_hrelPos);
+            PRINT_SCROLL_INFO("%s m_vrelPos: %f", __FUNCTION__, m_hrelPos)
         }
     }
 
@@ -1515,7 +1497,7 @@ bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distanc
 
     TRACEX_D("CPlotWidget::GetClosest_GO")
 
-    *distance_p = 0.0;
+    * distance_p = 0.0;
     *go_pp = nullptr;
 
     if (!m_surfaces.isEmpty()) {
@@ -1626,8 +1608,7 @@ void CPlotWidget::SetRow(const ScreenPoint_t *screenPoint_p)
         }
 
         if (row_Best == -1) {
-            TRACEX_W("Warning: Couldn't set log row from plot, no matching "
-                     "graphical element");
+            TRACEX_W("Warning: Couldn't set log row from plot, no matching graphical element")
             MW_PlaySystemSound(SYSTEM_SOUND_QUESTION);
             QMessageBox::warning(this,
                                  tr("Cursor not exact"),
@@ -1655,7 +1636,7 @@ bool CPlotWidget::HandleKeyDown(QKeyEvent *e)
     bool ALT_Pressed = QApplication::keyboardModifiers() & Qt::AltModifier ? true : false;
 
     TRACEX_D(QString("%1 ctrl:%2 shift:%3 alt:%4").arg(__FUNCTION__).arg(CTRL_Pressed)
-                 .arg(SHIFT_Pressed).arg(ALT_Pressed));
+                 .arg(SHIFT_Pressed).arg(ALT_Pressed))
 
     QPoint point = mapFromGlobal(QCursor::pos());
     bool updateNeeded = false;
@@ -1933,7 +1914,7 @@ void CPlotWidget::focusInEvent(QFocusEvent *event)
     if (CSCZ_ToolTipDebugEnabled) {
         TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
-    PRINT_FOCUS(__FUNCTION__);
+    PRINT_FOCUS(__FUNCTION__)
 }
 
 /***********************************************************************************************************************
@@ -1960,7 +1941,7 @@ void CPlotWidget::focusOutEvent(QFocusEvent *event)
     if (CSCZ_ToolTipDebugEnabled) {
         TRACEX_D(QString("%1").arg(__FUNCTION__))
     }
-    PRINT_FOCUS(__FUNCTION__);
+    PRINT_FOCUS(__FUNCTION__)
 }
 
 /***********************************************************************************************************************
@@ -1977,9 +1958,7 @@ void CPlotWidget::onToolTipTimer(void)
     QPoint screenCoordPoint = mapFromGlobal(QCursor::pos());
 
     if (CSCZ_ToolTipDebugEnabled) {
-        TRACEX_I(QString("%1  (x%2,y%3)")
-                     .arg(__FUNCTION__).arg(screenCoordPoint.x())
-                     .arg(screenCoordPoint.y()));
+        TRACEX_I(QString("%1  (x%2,y%3)").arg(__FUNCTION__).arg(screenCoordPoint.x()).arg(screenCoordPoint.y()))
     }
 
     if (!m_windowRect.contains(screenCoordPoint)) {
@@ -1989,7 +1968,7 @@ void CPlotWidget::onToolTipTimer(void)
                          .arg(__FUNCTION__).arg(screenCoordPoint.x())
                          .arg(screenCoordPoint.y()).arg(m_windowRect.left())
                          .arg(m_windowRect.top()).arg(m_windowRect.right())
-                         .arg(m_windowRect.bottom()));
+                         .arg(m_windowRect.bottom()))
         }
         CloseToolTip();
         m_toolTipEnabled = false;
@@ -2004,7 +1983,7 @@ void CPlotWidget::onToolTipTimer(void)
             TRACEX_I(QString("%1 mouse:%2 %3 box: %4 %5 %6 %7 Still").arg(__FUNCTION__)
                          .arg(screenPoint.mouse.x()).arg(screenPoint.mouse.y())
                          .arg(lastPosBox.left()).arg(lastPosBox.top())
-                         .arg(lastPosBox.right()).arg(lastPosBox.bottom()));
+                         .arg(lastPosBox.right()).arg(lastPosBox.bottom()))
         }
         still = true;
     }
@@ -2017,7 +1996,7 @@ void CPlotWidget::onToolTipTimer(void)
             if (CSCZ_ToolTipDebugEnabled) {
                 TRACEX_I(QString("%1  ToolTipState_Closing -> "
                                  "ToolTipState_WaitForRequest")
-                             .arg(__FUNCTION__));
+                             .arg(__FUNCTION__))
             }
 
             m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
@@ -2027,16 +2006,14 @@ void CPlotWidget::onToolTipTimer(void)
             m_lastCursorPos = screenPoint;
             if (still) {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> "
-                                     "ToolTipState_Pending").arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> ToolTipState_Pending").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_PENDING);
                 m_toolTipState = ToolTipState_Pending;
             } else {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> "
-                                     "ToolTipState_WaitForRequest")
-                                 .arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_WaitForRequest -> ToolTipState_WaitForRequest")
+                                 .arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
                 m_toolTipState = ToolTipState_WaitForRequest;
@@ -2047,18 +2024,14 @@ void CPlotWidget::onToolTipTimer(void)
             m_lastCursorPos = screenPoint;
             if (still && OpenToolTip()) {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_Pending "
-                                     "-> ToolTipState_Running")
-                                 .arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_Pending -> ToolTipState_Running").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_RUNNING);
                 m_toolTipState = ToolTipState_Running;
             } else {
                 if (CSCZ_ToolTipDebugEnabled) {
                     TRACEX_I(
-                        QString("%1  ToolTipState_Pending -> "
-                                "ToolTipState_WaitForRequest")
-                            .arg(__FUNCTION__));
+                        QString("%1  ToolTipState_Pending -> ToolTipState_WaitForRequest").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_WAIT_FOR_TOOL_TIP_REQUEST);
                 m_toolTipState = ToolTipState_WaitForRequest;
@@ -2068,8 +2041,7 @@ void CPlotWidget::onToolTipTimer(void)
         case ToolTipState_Running:
             if (still) {
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_Running -> "
-                                     "ToolTipState_Running").arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_Running -> ToolTipState_Running").arg(__FUNCTION__))
                 }
                 m_toolTipTimer->start(TO_TT_RUNNING);
                 m_toolTipState = ToolTipState_Running;
@@ -2078,8 +2050,7 @@ void CPlotWidget::onToolTipTimer(void)
                 m_toolTipTimer->start(TO_TT_CLOSE);
                 m_toolTipState = ToolTipState_Closing;
                 if (CSCZ_ToolTipDebugEnabled) {
-                    TRACEX_I(QString("%1  ToolTipState_Running -> "
-                                     "ToolTipState_Closing").arg(__FUNCTION__));
+                    TRACEX_I(QString("%1  ToolTipState_Running -> ToolTipState_Closing").arg(__FUNCTION__))
                 }
             }
             break;
@@ -2298,8 +2269,7 @@ bool CPlotWidget::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_p
         for (auto& surface_p : m_surfaces) {
             if (surface_p->GetClosestGraph(&screenPoint_p->DCBMP, &graph_p, &distance, &go_p)) {
 #ifdef _DEBUG
-                TRACEX_DE("CPlotWidget::GetClosestGraph  %s %f",
-                          graph_p->GetName(), distance);
+                TRACEX_DE("CPlotWidget::GetClosestGraph  %s %f", graph_p->GetName(), distance)
 #endif
                 if ((CSubPlot_Best_p == nullptr) || (distance < distance_Best)) {
                     CSubPlot_Best_p = surface_p;
@@ -2347,8 +2317,7 @@ bool CPlotWidget::GetClosestGraph(int row, CGraph **graph_pp, GraphicalObject_t 
         for (auto& surface_p : m_surfaces) {
             if ((surface_p != nullptr) && surface_p->GetClosestGraph(row, &graph_p, &distance, &go_p)) {
 #ifdef _DEBUG
-                TRACEX_DE("CPlotWidget::GetClosestGraph  %s %f",
-                          graph_p->GetName(), distance);
+                TRACEX_DE("CPlotWidget::GetClosestGraph  %s %f", graph_p->GetName(), distance)
 #endif
                 if ((CSubPlot_Best_p == nullptr) || (distance < distance_Best)) {
                     CSubPlot_Best_p = surface_p;
@@ -2581,9 +2550,8 @@ void CPlotWidget::InsertShadow(const ScreenPoint_t *screenPoint_p)
     m_restoreSubPlotSize = true;  /* make sure that all subplots gets a new rectangle with equal share */
 
     CSubPlotSurface *selectedSubPlot_p = GetSurfaceFromPoint(screenPoint_p);
-    QRect rectDummy(10, 10, 10, 10);
     CSubPlotSurface *newSubPlotSurface_p = new CSubPlotSurface(g_currentShadowCopy->m_subPlot_p,
-                                                               g_currentShadowCopy->m_parentPlot_p, &rectDummy, true);
+                                                               g_currentShadowCopy->m_parentPlot_p, true);
     int index = m_surfaces.indexOf(selectedSubPlot_p);
     if (index != -1) {
         m_surfaces.insert(index + 1, newSubPlotSurface_p); /* insert after */

@@ -538,7 +538,7 @@ bool CWorkspace_CleanAllPlots(void)
             for ( ; plotIter != plotList.end(); ++plotIter) {
                 CCfgItem *cfgItem_Plot_p = (*plotIter);
                 if ((cfgItem_Plot_p->m_itemKind == CFG_ITEM_KIND_Plot) && !cfgItem_Plot_p->m_cfgChildItems.isEmpty()) {
-                    ((CCfgItem_Plot *)cfgItem_Plot_p)->RemoveElements();
+                    reinterpret_cast<CCfgItem_Plot *>(cfgItem_Plot_p)->RemoveElements();
                 }
             }
         }
@@ -617,16 +617,16 @@ CCfgItem_Plot *CWorkspace_GetSelectedPlot(void)
     switch (cfgItem_p->m_itemKind)
     {
         case CFG_ITEM_KIND_Plot:
-            itemPlot_p = (CCfgItem_Plot *)cfgItem_p;
+            itemPlot_p = reinterpret_cast<CCfgItem_Plot *>(cfgItem_p);
             break;
 
         case CFG_ITEM_KIND_SubPlot:
-            itemPlot_p = (CCfgItem_Plot *)cfgItem_p->m_itemParent_p;
+            itemPlot_p = reinterpret_cast<CCfgItem_Plot *>(cfgItem_p->m_itemParent_p);
             break;
 
         case CFG_ITEM_KIND_Graph:
         case CFG_ITEM_KIND_SequenceDiagram:
-            itemPlot_p = (CCfgItem_Plot *)cfgItem_p->m_itemParent_p->m_itemParent_p;
+            itemPlot_p = reinterpret_cast<CCfgItem_Plot *>(cfgItem_p->m_itemParent_p->m_itemParent_p);
             break;
 
         default:
@@ -672,32 +672,33 @@ CCfgItem_Plugin *CWorkspace_GetSelectedPlugin(CCfgItem *selection_p)
     switch (cfgItem_p->m_itemKind)
     {
         case CFG_ITEM_KIND_PlugIn:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p);
             break;
 
         case CFG_ITEM_KIND_PlotRoot:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p->m_itemParent_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p->m_itemParent_p);
             break;
 
         case CFG_ITEM_KIND_Plot:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p->m_itemParent_p->m_itemParent_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p->m_itemParent_p->m_itemParent_p);
             break;
 
         case CFG_ITEM_KIND_SubPlot:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p->m_itemParent_p->m_itemParent_p->m_itemParent_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p->m_itemParent_p->m_itemParent_p->m_itemParent_p);
             break;
 
         case CFG_ITEM_KIND_Graph:
         case CFG_ITEM_KIND_SequenceDiagram:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p->m_itemParent_p->m_itemParent_p->m_itemParent_p->m_itemParent_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>
+                       (cfgItem_p->m_itemParent_p->m_itemParent_p->m_itemParent_p->m_itemParent_p);
             break;
 
         case CFG_ITEM_KIND_DecoderRoot:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p->m_itemParent_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p->m_itemParent_p);
             break;
 
         case CFG_ITEM_KIND_Decoder:
-            plugin_p = (CCfgItem_Plugin *)cfgItem_p->m_itemParent_p->m_itemParent_p;
+            plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p->m_itemParent_p->m_itemParent_p);
             break;
 
         default:
@@ -1011,7 +1012,7 @@ void CWorkspace::FillWorkspace(void)
 /***********************************************************************************************************************
 *   SetQuickSearch
 ***********************************************************************************************************************/
-void CWorkspace::SetQuickSearch(uint32_t nChar)
+void CWorkspace::SetQuickSearch(int nChar)
 {
     /* Set a specific letter to designate a quick search/
      *  If letter is occupied it is re-assigned to the new one */
@@ -1026,7 +1027,7 @@ void CWorkspace::SetQuickSearch(uint32_t nChar)
     /* Assign the filter the letter for quick search */
     auto cfgItem_p = selectionList.first();
     if (cfgItem_p->m_itemKind == CFG_ITEM_KIND_FilterItem) {
-        static_cast<CCfgItem_FilterItem *>(cfgItem_p)->m_quickSearchNum = (int)nChar;
+        static_cast<CCfgItem_FilterItem *>(cfgItem_p)->m_quickSearchNum = nChar;
     } else {
         return;
     }
@@ -1035,7 +1036,7 @@ void CWorkspace::SetQuickSearch(uint32_t nChar)
     for (auto cfgFilter_p : m_filters_p->m_cfgChildItems) {
         for (auto cfgItem_p : cfgFilter_p->m_cfgChildItems) {
             auto cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(cfgItem_p);
-            if (cfgFilterItem_p->m_quickSearchNum == (int)nChar) {
+            if (cfgFilterItem_p->m_quickSearchNum == nChar) {
                 cfgFilterItem_p->m_quickSearchNum = -1;
                 MW_Refresh();
                 return;
@@ -1047,17 +1048,19 @@ void CWorkspace::SetQuickSearch(uint32_t nChar)
 /***********************************************************************************************************************
 *   QuickSearch
 ***********************************************************************************************************************/
-void CWorkspace::QuickSearch(uint32_t nChar, bool searchDown)
+
+/* TODO, this is not used anywhere, should be a letter mapped to a filer */
+void CWorkspace::QuickSearch(int nChar, bool searchDown)
 {
     /* Search through all filters/filterItems, when the cChar assign filter is found start the quick search and then
      * return */
     for (auto cfgFilter_p : m_filters_p->m_cfgChildItems) {
         for (auto cfgItem_p : cfgFilter_p->m_cfgChildItems) {
             auto cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(cfgItem_p);
-            if (cfgFilterItem_p->m_quickSearchNum == (int)nChar) {
+            if (cfgFilterItem_p->m_quickSearchNum == nChar) {
                 char searchString[CFG_TEMP_STRING_MAX_SIZE];
                 memcpy(searchString, cfgFilterItem_p->m_filterItem_ref_p->m_start_p,
-                       cfgFilterItem_p->m_filterItem_ref_p->m_size);
+                       static_cast<size_t>(cfgFilterItem_p->m_filterItem_ref_p->m_size));
                 searchString[cfgFilterItem_p->m_filterItem_ref_p->m_size] = 0;
 
                 MW_QuickSearch(searchString,
@@ -1096,7 +1099,7 @@ bool CWorkspace::GetSelectionFileInformation(QString *fileSaveInfo_p, CfgItemKin
 {
     CfgItemKind_t itemKind;
     bool success = false;
-    CfgItem_PossibleFileOperations_t fileOperation;
+    CfgItem_PossibleFileOperations_t fileOperation = CFGITEM_FILE_OPERATION_NONE;
 
     if (isSingleKindSelections(&itemKind)) {
         QList<CCfgItem *> selectionList;
@@ -1108,7 +1111,7 @@ bool CWorkspace::GetSelectionFileInformation(QString *fileSaveInfo_p, CfgItemKin
         {
             case CFG_ITEM_KIND_Filter:
             {
-                CCfgItem_Filter *filter_p = (CCfgItem_Filter *)cfgItem_p;
+                auto *filter_p = reinterpret_cast<CCfgItem_Filter *>(cfgItem_p);
                 filter_p->m_filter_ref_p->GetFileNameOnly(fileSaveInfo_p);
 
                 fileOperation = CFGITEM_FILE_OPERATION_SAVE | CFGITEM_FILE_OPERATION_SAVE_AS |
@@ -1119,7 +1122,7 @@ bool CWorkspace::GetSelectionFileInformation(QString *fileSaveInfo_p, CfgItemKin
 
             case CFG_ITEM_KIND_FilterItem:
             {
-                CCfgItem_Filter *filter_p = (CCfgItem_Filter *)cfgItem_p->m_itemParent_p;
+                auto *filter_p = reinterpret_cast<CCfgItem_Filter *>(cfgItem_p->m_itemParent_p);
                 filter_p->m_filter_ref_p->GetFileNameOnly(fileSaveInfo_p);
 
                 fileOperation = CFGITEM_FILE_OPERATION_SAVE | CFGITEM_FILE_OPERATION_SAVE_AS |
@@ -1137,7 +1140,7 @@ bool CWorkspace::GetSelectionFileInformation(QString *fileSaveInfo_p, CfgItemKin
 
             case CFG_ITEM_KIND_PlugIn:
             {
-                CCfgItem_Plugin *plugin_p = (CCfgItem_Plugin *)cfgItem_p;
+                auto *plugin_p = reinterpret_cast<CCfgItem_Plugin *>(cfgItem_p);
                 *fileSaveInfo_p = plugin_p->m_fileName;
                 fileOperation = CFGITEM_FILE_OPERATION_CLOSE;
                 success = true;
@@ -1193,9 +1196,9 @@ void CWorkspace::ExecuteFileOperationOnSelection(CfgItem_PossibleFileOperations_
         if ((itemKind == CFG_ITEM_KIND_Filter) || (itemKind == CFG_ITEM_KIND_FilterItem)) {
             CCfgItem_Filter *filter_p;
             if (itemKind == CFG_ITEM_KIND_Filter) {
-                filter_p = (CCfgItem_Filter *)cfgItem_p;
+                filter_p = reinterpret_cast<CCfgItem_Filter *>(cfgItem_p);
             } else {
-                filter_p = (CCfgItem_Filter *)cfgItem_p->m_itemParent_p;
+                filter_p = reinterpret_cast<CCfgItem_Filter *>(cfgItem_p->m_itemParent_p);
             }
 
             switch (fileOperations)
@@ -1214,7 +1217,7 @@ void CWorkspace::ExecuteFileOperationOnSelection(CfgItem_PossibleFileOperations_
 
                 default:
                     TRACEX_W("CWorkspace::ExecuteFileOperationOnSelection kind:%d "
-                             "operation:%d NOT SUPPORTED", itemKind, fileOperations);
+                             "operation:%d NOT SUPPORTED", itemKind, fileOperations)
                     break;
             }
         } else if (itemKind == CFG_ITEM_KIND_Root) {
@@ -1240,7 +1243,7 @@ void CWorkspace::ExecuteFileOperationOnSelection(CfgItem_PossibleFileOperations_
 
                 default:
                     TRACEX_W("CWorkspace::ExecuteFileOperationOnSelection kind:%d "
-                             "operation:%d NOT SUPPORTED", itemKind, fileOperations);
+                             "operation:%d NOT SUPPORTED", itemKind, fileOperations)
                     break;
             }
         } else if (itemKind == CFG_ITEM_KIND_PlugIn) {
@@ -1248,14 +1251,14 @@ void CWorkspace::ExecuteFileOperationOnSelection(CfgItem_PossibleFileOperations_
                 CloseAllSelectedPlugins();
             } else {
                 TRACEX_W("CWorkspace::ExecuteFileOperationOnSelection kind:%d "
-                         "operation:%d NOT SUPPORTED", itemKind, fileOperations);
+                         "operation:%d NOT SUPPORTED", itemKind, fileOperations)
             }
         } else if (itemKind == CFG_ITEM_KIND_Log) {
             if (fileOperations == CFGITEM_FILE_OPERATION_CLOSE) {
                 RemoveLog();
             } else {
                 TRACEX_W("CWorkspace::ExecuteFileOperationOnSelection kind:%d operation:%d NOT SUPPORTED",
-                         itemKind, fileOperations);
+                         itemKind, fileOperations)
             }
         }
     }
@@ -1340,7 +1343,7 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
                 cfgFilter_p = static_cast<CCfgItem_Filter *>(selectionList.first());
             } else if (!m_filters_p->m_cfgChildItems.isEmpty()) {
                 /* Pick first */
-                cfgFilter_p = (CCfgItem_Filter *)m_filters_p->m_cfgChildItems.first();
+                cfgFilter_p = reinterpret_cast<CCfgItem_Filter *>(m_filters_p->m_cfgChildItems.first());
             } else {
                 cfgFilter_p = CreateCfgFilter(nullptr);
             }
@@ -1374,10 +1377,10 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
         }
 
         filterItem_p->m_size = text.length();
-        filterItem_p->m_start_p = (char *)malloc(text.length() + 1);
+        filterItem_p->m_start_p = reinterpret_cast<char *>(malloc(static_cast<size_t>(text.length() + 1)));
 
         if (filterItem_p->m_start_p != nullptr) {
-            memcpy(filterItem_p->m_start_p, text.toLatin1().constData(), filterItem_p->m_size);
+            memcpy(filterItem_p->m_start_p, text.toLatin1().constData(), static_cast<size_t>(filterItem_p->m_size));
             filterItem_p->m_start_p[filterItem_p->m_size] = 0;
         } else {
             TRACEX_E("CCfgItem_FilterItem::PropertiesDlg    m_filterItem_ref_p->m_start_p  nullptr")
@@ -1591,7 +1594,7 @@ void CWorkspace::ToggleBookmark(QWidget *parent, QString *comment_p, int row)
 
     if (row > doc_p->m_database.TIA.rows) {
         TRACEX_W("CWorkspace::ToggleBookmark  Trying to toggle bookmark to row outside "
-                 "logfile max:%d row:%d", doc_p->m_database.TIA.rows, row);
+                 "logfile max:%d row:%d", doc_p->m_database.TIA.rows, row)
         return;
     }
 
@@ -1625,9 +1628,10 @@ void CWorkspace::ToggleBookmark(QWidget *parent, QString *comment_p, int row)
 
     if (insert) {
         bool ok;
-        QString description("Enter your bookmark comment here");
-        QString text = QInputDialog::getText(parent, QString("Create bookmark"), QString("Enter description:"),
-                                             QLineEdit::Normal, description, &ok);
+        QString dlgDescription("Add a bookmark comment");
+        QString comment = comment_p != nullptr && *comment_p != "" ? *comment_p : "My bookmark is important";
+        QString text = QInputDialog::getText(parent, QString("Create bookmark"), dlgDescription,
+                                             QLineEdit::Normal, comment, &ok);
         bookmark_p = new CCfgItem_Bookmark( /*this, m_bookmarks_p->m_h_treeItem,*/ text, row, m_bookmarks_p);
         bookmark_p->InsertItem(false, true, true, itemBefore_p);
     }
@@ -1649,7 +1653,7 @@ void CWorkspace::AddBookmark(const QString& comment, int row)
 
     if (row > doc_p->m_database.TIA.rows) {
         TRACEX_W("CWorkspace::AddBookmark  Trying to add bookmark to row outside logfile "
-                 "max:%d row:%d", doc_p->m_database.TIA.rows, row);
+                 "max:%d row:%d", doc_p->m_database.TIA.rows, row)
         return;
     }
     TRACEX_D("CWorkspace::AddBookmark")
@@ -1672,7 +1676,7 @@ void CWorkspace::AddBookmark(const QString& comment, int row)
             } else if (bookmark_p->m_row > row) {
                 found = true;
             } else {
-                itemBefore_p = (CCfgItem *)bookmark_p;
+                itemBefore_p = static_cast<CCfgItem *>(bookmark_p);
                 ++iter;
             }
         } /* while */
@@ -2174,7 +2178,7 @@ bool Model::setData(const QModelIndex &index, const QVariant &value, int role)
     CCfgItem *item_p = static_cast<CCfgItem *>(index.internalPointer());
 
     TRACEX_D(QString("Model::setData index:%1,%2 role:%3 user_type:%4 value:%5")
-                 .arg(index.row()).arg(index.column()).arg(role).arg(value.userType()).arg(value.toBool()));
+                 .arg(index.row()).arg(index.column()).arg(role).arg(value.userType()).arg(value.toBool()))
 
     switch (item_p->m_itemKind)
     {
@@ -2185,7 +2189,7 @@ bool Model::setData(const QModelIndex &index, const QVariant &value, int role)
                 filterItem->m_filterItem_ref_p->m_enabled = enabled ? false : true;
                 TRACEX_I(QString("FilterItem: %1 - %2")
                              .arg(filterItem->m_itemText)
-                             .arg(filterItem->m_filterItem_ref_p->m_enabled ? QString("Enabled") : QString("Disabled")));
+                             .arg(filterItem->m_filterItem_ref_p->m_enabled ? QString("Enabled") : QString("Disabled")))
 
                 emit dataChanged(index, index);
                 return true;
@@ -2215,7 +2219,7 @@ bool Model::hasChildren(const QModelIndex &parent) const
 Qt::ItemFlags Model::flags(const QModelIndex &index) const
 {
     if (!index.isValid()) {
-        return 0;
+        return Qt::NoItemFlags;
     }
 
     Qt::ItemFlags flags = QAbstractItemModel::flags(index);
@@ -2355,18 +2359,17 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
 
     CCfgItem *parentItem_p = static_cast<CCfgItem *>(parent.internalPointer());
     TRACEX_DE(QString("drop rows row:%1 action:%2 Parent:%3")
-                  .arg(row).arg(action).arg(parentItem_p->m_itemText));
+                  .arg(row).arg(action).arg(parentItem_p->m_itemText))
 
     QModelIndex trueParentIndex;
 
     CWorkspace_TreeView_UnselectAll();
 
-    /*
-     *  When row and column are -1 it means that the dropped data should be considered as dropped directly on
-     * parent/item.
-     *  Usually this will mean appending the data as child items of parent. If row and column are greater than or equal
-     *  zero, it means that the drop occurred just before the specified row and column in the specified parent. */
-    if (row == -1) {
+    /* When row and column are -1 it means that the dropped data should be considered as dropped directly on
+     * parent/item. Usually this will mean appending the data as child items of parent. If row and column are greater
+     * than or equal zero, it means that the drop occurred just before the specified row and column in the specified
+     *  parent. */
+    if ((row == -1) && (column == -1)) {
         switch (parentItem_p->m_itemKind)
         {
             case CFG_ITEM_KIND_FilterItem:
@@ -2390,6 +2393,7 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
         }
     }
 
+#if 0 /* TODO, support general text drag and drop */
     if (data->hasFormat("application/vnd.text.list")) {
         /* Create a filter item at the index, at least if the row/column is among filterItems or in a filter */
 
@@ -2407,19 +2411,13 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
 
         return true;
     }
+#endif
 
+    /* Extract the bytestream created for the drag and drop */
     if (data->hasFormat("application/lsz.bytestream")) {
         QByteArray encodedData = data->data("application/lsz.bytestream");
         QDataStream stream(&encodedData, QIODevice::ReadOnly);
-
-        /*
-         *  const quint32 MIME_STREAM_START_TAG = 0x11111111;
-         *  const quint32 MIME_ITEM_START_TAG = 0x22222222;
-         *  const quint32 MIME_ITEM_END_TAG = 0x33333333;
-         *  const quint32 MIME_STREAM_END_TAG = 0x44444444;
-         */
         quint32 streamTag;
-
         stream >> streamTag;
 
         Q_ASSERT(streamTag == MIME_STREAM_START_TAG);
@@ -2605,26 +2603,6 @@ void Model::stopInsertRows(bool expand)
         MW_TV_Expand(parentIndex);
     }
     lastInsertParent = nullptr;
-}
-
-/***********************************************************************************************************************
-*   moveRows
-***********************************************************************************************************************/
-bool Model::moveRows(const QModelIndex &sourceParent, int sourceRow, int count,
-                     const QModelIndex &destinationParent, int destinationChild)
-{
-    TRACEX_DE(QString("Move rows from:%1 to:%2 count:%3"
-                      ).arg(sourceRow).arg(destinationChild).arg(count));
-
-#ifdef _DEBUG
-    QModelIndexList selectionList;
-    CWorkspace_TreeView_GetSelectionIndexes(selectionList);
-    for (auto& index : selectionList) {
-        TRACEX_DE(QString("selection row:%1").arg(index.row()))
-    }
-#endif
-
-    return true;
 }
 
 /***********************************************************************************************************************

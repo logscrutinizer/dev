@@ -80,8 +80,8 @@ void CRowCache::Get(const int rowIndex, char **text_p, int *size_p, int *propert
     }
 
     if (m_cache_memMap[cacheIndex].row == rowIndex) {
-        *text_p = (char *)m_cache_memMap[cacheIndex].poolItem_p->GetDataRef();
-        *size_p = (int)m_cache_memMap[cacheIndex].size;
+        *text_p = reinterpret_cast<char *>(m_cache_memMap[cacheIndex].poolItem_p->GetDataRef());
+        *size_p = m_cache_memMap[cacheIndex].size;
 
         if (properties_p != nullptr) {
             *properties_p = m_cache_memMap[cacheIndex].properties;
@@ -122,7 +122,7 @@ void CRowCache::Get(const int rowIndex, char **text_p, int *size_p, int *propert
             to_readBytes = m_cache_memMap[cacheIndex].poolItem_p->GetDataSize() - 1;
         }
 
-        char *dataRef_p = (char *)m_cache_memMap[cacheIndex].poolItem_p->GetDataRef();
+        auto *dataRef_p = reinterpret_cast<char *>(m_cache_memMap[cacheIndex].poolItem_p->GetDataRef());
 
         /*
          *  if (!rawFromFile(m_TIA_p->textItemArray_p[rowIndex].fileIndex, to_readBytes, dataRef_p)) {
@@ -151,7 +151,7 @@ void CRowCache::Get(const int rowIndex, char **text_p, int *size_p, int *propert
         Decode(cacheIndex);
 
         *size_p = m_cache_memMap[cacheIndex].size;
-        *text_p = (char *)m_cache_memMap[cacheIndex].poolItem_p->GetDataRef();
+        *text_p = reinterpret_cast<char *>(m_cache_memMap[cacheIndex].poolItem_p->GetDataRef());
 
         m_cache_memMap[cacheIndex].tabbedSize = -1; /*CalculateTextItemTabbedLength(*text_p, *size_p); */
 
@@ -224,11 +224,13 @@ void CRowCache::GetAtCacheIndex(int cacheIndex, char **text_p, int *size_p, int 
     if (cache_p->poolItem_p != nullptr) {
         *text_p = reinterpret_cast<char *>(cache_p->poolItem_p->GetDataRef());
         *size_p = cache_p->size;
+        *properties_p = cache_p->properties;
         return;
     }
 
     *text_p = nullptr;
     *size_p = 0;
+    *properties_p = 0;
 }
 
 /***********************************************************************************************************************
@@ -248,7 +250,7 @@ void CRowCache::UpdateAtCacheIndex(int cacheIndex, char *text_p, int size, int p
         /* Replace the string in cache */
         cache_p->size = size - 1; /* -1 to avoid adding the zero termination to the string size */
         cache_p->properties = properties;
-        memcpy(cache_p->poolItem_p->GetDataRef(), text_p, size);
+        memcpy(cache_p->poolItem_p->GetDataRef(), text_p, static_cast<size_t>(size));
     }
 }
 

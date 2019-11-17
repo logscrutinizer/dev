@@ -279,6 +279,7 @@ typedef struct {
 
 #define DEFAULT_MEM_SIZE (1024 * 1000 * 200)    /* 200 MB */
 #define DEFAULT_MAX_MEM_SIZE (1024 * 1000 * 600)    /* 600 MB will enable smaller chunks of work */
+#define DEFAULT_MIN_MEM_SIZE (1024 * 100)    /* 100 kB is minimum size for operation */
 
 #define MAX_SEARCH_HISTORY 10
 

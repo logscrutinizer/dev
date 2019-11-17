@@ -52,8 +52,7 @@ public:
     {
 #ifdef _DEBUG
         if (!selection.isEmpty() && !selection.first().isEmpty() && !selection.first().indexes().isEmpty()) {
-            TRACEX_DE(QString("set Selection %1")
-                          .arg(selection.first().indexes().first().row()));
+            TRACEX_DE(QString("set Selection %1").arg(selection.first().indexes().first().row()))
         }
 #endif
         QItemSelectionModel::select(selection, command);
@@ -110,8 +109,6 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
     Qt::DropActions supportedDragActions() const Q_DECL_OVERRIDE;
     Qt::DropActions supportedDropActions() const Q_DECL_OVERRIDE;
-    virtual bool moveRows(const QModelIndex &sourceParent, int sourceRow, int count,
-                          const QModelIndex &destinationParent, int destinationChild) Q_DECL_OVERRIDE;
     virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) Q_DECL_OVERRIDE;
     QModelIndex index(int row, int column, const QModelIndex &parent) const Q_DECL_OVERRIDE;
     QModelIndex parent(const QModelIndex &child) const Q_DECL_OVERRIDE;
@@ -171,8 +168,8 @@ public:
     void ExecuteFileOperationOnSelection(CfgItem_PossibleFileOperations_t fileOperations);
     QString GetShortName(QString& filePath);
     QModelIndex toModelIndex(CCfgItem *cfgItem_p) {return m_model_p->toIndex(cfgItem_p);}
-    void SetQuickSearch(uint32_t nChar);
-    void QuickSearch(uint32_t nChar, bool searchDown);
+    void SetQuickSearch(int nChar);
+    void QuickSearch(int nChar, bool searchDown);
     bool isItemSelected(CCfgItem *cfgItem_p);
     bool isSingleKindSelections(CfgItemKind_t *kind_p = nullptr);
     void PopupAction(int action);

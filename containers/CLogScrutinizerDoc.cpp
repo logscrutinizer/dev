@@ -910,7 +910,7 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
     /* Check if we may open, if not possible try with alternative names. If this fails entirely then this log
      * cannot be opened at all since we cannot create a corresponding TIA file
      * check tia file, open *_x.tia if necessary (x= 1-10) */
-    if (!CanFileBeOpenedForFileReadWrite(m_TIA_FileName, CFG_MAX_FILE_NAME_SIZE, true, 0, true)) {
+    if (!CanFileBeOpenedForFileReadWrite(m_TIA_FileName, true, true)) {
         CleanDB(false);  /* fallback solution */
 #ifdef _DEBUG
         TRACEX_E(m_delayedErrorMsg)
@@ -923,7 +923,7 @@ bool CLogScrutinizerDoc::LoadLogFile(QString fileName /*use copy*/, bool reload)
     /* Check if we may open, if not possible try with alternative names. If this fails entirely then this log
      * cannot be opened at all since we cannot create a corresponding FIRA file
      * check fira file, open *_x.fira if necessary (x= 1-10 */
-    if (!CanFileBeOpenedForFileReadWrite(m_FIRA_FileName, CFG_MAX_FILE_NAME_SIZE, true, 0, true)) {
+    if (!CanFileBeOpenedForFileReadWrite(m_FIRA_FileName, true, true)) {
         CleanDB(false);  /* fallback solution */
 #ifdef _DEBUG
         TRACEX_E(m_delayedErrorMsg)
@@ -1461,14 +1461,6 @@ void CLogScrutinizerDoc::PostProcPlot(void)
 }
 
 /***********************************************************************************************************************
-*   RefreshFIRACache
-***********************************************************************************************************************/
-void CLogScrutinizerDoc::RefreshFIRACache(int rowIndex)
-{
-    CleanRowCache();
-}
-
-/***********************************************************************************************************************
 *   ClearDecoders
 ***********************************************************************************************************************/
 void CLogScrutinizerDoc::ClearDecoders(void)
@@ -1564,7 +1556,7 @@ void CLogScrutinizerDoc::VerifyDB(void)
     }
 
     TRACEX_I("Max row:%d size:%d, number of very long rows (>%d):%d ",
-             MAX_RowIndex, MAX_Line, MAX_RowSize, numOfMAX_Lines);
+             MAX_RowIndex, MAX_Line, MAX_RowSize, numOfMAX_Lines)
 }
 
 /***********************************************************************************************************************
@@ -1580,7 +1572,7 @@ bool CLogScrutinizerDoc::SaveRowsToFile(char *fileName_p, int startRow, int endR
     QFile outputFile(fileName_p);
 
     if (!outputFile.open(QIODevice::WriteOnly)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to save row clipped region to file", &outputFile);
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to save row clipped region to file", &outputFile)
         return false;
     }
 
@@ -1590,7 +1582,7 @@ bool CLogScrutinizerDoc::SaveRowsToFile(char *fileName_p, int startRow, int endR
         char *text_p;
         GetTextItem(row, &text_p, &size);
 
-        memcpy(g_largeTempString, text_p, size);
+        memcpy(g_largeTempString, text_p, static_cast<size_t>(size));
 
         g_largeTempString[size++] = 0x0d;
         g_largeTempString[size++] = 0x0a;
@@ -1598,8 +1590,7 @@ bool CLogScrutinizerDoc::SaveRowsToFile(char *fileName_p, int startRow, int endR
         int writtenBytes = static_cast<int32_t>(outputFile.write(g_largeTempString, size));
 
         if (writtenBytes != size) {
-            TRACEX_W(
-                "While writing text to file not all data was stored. Please try again");
+            TRACEX_W("While writing text to file not all data was stored. Please try again")
         }
     }
 
@@ -1647,8 +1638,7 @@ bool CLogScrutinizerDoc::CanFileBeOpenedForFileRead(QString& fileName, bool prom
 /***********************************************************************************************************************
 *   CanFileBeOpenedForFileReadWrite
 ***********************************************************************************************************************/
-bool CLogScrutinizerDoc::CanFileBeOpenedForFileReadWrite(QString& fileName, int maxFileNameSize,
-                                                         bool promtWarning, int sharing, bool tryOtherName)
+bool CLogScrutinizerDoc::CanFileBeOpenedForFileReadWrite(QString& fileName, bool promtWarning, bool tryOtherName)
 {
     /* This function checks if the file can be opened/created with the sharing specified. If tryOtherName is set then
      * this
@@ -1710,7 +1700,6 @@ bool CLogScrutinizerDoc::CanFileBeOpenedForFileReadWrite(QString& fileName, int 
         } /* promtWarning */
         return false;
     } /* try other name */
-    return false;
 }
 
 /***********************************************************************************************************************
@@ -1729,7 +1718,7 @@ QString CLogScrutinizerDoc::GetRecommendedPath(void)
         return lsPath;
     } else {
         TRACEX_D("CLogScrutinizerDoc::CLogScrutinizerDoc    Reading environment "
-                 "var LS_PATH failed, it doesn't exist");
+                 "var LS_PATH failed, it doesn't exist")
     }
 
     filePath_CStr = m_recentFiles.GetRecentPath(RecentFile_Kind_LogFile_en);

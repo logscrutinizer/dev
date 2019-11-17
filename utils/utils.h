@@ -60,7 +60,7 @@ extern ScreenPoint_t MakeScreenPoint(QContextMenuEvent *event, int dx = 0, int d
 
 QImage MakeTransparantImage(QString resource, QRgb transparencyColor);
 
-#define DELETE_AND_CLEAR(A) {if (A != nullptr) {delete(A); A = nullptr;}}
+#define IF_NOT_NULL_DELETE_AND_SET_NULL(A) {if (A != nullptr) {delete(A); A = nullptr;}}
 
 #define SAFE_STR_MEMCPY(DEST, DEST_SIZE, SRC, SRC_SIZE) { \
         const size_t copy_size = DEST_SIZE - 1 < SRC_SIZE ? DEST_SIZE - 1 : SRC_SIZE; \

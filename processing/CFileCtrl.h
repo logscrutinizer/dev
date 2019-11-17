@@ -168,11 +168,11 @@ private:
 /***********************************************************************************************************************
 *   CFileCtrl
 ***********************************************************************************************************************/
-class CFileCtrl
+class CFileCtrl final /* final as no virtual desctructor */
 {
 public:
     CFileCtrl(void);
-    virtual ~CFileCtrl(void)
+    ~CFileCtrl(void)
     {
         while (!m_parseCmdList.isEmpty()) {
             delete (m_parseCmdList.takeFirst());
