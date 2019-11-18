@@ -361,7 +361,7 @@ void CEditorWidget::Initialize(void)
 ***********************************************************************************************************************/
 void CEditorWidget::Refresh(bool doUpdate)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
     UpdateTotalNumRows();
     InvalidateRockScroll();
 
@@ -399,7 +399,7 @@ void CEditorWidget::UpdateTotalNumRows(void)
      * be filtered and hence there is not specific need to update the total number of rows considering row clipping,
      * this should be automagically be fixed by the filtering. */
 
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     m_totalNumOfRows = doc_p->m_database.TIA.rows;
     m_minRowIndex = 0;
@@ -425,7 +425,7 @@ void CEditorWidget::UpdateTotalNumRows(void)
 ***********************************************************************************************************************/
 void CEditorWidget::SetupScreenProperties_Step0(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     bool static first = true;
     QRect rcClient;
 
@@ -485,7 +485,7 @@ void CEditorWidget::SetupScreenProperties_Step0(void)
 ***********************************************************************************************************************/
 void CEditorWidget::SetupScreenProperties_Step1(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     /* Let the text window padding be dependent on the font size */
 
@@ -568,7 +568,7 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
 ***********************************************************************************************************************/
 void CEditorWidget::SetupScreenProperties_Step2(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     QSize lineSize(0, 0);
     char *start_p;
     int size;
@@ -1580,7 +1580,7 @@ bool CEditorWidget::ContainsTabs(const char *text_p, const int textSize)
 void CEditorWidget::DrawModifiedFontRow(FontModification_RowInfo_t *fontModRowInfo_p, QRect *rect_p,
                                         const char *text_p, const int textSize, CFilterItem *filterItem_p)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     int currentCol = 0;
 
     /* Parts of the text line that is not part of the elementRefs shall be drawn normally, and this will be mixed all
@@ -1804,7 +1804,7 @@ bool CEditorWidget::RowExist_inScreen(const int row)
 ***********************************************************************************************************************/
 bool CEditorWidget::SearchFilteredRows_inScreen(int startRow, int count, bool up, int *row_p)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     FIR_t *FIRA_p = doc_p->m_database.FIRA.FIR_Array_p;
     int index = startRow;
 
@@ -1850,7 +1850,7 @@ bool CEditorWidget::SearchFilteredRows_inScreen(int startRow, int count, bool up
 ***********************************************************************************************************************/
 bool CEditorWidget::GetClosestFilteredRow(int startRow, bool up, int *row_p)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     bool found = false;
     int row = startRow;
 
@@ -1902,7 +1902,7 @@ bool CEditorWidget::GetClosestFilteredRow(int startRow, bool up, int *row_p)
 ***********************************************************************************************************************/
 bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int *row_p, int *remains_p)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     int row = 0;
 
     *row_p = startRow; /* get the same row back (no move) */
@@ -2048,7 +2048,7 @@ void CEditorWidget::GotoTop(void)
 ***********************************************************************************************************************/
 void CEditorWidget::GotoBottom(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     EmptySelectionList();
 
@@ -2080,7 +2080,7 @@ void CEditorWidget::GotoBottom(void)
 ***********************************************************************************************************************/
 void CEditorWidget::GotoRow(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     bool ok;
     int row = QInputDialog::getInt(this, tr("Goto row"), tr("Row"), 0, 0, doc_p->m_database.TIA.rows, 1, &ok);
 
@@ -2133,7 +2133,7 @@ void CEditorWidget::showEvent(QShowEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::Filter(void)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
     doc_p->Filter();
     Refresh();
 }
@@ -2205,7 +2205,7 @@ void CEditorWidget::OnFilterItemAdd(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnFilterItemProperties(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     CFilterItem *filterItem_p = doc_p->m_rowCache_p->GetFilterRef(m_cursorSel.row);
     if ((filterItem_p != nullptr) && (g_workspace_p != nullptr)) {
         CWorkspace_FilterItemProperties(filterItem_p->m_uniqueID, this);
@@ -2218,7 +2218,7 @@ void CEditorWidget::OnFilterItemProperties(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnFilterItemDisable(void)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     CFilterItem *filterItem_p = doc_p->m_rowCache_p->GetFilterRef(m_cursorSel.row);
     if ((filterItem_p != nullptr) && (g_workspace_p != nullptr)) {
         CWorkspace_DisableFilterItem(filterItem_p->m_uniqueID);
@@ -2387,7 +2387,7 @@ void CEditorWidget::OnLogFileOpen(void)
 ***********************************************************************************************************************/
 void CEditorWidget::OnFileSaveSelectionsAs(void)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
     QStringList filters;
     filters << "Text files (*.txt *.log)";
 
@@ -2410,7 +2410,7 @@ void CEditorWidget::OnFileSaveSelectionsAs(void)
 ***********************************************************************************************************************/
 void CEditorWidget::contextMenuEvent(QContextMenuEvent *event)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
 
     if ((doc_p->m_database.TIA.rows == 0) || (g_workspace_p == nullptr)) {
         return;
@@ -2640,7 +2640,7 @@ void CEditorWidget::SetPlotCursor(void)
 {
     CPlotPane *plotPane_p = CPlotPane_GetPlotPane();
     CSelection selection;
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (plotPane_p == nullptr) {
         return;
@@ -2689,7 +2689,7 @@ void CEditorWidget::SetPlotCursor(void)
 ***********************************************************************************************************************/
 void CEditorWidget::SetRowClip(bool isStart, int row)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (row != -3) {
         /* do nothing */
@@ -2790,7 +2790,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
     bool invalidate = false;
     bool vscrollSliderHit = false;
     Qt::CursorShape requestCursor = Qt::ArrowCursor;
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     m_CTRL_Pressed = QApplication::keyboardModifiers() & Qt::ControlModifier ? true : false;
     m_SHIFT_Pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier ? true : false;
@@ -3044,7 +3044,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
 ***********************************************************************************************************************/
 void CEditorWidget::OnMouseWheel(QWheelEvent *event)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     MW_updateLogFileTrackState(false);
 
@@ -3166,7 +3166,7 @@ void CEditorWidget::PageLeftRight(bool left, int charsToScroll)
 ***********************************************************************************************************************/
 void CEditorWidget::HorizontalCursorFocus(HCursorScrollAction_e scrollAction)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     /* In the bitmap where all is blitted...
      *
@@ -3290,7 +3290,7 @@ void CEditorWidget::UpdateRelPosition(void)
         m_topLine = 0;
     }
 
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     double old_relPos = m_relPos;
     double rowIndex_f = static_cast<double>(m_topLine);
 
@@ -3345,7 +3345,7 @@ void CEditorWidget::UpdateRelTopLinePosition(void)
     m_topLine = topIndex;
 
     if ((m_presentationMode == PRESENTATION_MODE_ONLY_FILTERED_e) && (m_totalNumOfRows > 0)) {
-        CLogScrutinizerDoc *doc_p = GetDocument();
+        auto *doc_p = GetDocument();
         if (m_maxDisplayRows >= m_totalNumOfRows) {
             m_topLine = doc_p->m_database.packedFIRA_p[0].row;
         } else if (topIndex >= 0) {
@@ -3479,7 +3479,7 @@ void CEditorWidget::OnLButtonDown(Qt::KeyboardModifiers modifiers, ScreenPoint_t
         setFocus();
     }
 
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (doc_p->m_database.TIA.rows == 0) {
         return;
@@ -3594,7 +3594,7 @@ void CEditorWidget::OnLButtonUp(ScreenPoint_t& screenPoint)
         m_captureOn = false;
     }
 
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (doc_p->m_database.TIA.rows == 0) {
         return;
@@ -3740,7 +3740,7 @@ void CEditorWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton) {
         bool invalidate = false;
-        CLogScrutinizerDoc *doc_p = GetDocument();
+        auto *doc_p = GetDocument();
 
         if (doc_p->m_database.TIA.rows == 0) {
             return;
@@ -3792,7 +3792,7 @@ void CEditorWidget::CursorUpDown(bool up)
  *      a. pressed - Scroll entire window, cursor fixed
  *
  * When no function key is pressed only cursor moves */
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     int cursorRow = m_cursorSel.row;
     int cursorCol = m_cursorSel.startCol;
     int searchRow = 0;
@@ -4220,7 +4220,7 @@ void CEditorWidget::CursorUpDown(bool up)
 ***********************************************************************************************************************/
 void CEditorWidget::CursorLeftRight(bool left)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     int cursorRow = m_cursorSel.row;
     int cursorCol = m_cursorSel.startCol;
     char *text_p = nullptr;
@@ -4385,7 +4385,7 @@ void CEditorWidget::CursorLeftRight(bool left)
 void CEditorWidget::PageUpDown(bool up, int lines)
 {
     /* select next top line */
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     CSelection currentCur = m_cursorSel;
 
     if (lines == 0) {
@@ -4493,7 +4493,7 @@ void CEditorWidget::TogglePresentationMode(void)
 ***********************************************************************************************************************/
 void CEditorWidget::SetPresentationMode(LogScrutinizerView_PresentaiontMode_t mode)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if ((mode == PRESENTATION_MODE_ONLY_FILTERED_e) && (doc_p->m_database.FIRA.filterMatches == 0)) {
         TRACEX_I("No filter matches")
@@ -4518,7 +4518,7 @@ bool CEditorWidget::AddFilterItem(void)
     if (m_selectionList.isEmpty()) {
         strcpy(m_tempStr, "");
     } else {
-        CLogScrutinizerDoc *doc_p = GetDocument();
+        auto *doc_p = GetDocument();
         CSelection *selection_p = m_selectionList.first();
         char *start_p;
         int textSize;
@@ -4547,7 +4547,7 @@ bool CEditorWidget::AddFilterItem(void)
 ***********************************************************************************************************************/
 bool CEditorWidget::isRowReselected(int row, int startCol, CSelection **selection_pp)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (m_selectionList.isEmpty() || (m_totalNumOfRows == 0)) {
         return false;
@@ -4580,7 +4580,7 @@ bool CEditorWidget::isRowReselected(int row, int startCol, CSelection **selectio
 ***********************************************************************************************************************/
 bool CEditorWidget::isRowSelected(int row, CSelection **selection_pp)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     *selection_pp = nullptr;
 
@@ -4719,7 +4719,7 @@ void CEditorWidget::AddSelection(
     bool updateCursor,
     bool cursorAfterSelection)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     CSelection *selection_p;
     int TIA_RowLength;
     CSelection *selectionIter_p;
@@ -4862,7 +4862,7 @@ void CEditorWidget::AddSelection(
 ***********************************************************************************************************************/
 void CEditorWidget::UpdateSelection(int TIA_Row, int startCol)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     bool skipFirstRow = false;
     bool skipLastRow = false;
 
@@ -5017,7 +5017,7 @@ void CEditorWidget::UpdateSelection(int TIA_Row, int startCol)
 ***********************************************************************************************************************/
 void CEditorWidget::ExpandSelection(CSelection *selection_p)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
     char *text_p = nullptr;
     int size = 0;
     bool stop = false;
@@ -5031,7 +5031,7 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
 
     ExpandKind_t expandKind;
 
-    PRINT_SELECTION("Expand selection");
+    PRINT_SELECTION("Expand selection")
 
     /* Check selection */
     if (selection_p->row >= doc_p->m_database.TIA.rows) {
@@ -5058,9 +5058,9 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
     if (text_p != nullptr) {
         int index = selection_p->startCol;
 
-        if (isdigit((uint8_t)text_p[selection_p->startCol])) {
+        if (isdigit(text_p[selection_p->startCol])) {
             expandKind = ExpandKind_Digit;
-        } else if (isalpha((uint8_t)text_p[selection_p->startCol])) {
+        } else if (isalpha(text_p[selection_p->startCol])) {
             expandKind = ExpandKind_Letter;
         } else if (text_p[selection_p->startCol] == '_') {
             expandKind = ExpandKind_Digit;
@@ -5075,13 +5075,13 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
                 stop = true;
             } else if ((text_p[index] == ' ') ||
                        ((expandKind == ExpandKind_Digit) &&
-                        (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
+                        (!isdigit(text_p[index]) && !isalpha(text_p[index]) &&
                          (text_p[index] != '_'))) ||
                        ((expandKind == ExpandKind_Letter) &&
-                        (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
+                        (!isdigit(text_p[index]) && !isalpha(text_p[index]) &&
                          (text_p[index] != '_'))) ||
                        ((expandKind == ExpandKind_Other) &&
-                        (isalpha((uint8_t)text_p[index]) || isdigit((uint8_t)text_p[index])))) {
+                        (isalpha(text_p[index]) || isdigit(text_p[index])))) {
                 stop = true;
                 ++index;
             } else {
@@ -5103,13 +5103,13 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
             while (!stop && index < size) {
                 if ((text_p[index] == ' ') ||
                     ((expandKind == ExpandKind_Digit) &&
-                     (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
+                     (!isdigit(text_p[index]) && !isalpha(text_p[index]) &&
                       (text_p[index] != '_'))) ||
                     ((expandKind == ExpandKind_Letter) &&
-                     (!isdigit((uint8_t)text_p[index]) && !isalpha((uint8_t)text_p[index]) &&
+                     (!isdigit(text_p[index]) && !isalpha(text_p[index]) &&
                       (text_p[index] != '_'))) ||
                     ((expandKind == ExpandKind_Other) &&
-                     (isalpha((uint8_t)text_p[index]) || isdigit((uint8_t)text_p[index])))) {
+                     (isalpha(text_p[index]) || isdigit(text_p[index])))) {
                     stop = true;
                 } else {
                     ++index;
@@ -5122,13 +5122,13 @@ void CEditorWidget::ExpandSelection(CSelection *selection_p)
         while (index < size &&
                text_p[index] != ' ' &&
                (((expandKind == ExpandKind_Digit) &&
-                 (isdigit((uint8_t)text_p[index]) || isalpha((uint8_t)text_p[index]) ||
+                 (isdigit(text_p[index]) || isalpha(text_p[index]) ||
                   text_p[index] == '_')) ||
                 ((expandKind == ExpandKind_Letter) &&
-                 (isdigit((uint8_t)text_p[index]) || isalpha((uint8_t)text_p[index]) ||
+                 (isdigit(text_p[index]) || isalpha(text_p[index]) ||
                   text_p[index] == '_')) ||
                 ((expandKind == ExpandKind_Other) &&
-                 (!isalpha((uint8_t)text_p[index]) && !isdigit((uint8_t)text_p[index]))))) {
+                 (!isalpha(text_p[index]) && !isdigit(text_p[index]))))) {
             ++index;
         }
 
@@ -5322,7 +5322,7 @@ void CEditorWidget::ContinueSelection(int TIA_selectedRow, int startCol, int end
     int index;
     int endRow;
 
-    if (startPoint.row > (int)TIA_selectedRow) {
+    if (startPoint.row > TIA_selectedRow) {
         index = TIA_selectedRow;
         endRow = startPoint.row;
     } else {
@@ -5330,7 +5330,7 @@ void CEditorWidget::ContinueSelection(int TIA_selectedRow, int startCol, int end
         endRow = TIA_selectedRow;
     }
 
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (endRow - index > 1000) {
         g_processingCtrl_p->Processing_StartReport();
@@ -5381,7 +5381,7 @@ void CEditorWidget::SelectionUpdated(CSelection *selection_p)
 
     if (m_selectionList.isEmpty() || (m_selectionList.count() > 1) ||
         ((m_selectionList.first()->endCol - (m_selectionList.first()->startCol)) < 2)) {
-        CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+        auto *doc_p = GetDocument();
 #ifdef _DEBUG
         TRACEX_D("SetAutoHighlight RESET  selections:%d", m_selectionList.count())
 #endif
@@ -5405,7 +5405,7 @@ void CEditorWidget::SelectionUpdated(CSelection *selection_p)
 QString CEditorWidget::GetSelectionText(void)
 {
     int textSize;
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     char *start_p;
 
     if (m_selectionList.isEmpty()) {
@@ -5431,7 +5431,7 @@ int CEditorWidget::GetSelectionsTextSize(void)
 {
     int textSize;
     int TIA_Row;
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     char *start_p;
 
     /* Find out the total size first */
@@ -5463,7 +5463,7 @@ int CEditorWidget::GetSelectionsTextMaxSize(void)
 {
     int textSize;
     int TIA_Row;
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     char *start_p;
     int selectionMaxSize = 0;
     int selectionSize = 0;
@@ -5495,7 +5495,7 @@ void CEditorWidget::OnAutoHighlightTimer(void)
     auto doupdate = makeMyScopeGuard([&] () {
         update();
     });
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
 
 #ifdef _DEBUG
     TRACEX_D("CEditorWidget::OnAutoHighlightTimer  KillTimer - AUTO_HIGHLIGHT_TIMER_ID")
@@ -5524,10 +5524,10 @@ void CEditorWidget::OnAutoHighlightTimer(void)
         return;
     }
 
-    memcpy(m_tempStr, &text_p[selection_p->startCol], selectionSize);
+    memcpy(m_tempStr, &text_p[selection_p->startCol], static_cast<size_t>(selectionSize));
     m_tempStr[selectionSize] = 0;
 
-    doc_p->m_autoHighLighter_p->SetAutoHighlight(MW_GetTick(), m_tempStr);
+    doc_p->m_autoHighLighter_p->SetAutoHighlight(static_cast<uint64_t>(MW_GetTick()), m_tempStr);
 
     TRACEX_D("OnAutoHighlightTimer OK %s", m_tempStr)
 }
@@ -5560,13 +5560,12 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
         reselection = isRowReselected(TIA_row, screenCol, &reselection_p);
 
         PRINT_SELECTION(QString("textWindow_SelectionUpdate MOUSE %1,%2 Row:%3, Col:%4")
-                            .arg(screenPoint_p->mouse.rx()).arg(screenPoint_p->mouse.ry()).arg(screenRow).arg(screenCol));
+                            .arg(screenPoint_p->mouse.rx()).arg(screenPoint_p->mouse.ry()).arg(screenRow).arg(screenCol))
 
         if (LS_LG_Event == LS_LG_EVENT_LMOUSE_DOWN_e) {
             /* Mouse based event */
             if (modifiers & Qt::ControlModifier) {
-                PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DOWN_e + MK_LBUTTON, reselection:%d",
-                                reselection);
+                PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DOWN_e + MK_LBUTTON, reselection:%d", reselection)
 
                 if (reselection) {
                     RemoveSelection(TIA_row);
@@ -5579,7 +5578,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
             } else if (modifiers & Qt::ShiftModifier) {
                 m_pendingSingleSelection = false;
 
-                PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DOWN_e, MULTIPLE  Reselection:%d", reselection);
+                PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DOWN_e, MULTIPLE  Reselection:%d", reselection)
 
                 /*ContinueSelection(TIA_row, screenCol, screenCol); */
 
@@ -5590,10 +5589,10 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
                     UpdateSelection(TIA_row, screenCol);
                 }
             } else {
-                PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DOWN_e, reselection:%d", reselection);
+                PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DOWN_e, reselection:%d", reselection)
 
                 if (reselection) {
-                    PRINT_SELECTION("Selection update, DRAG ENABLED");
+                    PRINT_SELECTION("Selection update, DRAG ENABLED")
                     m_dragEnabled = true;
                     m_dragOngoing = false;
                     m_pendingSingleSelection = true;     /* If there is no drag then we should empty selection list and
@@ -5621,19 +5620,19 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
                     DragAndDrop();
 #endif
                     PRINT_SELECTION("Selection update, LS_LG_EVENT_MOUSE_MOVE_e  DragOnGoing x:%-4d y:%-4d",
-                                    screenPoint_p->mouse.x(), screenPoint_p->mouse.y());
+                                    screenPoint_p->mouse.x(), screenPoint_p->mouse.y())
                 }
                 return false;
             }
 
             if (m_LMousePressed) {
                 /* Column selection */
-                PRINT_SELECTION(QString("Selection update, column selection col:%1").arg(screenCol));
+                PRINT_SELECTION(QString("Selection update, column selection col:%1").arg(screenCol))
                 UpdateSelection(TIA_row, screenCol - (overHalf ? 1 : 0));
                 m_pendingSingleSelection = false;
             }
         } else if (LS_LG_Event == LS_LG_EVENT_LMOUSE_UP_e) {
-            PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_UP_e");
+            PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_UP_e")
 
             /* E.g. the user has select many rows, then a already selected row is selected again, hence all but the
              * re-selected row should be selected. This
@@ -5658,7 +5657,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
             CSelection newSelection;
             bool expandExisting = false;
 
-            PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DBL_e");
+            PRINT_SELECTION("Selection update, LS_LG_EVENT_LMOUSE_DBL_e")
 
             m_LMousePressed = false;
             m_dragEnabled = false;
@@ -5699,7 +5698,7 @@ bool CEditorWidget::textWindow_SelectionUpdate(ScreenPoint_t *screenPoint_p, LS_
         return true;
     } else if (LS_LG_Event & LS_LG_EVENT_KEY_e) {
         if (LS_LG_Event == LS_LG_EVENT_KEY_CTRL_C_e) {
-            PRINT_SELECTION("Selection update, LS_LG_EVENT_KEY_CTRL_C_e");
+            PRINT_SELECTION("Selection update, LS_LG_EVENT_KEY_CTRL_C_e")
 
             SelectionsToClipboard();
             return false; /* no redraw necessary */
@@ -5723,7 +5722,7 @@ void CEditorWidget::AddDragSelection(int TIA_Row, int startCol, int endCol)
     m_origDragSelection.startCol = startCol;
     m_origDragSelection.endCol = endCol;
 
-    PRINT_SELECTION(QString("Add drag selection, row:%1 start:%2 end:%3").arg(TIA_Row).arg(startCol).arg(endCol));
+    PRINT_SELECTION(QString("Add drag selection, row:%1 start:%2 end:%3").arg(TIA_Row).arg(startCol).arg(endCol))
 }
 
 /* Use QByteArray instead of CShareFile */
@@ -5733,8 +5732,7 @@ bool CEditorWidget::CopySelectionsToSharedFile(QString sharedFile /*CSharedFile*
     Q_UNUSED(bytesWritten_p)
 
 #ifdef QT_TODO
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
-
+    auto *doc_p = GetDocument();
     CSelection *selection_p = nullptr;
     POSITION pos;
     char *start_p;
@@ -5809,8 +5807,7 @@ bool CEditorWidget::CopySelectionsToMem(char *dest_p, int *bytesWritten_p)
     Q_UNUSED(bytesWritten_p)
 
 #ifdef QT_TODO
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
-
+    auto *doc_p = GetDocument();
     CSelection *selection_p = nullptr;
     POSITION pos;
     char *start_p;
@@ -5915,7 +5912,7 @@ bool CEditorWidget::SaveSelectionsToFile(QString& fileName)
 void CEditorWidget::SelectionsToClipboard(void)
 {
     QClipboard *clipboard = QApplication::clipboard();
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
 
 #ifdef _DEBUG
     const QMimeData *mimeDataCopy = clipboard->mimeData();
@@ -5939,7 +5936,7 @@ void CEditorWidget::SelectionsToClipboard(void)
     QString fontSize = QString("%1px").arg(GetTheDoc()->m_fontCtrl.GetSize() + 4);
 
     /* Important, the content that needs to be copied differs between Win32 and Linux */
-#if _WIN32
+#ifdef _WIN32
     QString head("<html><body>");
     QString tail("</html></body>");
 #else
@@ -5950,7 +5947,7 @@ void CEditorWidget::SelectionsToClipboard(void)
     QString meta("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">");
 
     /*    rich_text->setHtml(str); */
-    int selectionCount = (int)m_selectionList.count();
+    int selectionCount = m_selectionList.count();
     if (selectionCount == 0) {
         TRACEX_W("No selection to copy")
         return;
@@ -6016,7 +6013,7 @@ void CEditorWidget::SelectionsToClipboard(void)
 bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p, int *screenCol_p,
                                   bool *overHalf)
 {
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     int TIA_row;
 
     *screenRow_p = 0;
@@ -6047,11 +6044,11 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
     }
 
     *screenRow_p = index;
-    if ((int)*screenRow_p > m_maxDisplayRows - 1) {
+    if (*screenRow_p > m_maxDisplayRows - 1) {
         *screenRow_p = m_maxDisplayRows - 1;
     }
 
-    if ((int)*screenRow_p < 0) {
+    if (*screenRow_p < 0) {
         *screenRow_p = 0;
     }
 
@@ -6062,7 +6059,7 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
 
         /* Until the screen is as large as the text the below print cannot be a WARNING */
         TRACEX_DE("CEditorWidget::PointToCursor  WARNING screenRow:%d NOT VALID y:%d w_top:%d height:%d",
-                  *screenRow_p, screenPoint_p->DCBMP.y(), m_textWindow.top(), m_rowHeigth);
+                  *screenRow_p, screenPoint_p->DCBMP.y(), m_textWindow.top(), m_rowHeigth)
 #endif
 
         update();
@@ -6137,11 +6134,11 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
                     }
                 }
 
-                if (*screenCol_p >= (int)textSize) {
+                if (*screenCol_p >= textSize) {
                     if (textSize <= 0) {
                         *screenCol_p = 0;
                     } else {
-                        *screenCol_p = (int)textSize;
+                        *screenCol_p = textSize;
                     }
                 }
                 return true;
@@ -6154,7 +6151,7 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
             if (textSize == 0) {
                 *screenCol_p = 0;
             } else {
-                *screenCol_p = (int)textSize;
+                *screenCol_p = textSize;
             }
             return true;
         }
@@ -6162,16 +6159,13 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
 #ifdef _DEBUG
         PRINT_SELECTION(
             "CEditorWidget::PointToCursor Search failed (%d), TextSize:%d, last x_pos_left:%d x_pos_right:%d",
-            index,
-            textSize,
-            x_pos_left,
-            x_pos_right);
+            index, textSize, x_pos_left, x_pos_right)
 #endif
     } else {
 #ifdef _DEBUG
         TRACEX_DE("CEditorWidget::PointToCursor NOT IN BOX  top:%d bottom:%d screen_row:%d",
                   m_screenRows[*screenRow_p].screenRect.top(), m_screenRows[*screenRow_p].screenRect.bottom(),
-                  m_screenRows[*screenRow_p].row);
+                  m_screenRows[*screenRow_p].row)
 #endif
     }
 
@@ -6185,7 +6179,7 @@ bool CEditorWidget::GetSelectionRect(CSelection *selection_p, QRect *rect_p)
 {
     for (int index = 0; index < LOG_SCRUTINIZER_MAX_SCREEN_ROWS && m_screenRows[index].valid; ++index) {
         if (m_screenRows[index].row == selection_p->row) {
-            CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+            auto *doc_p = GetDocument();
             QSize size;
             char *text_p;
             int textSize;
@@ -6197,7 +6191,7 @@ bool CEditorWidget::GetSelectionRect(CSelection *selection_p, QRect *rect_p)
 
             doc_p->GetTextItem(m_screenRows[index].row, &text_p, &textSize);
 
-            if (selection_p->endCol < (int)textSize - 1) {
+            if (selection_p->endCol < textSize - 1) {
                 size = GetTabbedSize(text_p, selection_p->startCol, m_blackFont_p->font_p);
                 rect_p->setLeft(m_screenRows[index].screenRect.left() + size.width());
 
@@ -6217,7 +6211,7 @@ bool CEditorWidget::GetSelectionRect(CSelection *selection_p, QRect *rect_p)
 ***********************************************************************************************************************/
 bool CEditorWidget::RowColumnToRect(int row, int screenCol, QRect *rect_p)
 {
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     int index = 0;
     bool found = false;
     char *text_p = nullptr;
@@ -6263,7 +6257,7 @@ bool CEditorWidget::RowColumnToRect(int row, int screenCol, QRect *rect_p)
 ***********************************************************************************************************************/
 bool CEditorWidget::PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p, QPoint *alignedPoint_p)
 {
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     int TIA_row;
 
     *screenCol_p = 0;
@@ -6291,8 +6285,7 @@ bool CEditorWidget::PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p
         *screenCol_p = 0;
 
         TRACEX_DE("CEditorWidget::PointToColumn Before line, textLeft:%-4d col:%-4d",
-                  m_screenRows[0].screenRect.left(),
-                  *screenCol_p);
+                  m_screenRows[0].screenRect.left(), *screenCol_p)
 
         alignedPoint_p->setX(x_pos_left);
         return true;
@@ -6336,10 +6329,7 @@ bool CEditorWidget::PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p
     }
 
     TRACEX_W("CEditorWidget::PointToCursor Search failed (%d), TextSize:%d, last x_pos_left:%d x_pos_right:%d",
-             index,
-             textSize,
-             x_pos_left,
-             x_pos_right);
+             index, textSize, x_pos_left, x_pos_right)
 
     return false;
 }
@@ -6375,7 +6365,7 @@ bool CEditorWidget::ColumnToPoint(int screenCol, int& x)
 ***********************************************************************************************************************/
 int CEditorWidget::CursorTo_TIA_Index(int screenRow)
 {
-    CLogScrutinizerDoc *doc_p = GetDocument();
+    auto *doc_p = GetDocument();
 
     if (m_screenRows[screenRow].valid) {
         if (m_screenRows[screenRow].row >= doc_p->m_database.TIA.rows) {
@@ -6423,7 +6413,7 @@ void CEditorWidget::ToggleBookmark(void)
 ***********************************************************************************************************************/
 void CEditorWidget::NextBookmark(bool backward)
 {
-    CLogScrutinizerDoc *doc_p = (CLogScrutinizerDoc *)GetDocument();
+    auto *doc_p = GetDocument();
     CSelection selection;
     int row;
     bool status = false;
@@ -6494,7 +6484,7 @@ int CEditorWidget::GetScreenRowOffset(const int row)
 ***********************************************************************************************************************/
 void CEditorWidget::FillRockScroll(void)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
 
     if ((m_vscrollFrame.height() <= 10) || (m_vscrollFrame.width() <= 2)) {
         return;
@@ -6590,7 +6580,7 @@ void CEditorWidget::FillRockScroll(void)
 #ifdef _DEBUG
             if (m_rockScrollInfo.numberOfItems > m_vscrollFrame.height()) {
                 TRACEX_E("%s Too many items num:%d pixels:%d", __FUNCTION__,
-                         m_rockScrollInfo.numberOfItems, m_vscrollFrame.height());
+                         m_rockScrollInfo.numberOfItems, m_vscrollFrame.height())
             }
 #endif
         } else {
@@ -6632,7 +6622,7 @@ void CEditorWidget::FillRockScroll(void)
 #ifdef _DEBUG
             if (m_rockScrollInfo.numberOfItems > (m_vscrollFrame.height() + 1)) {
                 TRACEX_E("%s Too many items num:%d pixels:%d", __FUNCTION__,
-                         m_rockScrollInfo.numberOfItems, m_vscrollFrame.height() + 1);
+                         m_rockScrollInfo.numberOfItems, m_vscrollFrame.height() + 1)
             }
 #endif
         }
@@ -6724,7 +6714,7 @@ void CEditorWidget::FillRockScroll(void)
 #ifdef _DEBUG
                 if (m_rockScrollInfo.numberOfItems > m_vscrollFrame.height()) {
                     TRACEX_E("%s Too many items num:%d pixels:%d", __FUNCTION__,
-                             m_rockScrollInfo.numberOfItems, m_vscrollFrame.height());
+                             m_rockScrollInfo.numberOfItems, m_vscrollFrame.height())
                 }
 #endif
             } /*  (deltaRasterPerRow > 1.0f) */
@@ -6786,12 +6776,12 @@ void CEditorWidget::FillRockScroll(void)
 ***********************************************************************************************************************/
 void CEditorWidget::AlignRelPosToRockScroll(int vscrollPos)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
     int OldTopLine = m_topLine;
 
     PRINT_ROCKSCROLL(QString("%1 vslider_h:%2 rowPerRaster:%3 bestRow:%4").
                          arg(__FUNCTION__).arg(m_vscrollSlider.height()).arg(m_rockScrollInfo.rowsPerRaster).arg(
-                         m_rockScrollInfo.itemArray_p[vscrollPos].bestRow));
+                         m_rockScrollInfo.itemArray_p[vscrollPos].bestRow))
 
     if ((m_vscrollSlider.height() < 3) &&
         (m_rockScrollInfo.rowsPerRaster > 1) &&
@@ -6816,8 +6806,8 @@ void CEditorWidget::AlignRelPosToRockScroll(int vscrollPos)
         m_topLine = m_topLine >= 0 ? m_topLine : 0;
         UpdateRelPosition();
 
-        PRINT_ROCKSCROLL(QString("%1 %2 -> %3  Raster:%4").arg(__FUNCTION__).arg(OldTopLine).arg(m_topLine).arg(
-                             vscrollPos));
+        PRINT_ROCKSCROLL(QString("%1 %2 -> %3  Raster:%4")
+                             .arg(__FUNCTION__).arg(OldTopLine).arg(m_topLine).arg(vscrollPos))
     }
 }
 
@@ -6903,7 +6893,7 @@ void CEditorWidget::RockScrollRasterToRow(int raster, int *startRow_p, int *endR
             *startRow_p = m_rockScrollInfo.itemArray_p[index].startRow;
             *endRow_p = m_rockScrollInfo.itemArray_p[index].endRow;
             PRINT_ROCKSCROLL(QString("%1 raster:%2 -> startRow:%2 endRow:%3")
-                                 .arg(__FUNCTION__).arg(*startRow_p).arg(*endRow_p));
+                                 .arg(__FUNCTION__).arg(*startRow_p).arg(*endRow_p))
             return;
         }
     }
@@ -6916,7 +6906,7 @@ void CEditorWidget::UpdateCursor(bool isOnDraw, int row, int startCol)
 {
     if (m_totalNumOfRows == 0) {
         DisableCursor();
-        PRINT_CURSOR("Disable cursor, no rows");
+        PRINT_CURSOR("Disable cursor, no rows")
         return;
     }
 
@@ -6942,7 +6932,7 @@ void CEditorWidget::UpdateCursor(bool isOnDraw, int row, int startCol)
 
     if (!RowColumnToRect(m_cursorSel.row, m_cursorSel.startCol, &m_cursorRect)) {
         /*DisableCursor(); // Added this during QT porting (untested) */
-        PRINT_CURSOR("Disable cursor, RowColumnToRect failure");
+        PRINT_CURSOR("Disable cursor, RowColumnToRect failure")
         return;
     }
 
@@ -6959,7 +6949,7 @@ void CEditorWidget::UpdateCursor(bool isOnDraw, int row, int startCol)
 
     if (!isOnDraw) {
         PRINT_CURSOR(QString("%1    isOnDraw:%2 row:%3 startCol:%4 drag:%5")
-                         .arg(__FUNCTION__).arg(isOnDraw).arg(row).arg(startCol).arg(m_dragSelectionOngoing));
+                         .arg(__FUNCTION__).arg(isOnDraw).arg(row).arg(startCol).arg(m_dragSelectionOngoing))
 
         /* Restart the timer, the cursor was updated... let get the blinking a new period start */
         m_cursorToggleVisible = true;
@@ -7010,7 +7000,7 @@ void CEditorWidget::DisableCursor(void)
 ***********************************************************************************************************************/
 void CEditorWidget::SetFocusRow(int row, int cursorCol)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    auto *doc_p = GetDocument();
 
     EmptySelectionList();
     AddSelection(row, -1, -1, false, false);
@@ -7057,7 +7047,7 @@ void CEditorWidget::resizeEvent(QResizeEvent *event)
     PRINT_SIZE(QString("Editor resize %1,%2 -> %3,%4 state:%5")
                    .arg(event->oldSize().width()).arg(event->oldSize().height())
                    .arg(event->size().width()).arg(event->size().height())
-                   .arg(windowState()));
+                   .arg(windowState()))
     m_resizeCursorSync = true; /* Required to reset the cursor after a resize operation */
     Refresh(false);
     updateGeometry();
@@ -7070,7 +7060,9 @@ void CEditorWidget::resizeEvent(QResizeEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::focusInEvent(QFocusEvent *event)
 {
-    CLogScrutinizerDoc *doc_p = GetTheDoc();
+    Q_UNUSED(event)
+
+    auto *doc_p = GetDocument();
 
     CSCZ_SetLastViewSelectionKind(CSCZ_LastViewSelectionKind_TextView_e);
 
@@ -7084,7 +7076,7 @@ void CEditorWidget::focusInEvent(QFocusEvent *event)
     MW_Refresh();
 
     m_inFocus = true;
-    PRINT_FOCUS("CEditorWidget::focusInEvent");
+    PRINT_FOCUS("CEditorWidget::focusInEvent")
 }
 
 /***********************************************************************************************************************
@@ -7093,6 +7085,8 @@ void CEditorWidget::focusInEvent(QFocusEvent *event)
 void CEditorWidget::focusOutEvent(QFocusEvent *event)
 {
     /*DisableCursor(); */
+
+    Q_UNUSED(event)
 
     m_inFocus = false;
     m_focusLostPreviously = true;
@@ -7110,7 +7104,7 @@ void CEditorWidget::focusOutEvent(QFocusEvent *event)
 
     update();
 
-    PRINT_FOCUS("CEditorWidget::focusOutEvent");
+    PRINT_FOCUS("CEditorWidget::focusOutEvent")
 }
 
 /***********************************************************************************************************************
@@ -7264,7 +7258,7 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
         m_keys[index] = true;
     }
 
-    PRINT_KEYPRESS(QString("%1 key:%2").arg(__FUNCTION__).arg(index));
+    PRINT_KEYPRESS(QString("%1 key:%2").arg(__FUNCTION__).arg(index))
 
     if (!GetTheDoc()->isValidLog()) {
         QWidget::keyPressEvent(e);
@@ -7311,7 +7305,7 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
 
         case Qt::Key_A:
             if (m_CTRL_Pressed) {
-                if (textWindow_SelectionUpdate(nullptr, LS_LG_EVENT_KEY_CTRL_A_e, 0)) {
+                if (textWindow_SelectionUpdate(nullptr, LS_LG_EVENT_KEY_CTRL_A_e, Qt::NoModifier)) {
                     update();
                 }
             }
@@ -7319,7 +7313,7 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
 
         case Qt::Key_C:
             if (m_CTRL_Pressed) {
-                if (textWindow_SelectionUpdate(nullptr, LS_LG_EVENT_KEY_CTRL_C_e, 0)) {
+                if (textWindow_SelectionUpdate(nullptr, LS_LG_EVENT_KEY_CTRL_C_e, Qt::NoModifier)) {
                     update();
                 }
             }
@@ -7480,7 +7474,7 @@ void CEditorWidget::onEnd(void)
 
                 if (isRowSelected(m_cursorSel.row, &selection_p)) {
                     if (selection_p->endCol >=
-                        (int)(GetDocument()->m_database.TIA.textItemArray_p[m_cursorSel.row].size) - 1) {
+                        GetDocument()->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1) {
                         RemoveSelection(selection_p->row);
                     } else {
                         /* If cursor is to the right of the current selection */
