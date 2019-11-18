@@ -32,6 +32,12 @@ public:
 class CTimeMeas
 {
 public:
+    enum timeSpan {
+        sec,
+        milli,
+        micro
+    };
+
     CTimeMeas(void)
     {
         m_startPoint.ReadFromSystem();
@@ -62,6 +68,25 @@ public:
         return diff;
     }
 
+    /****/
+    int64_t elapsed(timeSpan ts)
+    {
+        if (!m_triggerSet) {
+            m_triggerPoint.ReadFromSystem();
+        }
+
+        int64_t diff;
+
+        if (ts == milli) {
+            diff = duration_cast<std::chrono::milliseconds>(m_triggerPoint.clock - m_startPoint.clock).count();
+        } else if (ts == micro) {
+            diff = duration_cast<std::chrono::microseconds>(m_triggerPoint.clock - m_startPoint.clock).count();
+        } else {
+            diff = duration_cast<std::chrono::seconds>(m_triggerPoint.clock - m_startPoint.clock).count();
+        }
+        return diff;
+    }
+
     ~CTimeMeas(void) {}
 
 private:
@@ -71,18 +96,69 @@ private:
 };
 
 /***********************************************************************************************************************
-*   CTimeFilter
+*   CTimeAverage
 ***********************************************************************************************************************/
-class CTimeFilter
+class CTimeAverage : public CTimeMeas
+{
+public:
+    /****/
+    void start(void)
+    {
+        Restart();
+        count++;
+    }
+
+    /****/
+    void stop(timeSpan ts = milli)
+    {
+        auto last_elapsed = elapsed(ts);
+        sum += last_elapsed;
+        if ((min == -1) || (min > last_elapsed)) {
+            min = last_elapsed;
+        }
+        if ((max == -1) || (max < last_elapsed)) {
+            max = last_elapsed;
+        }
+    }
+
+    /****/
+    void reset(void)
+    {
+        if (!count) {
+            stop();
+        }
+        sum = 0;
+        count = 0;
+        min = -1;
+        max = -1;
+    }
+
+    /****/
+    int64_t avg(void)
+    {
+        return sum / count;
+    }
+
+private:
+    int count = 0;
+    int64_t sum = 0;
+    int64_t min = -1;
+    int64_t max = -1;
+};
+
+/***********************************************************************************************************************
+*   CTimePeriod
+***********************************************************************************************************************/
+class CTimePeriod
 {
     QDateTime m_next;
     int m_filterTime_ms;
 
 public:
-    CTimeFilter(int filterTime_ms) : m_next(QDateTime::currentDateTime()), m_filterTime_ms(filterTime_ms) {}
+    CTimePeriod(int filterTime_ms) : m_next(QDateTime::currentDateTime()), m_filterTime_ms(filterTime_ms) {}
 
     /****/
-    bool Check(void)
+    bool isNext(void)
     {
         QDateTime now = QDateTime::currentDateTime();
         if (QDateTime::currentDateTime() >= m_next) {

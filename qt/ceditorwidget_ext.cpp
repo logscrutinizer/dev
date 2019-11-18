@@ -1121,16 +1121,21 @@ void CEditorWidget::FillScreenRows(void)
     auto doc_p = GetDocument();
     bool filteringEnabled = doc_p->m_allEnabledFilterItems.isEmpty() ? false : true;
     int index_toplined = m_topLine;
+    static CTimeAverage average;
 
     m_numOfScreenRows = 0;
 
     /* clean the screenRows */
-    memset(&m_screenRows[0], 0, sizeof(LogScrutinizerView_ScreenRow_t) * LOG_SCRUTINIZER_MAX_SCREEN_ROWS);
+
+    average.start();
+
+    memset(&m_screenRows[0], 0, sizeof(LogScrutinizerView_ScreenRow_t) * static_cast<size_t>(m_maxDisplayRows));
+
+    average.stop(CTimeMeas::micro);
 
     for (index = 0; index_toplined < m_totalNumOfRows && index < m_maxDisplayRows; ++index_toplined) {
         m_screenRows[index].valid = true;
         visible = false;
-
         if (index_toplined < 0) {
             /* Drawing the head frame */
             visible = true;
@@ -1141,11 +1146,9 @@ void CEditorWidget::FillScreenRows(void)
             m_screenRows[index].presentation = ROW_PRESENTATION_FOOTER_FRAME_e;
         } else if (doc_p->m_database.FIRA.FIR_Array_p[index_toplined].LUT_index == BOOKMARK_FILTER_LUT_INDEX) {
             visible = true;
-
             m_screenRows[index].presentation = ROW_PRESENTATION_BOOKMARKED_e;
         } else if (!filteringEnabled) {
             visible = true;
-
             if (doc_p->isRowClipped(index_toplined)) {
                 m_screenRows[index].presentation = ROW_PRESENTATION_CLIPPED_e;
             } else {
@@ -1162,7 +1165,6 @@ void CEditorWidget::FillScreenRows(void)
             }
         } else if (m_presentationMode == PRESENTATION_MODE_ALL_e) {
             visible = true;
-
             if (doc_p->isRowClipped(index_toplined)) {
                 m_screenRows[index].presentation = ROW_PRESENTATION_CLIPPED_e;
             } else {
@@ -1182,12 +1184,17 @@ void CEditorWidget::FillScreenRows(void)
 ***********************************************************************************************************************/
 void CEditorWidget::FillScreenRows_Filtered(void)
 {
+    static CTimeAverage average;
     auto doc_p = GetDocument();
 
     m_numOfScreenRows = 0;
 
+    average.start();
+
     /* clean the screenRows */
-    memset(&m_screenRows[0], 0, sizeof(LogScrutinizerView_ScreenRow_t) * LOG_SCRUTINIZER_MAX_SCREEN_ROWS);
+    memset(&m_screenRows[0], 0, sizeof(LogScrutinizerView_ScreenRow_t) * static_cast<size_t>(m_maxDisplayRows));
+
+    average.stop(CTimeMeas::micro);
 
     if ((m_totalNumOfRows == 0) && (g_workspace_p->GetBookmarksCount() == 0)) {
         return;
@@ -1234,23 +1241,23 @@ void CEditorWidget::FillScreenRows_Filtered(void)
 ***********************************************************************************************************************/
 bool CEditorWidget::OutlineScreenRows(void)
 {
-    QRect lineRect;
+    Rect_t lineRect;
     auto doc_p = GetDocument();
     int index = 0;
     int numOfRowAdjustments = m_numOfRowAdjustments;
     int rowAdjustment = m_rowAdjustment;
     int numOf_1_PixelBonus = m_numOf_1_PixelBonus;
 
-    lineRect.setTop(m_textWindow.top());
-    lineRect.setLeft(m_textRow_X.left());
-    lineRect.setRight(0);  /* will be set when drawing the line */
-    lineRect.setBottom(lineRect.top() + m_rowHeigth);
+    lineRect.top = m_textWindow.top();
+    lineRect.left = m_textRow_X.left();
+    lineRect.right = 0;  /* will be set when drawing the line */
+    lineRect.bottom = lineRect.top + m_rowHeigth;
 
     char *text_p;
 
     while (m_screenRows[index].valid) {
         /* The outline remove the lines that cannot fit in the bottom */
-        if (lineRect.top() < m_textWindow.bottom()) {
+        if (lineRect.top < m_textWindow.bottom()) {
             int textLength;
 
             m_screenRows[index].screenRect = lineRect;
@@ -1263,20 +1270,20 @@ bool CEditorWidget::OutlineScreenRows(void)
                 m_maxColWidthRow = m_screenRows[index].row;
             }
 
-            lineRect.setTop(lineRect.bottom());
-            lineRect.setBottom(lineRect.top() + m_rowHeigth);
+            lineRect.top = lineRect.bottom;
+            lineRect.bottom = lineRect.top + m_rowHeigth;
 
             if (numOfRowAdjustments > 0) {
                 --numOfRowAdjustments;
 
                 /* Make the spacing between lines rowAdjustment numOfPixels larger to ensure last line lies perfect
                  * at the bottom */
-                lineRect.setBottom(lineRect.bottom() + rowAdjustment);
+                lineRect.bottom = lineRect.bottom + rowAdjustment;
             }
 
             if (numOf_1_PixelBonus > 0) {
                 --numOf_1_PixelBonus;
-                lineRect.setBottom(lineRect.bottom() + 1);
+                lineRect.bottom += 1;
             }
             ++m_numOfScreenRows;
         } else {
@@ -1302,7 +1309,7 @@ void CEditorWidget::DrawRows(void)
     int row;
     CFilterItem* filterItem_p;
     int index;
-    QRect* screenRowRect_p;
+    QRect screenRowRect;
     QRect headRect;
     CSelection* selection_p;
     bool bookmark;
@@ -1322,7 +1329,8 @@ void CEditorWidget::DrawRows(void)
     debug_numOfRowsForHighLight = 0;
     for (index = 0; m_screenRows[index].valid; ++index) {
         row = m_screenRows[index].row;
-        screenRowRect_p = &m_screenRows[index].screenRect;
+        auto &rect = m_screenRows[index].screenRect;
+        screenRowRect = QRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 
         filterItem_p = nullptr;
 
@@ -1331,8 +1339,8 @@ void CEditorWidget::DrawRows(void)
             filterItem_p = doc_p->m_rowCache_p->GetFilterRef(row);
         }
 
-        headRect.setTop(screenRowRect_p->top());
-        headRect.setBottom(screenRowRect_p->bottom());
+        headRect.setTop(screenRowRect.top());
+        headRect.setBottom(screenRowRect.bottom());
 
         switch (m_screenRows[index].presentation) {
             case ROW_PRESENTATION_HEAD_FRAME_e:
@@ -1394,13 +1402,13 @@ void CEditorWidget::DrawRows(void)
         m_tempStr[size] = 0;
 
         lineSize = GetTabbedSize(m_tempStr, size, currentFont_p->font_p);
-        screenRowRect_p->setRight(screenRowRect_p->left() + lineSize.width());
+        screenRowRect.setRight(screenRowRect.left() + lineSize.width());
 
         /* ---- Draw the bookmark bitmap/icon  ---- */
 
         if (bookmark) {
             QRect bookmarkRect = QRect(headRect.right() - 1 - m_bookmarkWidth, headRect.top(),
-                                       m_bookmarkWidth, screenRowRect_p->height());
+                                       m_bookmarkWidth, screenRowRect.height());
             DrawBookmark(&bookmarkRect);
         }
 
@@ -1408,8 +1416,8 @@ void CEditorWidget::DrawRows(void)
 
         if (rowProperties & TIA_CACHE_MEMMAP_PROPERTY_DECODED) {
             int xstart = headRect.right() - 2 - m_bookmarkWidth - 1 - m_decodedRectWidth;
-            m_painter_p->fillRect(xstart, screenRowRect_p->top(),
-                                  m_decodedRectWidth, screenRowRect_p->height(),
+            m_painter_p->fillRect(xstart, screenRowRect.top(),
+                                  m_decodedRectWidth, screenRowRect.height(),
                                   QColor(DECODED_COLOR));
         }
 
@@ -1417,8 +1425,8 @@ void CEditorWidget::DrawRows(void)
 
         Q_COLORREF bgColor;
         if (doc_p->m_fontCtrl.GetBGColor(currentFont_p, &bgColor)) {
-            m_painter_p->fillRect(screenRowRect_p->left(), screenRowRect_p->top(),
-                                  screenRowRect_p->width(), screenRowRect_p->height(),
+            m_painter_p->fillRect(screenRowRect.left(), screenRowRect.top(),
+                                  screenRowRect.width(), screenRowRect.height(),
                                   QColor(bgColor));
         }
 
@@ -1447,8 +1455,8 @@ void CEditorWidget::DrawRows(void)
                 pixelUpdate = true;
             }
 
-            if (starty != static_cast<uint64_t>(screenRowRect_p->top())) {
-                PIXEL_STAMP_SET_STARTY(autoHighlightInfo_p->pixelStamp, screenRowRect_p->top());
+            if (starty != static_cast<uint64_t>(screenRowRect.top())) {
+                PIXEL_STAMP_SET_STARTY(autoHighlightInfo_p->pixelStamp, screenRowRect.top());
                 topUpdate = true;
             }
 
@@ -1466,13 +1474,13 @@ void CEditorWidget::DrawRows(void)
                     highLightLength = GetTabbedSize(m_tempStr, element_p->endCol + 1,
                                                     currentFont_p->font_p) - highLightStart;
 
-                    element_p->rectPixel = *screenRowRect_p;
+                    element_p->rectPixel = screenRowRect;
                     element_p->rectPixel.setLeft(m_textRow_X.left() + highLightStart.width());
                     element_p->rectPixel.setRight(element_p->rectPixel.left() + highLightLength.width());
                 }
                 else if (topUpdate) {
-                    element_p->rectPixel.setTop(screenRowRect_p->top());
-                    element_p->rectPixel.setBottom(screenRowRect_p->bottom());
+                    element_p->rectPixel.setTop(screenRowRect.top());
+                    element_p->rectPixel.setBottom(screenRowRect.bottom());
                 }
                 m_painter_p->fillRect(element_p->rectPixel.left(), element_p->rectPixel.top(),
                                       element_p->rectPixel.width(), element_p->rectPixel.height(),
@@ -1488,13 +1496,13 @@ void CEditorWidget::DrawRows(void)
          * parts of the line in bold (text shifted), as when drawing pieces of text the */
         if (filterItem_p != nullptr && (filterItem_p->m_size > 0) &&
                 (doc_p->m_fontModifier_p->GetFontModRowInfo(row, filterItem_p, &fontModRowInfo_p))) {
-            DrawModifiedFontRow(fontModRowInfo_p, screenRowRect_p, m_tempStr, size, filterItem_p);
+            DrawModifiedFontRow(fontModRowInfo_p, &screenRowRect, m_tempStr, size, filterItem_p);
         }
         else {
-            m_painter_p->drawText(QRect(screenRowRect_p->left(),
-                                        screenRowRect_p->top() + static_cast<int>(m_textRectOffset_Y),
-                                        screenRowRect_p->right(),
-                                        screenRowRect_p->bottom()),
+            m_painter_p->drawText(QRect(screenRowRect.left(),
+                                        screenRowRect.top() + static_cast<int>(m_textRectOffset_Y),
+                                        screenRowRect.right(),
+                                        screenRowRect.bottom()),
                                   QString(m_tempStr), m_textOption);
         }
 
@@ -1504,16 +1512,16 @@ void CEditorWidget::DrawRows(void)
 
         /* Draw Line numbers */
 
-        m_painter_p->drawText(QRect(headRect.left(), screenRowRect_p->top() + static_cast<int>(m_textRectOffset_Y),
-                                    screenRowRect_p->left(), screenRowRect_p->bottom()),
+        m_painter_p->drawText(QRect(headRect.left(), screenRowRect.top() + static_cast<int>(m_textRectOffset_Y),
+                                    screenRowRect.left(), screenRowRect.bottom()),
                               QString("%1").arg(row, 5), m_textOption);
 
         /* Draw exclude line, small thin red line, "exclude marker" */
 
         if (filterItem_p != nullptr && filterItem_p->m_exclude) {
-            m_painter_p->fillRect(screenRowRect_p->left(),
-                                  screenRowRect_p->top() + (screenRowRect_p->bottom() - screenRowRect_p->top()) / 2 - 1,
-                                  screenRowRect_p->right() - screenRowRect_p->left(),
+            m_painter_p->fillRect(screenRowRect.left(),
+                                  screenRowRect.top() + screenRowRect.height() / 2 - 1,
+                                  screenRowRect.width(),
                                   2,
                                   QColor(Q_RGB(0xff, 0x00, 0x00)));
         }
@@ -1525,7 +1533,7 @@ void CEditorWidget::DrawRows(void)
             doc_p->m_fontCtrl.SetFont(m_painter_p, m_blackFont_p);
 
             if (selection_p->startCol == -1 || selection_p->endCol == -1) {
-                m_painter_p->fillRect(*screenRowRect_p, selectionColor);
+                m_painter_p->fillRect(screenRowRect, selectionColor);
             }
             else if (start_p != nullptr) {
                 QSize size_start;
@@ -1543,15 +1551,15 @@ void CEditorWidget::DrawRows(void)
 
                 size_end = GetTabbedSize(m_tempStr, endCol + 1, currentFont_p->font_p);
 
-                m_painter_p->fillRect(screenRowRect_p->left() + size_start.width(),
-                                      screenRowRect_p->top(),
+                m_painter_p->fillRect(screenRowRect.left() + size_start.width(),
+                                      screenRowRect.top(),
                                       size_end.width() - size_start.width(),
-                                      screenRowRect_p->height(),
+                                      screenRowRect.height(),
                                       QColor(selectionColor));
 
                 /* terminate the string (note that this string is useless after this */
                 m_tempStr[/*selection_p->startCol +*/ endCol + 1] = 0;
-                DrawTextPart(screenRowRect_p, m_tempStr, selection_p->startCol,
+                DrawTextPart(&screenRowRect, m_tempStr, selection_p->startCol,
                              endCol - selection_p->startCol + 1, m_blackFont_p->font_p);
             }
         }
@@ -6035,8 +6043,8 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
     int index = 0;
 
     while (m_screenRows[index].valid && !found) {
-        if ((m_screenRows[index].screenRect.top() <= screenPoint_p->DCBMP.y()) &&
-            (m_screenRows[index].screenRect.bottom() >= screenPoint_p->DCBMP.y())) {
+        if ((m_screenRows[index].screenRect.top <= screenPoint_p->DCBMP.y()) &&
+            (m_screenRows[index].screenRect.bottom >= screenPoint_p->DCBMP.y())) {
             found = true;
         } else {
             ++index;
@@ -6067,8 +6075,8 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
     }
 
     if ((TIA_row <= doc_p->m_database.TIA.rows) &&
-        (m_screenRows[*screenRow_p].screenRect.top() <= screenPoint_p->DCBMP.y()) &&
-        (m_screenRows[*screenRow_p].screenRect.bottom() >= screenPoint_p->DCBMP.y())) {
+        (m_screenRows[*screenRow_p].screenRect.top <= screenPoint_p->DCBMP.y()) &&
+        (m_screenRows[*screenRow_p].screenRect.bottom >= screenPoint_p->DCBMP.y())) {
         char *text_p = nullptr;
         int textSize = 0;
         int x_pos_left = 0;
@@ -6080,7 +6088,7 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
 
         /* The row was selected, now find out in which column. Necessary to search through the row for each letter */
 
-        x_offset = m_screenRows[*screenRow_p].screenRect.left();
+        x_offset = m_screenRows[*screenRow_p].screenRect.left;
         x_pos_left = x_offset;
 
         if (screenPoint_p->DCBMP.x() <= x_pos_left) {
@@ -6114,8 +6122,8 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
 
                     rect.setLeft(mousePoint);
                     rect.setRight(x_pos_right);
-                    rect.setTop(m_screenRows[*screenRow_p].screenRect.bottom() - 3);
-                    rect.setBottom(m_screenRows[*screenRow_p].screenRect.bottom());
+                    rect.setTop(m_screenRows[*screenRow_p].screenRect.bottom - 3);
+                    rect.setBottom(m_screenRows[*screenRow_p].screenRect.bottom);
 
                     m_isDebuggingSelection = true;
                     m_debuggingSelection = rect;
@@ -6164,7 +6172,7 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
     } else {
 #ifdef _DEBUG
         TRACEX_DE("CEditorWidget::PointToCursor NOT IN BOX  top:%d bottom:%d screen_row:%d",
-                  m_screenRows[*screenRow_p].screenRect.top(), m_screenRows[*screenRow_p].screenRect.bottom(),
+                  m_screenRows[*screenRow_p].screenRect.top, m_screenRows[*screenRow_p].screenRect.bottom,
                   m_screenRows[*screenRow_p].row)
 #endif
     }
@@ -6186,17 +6194,17 @@ bool CEditorWidget::GetSelectionRect(CSelection *selection_p, QRect *rect_p)
 
             rect_p->setRect(0, 0, 0, 0);
 
-            rect_p->setTop(m_screenRows[index].screenRect.top());
-            rect_p->setBottom(m_screenRows[index].screenRect.bottom());
+            rect_p->setTop(m_screenRows[index].screenRect.top);
+            rect_p->setBottom(m_screenRows[index].screenRect.bottom);
 
             doc_p->GetTextItem(m_screenRows[index].row, &text_p, &textSize);
 
             if (selection_p->endCol < textSize - 1) {
                 size = GetTabbedSize(text_p, selection_p->startCol, m_blackFont_p->font_p);
-                rect_p->setLeft(m_screenRows[index].screenRect.left() + size.width());
+                rect_p->setLeft(m_screenRows[index].screenRect.left + size.width());
 
                 size = GetTabbedSize(text_p, selection_p->endCol + 1, m_blackFont_p->font_p);
-                rect_p->setRight(m_screenRows[index].screenRect.left() + size.width());
+                rect_p->setRight(m_screenRows[index].screenRect.left + size.width());
             }
             return true;
         }
@@ -6242,10 +6250,10 @@ bool CEditorWidget::RowColumnToRect(int row, int screenCol, QRect *rect_p)
         }
 
         /*rect_p->setLeft(m_screenRows[index].screenRect.left() + size.width() - m_hbmpOffset); */
-        rect_p->setLeft(m_screenRows[index].screenRect.left() + size.width());
+        rect_p->setLeft(m_screenRows[index].screenRect.left + size.width());
         rect_p->setRight(rect_p->left());
-        rect_p->setTop(m_screenRows[index].screenRect.top());
-        rect_p->setBottom(m_screenRows[index].screenRect.bottom());
+        rect_p->setTop(m_screenRows[index].screenRect.top);
+        rect_p->setBottom(m_screenRows[index].screenRect.bottom);
 
         return true;
     }
@@ -6278,14 +6286,14 @@ bool CEditorWidget::PointToColumn(ScreenPoint_t *screenPoint_p, int *screenCol_p
 
     /* The row was selected, now find out in which column. Necessary to search through the row for each letter */
 
-    x_offset = m_screenRows[0].screenRect.left();
+    x_offset = m_screenRows[0].screenRect.left;
     x_pos_left = x_offset;
 
     if (screenPoint_p->DCBMP.x() <= x_pos_left) {
         *screenCol_p = 0;
 
         TRACEX_DE("CEditorWidget::PointToColumn Before line, textLeft:%-4d col:%-4d",
-                  m_screenRows[0].screenRect.left(), *screenCol_p)
+                  m_screenRows[0].screenRect.left, *screenCol_p)
 
         alignedPoint_p->setX(x_pos_left);
         return true;
@@ -7112,7 +7120,7 @@ void CEditorWidget::focusOutEvent(QFocusEvent *event)
 ***********************************************************************************************************************/
 void CEditorWidget::UpdateGrayFont(void)
 {
-    m_grayFont_p = ((CLogScrutinizerDoc *)GetDocument())->m_fontCtrl.RegisterFont(
+    m_grayFont_p = GetDocument()->m_fontCtrl.RegisterFont(
         Q_RGB(g_cfg_p->m_log_GrayIntensity,
               g_cfg_p->m_log_GrayIntensity, g_cfg_p->m_log_GrayIntensity), BACKGROUND_COLOR);
 
@@ -7147,10 +7155,10 @@ void CEditorWidget::mainWindowIsMoving(QMoveEvent *event)
      * is currently repainted. This causes some heavy load, and if the entire window is moved it creates some glitches
      * where it seems like the window
      * is getting stuck in the screen. The cursor timer is as such not running while the window is moving. */
-    static CTimeFilter filter(500);
+    static CTimePeriod period(500);
 
     /* block this print from printing more than twice per second. */
-    if (filter.Check()) {
+    if (period.isNext()) {
         TRACEX_D("CEditorWidget::mainWindowIsMoving")
     }
 

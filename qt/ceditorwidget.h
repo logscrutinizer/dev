@@ -84,10 +84,11 @@ typedef enum {
 } LogScrutinizerView_RowPresentaion_t;
 
 typedef struct {
+    Rect_t screenRect;
     int row;
-    QRect screenRect;
     LogScrutinizerView_RowPresentaion_t presentation;
     bool valid;
+    char unused_padding[3];
 } LogScrutinizerView_ScreenRow_t;
 
 typedef struct {
@@ -163,7 +164,7 @@ class CEditorWidget : public QWidget /*QOpenGLWidget */
 
 public:
     explicit CEditorWidget(QWidget *parent = nullptr);
-    ~CEditorWidget() {CleanUp_0();}
+    ~CEditorWidget() override {CleanUp_0();}
 
 private:
     QBrush m_background;

@@ -197,7 +197,24 @@ public:
         g_cfg_p->m_Log_colClip_Start = start;
         g_cfg_p->m_Log_colClip_End = end;
     }
-    bool isRowClipped(int row);
+
+    /****/
+    inline bool isRowClipped(const int row)
+    {
+        if ((g_cfg_p->m_Log_rowClip_Start == CFG_CLIP_NOT_SET) && (g_cfg_p->m_Log_rowClip_End == CFG_CLIP_NOT_SET)) {
+            return false;
+        }
+
+        if ((g_cfg_p->m_Log_rowClip_Start > CFG_CLIP_NOT_SET) && (row <= g_cfg_p->m_Log_rowClip_Start)) {
+            return true;
+        }
+
+        if ((g_cfg_p->m_Log_rowClip_End > CFG_CLIP_NOT_SET) && (row >= g_cfg_p->m_Log_rowClip_End)) {
+            return true;
+        }
+
+        return false;
+    }
 
     ReloadStrategy_e decideReloadStrategy(const QFileInfo& newFileInfo);
 
