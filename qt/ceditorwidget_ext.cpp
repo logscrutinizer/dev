@@ -44,28 +44,28 @@ struct info_text_elem {
 };
 const struct info_text_elem welcome[] =
 {
-    {"Welcome to LogScrutinizer", 1.0f},
-    {"(1.) Open, or drag and drop, a text log into the main window", 1.5f},
-    {"(2.) Create one or several filters by pressing Ctrl-N", 1.0f},
-    {"(3.) Press F5 to filter your text file with your new filters", 1.0f},
-    {"(4.) Press F4 to toggle between viewing only filter matches", 1.0f},
-    {"Read more at www.logscrutinizer.com. Press F1 for quick help web page", 1.5f}
+    {"Welcome to LogScrutinizer", 1.0},
+    {"(1.) Open, or drag and drop, a text log into the main window", 1.5},
+    {"(2.) Create one or several filters by pressing Ctrl-N", 1.0},
+    {"(3.) Press F5 to filter your text file with your new filters", 1.0},
+    {"(4.) Press F4 to toggle between viewing only filter matches", 1.0},
+    {"Read more at www.logscrutinizer.com. Press F1 for quick help web page", 1.5}
 };
 const struct info_text_elem nothing_to_show[] =
 {
-    {"LogScrutinizer has currently no text rows to show?", 1.5f}
+    {"LogScrutinizer has currently no text rows to show?", 1.5}
 };
 const struct info_text_elem pending_update[] =
 {
-    {"Window being updated, pending...", 1.5f}
+    {"Window being updated, pending...", 1.5}
 };
 const struct info_text_elem internal_error[] =
 {
-    {"LogScrutinizer is experiencing internal error, please save workspace and restart", 1.5f}
+    {"LogScrutinizer is experiencing internal error, please save workspace and restart", 1.5}
 };
 const struct info_text_elem log_file_empty[] =
 {
-    {"Log file empty ...", 1.5f}
+    {"Log file empty ...", 1.5}
 };
 
 /*
@@ -137,7 +137,7 @@ const struct info_text_elem log_file_empty[] =
  * The macro RELPOS_NORMALIZED translates m_relPos to 0-1, compensating for the start and end point of m_relPos.
  * (m_max_rel_pos - m_min_rel_pos) ... seems to be 1.0 ???
  * normalized m_relPos to 0-1 */
-#define RELPOS_NORMALIZED   ((double)((m_relPos - m_min_rel_pos) / (m_max_rel_pos - m_min_rel_pos)))
+#define RELPOS_NORMALIZED   (((m_relPos - m_min_rel_pos) / (m_max_rel_pos - m_min_rel_pos)))
 
 /***********************************************************************************************************************
 *   Initialize_0
@@ -513,15 +513,15 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
                               + 2 /*decoded spacing */
                               + m_decodedRectWidth);
 
-    m_textRow_X.setLeft(m_textRow_Head_X.right()
-                        + (int32_t)(m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.left));
+    m_textRow_X.setLeft(static_cast<int>(m_textRow_Head_X.right()
+                                         + m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.left));
 
     m_beam_left_padding = oneLetter.width();
 
     m_rowAdjustment = 1;
     m_numOf_1_PixelBonus = 0;
 
-    m_maxDisplayRows = (int)((double)(m_textWindow.bottom() - m_textWindow.top()) / (double)m_rowHeigth);
+    m_maxDisplayRows = ((m_textWindow.bottom() - m_textWindow.top()) / m_rowHeigth);
 
     if (m_maxDisplayRows > m_totalNumOfRows) {
         m_maxDisplayRows = m_totalNumOfRows;
@@ -532,7 +532,7 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
 
         if (requiredRowAdjustment > m_maxDisplayRows) {
             /* Not enough to adjust one pixel per row */
-            m_rowAdjustment = (int)(((double)requiredRowAdjustment / (double)m_maxDisplayRows));
+            m_rowAdjustment = requiredRowAdjustment / m_maxDisplayRows;
             m_numOfRowAdjustments = m_maxDisplayRows;
             m_numOf_1_PixelBonus = requiredRowAdjustment - m_rowAdjustment * m_maxDisplayRows;
         }
@@ -540,9 +540,8 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
 
     /* not compensated for having few lines */
     if (m_maxDisplayRows != m_totalNumOfRows) {
-        m_min_rel_pos = ((double)m_maxDisplayRows / 2.0) / (double)(m_totalNumOfRows - m_maxDisplayRows);
-        m_max_rel_pos = ((double)m_totalNumOfRows - ((double)m_maxDisplayRows / 2.0)) /
-                        (double)(m_totalNumOfRows - m_maxDisplayRows);
+        m_min_rel_pos = (m_maxDisplayRows / 2.0) / (m_totalNumOfRows - m_maxDisplayRows);
+        m_max_rel_pos = (m_totalNumOfRows - (m_maxDisplayRows / 2.0)) / (m_totalNumOfRows - m_maxDisplayRows);
     } else {
         m_min_rel_pos = 0.5;
         m_max_rel_pos = 0.5;
@@ -582,11 +581,11 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
     lineSize = GetTabbedSize(start_p, size, m_blackFont_p->font_p);
 
     m_textRow_X.setRight(m_textRow_X.left() + lineSize.width());
-    m_textWindow.setRight(m_textRow_X.right() +
-                          (int32_t)((double)m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.right));
+    m_textWindow.setRight(static_cast<int>(m_textRow_X.right() +
+                                           (m_fontWidth * CFG_SCREEN_TEXT_ROW_PADDING_persistent.right)));
     m_rcBoarder.setRight(m_textWindow.right());
 
-    m_textRectOffset_Y = (m_rowHeigth / 2) - (m_fontHeigth / 2);
+    m_textRectOffset_Y = static_cast<int>((m_rowHeigth / 2.0) - (m_fontHeigth / 2.0));
 
     m_bmpWindow = m_rcClient;
 
@@ -607,24 +606,24 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
     if (m_maxDisplayRows > m_totalNumOfRows) {
         temp_scrollSliderHeight = m_vscrollFrameHeigth;
     } else if (m_vscrollFrameHeigth > 0) {
-        temp_scrollSliderHeight = (int)((double)m_vscrollFrameHeigth *
-                                        (double)((double)m_maxDisplayRows / (double)(m_totalNumOfRows)));
+        temp_scrollSliderHeight = static_cast<int>(m_vscrollFrameHeigth *
+                                                   (m_maxDisplayRows / static_cast<double>(m_totalNumOfRows)));
     }
 
     if (temp_scrollSliderHeight < 1) {
         temp_scrollSliderHeight = 1;
     }
 
-    m_min_vslider_center_pos = (int)((double)m_vscrollFrame.top() + ((double)temp_scrollSliderHeight / 2.0f) - 0.5f);
-    m_max_vslider_center_pos = (int)((double)m_vscrollFrame.bottom() - ((double)temp_scrollSliderHeight / 2.0f) + 0.5f);
+    m_min_vslider_center_pos = static_cast<int>(m_vscrollFrame.top() + (temp_scrollSliderHeight / 2.0) - 0.5);
+    m_max_vslider_center_pos = static_cast<int>(m_vscrollFrame.bottom() - (temp_scrollSliderHeight / 2.0) + 0.5);
 
     /* Setup the size of the horizontal scroll slider */
 
     if (m_hscrollFrameWidth > m_textWindow.width()) {
         m_hscrollSliderWidth = m_hscrollFrameWidth;
     } else {
-        m_hscrollSliderWidth = (int)((double)m_hscrollFrameWidth *
-                                     (double)((double)m_hscrollFrameWidth / (m_textWindow.width())));
+        m_hscrollSliderWidth = static_cast<int>(m_hscrollFrameWidth *
+                                                (m_hscrollFrameWidth / static_cast<double>(m_textWindow.width())));
     }
 
     LimitTopLine();
@@ -641,9 +640,10 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
     /* Perhaps a little bit of "cake on cake", as m_relPos already describe the middle of the vslider (and have
      * compensation for min and max), it should be enough to take the size of the slider bar and multiply it
      * with m_relPos and then subtract half of the slider size */
-    m_vscrollSlider.setTop(m_min_vslider_center_pos
-                           + (int)(((double)(m_max_vslider_center_pos - m_min_vslider_center_pos) * RELPOS_NORMALIZED) -
-                                   ((double)temp_scrollSliderHeight / 2.0f) + 0.5f));
+    m_vscrollSlider.setTop(static_cast<int>(m_min_vslider_center_pos +
+                                            (((m_max_vslider_center_pos - m_min_vslider_center_pos) *
+                                              RELPOS_NORMALIZED) -
+                                             (temp_scrollSliderHeight / 2.0) + 0.5)));
 
     if (m_vscrollSlider.top() < 0) {
         m_vscrollSlider.setTop(0);
@@ -651,8 +651,8 @@ void CEditorWidget::SetupScreenProperties_Step2(void)
 
     m_vscrollSlider.setBottom(m_vscrollSlider.top() + temp_scrollSliderHeight);
 
-    m_hscrollSlider.setLeft((int)((double)m_hscrollFrame.left() +
-                                  m_hrelPos * ((double)m_hscrollFrameWidth - (double)m_hscrollSliderWidth)));
+    m_hscrollSlider.setLeft(static_cast<int>(m_hscrollFrame.left() +
+                                             m_hrelPos * (m_hscrollFrameWidth - m_hscrollSliderWidth)));
     m_hscrollSlider.setRight(m_hscrollSlider.left() + m_hscrollSliderWidth);
 }
 
@@ -815,14 +815,12 @@ void CEditorWidget::OnDraw(void)
 
     if (m_presentationMode == PRESENTATION_MODE_ONLY_FILTERED_e) {
         if (m_totalNumOfRows != doc_p->m_database.FIRA.filterMatches) {
-            TRACEX_W(
-                "OnDraw, row count missmatch, FILTERED Mode total:%d expected:%d",
-                m_totalNumOfRows, doc_p->m_database.FIRA.filterMatches);
+            TRACEX_W("OnDraw, row count missmatch, FILTERED Mode total:%d expected:%d",
+                     m_totalNumOfRows, doc_p->m_database.FIRA.filterMatches)
         }
     } else if (m_totalNumOfRows != doc_p->m_database.TIA.rows) {
-        TRACEX_W(
-            "OnDraw, row count missmatch, non-FILTERED Mode total:%d expected:%d",
-            m_totalNumOfRows, doc_p->m_database.TIA.rows);
+        TRACEX_W("OnDraw, row count missmatch, non-FILTERED Mode total:%d expected:%d",
+                 m_totalNumOfRows, doc_p->m_database.TIA.rows)
     }
 
     if ((rcClient.height() < 20) || (rcClient.width() < 20)) {
@@ -883,7 +881,7 @@ void CEditorWidget::OnDraw(void)
     m_hbmpOffset = 0;
 
     if (rcClient.width() < m_bmpWindow.width()) {
-        m_hbmpOffset = (long)(m_hrelPos * (m_bmpWindow.width() - rcClient.width()));
+        m_hbmpOffset = static_cast<int>(m_hrelPos * (m_bmpWindow.width() - rcClient.width()));
     }
 
     /* Fill all the text to the DC */
@@ -902,14 +900,14 @@ void CEditorWidget::OnDraw(void)
         int index;
 
         /* Left side */
-        int count = (int)((((double)m_rcBoarder.height()) / (double)m_bitmap_left.height()) + 1.0f);
+        int count = static_cast<int>((m_rcBoarder.height() / static_cast<double>(m_bitmap_left.height())) + 1.0);
         for (index = 0; index < count; ++index) {
             m_painter_p->drawImage(m_rcBoarder.left(),
                                    m_rcBoarder.top() + index * m_bitmap_left.height(), m_bitmap_left);
         }
 
         /* Right side */
-        count = (int)((((double)m_rcBoarder.height()) / (double)m_bitmap_right.height()) + 1.0f);
+        count = static_cast<int>(((m_rcBoarder.height()) / static_cast<double>(m_bitmap_right.height())) + 1.0);
         for (index = 0; index < count; ++index) {
             m_painter_p->drawImage(m_rcBoarder.right(), m_rcBoarder.top() +
                                    index * m_bitmap_right.height(), m_bitmap_right);
@@ -1078,8 +1076,8 @@ void CEditorWidget::DrawTextWindow(void)
 ***********************************************************************************************************************/
 void CEditorWidget::FillWindowWithConstData(const struct info_text_elem *text_elems, const int byte_size)
 {
-    int x_pos = (int)((double)(m_rcClient.right() - m_rcClient.left()) * (double)0.1);
-    int y_pos = (int)((double)(m_rcClient.bottom() - m_rcClient.top()) * (double)0.1);
+    int x_pos = static_cast<int>((m_rcClient.right() - m_rcClient.left()) * 0.1);
+    auto y_pos = (m_rcClient.bottom() - m_rcClient.top()) * 0.1;
 
     m_painter_p->fillRect(m_rcClient, QColor(BOARDER_BACKGROUND_COLOR));
     m_painter_p->setFont(m_FontEmptyWindow);
@@ -1093,7 +1091,7 @@ void CEditorWidget::FillWindowWithConstData(const struct info_text_elem *text_el
 
     for (int i = 0; i < byte_size / static_cast<int>(sizeof(struct info_text_elem)); ++i) {
         y_pos += offset * text_elems[i].y_rel;
-        m_painter_p->drawText(QPoint(x_pos, y_pos), QString(text_elems[i].text));
+        m_painter_p->drawText(QPoint(x_pos, static_cast<int>(round(y_pos))), QString(text_elems[i].text));
     }
 }
 
@@ -1203,8 +1201,7 @@ void CEditorWidget::FillScreenRows_Filtered(void)
     if (m_totalNumOfRows > 0) {
         if (!GetClosestFilteredRow(m_topLine, true, &new_startRow)) {
             if (!GetClosestFilteredRow(m_topLine, false, &new_startRow)) {
-                TRACEX_W(
-                    "FillScreenRows_Filtered   No filters found when trying to fill rows");
+                TRACEX_W("FillScreenRows_Filtered   No filters found when trying to fill rows")
                 return;
             }
         }
@@ -1445,7 +1442,7 @@ void CEditorWidget::DrawRows(void)
             // If the auto hightlight info is in-correct then update the data
             if (startx != static_cast<uint64_t>(m_textRow_X.left()) ||
                     font != static_cast<uint64_t>(fontSize.width())) {
-                PIXEL_STAMP_SET_STARTX(autoHighlightInfo_p->pixelStamp, m_textRow_X.left());
+                PIXEL_STAMP_SET_STARTX(autoHighlightInfo_p->pixelStamp, static_cast<uint64_t>(m_textRow_X.left()));
                 PIXEL_STAMP_SET_FONT(autoHighlightInfo_p->pixelStamp, fontSize.width());
                 pixelUpdate = true;
             }
@@ -1658,8 +1655,7 @@ void CEditorWidget::LimitTopLine(void)
             /* There was not enough lines to fill the screen, move the topLine upwards, exclude the current topLine */
 
             if (!SearchFilteredRows_TIA(m_topLine - 1, searchUp, true, &m_topLine, &remains)) {
-                TRACEX_DE(
-                    "CEditorWidget::LimitTopLine Not enough lines to position topLine");
+                TRACEX_DE("CEditorWidget::LimitTopLine Not enough lines to position topLine")
             }
         }
     } else {
@@ -1676,10 +1672,7 @@ void CEditorWidget::LimitTopLine(void)
 
     if (m_topLine != currentTopLine) {
         TRACEX_DE("CEditorWidget::LimitTopLine rePos %f -> %f  TopLine %d -> %d",
-                  currentRelPos,
-                  m_relPos,
-                  currentTopLine,
-                  m_topLine);
+                  currentRelPos, m_relPos, currentTopLine, m_topLine)
     }
 }
 
@@ -1724,8 +1717,7 @@ void CEditorWidget::SearchNewTopLine(bool checkDisplayCache, int focusRow)
          * If there is no selection, and the cursor is not currently visible, then pick a row in the middle of the
          * screen to align to. */
         if (checkDisplayCache && RowExist_inScreen(static_cast<int>(focusRow))) {
-            TRACEX_D("CEditorWidget::SearchNewTopLine   Cursor or Selection "
-                     "Visible at row:%d", focusRow);
+            TRACEX_D("CEditorWidget::SearchNewTopLine   Cursor or Selection Visible at row:%d", focusRow)
             return;
         }
 
@@ -1818,8 +1810,7 @@ bool CEditorWidget::SearchFilteredRows_inScreen(int startRow, int count, bool up
 
     *row_p = startRow; /* get the same row back (no move) */
 
-    TRACEX_DE("SearchFilteredRows_inScreen startRow:%d count:%d up:%d",
-              startRow, count, up);
+    TRACEX_DE("SearchFilteredRows_inScreen startRow:%d count:%d up:%d", startRow, count, up)
 
     if (up) {
         for (index = startRow; index > 1; --index) {
@@ -1931,12 +1922,12 @@ bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int
     }
 
     if (startRow < m_minRowIndex) {
-        TRACEX_D("SearchFilteredRows_TIA startRow:%d WRONG  -> %d",
-                 startRow, m_minRowIndex); /* Outside region, perhaps row clip */
+        /* Outside region, perhaps row clip */
+        TRACEX_D("SearchFilteredRows_TIA startRow:%d WRONG  -> %d", startRow, m_minRowIndex)
         startRow = m_minRowIndex;
     } else if (startRow > m_maxRowIndex) {
-        TRACEX_D("SearchFilteredRows_TIA startRow:%d Outside  -> %d",
-                 startRow, m_maxRowIndex);   /* Outside region, perhaps row clip */
+        /* Outside region, perhaps row clip */
+        TRACEX_D("SearchFilteredRows_TIA startRow:%d Outside  -> %d", startRow, m_maxRowIndex)
         startRow = m_maxRowIndex;
     }
 
@@ -1968,9 +1959,7 @@ bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int
             if (!GetClosestFilteredRow(startRow, false, &row)) {
                 if (!GetClosestFilteredRow(startRow, true, &row)) {
                     TRACEX_W("SearchFilteredRows_TIA no filters either up or down from startRow:%d "
-                             "count:%d up:%d m_totalNumOfRows:%d",
-                             startRow, count, up, m_totalNumOfRows);
-
+                             "count:%d up:%d m_totalNumOfRows:%d", startRow, count, up, m_totalNumOfRows)
                     return false;  /* total failure */
                 }
 
@@ -2001,7 +1990,7 @@ bool CEditorWidget::SearchFilteredRows_TIA(int startRow, int count, bool up, int
             if (!GetClosestFilteredRow(startRow, true, &row)) {
                 if (!GetClosestFilteredRow(startRow, false, &row)) {
                     TRACEX_W("SearchFilteredRows_TIA no filters either up or down from startRow:%d "
-                             "count:%d up:%d m_totalNumOfRows:%d", startRow, count, up, m_totalNumOfRows);
+                             "count:%d up:%d m_totalNumOfRows:%d", startRow, count, up, m_totalNumOfRows)
                     return false;  /* total failure */
                 }
                 count--; /* take away one count since we need to search for one up */
@@ -2105,7 +2094,7 @@ void CEditorWidget::GotoRow(void)
         }
 
         EmptySelectionList();
-        AddSelection((int)row, -1, -1, true, false);
+        AddSelection(row, -1, -1, true, false);
 
         SearchNewTopLine(); /* uses the selection as focus */
         LimitTopLine();
@@ -2674,7 +2663,7 @@ void CEditorWidget::SetPlotCursor(void)
 
         plotPane_p->setPlotCursor(selection.row, &newRow);
 
-        if ((int)newRow != selection.row) {
+        if (newRow != selection.row) {
             MW_PlaySystemSound(SYSTEM_SOUND_QUESTION);
             QMessageBox::warning(this,
                                  tr("Cursor not exact"),
@@ -2684,11 +2673,11 @@ void CEditorWidget::SetPlotCursor(void)
             if (resultCode == -1) {
                 message = QString("None of the plugins could extract the time from current row, after search "
                                   "closest row in graphs is %1 (dist:%2)")
-                              .arg(newRow).arg((int)newRow - selection.row);
+                              .arg(newRow).arg(newRow - selection.row);
             } else {
                 message = QString("None of the plugins support extracting the time from current row, after search "
                                   "closest row in graphs is %1 (dist:%2)")
-                              .arg(newRow).arg((int)newRow - selection.row);
+                              .arg(newRow).arg(newRow - selection.row);
             }
             TRACEX_I(message)
         }
@@ -2781,7 +2770,7 @@ void CEditorWidget::SaveMouseMovement(ScreenPoint_t *screenPoint_p)
                         .arg(screenPoint_p->DCBMP.x())
                         .arg(screenPoint_p->DCBMP.y())
                         .arg(m_vscrollFrame.left())
-                        .arg(m_textWindow.right()));
+                        .arg(m_textWindow.right()))
     }
 }
 
@@ -2817,7 +2806,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
         TRACEX_DE(QString("%1 mouse(%2,%3#%4,%5)  scrollFL:%6 textWR:%7")
                       .arg(__FUNCTION__).arg(screenPoint.mouse.x()).arg(screenPoint.mouse.y())
                       .arg(screenPoint.DCBMP.x()).arg(screenPoint.DCBMP.y())
-                      .arg(m_vscrollFrame.left()).arg(m_textWindow.right()));
+                      .arg(m_vscrollFrame.left()).arg(m_textWindow.right()))
     }
 
     if (doc_p->m_database.TIA.rows == 0) {
@@ -2872,7 +2861,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
 
                     if (LOG_TRACE_MOUSE_COND) {
                         TRACEX_DE("%s m_relPos -> m_min_rel_pos, scrollTop:%d FrameTop:%d",
-                                  __FUNCTION__, vscrollSlider_top, m_vscrollFrame.top());
+                                  __FUNCTION__, vscrollSlider_top, m_vscrollFrame.top())
                     }
                 } else if (vscrollSlider_top + m_vscrollSlider.height() > m_vscrollFrame.bottom()) {
                     /* Below slider */
@@ -2882,15 +2871,15 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
 
                     if (LOG_TRACE_MOUSE_COND) {
                         TRACEX_DE("%s m_relPos -> m_max_rel_pos, scrollTop:%d Height:%d FrameBottom:%d",
-                                  __FUNCTION__, vscrollSlider_top, m_vscrollSlider.height(), m_vscrollFrame.bottom());
+                                  __FUNCTION__, vscrollSlider_top, m_vscrollSlider.height(), m_vscrollFrame.bottom())
                     }
                 } else {
                     /* This equ. is normalized in the sense it is in the range of 0 - 1
                      *  Note also that we do not advance to the middle of the slider, that is instead handled in
                      *  equ.2 where the "middle" of set is added ontop. As when the middle is at m_min_rel_pos then
                      *  topLine is 0. */
-                    m_relPos = (double)((vscrollSlider_top - m_vscrollFrame.top())) /
-                               (double)(m_vscrollFrameHeigth - (m_vscrollSlider.height()));  /* equ.1 */
+                    m_relPos = ((vscrollSlider_top - m_vscrollFrame.top())) /
+                               static_cast<double>(m_vscrollFrameHeigth - (m_vscrollSlider.height()));  /* equ.1 */
                     m_relPos += m_min_rel_pos;       /* equ.2 */
 
                     if (LOG_TRACE_MOUSE_COND_WARN) {
@@ -2898,7 +2887,7 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                             (m_vscrollSlider.height() != m_vscrollSlider.height())) {
                             TRACEX_W("%s Frame or Slider not setup OK cFrameHight:%d FrameHeight:%d cSlider:%d Slider",
                                      __FUNCTION__, m_vscrollFrameHeigth, m_vscrollFrame.height(),
-                                     m_vscrollSlider.height(), m_vscrollSlider.height());
+                                     m_vscrollSlider.height(), m_vscrollSlider.height())
                         }
                     }
 
@@ -2920,9 +2909,9 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                 UpdateRelTopLinePosition();
 
                 int evalRaster =
-                    (int)((double)m_min_vslider_center_pos
-                          + (((double)m_max_vslider_center_pos - (double)m_min_vslider_center_pos) * RELPOS_NORMALIZED)
-                          - (double)(((double)m_vscrollSlider.height() / 2.0f)) + (double)0.5f);
+                    static_cast<int>(m_min_vslider_center_pos
+                                     + ((m_max_vslider_center_pos - m_min_vslider_center_pos) * RELPOS_NORMALIZED)
+                                     - (m_vscrollSlider.height() / 2.0) + 0.5);
 
                 AlignRelPosToRockScroll(evalRaster);
 
@@ -2932,18 +2921,18 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                               "g-offset:%d offset-mouse:%d sliderHeight:%d frameHeight:%d",
                               __FUNCTION__, vscrollSlider_top, evalRaster, m_relPos,
                               temp_relPos - m_relPos,
-                              (temp_relPos - m_relPos) * (double)m_totalNumOfRows,
+                              (temp_relPos - m_relPos) * m_totalNumOfRows,
                               m_topLine, m_vscrollSliderGlueOffset,
                               screenPoint.mouse.y() - vscrollSlider_top,
-                              m_vscrollSlider.height(), m_vscrollFrame.height());
+                              m_vscrollSlider.height(), m_vscrollFrame.height())
                 }
 
                 invalidate = true;
             } /* if (m_vscrollSliderGlue) */
             else if (m_hscrollSliderGlue) {
                 m_hscrollSlider.setLeft(screenPoint.mouse.x() - m_hscrollSliderGlueOffset);
-                m_hrelPos = (double)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
-                            (double)(m_hscrollFrameWidth - m_hscrollSliderWidth);
+                m_hrelPos = (m_hscrollSlider.left() - m_hscrollFrame.left()) /
+                            static_cast<double>(m_hscrollFrameWidth - m_hscrollSliderWidth);
 
                 if (LOG_TRACE_MOUSE_COND) {
                     TRACEX_DE("%s  V-Glued dragging HSCROLL m_hrelPos:%f", __FUNCTION__, m_hrelPos)
@@ -2988,8 +2977,8 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
                 if (m_hscrollSlider.left() < 0) {
                     m_hscrollSlider.setLeft(0);
                 }
-                m_hrelPos = (double)(m_hscrollSlider.left() - m_hscrollFrame.left()) /
-                            (double)(m_hscrollFrameWidth - m_hscrollSliderWidth);
+                m_hrelPos = (m_hscrollSlider.left() - m_hscrollFrame.left()) /
+                            static_cast<double>(m_hscrollFrameWidth - m_hscrollSliderWidth);
                 if (LOG_TRACE_MOUSE_COND) {
                     TRACEX_DE("%s HSCROLL hrelPos:%f", __FUNCTION__, m_hrelPos)
                 }
@@ -3035,16 +3024,16 @@ void CEditorWidget::ProcessMouseMove(QMouseEvent *event, ScreenPoint_t& screenPo
         unsetCursor();
         setCursor(Qt::ArrowCursor);
         setCursor(m_cursorShape);
-        PRINT_CURSOR(QString("Reset/set cursor %1").arg(m_cursorShape));
+        PRINT_CURSOR(QString("Reset/set cursor %1").arg(m_cursorShape))
     }
 
     if (m_cursorShape != requestCursor) {
         if (requestCursor == Qt::ArrowCursor) {
             unsetCursor();
-            PRINT_CURSOR(QString("Unset cursor"));
+            PRINT_CURSOR(QString("Unset cursor"))
         } else {
             setCursor(requestCursor);
-            PRINT_CURSOR(QString("Set cursor %1").arg(requestCursor));
+            PRINT_CURSOR(QString("Set cursor %1").arg(requestCursor))
         }
     }
     m_cursorShape = requestCursor;
@@ -3079,7 +3068,7 @@ void CEditorWidget::OnMouseWheel(QWheelEvent *event)
                          .arg(__FUNCTION__)
                          .arg(zDelta)
                          .arg(numDegrees.isNull() ? -1 : numDegrees.y())
-                         .arg(numPixels.isNull() ? -1 : numPixels.y()));
+                         .arg(numPixels.isNull() ? -1 : numPixels.y()))
 
     ForceVScrollBitmap();
 
@@ -3099,7 +3088,7 @@ void CEditorWidget::OnMouseWheel(QWheelEvent *event)
         g_cfg_p->m_log_FilterMatchColorModify = g_cfg_p->m_log_FilterMatchColorModify < 0 ?
                                                 0 : g_cfg_p->m_log_FilterMatchColorModify;
 
-        ((CLogScrutinizerDoc *)GetDocument())->m_fontCtrl.UpdateAllFontsWith_fontMod(FONT_MOD_COLOR_MOD);
+        GetDocument()->m_fontCtrl.UpdateAllFontsWith_fontMod(FONT_MOD_COLOR_MOD);
         m_EraseBkGrndDisabled = true;
         update();
         return;
@@ -3214,7 +3203,7 @@ void CEditorWidget::HorizontalCursorFocus(HCursorScrollAction_e scrollAction)
 
     /* Check if scroll needed */
 
-    int currentHorizOffset = (int)(m_hrelPos * (double)(m_bmpWindow.width() - m_rcClient.width()));
+    int currentHorizOffset = static_cast<int>(m_hrelPos * (m_bmpWindow.width() - m_rcClient.width()));
 
     /* BMP not usable for text, m_textRow_X.left
      * Screen not usable to the right, m_hscrollFrame.Width() */
@@ -3263,7 +3252,7 @@ void CEditorWidget::HorizontalCursorFocus(HCursorScrollAction_e scrollAction)
         }
 
         if (bmpOffset > 0) {
-            m_hrelPos = (double)bmpOffset / (double)((m_bmpWindow.width() - m_rcClient.width()));
+            m_hrelPos = bmpOffset / static_cast<double>((m_bmpWindow.width() - m_rcClient.width()));
         } else {
             /* backup... */
             m_hrelPos = 0.0;
@@ -3303,19 +3292,19 @@ void CEditorWidget::UpdateRelPosition(void)
 
     CLogScrutinizerDoc *doc_p = GetDocument();
     double old_relPos = m_relPos;
-    double rowIndex_f = (double)m_topLine;
+    double rowIndex_f = static_cast<double>(m_topLine);
 
     if (m_presentationMode == PRESENTATION_MODE_ONLY_FILTERED_e) {
         if (m_topLine >= 0) {
             /* must be an index larger than -1 */
-            rowIndex_f = (double)doc_p->m_rowCache_p->GetFilterIndex(m_topLine);  /* 0 based */
+            rowIndex_f = static_cast<double>(doc_p->m_rowCache_p->GetFilterIndex(m_topLine));  /* 0 based */
         }
     }
 
     if (m_maxDisplayRows < m_totalNumOfRows) {
         /* Removing m_maxDisplayRows to compensate for 1/2 * m_maxDisplayRows at the top and bottom that cannot be seen
          * */
-        m_relPos = (rowIndex_f + ((double)m_maxDisplayRows / 2.0)) / (double)(m_totalNumOfRows - m_maxDisplayRows);
+        m_relPos = (rowIndex_f + (m_maxDisplayRows / 2.0)) / (m_totalNumOfRows - m_maxDisplayRows);
     } else {
         m_relPos = m_min_rel_pos;
     }
@@ -3328,7 +3317,7 @@ void CEditorWidget::UpdateRelPosition(void)
 
     CheckRelPosition();
 
-    if (old_relPos != m_relPos) {
+    if (!almost_equal(old_relPos, m_relPos)) {
         UpdateCursor(false, m_cursorSel.row, m_cursorSel.startCol);
     }
 }
@@ -3458,17 +3447,11 @@ void CEditorWidget::CheckVScrollSliderPosition(void)
         }
 
         if (found) {
-            TRACEX_DE(
-                "CEditorWidget::CheckVScrollSliderPosition  row_start_end (%d, %d) item_start_end "
-                "(%d, %d) y_raster _start (%d, %d)  y_raster_end (%d, %d)",
-                m_topLine,
-                endLine,
-                startItem_p != nullptr ? startItem_p->startRow : -1,
-                endItem_p != nullptr ? endItem_p->endRow : -1,
-                y_start_raster,
-                m_vscrollSlider.top(),
-                y_end_raster,
-                m_vscrollSlider.bottom());
+            TRACEX_DE("CEditorWidget::CheckVScrollSliderPosition  row_start_end (%d, %d) item_start_end "
+                      "(%d, %d) y_raster _start (%d, %d)  y_raster_end (%d, %d)",
+                      m_topLine, endLine, startItem_p != nullptr ? startItem_p->startRow : -1,
+                      endItem_p != nullptr ? endItem_p->endRow : -1, y_start_raster, m_vscrollSlider.top(),
+                      y_end_raster, m_vscrollSlider.bottom())
 
             if (y_start_raster != m_vscrollSlider.top()) {
                 m_vscrollSlider.setTop(y_start_raster);
@@ -3876,16 +3859,16 @@ void CEditorWidget::CursorUpDown(bool up)
          * too short rows */
 
         if (m_cursorSel.row != cursorRow) {
-            if (m_cursorDesiredCol == (int)doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size) {
+            if (m_cursorDesiredCol == doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size) {
                 /* Tracking the end of the row */
-                m_cursorDesiredCol = (int)doc_p->m_database.TIA.textItemArray_p[cursorRow].size;
+                m_cursorDesiredCol = doc_p->m_database.TIA.textItemArray_p[cursorRow].size;
                 cursorCol = m_cursorDesiredCol;
-            } else if (m_cursorDesiredCol >= (int)doc_p->m_database.TIA.textItemArray_p[cursorRow].size) {
+            } else if (m_cursorDesiredCol >= doc_p->m_database.TIA.textItemArray_p[cursorRow].size) {
                 cursorCol = doc_p->m_database.TIA.textItemArray_p[cursorRow].size;
-            } else if (cursorCol >= (int)doc_p->m_database.TIA.textItemArray_p[cursorRow].size) {
+            } else if (cursorCol >= doc_p->m_database.TIA.textItemArray_p[cursorRow].size) {
                 cursorCol = doc_p->m_database.TIA.textItemArray_p[cursorRow].size;
             } else if ((m_cursorDesiredCol != cursorCol) &&
-                       (m_cursorDesiredCol <= (int)(doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1))) {
+                       (m_cursorDesiredCol <= (doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1))) {
                 cursorCol = m_cursorDesiredCol;
             }
         }
@@ -3935,7 +3918,7 @@ void CEditorWidget::CursorUpDown(bool up)
                 AddDragSelection(m_cursorSel.row, m_cursorSel.startCol, m_cursorSel.startCol);
                 if (up) {
                     if (doc_p->m_database.TIA.textItemArray_p[cursorRow].size != 0) {
-                        if (cursorCol <= (int)doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1) {
+                        if (cursorCol <= doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1) {
                             auto endCol = doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1;
                             AddSelection(cursorRow, cursorCol, endCol, true, false, false);
                         } else {
@@ -3955,8 +3938,7 @@ void CEditorWidget::CursorUpDown(bool up)
                     }
 
                     if (doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size != 0) {
-                        if (m_cursorSel.startCol <=
-                            (int)doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1) {
+                        if (m_cursorSel.startCol <= doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1) {
                             auto endCol = doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1;
                             AddSelection(m_cursorSel.row, m_cursorSel.startCol, endCol, true, false, false);
                         }
@@ -4011,11 +3993,11 @@ void CEditorWidget::CursorUpDown(bool up)
                     } else {
                         /* not selected */
                         if ((doc_p->m_database.TIA.textItemArray_p[cursorRow].size != 0) &&
-                            (cursorCol < (int)(doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1))) {
+                            (cursorCol < (doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1))) {
                             /* if cursor is at end of the row then there shouldn't be a selection added */
                             AddSelection(cursorRow,
                                          cursorCol,
-                                         (int)doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1,
+                                         doc_p->m_database.TIA.textItemArray_p[cursorRow].size - 1,
                                          true,
                                          false,
                                          false); /* 1.1 */
@@ -4084,9 +4066,9 @@ void CEditorWidget::CursorUpDown(bool up)
 
                             selection_p->startCol = selection_p->startCol > 0 ? selection_p->startCol : 0;
                             selection_p->endCol = selection_p->endCol <
-                                                  (int)(doc_p->m_database.TIA.textItemArray_p[selection_p->row].size) ?
-                                                  selection_p->endCol : (
-                                int)(doc_p->m_database.TIA.textItemArray_p[selection_p->row].size) - 1;
+                                                  (doc_p->m_database.TIA.textItemArray_p[selection_p->row].size) ?
+                                                  selection_p->endCol :
+                                                  (doc_p->m_database.TIA.textItemArray_p[selection_p->row].size) - 1;
 
                             SelectionUpdated(selection_p);
                         } else if (selection_p->startCol <= cursorCol) {
@@ -4122,13 +4104,11 @@ void CEditorWidget::CursorUpDown(bool up)
                             startCol = m_origDragSelection.startCol;
                         }
 
-                        startCol = startCol <
-                                   (int)(doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size) -
-                                   1 ? startCol : (int)(doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size) -
-                                   1;
+                        startCol = startCol < (doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1) ?
+                                   startCol : doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1;
 
-                        int endCol = doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size !=
-                                     0 ? doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1 : 0;
+                        int endCol = doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size != 0 ?
+                                     doc_p->m_database.TIA.textItemArray_p[m_cursorSel.row].size - 1 : 0;
 
                         if (startCol != endCol) {
                             selection_p->startCol = startCol;
@@ -4183,8 +4163,7 @@ void CEditorWidget::CursorUpDown(bool up)
                 (up && (doc_p->m_database.FIRA.FIR_Array_p[m_topLine].index == 0)) || /* scroll up but topLine is at
                                                                                        * first filter */
                 (!up &&
-                 (((int)doc_p->m_database.FIRA.filterMatches -
-                   (int)doc_p->m_database.FIRA.FIR_Array_p[m_topLine].index) <=
+                 ((doc_p->m_database.FIRA.filterMatches - doc_p->m_database.FIRA.FIR_Array_p[m_topLine].index) <=
                   m_maxDisplayRows))) {
                 /* scroll down but topLine is at last possible filter for the top */
                 TRACEX_DE("CEditorWidget::CursorUpDown NO scroll possible")
@@ -4638,7 +4617,7 @@ void CEditorWidget::EmptySelectionList(bool invalidate)
         }
     });
 
-    PRINT_SELECTION("Empty selection list, count:%d", m_selectionList.count());
+    PRINT_SELECTION("Empty selection list, count:%d", m_selectionList.count())
 
     for (auto selection : m_selectionList) {
         delete (selection);
@@ -4670,7 +4649,7 @@ void CEditorWidget::EmptySelectionListAbove(CSelection *selection_p)
     }
 
     SelectionUpdated();
-    PRINT_SELECTION("EmptySelectionListAbove, count:%d", count);
+    PRINT_SELECTION("EmptySelectionListAbove, count:%d", count)
 }
 
 /***********************************************************************************************************************
@@ -4698,7 +4677,7 @@ void CEditorWidget::EmptySelectionListBelow(CSelection *selection_p)
     }
 
     SelectionUpdated();
-    PRINT_SELECTION("EmptySelectionListBelow, count:%d", count);
+    PRINT_SELECTION("EmptySelectionListBelow, count:%d", count)
 }
 
 /***********************************************************************************************************************
@@ -4710,7 +4689,7 @@ void CEditorWidget::RemoveSelection(int row)
         return;
     }
 
-    PRINT_SELECTION("RemoveSelection, Row:%d", row);
+    PRINT_SELECTION("RemoveSelection, Row:%d", row)
     m_multiSelectionActive = false;
 
     for (auto selection_p : m_selectionList) {
@@ -4769,11 +4748,11 @@ void CEditorWidget::AddSelection(
 
     endCol = endCol < 0 ? 0 : endCol;   /* For rows of length 0 */
 
-    if ((startCol != endCol) && ((int)startCol > TIA_RowLength)) {
+    if ((startCol != endCol) && (startCol > TIA_RowLength)) {
         TRACEX_W("AddSelection failed, start is in-front of total row size, Row:%d SCol:%d ECol:%d",
                  TIA_Row,
                  startCol,
-                 endCol);
+                 endCol)
         return;
     }
 
@@ -4783,7 +4762,7 @@ void CEditorWidget::AddSelection(
         m_multiSelectionActive = false;  /* single selection, multi selection disabled */
     }
 
-    if ((TIA_RowLength != 0) && ((int)endCol > TIA_RowLength - 1)) {
+    if ((TIA_RowLength != 0) && (endCol > TIA_RowLength - 1)) {
         if (startCol == endCol) {
             startCol = TIA_RowLength - 1;
         }
@@ -4814,7 +4793,7 @@ void CEditorWidget::AddSelection(
     }
 
     PRINT_SELECTION("AddSelection, Row:%d SCol:%d ECol:%d", selection_p->row, selection_p->startCol,
-                    selection_p->endCol);
+                    selection_p->endCol)
 
     if (m_selectionList.isEmpty()) {
         m_selectionList.append(selection_p);
@@ -4887,14 +4866,14 @@ void CEditorWidget::UpdateSelection(int TIA_Row, int startCol)
     bool skipFirstRow = false;
     bool skipLastRow = false;
 
-    PRINT_SELECTION("UpdateSelection Row:%-6d Col:%-4d", TIA_Row, startCol);
+    PRINT_SELECTION("UpdateSelection Row:%-6d Col:%-4d", TIA_Row, startCol)
 
     if (m_totalNumOfRows == 0) {
         return;
     }
 
     if ((m_origDragSelection.row == TIA_Row) && (m_origDragSelection.startCol == startCol)) {
-        PRINT_SELECTION("UpdateSelection same ROW and COL - No action");
+        PRINT_SELECTION("UpdateSelection same ROW and COL - No action")
         return;
     }
 
@@ -4944,7 +4923,7 @@ void CEditorWidget::UpdateSelection(int TIA_Row, int startCol)
             SelectionUpdated();
         }
         return;
-    } else if (m_origDragSelection.row < (int)TIA_Row) {
+    } else if (m_origDragSelection.row < TIA_Row) {
         /* Selecting down
          * 1. First row is added as m_origDragSelection.startCol until end of string
          * 2. Last row is added as 0 until cursor/startCol
@@ -4985,7 +4964,7 @@ void CEditorWidget::UpdateSelection(int TIA_Row, int startCol)
         doc_p->m_rowCache_p->GetTextItemLength(firstRow.row, &length);
 
         firstRow.endCol = length - 1 > 0 ? length - 1 : 0;
-        firstRow.startCol = (int)startCol > firstRow.endCol ? firstRow.endCol : (int)startCol;
+        firstRow.startCol = startCol > firstRow.endCol ? firstRow.endCol : startCol;
 
         lastRow.row = m_origDragSelection.row;
         lastRow.startCol = 0;
@@ -5004,10 +4983,10 @@ void CEditorWidget::UpdateSelection(int TIA_Row, int startCol)
     }
 
     if (m_presentationMode == PRESENTATION_MODE_ONLY_FILTERED_e) {
-        int startIndex = (int)doc_p->m_database.FIRA.FIR_Array_p[firstRow.row].index + 1;  /* start at filtered row
-                                                                                            * after this one */
-        int endIndex = (int)doc_p->m_database.FIRA.FIR_Array_p[lastRow.row].index;       /* stops at row before this one
-                                                                                          * */
+        int startIndex = doc_p->m_database.FIRA.FIR_Array_p[firstRow.row].index + 1;  /* start at filtered row
+                                                                                       * after this one */
+        int endIndex = doc_p->m_database.FIRA.FIR_Array_p[lastRow.row].index;       /* stops at row before this one
+                                                                                     * */
 
         for (int index = startIndex; index < endIndex; ++index) {
             if (m_CTRL_Pressed) {
