@@ -58,9 +58,9 @@ public:
     void SetNumOfProgressCounters(int numOfProgressCounters) {m_numOfProgressCounters = numOfProgressCounters;}
     void SetProgressCounter(double value); /* To align the * progress * this could * be used to * "jump" * forward */
     void StepProgressCounter(int counterIndex = 0);
-    void SetSuccess(void) {m_success = 1; SetProgressCounter(1.0f);}
-    void SetFail(void) {m_success = 0; SetProgressCounter(1.0f);}
-    void SetInit(void) {m_success = -1; SetProgressCounter(0.0f);}
+    void SetSuccess(void) {m_success = 1; SetProgressCounter(1.0);}
+    void SetFail(void) {m_success = 0; SetProgressCounter(1.0);}
+    void SetInit(void) {m_success = -1; SetProgressCounter(0.0);}
     void SetFileOperationOngoing(bool ongoing) {m_fileOperationOngoing = ongoing;}
     bool isProcessing(void) {return m_processingLevel > 0 ? true : false;}
 

@@ -52,7 +52,7 @@ const char NO_SUBPLOT_DATA[NUM_OF_NO_SUBPLOT_STRINGS][256] =
 
 extern CThreadManager *g_CPlotPane_ThreadMananger_p;
 
-#define Y_ADJUST 3.0f /* Unknown why it looks like text is a bit under the center line */
+#define Y_ADJUST 3.0 /* Unknown why it looks like text is a bit under the center line */
 
 typedef struct {
     CSubPlotSurface *subplotSurface_p;
@@ -76,20 +76,20 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
     m_cursorTime(0.0), m_painter_p(nullptr), m_DC_windowRect(0, 0, 0, 0), m_DC_viewPortRect(0, 0, 0, 0),
     m_windowRect(0, 0, 0, 0), m_viewPortRect(0, 0, 0, 0), m_zoomEnabled(false), m_unitsPerPixel_X(0.0),
     m_unitsPerPixel_Y(0.0), m_unitsPerPixel_X_inv(0.0), m_unitsPerPixel_Y_inv(0.0),
-    m_viewPort_Width(0.0), m_viewPort_Height(0.0f), m_viewPort_X_Center(0.0), m_viewPort_Y_Center(0.0f),
+    m_viewPort_Width(0.0), m_viewPort_Height(0.0), m_viewPort_X_Center(0.0), m_viewPort_Y_Center(0.0),
     m_bgBrush_p(nullptr), m_bgPen_p(nullptr), m_graphPenArray_p(nullptr), m_graphPenArraySize(0),
     m_colorTable_p(nullptr), m_graphColors(0), m_numOfGraphUserColors(0),
     m_linePen_Y_p(nullptr), m_cursorPen_Y_p(nullptr), m_resourcesLoaded(false), m_setupGraphs(false),
     m_label_refs_a(nullptr), m_numOfLabelRefs(0), m_lineSize(0, 0), m_halfLineHeight(0), m_subplot_properties(0),
-    m_avgPixPerLetter(0), m_avgPixPerLetterHeight(0.0f),
+    m_avgPixPerLetter(0), m_avgPixPerLetterHeight(0.0),
     m_hasFocus(false)
 {
     m_surfaceZoom.x_max = 0.0;
     m_surfaceZoom.x_min = 0.0;
     m_surfaceZoom.x_offset = 0.0;
-    m_surfaceZoom.y_max = 0.0f;
-    m_surfaceZoom.y_min = 0.0f;
-    m_surfaceZoom.y_offset = 0.0f;
+    m_surfaceZoom.y_max = 0.0;
+    m_surfaceZoom.y_min = 0.0;
+    m_surfaceZoom.y_offset = 0.0;
 
     char *title_p;
     char *subTitle_p;
@@ -346,7 +346,7 @@ void CSubPlotSurface::SetZoom(double x_min, double x_max, bool reset_Y_Zoom)
     }
 
     if (reset_Y_Zoom) {
-        double zoom_out = (extents.y_max - extents.y_min) * 0.2f;
+        double zoom_out = (extents.y_max - extents.y_min) * 0.2;
 
         m_surfaceZoom.y_max = extents.y_max + zoom_out;
         m_surfaceZoom.y_min = extents.y_min - zoom_out;
@@ -387,10 +387,10 @@ void CSubPlotSurface::SetSurfaceZoom(SurfaceZoom_t *zoom_p)
 void CSubPlotSurface::Initialize(void)
 {
     m_viewPort_Width = 0;
-    m_viewPort_Height = 0.0f;
+    m_viewPort_Height = 0.0;
 
     m_viewPort_X_Center = 0;
-    m_viewPort_Y_Center = 0.0f;
+    m_viewPort_Y_Center = 0.0;
 
     m_unitsPerPixel_X = 0.0;
     m_unitsPerPixel_Y = 0.0;
@@ -399,8 +399,8 @@ void CSubPlotSurface::Initialize(void)
 
     m_surfaceZoom.x_max = 0;
     m_surfaceZoom.x_min = 0;
-    m_surfaceZoom.y_max = 0.0f;
-    m_surfaceZoom.y_min = 0.0f;
+    m_surfaceZoom.y_max = 0.0;
+    m_surfaceZoom.y_min = 0.0;
 
     m_cursorRowEnabled = false;
     m_cursorRow = 0;
@@ -674,12 +674,12 @@ void CSubPlotSurface::OnPaint_Empty(void)
 
     doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
 
-    const int textRowHeight = lineSize.height() + static_cast<int>(static_cast<double>(lineSize.height()) * 0.05f);
+    const int textRowHeight = lineSize.height() + static_cast<int>(static_cast<double>(lineSize.height()) * 0.05);
     const int textBoxHeight = textRowHeight * NUM_OF_NO_SUBPLOT_STRINGS;
     int x;
     int y;
 
-    x = static_cast<int>(static_cast<double>(m_windowRect.width()) * 0.1f);
+    x = static_cast<int>(static_cast<double>(m_windowRect.width()) * 0.1);
     y = 15;
 
     const int totalHeight = m_windowRect.height();
@@ -843,8 +843,8 @@ void CSubPlotSurface::Reconfigure(QRect *rect_p)
     m_unitsPerPixel_Y_inv = (double)1.0 / m_unitsPerPixel_Y;
 
     PRINT_SUBPLOTSURFACE(
-        "CSubPlotSurface::Reconfigure  %s  WP_RECT %d %d %d %d Width:%.2e Height:%5.2f CenterX:%.2e"
-        " CenterY:%4.2f ExtX %.2e %.2e ExtY:%4.2f %4.2f UnitPerPixel %e %e INV:%e %e",
+        "CSubPlotSurface::Reconfigure  %s  WP_RECT %d %d %d %d Width:%.2e Height:%5.2 CenterX:%.2e"
+        " CenterY:%4.2 ExtX %.2e %.2e ExtY:%4.2 %4.2 UnitPerPixel %e %e INV:%e %e",
         m_subPlotTitle,
         m_viewPortRect.left(), m_viewPortRect.right(), m_viewPortRect.top(), m_viewPortRect.bottom(),
         m_viewPort_Width, m_viewPort_Height,
@@ -1260,17 +1260,17 @@ void CSubPlotSurface::Setup_Y_Lines(void)
         /* Ensure 0 is shown */
         m_lines_Y[m_numOf_Y_Lines++] = 0.0;
         steps = 0;
-        while ((steps * step) < y_max) {
+        while ((steps * step) < y_max && m_numOf_Y_Lines < ARRAY_COUNT(m_lines_Y)) {
             m_lines_Y[m_numOf_Y_Lines++] = (steps * step);
             ++steps;
         }
         steps = -1;
-        while ((steps * step) > y_min) {
+        while ((steps * step) > y_min && m_numOf_Y_Lines < ARRAY_COUNT(m_lines_Y)) {
             m_lines_Y[m_numOf_Y_Lines++] = (steps * step);
             --steps;
         }
     } else {
-        while ((base + (steps * step)) < y_max) {
+        while ((base + (steps * step)) < y_max && m_numOf_Y_Lines < ARRAY_COUNT(m_lines_Y)) {
             m_lines_Y[m_numOf_Y_Lines] = base + (steps * step);
             ++m_numOf_Y_Lines;
             ++steps;
@@ -1347,7 +1347,7 @@ void CSubPlotSurface::DrawGraphs(void)
     const int lineEnds = g_cfg_p->m_plot_lineEnds;
     const int minPixelDist = g_cfg_p->m_plot_LineEnds_MinPixelDist;
     const int maxPixelDist = g_cfg_p->m_plot_LineEnds_MaxCombinePixelDist;
-    double label_relative_from_top = 0.2f; /* to enable labels not overlapping entirely */
+    double label_relative_from_top = 0.2; /* to enable labels not overlapping entirely */
 
     /* In-case lines and boxes are labelled */
     m_painter_p->setBackgroundMode(Qt::TransparentMode);
@@ -1404,7 +1404,7 @@ void CSubPlotSurface::DrawGraphs(void)
                         const int x_2 = di_p->x2_pix;
                         const int y_2 = di_p->y2_pix;
                         const short properties = di_p->properties;
-                        double relative_X = 0.0f;  /* Some graphical object may offset the label */
+                        double relative_X = 0.0;  /* Some graphical object may offset the label */
                         int x_len = 0;
                         int y_len = 0;
                         int x_dist = 0;
@@ -1714,9 +1714,9 @@ void CSubPlotSurface::DrawGraphs(void)
 
                                 if (relative_X == static_cast<double>(0.0)) {
                                     label_x_start = x_1 +
-                                                    static_cast<int>(static_cast<double>(x_2 - x_1) / 2.0f -
+                                                    static_cast<int>(static_cast<double>(x_2 - x_1) / 2.0 -
                                                                      static_cast<double>(di_p->label_pix_length) /
-                                                                     2.0f);
+                                                                     2.0);
                                 } else {
                                     label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
                                 }
@@ -1728,15 +1728,15 @@ void CSubPlotSurface::DrawGraphs(void)
                                 if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK &&
                                     (di_p->x2_pix - di_p->x1_pix < 2)) {
                                     y_text = y_2_temp + (y_1_temp - y_2_temp) * label_relative_from_top;
-                                    label_relative_from_top = label_relative_from_top < 0.8f ?
-                                                              label_relative_from_top + 0.2f : 0.2f;
+                                    label_relative_from_top = label_relative_from_top < 0.8 ?
+                                                              label_relative_from_top + 0.2 : 0.2;
                                 } else {
-                                    y_text = y_2_temp + (y_1_temp - y_2_temp) / 2.0f +
-                                             m_avgPixPerLetterHeight / 2.0f - Y_ADJUST;
+                                    y_text = y_2_temp + (y_1_temp - y_2_temp) / 2.0 +
+                                             m_avgPixPerLetterHeight / 2.0 - Y_ADJUST;
                                 }
 
                                 const auto box_upper = y_text - m_avgPixPerLetterHeight;
-                                const auto box_lower = y_text + 2.0f;
+                                const auto box_lower = y_text + 2.0;
                                 if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                                     rect = QRect(QPoint(label_x_start - 2, static_cast<int>(box_upper)),
                                                  QPoint(static_cast<int>(label_x_start +
@@ -1898,6 +1898,7 @@ void CSubPlotSurface::DrawDecorators(bool over)
                     if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                         (void)m_painter_p->setPen(QRgb(0x0));
                     }
+
                     /* lighter colors require a black label */
                     else if (totalColor > (0x85 * 3)) {
                         (void)m_painter_p->setPen(QRgb(0x0));
@@ -1907,21 +1908,21 @@ void CSubPlotSurface::DrawDecorators(bool over)
 
                     int label_x_start;
 
-                    if (relative_X == 0.0f) {
+                    if (relative_X == 0.0) {
                         label_x_start = x_1 + ((x_2 - x_1) >> 1) - (di_p->label_pix_length >> 1);
                     } else {
                         label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
                     }
 
                     const int y_text = y_1 - static_cast<int>(static_cast<double>((y_1 - y_2) >> 1) -
-                                                              m_avgPixPerLetterHeight / 2.0f);
+                                                              m_avgPixPerLetterHeight / 2.0);
 
                     if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                         /* Erase a small box where the label should be, mainly covering just the own line */
                         rect = QRect(QPoint(label_x_start, y_text - 2),
                                      QPoint(label_x_start + di_p->label_pix_length,
                                             static_cast<int>(static_cast<double>(y_text) -
-                                                             m_avgPixPerLetterHeight + 2.0f)));
+                                                             m_avgPixPerLetterHeight + 2.0)));
 
                         m_painter_p->fillRect(rect, BACKGROUND_COLOR);
                     }
@@ -2264,7 +2265,6 @@ void CSubPlotSurface::SetupGraphs(void)
     int threadIndex = 0;
 
 #ifdef _DEBUG
-
     CTimeMeas execTime;
 #endif
 
@@ -2361,7 +2361,6 @@ void CSubPlotSurface::SetupGraphs(void)
 #endif
 
 #ifdef _DEBUG
-
     double time = execTime.ms();
     PRINT_SUBPLOTSURFACE("CSubPlotSurface::SetupGraphs  Time:%f", time);
 #endif
@@ -2397,7 +2396,7 @@ void CSubPlotSurface::SetupDecorators(void)
                                                 m_displayDecorator.m_items_a[itemIndex].go_p)->label;
                         int pix_length =
                             (int)((double)label_p->labelKind.textLabel.length * m_avgPixPerLetter);
-                        pix_length = (int)((double)pix_length * 1.1f);
+                        pix_length = (int)((double)pix_length * 1.1);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2409,7 +2408,7 @@ void CSubPlotSurface::SetupDecorators(void)
                             (int)((double)(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength)
                                   * m_avgPixPerLetter);
 
-                        pix_length = (int)((double)pix_length * 1.1f);
+                        pix_length = (int)((double)pix_length * 1.1);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2711,7 +2710,7 @@ const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *r
         }
 
 #ifdef _DEBUG
-        PRINT_SUBPLOTSURFACE("CSubPlotSurface::GetCursorRow  %s  x:%d y:%d dist:%3.2f row:%d",
+        PRINT_SUBPLOTSURFACE("CSubPlotSurface::GetCursorRow  %s  x:%d y:%d dist:%3.2 row:%d",
                              m_subPlotTitle, point_p->x(), point_p->y(), *distance_p, *row_p);
 #endif
         return di_p;
@@ -2749,7 +2748,7 @@ bool CSubPlotSurface::GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double
             return false;
         }
 
-        PRINT_SUBPLOTSURFACE("CSubPlotSurface::GetGraph  %s  x:%d y:%d dist:%3.2f row:%d",
+        PRINT_SUBPLOTSURFACE("CSubPlotSurface::GetGraph  %s  x:%d y:%d dist:%3.2 row:%d",
                              m_subPlotTitle, point_p->x(), point_p->y(), *distance_p,
                              (*go_pp)->row);
 

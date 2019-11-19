@@ -6613,7 +6613,7 @@ void CEditorWidget::FillRockScroll(void)
                 rs_painter.fillRect(0, y_start_pix, m_vscrollFrame.width(), y_fill_pix, color);
 
                 /* memDC.FillSolidRect(0, y_start_pix, m_vscrollFrame.Width(), y_fill_pix, color);
-                 * Fill m_rockScrollInfo from y to (int)(rasterHeight + 0.5f) */
+                 * Fill m_rockScrollInfo from y to (int)(rasterHeight + 0.5) */
                 for (int infoIndex = static_cast<int>(y);
                      infoIndex <= static_cast<int>(y + rasterHeight + 0.5);
                      ++infoIndex) {
@@ -6725,7 +6725,7 @@ void CEditorWidget::FillRockScroll(void)
                              m_rockScrollInfo.numberOfItems, m_vscrollFrame.height())
                 }
 #endif
-            } /*  (deltaRasterPerRow > 1.0f) */
+            } /*  (deltaRasterPerRow > 1.0) */
         }
 
         /* Add the brush color-hashed rowClip */

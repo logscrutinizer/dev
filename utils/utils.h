@@ -24,6 +24,8 @@
 extern uint8_t g_upperChar_LUT[256];
 extern bool g_upperChar_LUT_init;
 
+#define ARRAY_COUNT(A) (static_cast<int>((sizeof(A) / sizeof((A)[0]))))
+
 typedef struct {
     QPoint mouse;              /* as captured (in the current window, normalized to the top 0,0 of the window) */
     QPoint DCBMP;              /* Position in the DC Bitmap, e.h mouse + current bitmap vert/horiz offsets */

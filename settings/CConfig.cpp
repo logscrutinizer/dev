@@ -17,8 +17,8 @@ CConfig *g_cfg_p;
 int FILECTRL_ROW_SIZE_ESTIMATE_persistent = FILECTRL_ROW_SIZE_ESTIMATE;
 int FILECTRL_ROW_MAX_SIZE_persistent = FILECTRL_ROW_MAX_SIZE;
 int FILECTRL_MINIMAL_NUM_OF_TIs_persistent = 1000; /**< How many TIs that will be made space for in the TIA */
-CFG_PADDING_t CFG_SCREEN_TEXT_ROW_PADDING_persistent = {1.0f, 1.0f, 0.05f, 0.05f};
-CFG_PADDING_t CFG_SCREEN_TEXT_WINDOW_PADDING_persistent = {1.0f, 1.0f, 1.0f, 1.0f};
+CFG_PADDING_t CFG_SCREEN_TEXT_ROW_PADDING_persistent = {1.0, 1.0, 0.05, 0.05};
+CFG_PADDING_t CFG_SCREEN_TEXT_WINDOW_PADDING_persistent = {1.0, 1.0, 1.0, 1.0};
 
 /* Color table */
 static const ColorTableItem_t fontColorTable_DEFAULT[MAX_COLOR_TABLE] =
@@ -112,14 +112,14 @@ CConfig::CConfig(void)
     g_cfg_p = this;
 
     m_minNumOfTIs = 1000;
-    m_text_RowPadding.left = 0.01f;
-    m_text_RowPadding.right = 0.01f;
-    m_text_RowPadding.top = 0.3f;
-    m_text_RowPadding.bottom = 0.3f;
-    m_text_WindowPadding.left = 0.005f;
-    m_text_WindowPadding.right = 0.005f;
-    m_text_WindowPadding.top = 0.005f;
-    m_text_WindowPadding.bottom = 0.005f;
+    m_text_RowPadding.left = 0.01;
+    m_text_RowPadding.right = 0.01;
+    m_text_RowPadding.top = 0.3;
+    m_text_RowPadding.bottom = 0.3;
+    m_text_WindowPadding.left = 0.005;
+    m_text_WindowPadding.right = 0.005;
+    m_text_WindowPadding.top = 0.005;
+    m_text_WindowPadding.bottom = 0.005;
     m_autoCloseProgressDlg = true;
     m_throwAtError = false;
 

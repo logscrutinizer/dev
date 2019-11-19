@@ -162,10 +162,10 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                 (-1 != m_boxes_a[m_currentBox_0_index].end)) {
                 m_boxes_a[index].graph_p->AddBox(
                     static_cast<double>(m_boxes_a[m_currentBox_0_index].start),
-                    2.0f,
+                    2.0,
                     m_boxes_a[m_currentBox_0_index].start_row,
                     static_cast<double>(m_boxes_a[m_currentBox_0_index].end),
-                    3.0f,
+                    3.0,
                     m_boxes_a[m_currentBox_0_index].end_row);
 
                 m_currentBox_0_index++;
@@ -187,10 +187,10 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
             if (status) {
                 m_boxes_a[index].graph_p->AddBox(
                     static_cast<double>(time1),
-                    0.0f,
+                    0.0,
                     rowIndex,
                     static_cast<double>(time2),
-                    1.0f,
+                    1.0,
                     rowIndex,
                     m_subPlot_Boxes_labelIndex_0,
                     Q_RGB(90, 90, time1 * 10));
@@ -260,7 +260,7 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                             temp,
                             static_cast<uint8_t>(strlen(temp)),
                             Q_RGB(150, 255 - time * 20, time * 20),
-                            0.1f * (double)time);
+                            0.1 * (double)time);
 
                         m_graph_OverrideColor_1_p->AddLine(
                             m_lines_a[index].prevX,
@@ -284,7 +284,7 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                             rowIndex,
                             m_subPlot_Lines_labelIndex_0,
                             -1,
-                            0.5f);
+                            0.5);
 
                         m_graph_OverrideColor_2_p->AddLine(
                             m_lines_a[index].prevX,

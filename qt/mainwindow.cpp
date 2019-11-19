@@ -831,7 +831,7 @@ void MainWindow::showEvent(QShowEvent *e)
  *
  */
 
-const double BIT_LESS = 0.90f;
+const double BIT_LESS = 0.90;
 
 /***********************************************************************************************************************
 *   sizeHint
@@ -906,10 +906,10 @@ void MainWindow::setupPredefinedWindowSizes(void)
     CGeometryState gs;
     getSettingKeys(gs.geoKey, gs.stateKey);
 
-    QRect rec = QApplication::desktop()->screenGeometry();
+    QRect rec = QGuiApplication::primaryScreen()->geometry();
 
     if (windowState() != Qt::WindowMaximized) {
-        auto scale = 0.6f;
+        auto scale = 0.6;
         gs.mainWindow = QSize(static_cast<int>(static_cast<double>(rec.width()) * scale),
                               static_cast<int>(static_cast<double>(rec.height()) * scale));
     } else {
@@ -917,12 +917,12 @@ void MainWindow::setupPredefinedWindowSizes(void)
     }
 
     TRACEX_I(QString("MW setupPredefinedWindowSizes resize %1,%2 state:%3")
-                 .arg(gs.mainWindow.width()).arg(gs.mainWindow.height()).arg(windowState()));
+                 .arg(gs.mainWindow.width()).arg(gs.mainWindow.height()).arg(windowState()))
 
-    gs.workspace = QSize(static_cast<int>(static_cast<double>(gs.mainWindow.width()) * 0.2f),
-                         static_cast<int>(static_cast<double>(gs.mainWindow.height()) * 0.8f));
+    gs.workspace = QSize(static_cast<int>(static_cast<double>(gs.mainWindow.width()) * 0.2),
+                         static_cast<int>(static_cast<double>(gs.mainWindow.height()) * 0.8));
     gs.editor = QSize(static_cast<int>((gs.mainWindow.width() - gs.workspace.width()) * BIT_LESS),
-                      static_cast<int>(static_cast<double>(gs.mainWindow.height()) * 0.8f * BIT_LESS));
+                      static_cast<int>(static_cast<double>(gs.mainWindow.height()) * 0.8 * BIT_LESS));
     gs.log = QSize(gs.editor.width(), static_cast<int>((gs.mainWindow.height() - gs.editor.height()) * BIT_LESS));
     gs.search = gs.log;
     m_pendingGeometryState.insert(std::pair<Qt::WindowStates, CGeometryState>(windowState(), gs));

@@ -26,6 +26,7 @@
 #define AXIS_DECORATION_HIGHT 10
 
 #define MIN_WINDOW_HEIGHT 60 /*pixels */
+#define MAX_WINDOW_HEIGHT 2048 /*pixels */
 #define DEFAULT_WINDOW_HEIGHT 80 /*pixels */
 
 /* The CSubPlotSurface is only used to manage the subplots, drawing it etc. */
@@ -293,10 +294,10 @@ public:
 private:
     SurfaceZoom_t m_surfaceZoom;
 
-#define MAX_Y_LINES 40
+#define MAX_Y_LINES 1080
 #define MAX_X_LINES 640
 
-    double m_lines_Y[1000 /*MAX_Y_LINES*/];
+    double m_lines_Y[MAX_Y_LINES];
     int m_numOf_Y_Lines;
     double m_lines_X[MAX_X_LINES];
     int m_base_X_right_count; /* Number of x-values from 0 index that is to the right of base */

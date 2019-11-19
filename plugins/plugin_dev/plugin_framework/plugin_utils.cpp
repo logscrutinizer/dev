@@ -525,11 +525,11 @@ lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label
     go_p->x2 = 0.0;
     go_p->y2 = y2;
 
-    const double halfHeigth = (y2 - y1) / 2.0f;
+    const double halfHeigth = (y2 - y1) / 2.0;
 
     newLifeLine_Box_p->y_center = y1 + halfHeigth;
-    newLifeLine_Box_p->y_execTop = newLifeLine_Box_p->y_center + halfHeigth * 0.3f;
-    newLifeLine_Box_p->y_execBottom = newLifeLine_Box_p->y_center - halfHeigth * 0.3f;
+    newLifeLine_Box_p->y_execTop = newLifeLine_Box_p->y_center + halfHeigth * 0.3;
+    newLifeLine_Box_p->y_execBottom = newLifeLine_Box_p->y_center - halfHeigth * 0.3;
 
     go_p->row = 0;
     go_p->properties = GRAPHICAL_OBJECT_KIND_DECORATOR_LIFELINE | GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_STR;
@@ -568,7 +568,7 @@ lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label
 
     newLifeLine_Line_p->lineColorRGB = colorRGB;
     newLifeLine_Line_p->label.labelKind.textLabel.length = labelLength;
-    newLifeLine_Line_p->relative_X = 0.2f;         /* 20% in on the line */
+    newLifeLine_Line_p->relative_X = 0.2;         /* 20% in on the line */
 
     memcpy(&newLifeLine_Line_p->label.labelKind.textLabel.label_a, label_p, labelLength);
     (&newLifeLine_Line_p->label.labelKind.textLabel.label_a)[labelLength] = 0;
@@ -611,7 +611,7 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
     }
 
     AddLine(x, lifeLine1_p->y_center, x, y_dest, row, labelIndex,
-            colorRGB, 0.5f, lineEnds);
+            colorRGB, 0.5, lineEnds);
 
     return true;
 }
@@ -642,7 +642,7 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
         }
     }
 
-    AddLine(x, lifeLine1_p->y_center, x, y_dest, row, label_p, labelLength, colorRGB, 0.5f, lineEnds);
+    AddLine(x, lifeLine1_p->y_center, x, y_dest, row, label_p, labelLength, colorRGB, 0.5, lineEnds);
 
     return true;
 }
@@ -676,7 +676,7 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
         }
     }
 
-    AddLine(x, y_src, x, y_dest, row, labelIndex, colorRGB, 0.5f, lineEnds);
+    AddLine(x, y_src, x, y_dest, row, labelIndex, colorRGB, 0.5, lineEnds);
     return true;
 }
 
@@ -710,7 +710,7 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
         }
     }
 
-    AddLine(x, y_src, x, y_dest, row, label_p, labelLength, colorRGB, 0.5f, lineEnds);
+    AddLine(x, y_src, x, y_dest, row, label_p, labelLength, colorRGB, 0.5, lineEnds);
     return true;
 }
 
@@ -723,7 +723,7 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, int labe
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     const double start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
-    AddLine(x, start, x, lifeLine_p->y_center, row, labelIndex, colorRGB, 0.5f, lineEnds);
+    AddLine(x, start, x, lifeLine_p->y_center, row, labelIndex, colorRGB, 0.5, lineEnds);
 
     return true;
 }
@@ -737,7 +737,7 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, const ch
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     const double start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
-    AddLine(x, start, x, lifeLine_p->y_center, row, label_p, labelLength, colorRGB, 0.5f, lineEnds);
+    AddLine(x, start, x, lifeLine_p->y_center, row, label_p, labelLength, colorRGB, 0.5, lineEnds);
 
     return true;
 }

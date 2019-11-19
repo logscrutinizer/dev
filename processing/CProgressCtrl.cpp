@@ -45,7 +45,7 @@ void CProgressMgr::ResetProgressInfo(void)
 void CProgressMgr::InitProgressCounter(void)
 {
     for (int index = 0; index < MAX_NUM_OF_THREADS; ++index) {
-        m_progressCounter[index] = 0.0f;
+        m_progressCounter[index] = 0.0;
     }
     m_timer.start();
 }

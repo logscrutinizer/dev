@@ -129,7 +129,7 @@ void CProgressDlg::UpdateProgressInfo(void)
         if (numOfProgressCounters > 1) {
             const int COUNT = numOfProgressCounters;
 
-            progress = 1.0f;                   /* Keeps the smallest progress value */
+            progress = 1.0;                   /* Keeps the smallest progress value */
 
             for (int index = 0; index < COUNT; ++index) {
                 if (progressCounters_p[index] < progress) {
@@ -139,10 +139,10 @@ void CProgressDlg::UpdateProgressInfo(void)
         } else if (numOfProgressCounters == 1) {
             progress = progressCounters_p[0];
         } else {
-            progress = 0.0f;
+            progress = 0.0;
         }
 
-        m_progressBar_p->setValue(static_cast<int>(progress * 100.0f));
+        m_progressBar_p->setValue(static_cast<int>(progress * 100.0));
 
         bool moreToRead;
         do {
@@ -365,7 +365,7 @@ uint32_t CProgressThread::TestProgress()
     * g_processingCtrl_p->m_abort = false;
     * g_processingCtrl_p->SetFileOperationOngoing(false); */
     g_processingCtrl_p->InitProgressCounter();
-    g_processingCtrl_p->SetupProgessCounter(1.0f / 1000.0f); /* 1000 ticks until completion */
+    g_processingCtrl_p->SetupProgessCounter(1.0 / 1000.0); /* 1000 ticks until completion */
     g_processingCtrl_p->SetNumOfProgressCounters(1);
 
     for (int i = 0; i < 1000 && !g_processingCtrl_p->m_abort; ++i) {

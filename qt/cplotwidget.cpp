@@ -455,8 +455,8 @@ void CPlotWidget::FillEmptyWindow(void)
 
     TRACEX_DE(QString("%1").arg(__FUNCTION__))
 
-    int x_pos = static_cast<int>((m_windowRect.right() - m_windowRect.left()) * 0.1f);
-    int y_pos = static_cast<int>((m_windowRect.bottom() - m_windowRect.top()) * 0.1f);
+    int x_pos = static_cast<int>((m_windowRect.right() - m_windowRect.left()) * 0.1);
+    int y_pos = static_cast<int>((m_windowRect.bottom() - m_windowRect.top()) * 0.1);
 
     doc_p->m_fontCtrl.SetFont(m_pDC, m_FontEmptyWindow_p);
 
@@ -469,11 +469,11 @@ void CPlotWidget::FillEmptyWindow(void)
 
     m_pDC->drawText(x_pos, y_pos, "The window is empty because you have loaded a plugin but you haven't run it's "
                                   "plot-function yet, or that");
-    y_pos += static_cast<int>(fontSize.height() * 1.1f);
+    y_pos += static_cast<int>(fontSize.height() * 1.1);
     m_pDC->drawText(x_pos, y_pos, "the plugin plot-function didn't create any graphical objects for LogScrutinizer "
                                   "to present");
 
-    y_pos += static_cast<int>(fontSize.height() * 1.5f);
+    y_pos += static_cast<int>(fontSize.height() * 1.5);
     x_pos += fontSize.width();
 
     char *title_p;
@@ -490,20 +490,20 @@ void CPlotWidget::FillEmptyWindow(void)
         m_pDC->drawText(x_pos, y_pos, QString("(1.) Right-click on Plots->%1").arg(title_p));
     }
 
-    y_pos += static_cast<int>(fontSize.height() * 1.1f);
+    y_pos += static_cast<int>(fontSize.height() * 1.1);
 
     m_pDC->drawText(x_pos, y_pos, "(2.) Select  Run");
 
-    y_pos += static_cast<int>(fontSize.height() * 1.1f);
+    y_pos += static_cast<int>(fontSize.height() * 1.1);
 
     m_pDC->drawText(x_pos, y_pos, "(3.) LogScrutinizer will then activate the plugin to process the log, "
                                   "and present graphical output in this window");
 
-    y_pos += static_cast<int>(fontSize.height() * 1.5f);
+    y_pos += static_cast<int>(fontSize.height() * 1.5);
 
     m_pDC->drawText(x_pos, y_pos, "Tip: You can also run all the loaded plugin's plot-function by pressing CTRL-R");
 
-    y_pos += static_cast<int>(fontSize.height() * 2.0f);
+    y_pos += static_cast<int>(fontSize.height() * 2.0);
 
     m_pDC->drawText(x_pos, y_pos, "Read more about plugins at www.logscrutinizer.com. Press F1 for quick "
                                   "help web page");
@@ -945,6 +945,10 @@ void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint
             if (rect.height() < MIN_WINDOW_HEIGHT) {
                 rect.setBottom(rect.top() + MIN_WINDOW_HEIGHT);
             }
+            if (rect.height() > MAX_WINDOW_HEIGHT) {
+                rect.setBottom(rect.top() + MAX_WINDOW_HEIGHT);
+            }
+
             surface_p->SurfaceReconfigure(&rect, false);
         }
     } /* while */
@@ -1072,7 +1076,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
         *invalidate_p = true;
     }
 
-    TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  zoom:%4.2f zoom_left:%f "
+    TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  zoom:%4.2 zoom_left:%f "
              "zoom_right:%f min:%e max:%e offset:%e",
              currentZoom, m_zoom_left, m_zoom_right, m_min_X, m_max_X, m_offset_X)
 
@@ -1146,7 +1150,7 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
         *invalidate_p = true;
     }
 
-    TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  zoom:%4.2f min:%e max:%e offset:%e",
+    TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  zoom:%4.2 min:%e max:%e offset:%e",
              currentZoom, static_cast<double>(zoom.y_min), static_cast<double>(zoom.y_max), y_offset)
 
     subPlot_p->SetSurfaceZoom(&zoom);
@@ -2069,7 +2073,7 @@ void CPlotWidget::DrawToolTip(void)
 
         QSize size = doc_p->m_fontCtrl.GetFontSize();
         QPoint point(m_lastCursorPos.DCBMP.x() + 5, m_lastCursorPos.DCBMP.y() - 5);
-        double delta = size.height() * 1.2f;
+        double delta = size.height() * 1.2;
         double y = static_cast<double>(point.y());
 
         for (auto& string : m_toolTipStrings) {
