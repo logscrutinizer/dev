@@ -213,7 +213,7 @@ public:
         const int length,
         const double time,
         const int rowIndex,
-        const CGraph *graphRef_p,
+        const CGraph_Internal *graphRef_p,
         char *feedbackText_p,
         const int maxFeedbackTextLength)
     {

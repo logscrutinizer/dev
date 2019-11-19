@@ -895,7 +895,7 @@ void CPlotWidget::RealignSubPlots(void)
         int height = rect.height();
         subPlotRect.setTop(y_top);
         subPlotRect.setHeight(height + y_bias);
-        surface_p->SurfaceReconfigure(&subPlotRect, false);
+        surface_p->SurfaceReconfigure(&subPlotRect);
 #ifdef _DEBUG
         surface_p->GetWindowRect(&rect);
         PRINT_SIZE(QString("U (%1,%2) (%3,%4) count:%5").arg(rect.left()).arg(rect.top()).arg(rect.right())
@@ -909,7 +909,7 @@ void CPlotWidget::RealignSubPlots(void)
         auto surface_p = m_surfaces.last();
         surface_p->GetWindowRect(&rect);
         rect.setBottom(m_plotWindowRect.bottom());
-        surface_p->SurfaceReconfigure(&rect, false);
+        surface_p->SurfaceReconfigure(&rect);
     }
 }
 
@@ -949,7 +949,7 @@ void CPlotWidget::ModifySubPlotSize(int zDelta, const ScreenPoint_t *screenPoint
                 rect.setBottom(rect.top() + MAX_WINDOW_HEIGHT);
             }
 
-            surface_p->SurfaceReconfigure(&rect, false);
+            surface_p->SurfaceReconfigure(&rect);
         }
     } /* while */
 
@@ -1007,7 +1007,7 @@ void CPlotWidget::RestoreSubPlotWindows(void)
             /* This was the last plot, make sure that it fills down to the bottom */
             surfaceRect.setBottom(m_plotWindowRect.bottom());
         }
-        surface_p->SurfaceReconfigure(&surfaceRect, false);
+        surface_p->SurfaceReconfigure(&surfaceRect);
         ++subPlotIndex;
     }
     m_restoreSubPlotSize = false;
@@ -1495,7 +1495,7 @@ bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distanc
     int distance = 0;
     int distance_Best = 0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
-    CGraph *graph_p = nullptr;
+    CGraph_Internal *graph_p = nullptr;
     GraphicalObject_t *go_p = nullptr;
     GraphicalObject_t *goBest_p = nullptr;
 
@@ -1720,10 +1720,11 @@ int CPlotWidget::GraphsObjectCount(void)
         subPlot_p->GetGraphs(&graphList_p);
 
         if (graphList_p->count() > 0) {
-            CGraph *graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
+            CGraph_Internal *graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->first());
             while (graph_p != nullptr) {
                 count += graph_p->GetNumOfObjects();
-                graph_p = reinterpret_cast<CGraph *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
+                graph_p =
+                    reinterpret_cast<CGraph_Internal *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
             }
         }
 
@@ -2089,7 +2090,7 @@ void CPlotWidget::DrawToolTip(void)
 ***********************************************************************************************************************/
 bool CPlotWidget::OpenToolTip(void)
 {
-    CGraph *graph_p;
+    CGraph_Internal *graph_p;
     GraphicalObject_t *go_p;
     CSubPlot *subPlot_p;
 
@@ -2257,14 +2258,14 @@ void CPlotWidget::UpdateFocus(const ScreenPoint_t *screenPoint_p)
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CPlotWidget::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_pp, GraphicalObject_t **go_pp,
+bool CPlotWidget::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph_Internal **graph_pp, GraphicalObject_t **go_pp,
                                   CSubPlot **subPlot_pp)
 {
     double distance = 0.0;
     double distance_Best = 0.0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
-    CGraph *graph_p = nullptr;
-    CGraph *graph_Best_p = nullptr;
+    CGraph_Internal *graph_p = nullptr;
+    CGraph_Internal *graph_Best_p = nullptr;
     GraphicalObject_t *go_p = nullptr;
     GraphicalObject_t *go_Best_p = nullptr;
     CSubPlot *subPlot_Best_p = nullptr;
@@ -2306,13 +2307,13 @@ bool CPlotWidget::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_p
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CPlotWidget::GetClosestGraph(int row, CGraph **graph_pp, GraphicalObject_t **go_pp, CSubPlot **subPlot_pp)
+bool CPlotWidget::GetClosestGraph(int row, CGraph_Internal **graph_pp, GraphicalObject_t **go_pp, CSubPlot **subPlot_pp)
 {
     int distance = 0;
     int distance_Best = 0;
     CSubPlotSurface *CSubPlot_Best_p = nullptr;
-    CGraph *graph_p = nullptr;
-    CGraph *graph_Best_p = nullptr;
+    CGraph_Internal *graph_p = nullptr;
+    CGraph_Internal *graph_Best_p = nullptr;
     GraphicalObject_t *go_p = nullptr;
     GraphicalObject_t *go_Best_p = nullptr;
     CSubPlot *subPlot_Best_p = nullptr;

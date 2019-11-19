@@ -91,7 +91,7 @@ void CGraphicsSubplotSurface::Populate(void)
     auto numOfDisplayGraphs = graphList_p->count();
 
     if (numOfDisplayGraphs != 0) {
-        CGraph *graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
+        CGraph_Internal *graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->first());
         int graphIndex = 0;
         int itemIndex = 0;
 
@@ -145,7 +145,8 @@ void CGraphicsSubplotSurface::Populate(void)
                          static_cast<double>(go_extents.y_min), static_cast<double>(go_extents.y_max))
             }
 
-            graph_p = reinterpret_cast<CGraph *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
+            graph_p =
+                reinterpret_cast<CGraph_Internal *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
             ++graphIndex;
         }
     }
@@ -430,10 +431,11 @@ int CPlotWidgetGraphics::GraphsObjectCount(void)
     subPlot_p->GetGraphs(&graphList_p);
 
     if (graphList_p->count() > 0) {
-        CGraph *graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
+        CGraph_Internal *graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->first());
         while (graph_p != nullptr) {
             count += graph_p->GetNumOfObjects();
-            graph_p = reinterpret_cast<CGraph *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
+            graph_p =
+                reinterpret_cast<CGraph_Internal *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
         }
     }
     return count;
@@ -768,7 +770,6 @@ bool CPlotWidgetGraphics::HandleKeyDown(QKeyEvent *e)
             }
         }
     }
-
     /* */
     else if (m_keyPressedList.contains(Qt::Key_C) && CTRL_Pressed) {
         handled = true;
@@ -1059,7 +1060,7 @@ void CPlotWidgetGraphics::DrawToolTip(void)
 ***********************************************************************************************************************/
 bool CPlotWidgetGraphics::OpenToolTip(void)
 {
-    CGraph *graph_p;
+    CGraph_Internal *graph_p;
     GraphicalObject_t *go_p;
     CSubPlot *subPlot_p;
 
@@ -1183,7 +1184,9 @@ void CPlotWidgetGraphics::UpdateFocus(const ScreenPoint_t *screenPoint_p)
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CPlotWidgetGraphics::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph **graph_pp, GraphicalObject_t **go_pp,
+bool CPlotWidgetGraphics::GetClosestGraph(ScreenPoint_t *screenPoint_p,
+                                          CGraph_Internal **graph_pp,
+                                          GraphicalObject_t **go_pp,
                                           CSubPlot **subPlot_pp)
 {
     /* Not supported */
@@ -1198,7 +1201,7 @@ bool CPlotWidgetGraphics::GetClosestGraph(ScreenPoint_t *screenPoint_p, CGraph *
 *   GetClosestGraph
 ***********************************************************************************************************************/
 bool CPlotWidgetGraphics::GetClosestGraph(int row,
-                                          CGraph **graph_pp,
+                                          CGraph_Internal **graph_pp,
                                           GraphicalObject_t **go_pp,
                                           CSubPlot **subPlot_pp)
 {

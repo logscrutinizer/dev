@@ -13,6 +13,7 @@
  * */
 
 #include <stdio.h>
+#include <cstdio>
 #include "plugin_api.h"
 #include "plugin_utils.h"
 #include "plugin_text_parser.h"
@@ -74,7 +75,8 @@ bool Q87_Decoder::pvDecode(char *row_p, int *length_p, const int maxLength)
             }
 
             int startIndex = parser.GetParseIndex();
-            sprintf(&row_p[startIndex - 1], "  <DECODED>  %-4.2", static_cast<double>(value) / 128.0);
+            snprintf(&row_p[startIndex - 1], static_cast<size_t>(maxLength - startIndex),
+                     "  <DECODED>  %-4.2f", value / 128.0);
             *length_p = static_cast<int>(strlen(row_p));
 
             return true;

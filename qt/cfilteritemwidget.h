@@ -43,7 +43,7 @@ public:
         CCfgItem_Filter **filterSelection_pp,
         QWidget *pParent = nullptr);
 
-    virtual ~CFilterItemWidget();
+    virtual ~CFilterItemWidget() override;
 
 public:
     QString *m_filterText_p;

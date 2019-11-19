@@ -320,7 +320,7 @@ bool test_plugin_plotting(QFile& dataFile, CPlugin_DLL_API *pluginAPI_p)
 
                 subPlot_p->GetGraphs(&graphList_p);
                 if (!graphList_p->isEmpty()) {
-                    CGraph *graph_p = (CGraph *)graphList_p->first();
+                    CGraph_Internal *graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
 
                     while (graph_p != nullptr) {
                         graph_p->GetExtents(&extents);

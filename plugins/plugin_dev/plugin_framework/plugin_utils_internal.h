@@ -148,8 +148,8 @@ typedef struct
     GraphicalObject_t go;
     int lineColorRGB; /* In-case LogScrutinizer should enumerate the colors */
     double relative_X; /* 0.0, or in case the label should not be located in the middle of the line this parameter
-                       *  shall be used to relatively offset.  0.1 means 10% from the left/start, and 0.6 means 60%
-                       * from the left.. that is slightly offset from the middle. */
+                        *  shall be used to relatively offset.  0.1 means 10% from the left/start, and 0.6 means 60%
+                        * from the left.. that is slightly offset from the middle. */
     GO_Label_t label; /* The label, must be placed last in the structure */
 }GraphicalObject_Line_Ex_t;
 
@@ -180,7 +180,7 @@ typedef struct
     double y_execBottom; /* Used to determine exec box size */
     int fillColorRGB; /* -"- -"-  Use Q_RGB(x,x,x) macro */
     double relative_X; /* 0.0, or in case the label should not be located in the middle of
-                       * the line this parameter shall be used to relatively offset */
+                        * the line this parameter shall be used to relatively offset */
     GO_Label_t label; /* The label, must be placed last in the structure */
 }GraphicalObject_LifeLine_Box_t;
 
@@ -190,7 +190,7 @@ typedef struct
     GraphicalObject_t go;
     int lineColorRGB;     /* -"- -"-  Use Q_RGB(x,x,x) macro */
     double relative_X;       /* 0.0, or in case the label should not be located in the middle of
-                             * the line this parameter shall be used to relatively offset */
+                              * the line this parameter shall be used to relatively offset */
     GO_Label_t label;            /* The label, must be placed last in the structure */
 }GraphicalObject_LifeLine_Line_t;
 
@@ -508,7 +508,7 @@ private:
  * Description: Internal object
  * ----------------------------------------------------------------------------------------------------------------------
  * */
-class CGraph_Internal : CListObject
+class CGraph_Internal : public CListObject
 {
 public:
     CGraph_Internal(const char *name_p, int subPlotID, int estimatedNumOfObjects);

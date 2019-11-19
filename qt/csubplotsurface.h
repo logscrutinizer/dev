@@ -125,7 +125,7 @@ public:
         }
     }
 
-    CGraph *m_graph_p;
+    CGraph_Internal *m_graph_p;
     int m_numOfItems;
     displayItem_t *m_items_a;
     QPen *m_pen_p;
@@ -154,9 +154,9 @@ public:
 
     const displayItem_t *GetCursorRow(const QPoint *point_p, int *row_p, double *time,
                                       double *distance_p);
-    bool GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double *distance_p,
+    bool GetClosestGraph(QPoint *point_p, CGraph_Internal **graph_pp, double *distance_p,
                          GraphicalObject_t **go_pp);
-    bool GetClosestGraph(int row, CGraph **graph_pp, int *distance_p,
+    bool GetClosestGraph(int row, CGraph_Internal **graph_pp, int *distance_p,
                          GraphicalObject_t **go_pp);
 
     void SetCursor(double cursorTime);
@@ -166,7 +166,7 @@ public:
 
     void GetWindowRect(QRect *windowRect_p) {*windowRect_p = m_DC_windowRect;}
     void GetViewPortRect(QRect *viewPortRect_p) {*viewPortRect_p = m_DC_viewPortRect;}
-    void SurfaceReconfigure(QRect *windowRect_p, bool surfaceZoom);
+    void SurfaceReconfigure(QRect *windowRect_p);
 
     void GetMaxExtents(GraphicalObject_Extents_t *extents_p) {m_subPlot_p->GetExtents(extents_p);}
 
@@ -206,8 +206,8 @@ private:
     CSubPlotSurface() {TRACEX_E("CSubPlotSurface::CSubPlotSurface  Default constructor not supported")}
 
     const displayItem_t *FindClosest_GO(const int x, const int y,
-                                        double *distance_p, CGraph **graph_pp = nullptr);
-    GraphicalObject_t *FindClosest_GO(int row, int *distance_p, CGraph **graph_pp = nullptr);
+                                        double *distance_p, CGraph_Internal **graph_pp = nullptr);
+    GraphicalObject_t *FindClosest_GO(int row, int *distance_p, CGraph_Internal **graph_pp = nullptr);
 
     bool LoadResources(void);
     void Initialize(void);

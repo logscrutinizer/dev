@@ -102,6 +102,8 @@ CFilterItemWidget::~CFilterItemWidget()
 ***********************************************************************************************************************/
 void CFilterItemWidget::paintEvent(QPaintEvent *event)
 {
+    Q_UNUSED(event)
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
 
@@ -218,6 +220,7 @@ void CFilterItemWidget::on_checkBox_enableBGColor_stateChanged(int arg1)
 ***********************************************************************************************************************/
 void CFilterItemWidget::on_lineEdit_filterItemEdit_textChanged(const QString &arg1)
 {
+    Q_UNUSED(arg1)
     repaint();
 }
 

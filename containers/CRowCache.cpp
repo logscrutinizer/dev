@@ -264,7 +264,7 @@ void CRowCache::GetTextItemLength(const int rowIndex, int *size_p)
     *size_p = 0;
 
     if (m_cache_memMap[cacheIndex].row == rowIndex) {
-        *size_p = (int)m_cache_memMap[cacheIndex].size;
+        *size_p = m_cache_memMap[cacheIndex].size;
         return;
     }
 

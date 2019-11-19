@@ -100,16 +100,16 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
     m_parentPlot_p->GetTitle(&title_p, &X_AxisLabel_p);
 
     strcpy_s(m_subPlotTitle, CFG_TEMP_STRING_MAX_SIZE, subTitle_p);
-    m_subPlotTitle_len = (int)strlen(m_subPlotTitle);
+    m_subPlotTitle_len = static_cast<int>(strlen(m_subPlotTitle));
 
     strcpy_s(m_parentPlotTitle, CFG_TEMP_STRING_MAX_SIZE, title_p);
-    m_parentPlotTitle_len = (int)strlen(m_parentPlotTitle);
+    m_parentPlotTitle_len = static_cast<int>(strlen(m_parentPlotTitle));
 
     strcpy_s(m_Y_Label, CFG_TEMP_STRING_MAX_SIZE, Y_AxisLabel_p);
-    m_Y_Label_len = (int)strlen(m_Y_Label);
+    m_Y_Label_len = static_cast<int>(strlen(m_Y_Label));
 
     strcpy_s(m_X_Label, CFG_TEMP_STRING_MAX_SIZE, X_AxisLabel_p);
-    m_X_Label_len = (int)strlen(m_X_Label);
+    m_X_Label_len = static_cast<int>(strlen(m_X_Label));
 
     if (g_cfg_p->m_pluginDebugBitmask != 0) {
         TRACEX_I("Adding subPlot:%s to the plot:%s ", m_subPlotTitle, m_parentPlotTitle)
@@ -120,14 +120,15 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
     m_subPlot_p->GetLabels(&labelList_p);
 
     if ((labelList_p != nullptr) && (labelList_p->count() > 0)) {
-        m_label_refs_a = (CGO_Label **)malloc(sizeof(CGO_Label *) * labelList_p->count());
-        memset(m_label_refs_a, 0, sizeof(CGO_Label *) * labelList_p->count());
+        m_label_refs_a =
+            reinterpret_cast<CGO_Label **>(malloc(sizeof(CGO_Label *) * static_cast<size_t>(labelList_p->count())));
+        memset(m_label_refs_a, 0, sizeof(CGO_Label *) * static_cast<size_t>(labelList_p->count()));
 
-        CGO_Label *label_p = (CGO_Label *)labelList_p->first();
+        CGO_Label *label_p = reinterpret_cast<CGO_Label *>(labelList_p->first());
         int index = 0;
         while (label_p != nullptr) {
             m_label_refs_a[index++] = label_p;
-            label_p = (CGO_Label *)labelList_p->GetNext((CListObject *)label_p);
+            label_p = reinterpret_cast<CGO_Label *>(labelList_p->GetNext(label_p));
         }
 
         m_numOfLabelRefs = index;
@@ -153,9 +154,9 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
     m_numOfDisplayGraphs = list_p->count();
 
     if (m_numOfDisplayGraphs != 0) {
-        m_displayGraphs_a = new CDisplayGraph[m_numOfDisplayGraphs];
+        m_displayGraphs_a = new CDisplayGraph[static_cast<size_t>(m_numOfDisplayGraphs)];
 
-        CGraph *graph_p = (CGraph *)list_p->first();
+        CGraph_Internal *graph_p = reinterpret_cast<CGraph_Internal *>(list_p->first());
         int graphIndex = 0;
         int itemIndex = 0;
 
@@ -163,7 +164,7 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
 #ifdef _DEBUG
             if (graphIndex >= m_numOfDisplayGraphs) {
                 TRACEX_E("CSubPlotSurface::CSubPlotSurface  Graph object corrupt, "
-                         "numOfItems doesn't match");
+                         "numOfItems doesn't match")
             }
 #endif
 
@@ -178,15 +179,17 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
             if (dgraph_p->m_numOfItems > 0) {
                 itemIndex = 0;
 
-                dgraph_p->m_items_a = (displayItem_t *)malloc(dgraph_p->m_numOfItems * sizeof(displayItem_t));
+                dgraph_p->m_items_a =
+                    reinterpret_cast<displayItem_t *>(malloc(static_cast<size_t>(dgraph_p->m_numOfItems) *
+                                                             sizeof(displayItem_t)));
 
                 if (dgraph_p->m_items_a == nullptr) {
                     TRACEX_E("CSubPlotSurface::CSubPlotSurface  Out of memory "
-                             "allocating dgraph_p->m_items_a");
+                             "allocating dgraph_p->m_items_a")
                     return;
                 }
 
-                memset(dgraph_p->m_items_a, 0, dgraph_p->m_numOfItems * sizeof(displayItem_t));
+                memset(dgraph_p->m_items_a, 0, static_cast<size_t>(dgraph_p->m_numOfItems) * sizeof(displayItem_t));
 
                 GraphicalObject_t *go_p = graph_p->GetFirstGraphicalObject();
                 const int numOfItems = dgraph_p->m_numOfItems;
@@ -200,9 +203,9 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
                 }
 
 #ifdef _DEBUG
-                if (itemIndex > (int)dgraph_p->m_numOfItems) {
+                if (itemIndex > dgraph_p->m_numOfItems) {
                     TRACEX_E("CSubPlotSurface::CSubPlotSurface  Graph object corrupt, "
-                             "numOfItems doesn't match");
+                             "numOfItems doesn't match")
                 }
 #endif
             }
@@ -216,10 +219,10 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
                          "ymin:%f ymax:%f",
                          graphIndex, dgraph_p->m_numOfItems, dgraph_p->m_overrideColor,
                          dgraph_p->m_overrideLinePattern, go_extents.x_min, go_extents.x_max,
-                         go_extents.y_min, go_extents.y_max);
+                         go_extents.y_min, go_extents.y_max)
             }
 
-            graph_p = (CGraph *)list_p->GetNext((CListObject *)graph_p);
+            graph_p = reinterpret_cast<CGraph_Internal *>(list_p->GetNext(graph_p));
 
             ++graphIndex;
         }
@@ -227,26 +230,26 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
 
     /* List of Decorators, each decorator contains one or several graphical objects. All similar to graphs */
     CDecorator *decorator_p;
-
     subPlot_p->GetDecorator(&decorator_p);
 
     if (decorator_p != nullptr) {
-        CGraph *graph_p = (CGraph *)decorator_p;
+        CGraph_Internal *graph_p = decorator_p;
         CDisplayGraph *dgraph_p = &m_displayDecorator;
 
         dgraph_p->m_numOfItems = graph_p->GetNumOfObjects();
         dgraph_p->m_graph_p = graph_p;
 
         if (dgraph_p->m_numOfItems > 0) {
-            dgraph_p->m_items_a = static_cast<displayItem_t *>(malloc(dgraph_p->m_numOfItems * sizeof(displayItem_t)));
+            dgraph_p->m_items_a =
+                static_cast<displayItem_t *>(malloc(static_cast<size_t>(dgraph_p->m_numOfItems) *
+                                                    sizeof(displayItem_t)));
 
             if (dgraph_p->m_items_a == nullptr) {
-                TRACEX_E("CSubPlotSurface::CSubPlotSurface    dgraph_p->m_items_a "
-                         "is nullptr");
+                TRACEX_E("CSubPlotSurface::CSubPlotSurface    dgraph_p->m_items_a is nullptr")
                 return;
             }
 
-            memset(dgraph_p->m_items_a, 0, dgraph_p->m_numOfItems * sizeof(displayItem_t));
+            memset(dgraph_p->m_items_a, 0, static_cast<size_t>(dgraph_p->m_numOfItems) * sizeof(displayItem_t));
 
             GraphicalObject_t *go_p = graph_p->GetFirstGraphicalObject();
             int itemIndex = 0;
@@ -262,7 +265,7 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
 #ifdef _DEBUG
             if (itemIndex > numOfItems) {
                 TRACEX_E("CSubPlotSurface::CSubPlotSurface  CDecorator,  "
-                         "Graph object corrupt, numOfItems doesn't match");
+                         "Graph object corrupt, numOfItems doesn't match")
             }
 #endif
         }
@@ -341,7 +344,7 @@ void CSubPlotSurface::SetZoom(double x_min, double x_max, bool reset_Y_Zoom)
     GraphicalObject_Extents_t extents;  /*TODO: */
     m_subPlot_p->GetExtents(&extents);
 
-    if (!reset_Y_Zoom && (m_surfaceZoom.x_max == x_max) && (m_surfaceZoom.x_min == x_min)) {
+    if (!reset_Y_Zoom && almost_equal(m_surfaceZoom.x_max, x_max) && almost_equal(m_surfaceZoom.x_min, x_min)) {
         return;
     }
 
@@ -356,7 +359,7 @@ void CSubPlotSurface::SetZoom(double x_min, double x_max, bool reset_Y_Zoom)
     m_surfaceZoom.x_min = x_min;
 
     PRINT_SUBPLOTSURFACE("CSubPlotSurface::SetZoom  %s  x_min:%e x_max:%e",
-                         m_subPlotTitle, x_min, x_max);
+                         m_subPlotTitle, x_min, x_max)
 
     Reconfigure(nullptr);
     m_setupGraphs = true;
@@ -367,12 +370,12 @@ void CSubPlotSurface::SetZoom(double x_min, double x_max, bool reset_Y_Zoom)
 ***********************************************************************************************************************/
 void CSubPlotSurface::SetSurfaceZoom(SurfaceZoom_t *zoom_p)
 {
-    if ((zoom_p->x_max == m_surfaceZoom.x_max) &&
-        (zoom_p->x_min == m_surfaceZoom.x_min) &&
-        (zoom_p->y_max == m_surfaceZoom.y_max) &&
-        (zoom_p->y_min == m_surfaceZoom.y_min) &&
-        (zoom_p->x_offset == m_surfaceZoom.x_offset) &&
-        (zoom_p->y_offset == m_surfaceZoom.y_offset)) {
+    if (almost_equal(zoom_p->x_max, m_surfaceZoom.x_max) &&
+        almost_equal(zoom_p->x_min, m_surfaceZoom.x_min) &&
+        almost_equal(zoom_p->y_max, m_surfaceZoom.y_max) &&
+        almost_equal(zoom_p->y_min, m_surfaceZoom.y_min) &&
+        almost_equal(zoom_p->x_offset, m_surfaceZoom.x_offset) &&
+        almost_equal(zoom_p->y_offset, m_surfaceZoom.y_offset)) {
         return;
     }
 
@@ -439,25 +442,25 @@ bool CSubPlotSurface::LoadResources(void)
     m_bitmap_left_top = QImage(":IDB_BRUSH_LEFT_TOP_BMP");
     if (m_bitmap_left_top.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_LEFT_TOP_BMP "
-                 "load FAILED");
+                 "load FAILED")
     }
 
     m_bitmap_left_bottom = QImage(":IDB_BRUSH_LEFT_BOTTOM_BMP");
     if (m_bitmap_left_bottom.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_LEFT_BOTTOM_BMP "
-                 "load FAILED");
+                 "load FAILED")
     }
 
     m_bitmap_right_bottom = QImage(":IDB_BRUSH_RIGHT_BOTTOM_BMP");
     if (m_bitmap_right_bottom.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_RIGHT_BOTTOM_BMP "
-                 "load FAILED");
+                 "load FAILED")
     }
 
     m_bitmap_right_top = QImage(":IDB_BRUSH_RIGHT_TOP_BMP");
     if (m_bitmap_right_top.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BRUSH_RIGHT_TOP_BMP "
-                 "load FAILED");
+                 "load FAILED")
     }
 
     m_resourcesLoaded = success;
@@ -496,7 +499,7 @@ void CSubPlotSurface::SetupGraphPens(void)
     }
 
     /*m_linePen_Y_p = new QPen(PS_SOLID, g_cfg_p->m_plot_GraphAxisLineSize, g_cfg_p->m_plot_GraphAxisLineColor); */
-    m_linePen_Y_p = new QPen(g_cfg_p->m_plot_GraphAxisLineColor);
+    m_linePen_Y_p = new QPen(static_cast<QRgb>(g_cfg_p->m_plot_GraphAxisLineColor));
     m_linePen_Y_p->setWidth(g_cfg_p->m_plot_GraphAxisLineSize);
     m_linePen_Y_p->setStyle(Qt::SolidLine);
 
@@ -506,7 +509,7 @@ void CSubPlotSurface::SetupGraphPens(void)
 
     /*m_cursorPen_Y_p = new QPen(PS_SOLID, g_cfg_p->m_plot_GraphCursorLineSize, g_cfg_p->m_plot_GraphCursorLineColor);
      * */
-    m_cursorPen_Y_p = new QPen(g_cfg_p->m_plot_GraphCursorLineColor);
+    m_cursorPen_Y_p = new QPen(static_cast<QRgb>(g_cfg_p->m_plot_GraphCursorLineColor));
     m_cursorPen_Y_p->setWidth(g_cfg_p->m_plot_GraphCursorLineSize);
     m_cursorPen_Y_p->setStyle(Qt::SolidLine);
 
@@ -515,10 +518,11 @@ void CSubPlotSurface::SetupGraphPens(void)
     m_graphColors = g_cfg_p->m_graph_ColorTable_p->GetCurrentNumberOfColors();
     m_colorTable_p = g_cfg_p->m_graph_ColorTable_p->GetTable();
 
-    Qt::PenStyle graphLineType;
-    GraphLinePattern_e graphLinePattern;
+    Qt::PenStyle graphLineType = Qt::SolidLine;
+    GraphLinePattern_e graphLinePattern = GLP_SOLID;
 
-    m_graphPenArray_p = (PendDescription_t *)malloc(m_graphColors * sizeof(PendDescription_t) * MAX_GRAPH_TYPES);
+    m_graphPenArray_p = reinterpret_cast<PendDescription_t *>(malloc(static_cast<size_t>(m_graphColors) *
+                                                                     sizeof(PendDescription_t) * MAX_GRAPH_TYPES));
 
     if (m_graphPenArray_p == nullptr) {
         TRACEX_E("CSubPlotSurface::SetupGraphPens  Out of memory when allocating pens")
@@ -566,7 +570,7 @@ void CSubPlotSurface::SetupGraphPens(void)
     }
 
     m_numOfGraphUserColors = 0;
-    memset((char *)m_graphPenArrayUser, 0, sizeof(PendDescription_t) * MAX_NUM_OF_PENS);  /* Dynamically added pens */
+    memset(m_graphPenArrayUser, 0, sizeof(PendDescription_t) * MAX_NUM_OF_PENS);  /* Dynamically added pens */
 }
 
 /***********************************************************************************************************************
@@ -588,8 +592,7 @@ QPen *CSubPlotSurface::GetUserDefinedPen(Q_COLORREF color, GraphLinePattern_e pa
         /* Too many pens */
         TRACEX_W("CSubPlotSurface::GetUserDefinedPen  Too many plugin defined "
                  "colors (max is:%d), no more pens to use, instead uses color: %d",
-                 MAX_NUM_OF_PENS,
-                 m_graphPenArrayUser[0].color);
+                 MAX_NUM_OF_PENS, m_graphPenArrayUser[0].color)
 
         return m_graphPenArrayUser[0].pen_p;
     }
@@ -651,8 +654,8 @@ bool CSubPlotSurface::isPaintable(void)
         }
     }
 
-    if ((totalItems > 0) && (m_surfaceZoom.x_max != m_surfaceZoom.x_min) &&
-        (m_surfaceZoom.y_max != m_surfaceZoom.y_min)) {
+    if ((totalItems > 0) && !almost_equal(m_surfaceZoom.x_max, m_surfaceZoom.x_min) &&
+        !almost_equal(m_surfaceZoom.y_max, m_surfaceZoom.y_min)) {
         return true;
     }
 
@@ -701,7 +704,7 @@ void CSubPlotSurface::OnPaint_Empty(void)
 void CSubPlotSurface::OnPaint_1(void)
 {
     PRINT_SUBPLOTSURFACE("OnPaint_1 - %s Width:%d Height:%d", m_subPlotTitle, m_windowRect.width(),
-                         m_windowRect.height());
+                         m_windowRect.height())
 
     CLogScrutinizerDoc *doc_p = GetTheDoc();
     doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_GrayFont_p);
@@ -711,7 +714,7 @@ void CSubPlotSurface::OnPaint_1(void)
         m_avgPixPerLetter = static_cast<double>(m_lineSize.width()) / static_cast<double>(g_avg_str.length());
         m_avgPixPerLetterHeight = static_cast<double>(m_lineSize.height());
         m_halfLineHeight = static_cast<int>(static_cast<double>(m_lineSize.height()) / static_cast<double>(2.0));
-        PRINT_SUBPLOTSURFACE(QString("m_avgPixPerLetter %1 %2").arg(m_lineSize.width()).arg(m_lineSize.height()));
+        PRINT_SUBPLOTSURFACE(QString("m_avgPixPerLetter %1 %2").arg(m_lineSize.width()).arg(m_lineSize.height()))
 
         if (m_renderMode == RenderMode_Maximized_en) {
             SetupGraphs();
@@ -792,7 +795,7 @@ void CSubPlotSurface::OnPaint_2(void)
     m_painter_p->setPen(oldPen);
     m_painter_p->setBrush(oldBrush);
 
-    PRINT_SUBPLOTSURFACE(QString("%1 onPaint_2 exec:%2").arg(__FUNCTION__).arg(execTime.ms()));
+    PRINT_SUBPLOTSURFACE(QString("%1 onPaint_2 exec:%2").arg(__FUNCTION__).arg(execTime.ms()))
 
 #ifdef _DEBUG
  #ifdef _WIN32
@@ -829,18 +832,17 @@ void CSubPlotSurface::Reconfigure(QRect *rect_p)
         m_viewPortRect.setBottom(m_windowRect.bottom() - BOARDER_HEIGHT);
     }
 
-    m_viewPort_Width = (double)(double)(m_surfaceZoom.x_max - m_surfaceZoom.x_min);
-    m_viewPort_Height = (double)(m_surfaceZoom.y_max - m_surfaceZoom.y_min);
+    m_viewPort_Width = m_surfaceZoom.x_max - m_surfaceZoom.x_min;
+    m_viewPort_Height = m_surfaceZoom.y_max - m_surfaceZoom.y_min;
 
-    m_viewPort_X_Center = (double)(m_surfaceZoom.x_min + (double)((double)(m_surfaceZoom.x_max
-                                                                           - m_surfaceZoom.x_min) / (double)2.0));
-    m_viewPort_Y_Center = m_surfaceZoom.y_min + (m_surfaceZoom.y_max - m_surfaceZoom.y_min) / (double)2.0;
+    m_viewPort_X_Center = m_surfaceZoom.x_min + (m_surfaceZoom.x_max - m_surfaceZoom.x_min) / 2.0;
+    m_viewPort_Y_Center = m_surfaceZoom.y_min + (m_surfaceZoom.y_max - m_surfaceZoom.y_min) / 2.0;
 
-    m_unitsPerPixel_X = (double)((double)m_viewPort_Width / (double)m_viewPortRect.width());
-    m_unitsPerPixel_Y = (double)(m_viewPort_Height / m_viewPortRect.height());
+    m_unitsPerPixel_X = m_viewPort_Width / m_viewPortRect.width();
+    m_unitsPerPixel_Y = m_viewPort_Height / m_viewPortRect.height();
 
-    m_unitsPerPixel_X_inv = (double)1.0 / m_unitsPerPixel_X;
-    m_unitsPerPixel_Y_inv = (double)1.0 / m_unitsPerPixel_Y;
+    m_unitsPerPixel_X_inv = 1.0 / m_unitsPerPixel_X;
+    m_unitsPerPixel_Y_inv = 1.0 / m_unitsPerPixel_Y;
 
     PRINT_SUBPLOTSURFACE(
         "CSubPlotSurface::Reconfigure  %s  WP_RECT %d %d %d %d Width:%.2e Height:%5.2 CenterX:%.2e"
@@ -852,15 +854,15 @@ void CSubPlotSurface::Reconfigure(QRect *rect_p)
         m_surfaceZoom.x_min, m_surfaceZoom.x_max,
         m_surfaceZoom.y_min, m_surfaceZoom.y_max,
         m_unitsPerPixel_X, m_unitsPerPixel_Y,
-        m_unitsPerPixel_X_inv, m_unitsPerPixel_Y_inv);
+        m_unitsPerPixel_X_inv, m_unitsPerPixel_Y_inv)
 }
 
 /***********************************************************************************************************************
 *   SurfaceReconfigure
 ***********************************************************************************************************************/
-void CSubPlotSurface::SurfaceReconfigure(QRect *windowRect_p, bool surfaceZoom)
+void CSubPlotSurface::SurfaceReconfigure(QRect *windowRect_p)
 {
-    PRINT_SIZE(QString("%1").arg(__FUNCTION__));
+    PRINT_SIZE(QString("%1").arg(__FUNCTION__))
     Reconfigure(windowRect_p);
     m_setupGraphs = true;
 }
@@ -970,7 +972,7 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
     m_subPlot_p->GetGraphs(&graphList_p);
 
     if (!graphList_p->isEmpty()) {
-        CGraph *graph_p = (CGraph *)graphList_p->first();
+        CGraph_Internal *graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->first());
         int graphColorIndex = 0;
         int graphIndex = 0;
 
@@ -993,15 +995,14 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
                     GraphicalObject_Extents_t extents;
                     graph_p->GetExtents(&extents);
 
-                    double center = extents.y_min + (extents.y_max - extents.y_min) / (double)2;
-                    int y_pix = m_viewPortRect.bottom()
-                                - (int)((center - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv)
-                                - halfLineHeight;
+                    double center = extents.y_min + (extents.y_max - extents.y_min) / 2.0;
+                    int y_pix =
+                        static_cast<int>(m_viewPortRect.bottom() -
+                                         ((center - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv) - halfLineHeight);
 
                     if ((y_pix > m_windowRect.top()) && (y_pix < (m_windowRect.bottom() - lineSize.height()))) {
-                        m_painter_p->drawText(QPoint(m_viewPortRect.left() + (int)(m_viewPortRect.width() * 0.05),
-                                                     y_pix),
-                                              QString(graph_p->GetName()));
+                        m_painter_p->drawText(QPoint(static_cast<int>(m_viewPortRect.left() + m_viewPortRect.width() *
+                                                                      0.05), y_pix), QString(graph_p->GetName()));
                     }
 
                     /* Draw graph boarders for schedule plots */
@@ -1010,10 +1011,12 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
                                                               g_cfg_p->m_plot_GrayIntensity,
                                                               g_cfg_p->m_plot_GrayIntensity));
 
-                    int y_low = m_viewPortRect.bottom()
-                                - (int)((extents.y_min - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv);
-                    int y_high = m_viewPortRect.bottom()
-                                 - (int)((extents.y_max - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv);
+                    int y_low =
+                        static_cast<int>(m_viewPortRect.bottom() -
+                                         ((extents.y_min - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv));
+                    int y_high =
+                        static_cast<int>(m_viewPortRect.bottom() -
+                                         ((extents.y_max - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv));
                     QPoint linePoint_1;
                     QPoint linePoint_2;
 
@@ -1032,7 +1035,7 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
                 ++graphIndex;
             }
             ++graphColorIndex;
-            graph_p = (CGraph *)graphList_p->GetNext((CListObject *)graph_p);
+            graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->GetNext(graph_p));
         }
     }
 }
@@ -1056,7 +1059,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
     m_subPlot_p->GetGraphs(&graphList_p);
 
     if (!graphList_p->isEmpty()) {
-        CGraph *graph_p = (CGraph *)graphList_p->first();
+        auto *graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->first());
         int graphColorIndex = 0;
         int graphIndex = 0;
 
@@ -1072,7 +1075,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
                 graph_p->GetOverrides(&isOverrideColorSet, &overrideColor, &overrideLinePattern);
 
                 if (isOverrideColorSet) {
-                    color = overrideColor; /*m_painter_p->setPen(QColor(overrideColor)); */
+                    color = static_cast<QRgb>(overrideColor); /*m_painter_p->setPen(QColor(overrideColor)); */
                 } else if ((subplot_properties & SUB_PLOT_PROPERTY_NO_LEGEND_COLOR) == 0) {
                     color = m_colorTable_p[graphColorIndex % m_graphColors].color;
                 } else {
@@ -1090,20 +1093,20 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
 
                 /* LINEs */
                 m_painter_p->drawText(
-                    QPoint(m_viewPortRect.left() + (int)(m_viewPortRect.width() * 0.05),
+                    QPoint(static_cast<int>(m_viewPortRect.left() + (m_viewPortRect.width() * 0.05)),
                            m_viewPortRect.top() + AXIS_DECORATION_HIGHT + graphIndex * halfLineHeight * 2 + 1),
                     QString(graph_p->GetName()));
 
                 PRINT_SUBPLOTSURFACE(QString("Graph: %1 Color:%2 prop:%3 override:%4")
                                          .arg(graph_p->GetName()).arg(color).arg(subplot_properties)
-                                         .arg(isOverrideColorSet));
+                                         .arg(isOverrideColorSet))
 
-                ++graphIndex;
+                ++ graphIndex;
             }
 
             ++graphColorIndex;
 
-            graph_p = (CGraph *)graphList_p->GetNext((CListObject *)graph_p);
+            graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->GetNext(graph_p));
         }
     }
 
@@ -1133,16 +1136,14 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
         int index = 0;
 
         while (index < m_numOf_Y_Lines) {
-            startPoint.setY(m_viewPortRect.bottom()
-                            - (int)((m_lines_Y[index]
-                                     - (double)m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv));
+            startPoint.setY(static_cast<int>(m_viewPortRect.bottom() -
+                                             ((m_lines_Y[index] - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv)));
             endPoint.setY(startPoint.y());
 
             if ((startPoint.y() > (m_viewPortRect.top() + 1)) && (startPoint.y() < (m_viewPortRect.bottom() - 1))) {
                 m_painter_p->drawLine(startPoint, endPoint);
-                m_painter_p->drawText(QPoint(startPoint.x() + (int)(m_viewPortRect.width() * 0.3),
-                                             startPoint.y() + halfLineHeight),
-                                      QString("%1").arg((double)m_lines_Y[index]));
+                m_painter_p->drawText(QPoint(static_cast<int>(startPoint.x() + (m_viewPortRect.width() * 0.3)),
+                                             startPoint.y() + halfLineHeight), QString("%1").arg(m_lines_Y[index]));
             }
             ++index;
         }
@@ -1179,8 +1180,8 @@ void CSubPlotSurface::Draw_X_Axis(void)
         auto skipLineCount = 0;
 
         while (index < m_numOf_X_Lines) {
-            startPoint.setX(m_viewPortRect.left() +
-                            (int)((m_lines_X[index] - (double)m_surfaceZoom.x_min) * m_unitsPerPixel_X_inv));
+            startPoint.setX(static_cast<int>(m_viewPortRect.left() +
+                                             (m_lines_X[index] - m_surfaceZoom.x_min) * m_unitsPerPixel_X_inv));
             endPoint.setX(startPoint.x());
 
             if (index == m_base_X_right_count) {
@@ -1196,7 +1197,7 @@ void CSubPlotSurface::Draw_X_Axis(void)
                 m_painter_p->drawLine(longStartPoint, endPoint);
 
                 /* temp = QString("+%.2e(s)", (double)(m_lines_X[index] - m_lines_X[0])); */
-                temp = QString("%1(s)").arg((double)(m_lines_X[index]), 0, 'E', 2);
+                temp = QString("%1(s)").arg(m_lines_X[index], 0, 'E', 2);
                 lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, temp);
                 m_painter_p->drawText(QPoint(startPoint.x() - lineSize.width() / 2, xaxis_label_y), temp);
             } else {
@@ -1216,7 +1217,8 @@ void CSubPlotSurface::Draw_X_Axis(void)
 ***********************************************************************************************************************/
 void CSubPlotSurface::DrawCursorTime(void)
 {
-    int x = m_viewPortRect.left() + (int)((m_cursorTime - m_surfaceZoom.x_min) * m_unitsPerPixel_X_inv);
+    int x =
+        static_cast<int>(m_viewPortRect.left() + ((m_cursorTime - m_surfaceZoom.x_min) * m_unitsPerPixel_X_inv));
     m_painter_p->setPen(*m_cursorPen_Y_p);
     m_painter_p->drawLine(x, m_windowRect.top(), x, m_windowRect.bottom());
 }
@@ -1230,7 +1232,7 @@ void CSubPlotSurface::Setup_Y_Lines(void)
     const double y_max = static_cast<double>(m_surfaceZoom.y_max);
     const double y_diff = y_max - y_min;
 
-    m_numOf_Y_Lines = m_viewPortRect.height() / m_avgPixPerLetterHeight;
+    m_numOf_Y_Lines = static_cast<int>(std::round(m_viewPortRect.height() / m_avgPixPerLetterHeight));
 
     double y_diff_perline = abs(y_diff) / m_numOf_Y_Lines;
     bool is_neg = y_min < 0.0 ? true : false;
@@ -1434,11 +1436,12 @@ void CSubPlotSurface::DrawGraphs(void)
                             /* LINE */
                             if ((properties & GRAPHICAL_OBJECT_KIND_LINE) == 0) {
                                 /* is a special line */
-                                int lineExColor = ((GraphicalObject_Line_Ex_t *)di_p->go_p)->lineColorRGB;
+                                int lineExColor =
+                                    reinterpret_cast<GraphicalObject_Line_Ex_t *>(di_p->go_p)->lineColorRGB;
 
                                 /* User may specify -1 to have legend color */
                                 if ((lineExColor != -1) && (color != lineExColor)) {
-                                    selectedPen_p = GetUserDefinedPen(lineExColor, pattern);
+                                    selectedPen_p = GetUserDefinedPen(static_cast<QRgb>(lineExColor), pattern);
                                     if (selectedPen_p != nullptr) {
                                         /* Necessary in-case label changed in previously */
                                         m_painter_p->setPen(*selectedPen_p);
@@ -1471,7 +1474,7 @@ void CSubPlotSurface::DrawGraphs(void)
                                 rect.setTop(y_2 - 1);
                                 rect.setBottom(y_2 + 1);
 
-                                m_painter_p->fillRect(rect, color);
+                                m_painter_p->fillRect(rect, static_cast<QRgb>(color));
                             } else if (
 
                                 /* always plot lines with intersection flag set */
@@ -1500,13 +1503,13 @@ void CSubPlotSurface::DrawGraphs(void)
                                         m_painter_p->drawLine(x1_old, y1_old, x_2, y_2);
 
                                         rect = QRect(QPoint(x_2 - 2, y_2 - 2), QPoint(x_2 + 2, y_2 + 2));
-                                        m_painter_p->fillRect(rect, color);
+                                        m_painter_p->fillRect(rect, static_cast<QRgb>(color));
                                     }
                                 } else {
                                     m_painter_p->drawLine(x_1, y_1, x_2, y_2);
 
                                     rect = QRect(QPoint(x_2 - 1, y_2 - 1), QPoint(x_2 + 1, y_2 + 1));
-                                    m_painter_p->fillRect(rect, color);
+                                    m_painter_p->fillRect(rect, static_cast<QRgb>(color));
                                 }
 
                                 prevPointsHidden = 0;
@@ -1597,16 +1600,14 @@ void CSubPlotSurface::DrawGraphs(void)
                         } else {
                             /* BOX */
                             if ((properties & GRAPHICAL_OBJECT_KIND_BOX) == 0) {
-                                if (((GraphicalObject_Box_Ex_t *)di_p->go_p)->fillColorRGB != -1) {
+                                if (reinterpret_cast<GraphicalObject_Box_Ex_t *>(di_p->go_p)->fillColorRGB != -1) {
                                     /* User may speficy -1 to have legend color */
-                                    color = ((GraphicalObject_Box_Ex_t *)di_p->go_p)->fillColorRGB;
+                                    color = reinterpret_cast<GraphicalObject_Box_Ex_t *>(di_p->go_p)->fillColorRGB;
                                 }
                             }
 
-                            if (
-
-                                /* always plot boxes with intersection flag set */
-                                (properties & PROPERTIES_BITMASK_VISIBLE_INTERSECT) ||
+                            /* always plot boxes with intersection flag set */
+                            if ((properties & PROPERTIES_BITMASK_VISIBLE_INTERSECT) ||
 
                                 /* if the box is large enough */
                                 (x_len > minPixelDist) || (y_len > minPixelDist) ||
@@ -1635,7 +1636,7 @@ void CSubPlotSurface::DrawGraphs(void)
                                         if (rect.height() == 0) {
                                             rect.setBottom(rect.bottom() + 1);
                                         }
-                                        m_painter_p->fillRect(rect, prevColor);
+                                        m_painter_p->fillRect(rect, static_cast<QRgb>(prevColor));
 
                                         rect = QRect(QPoint(x_1, y_1), QPoint(x_2, y_2));
                                         if (rect.width() == 0) {
@@ -1644,7 +1645,7 @@ void CSubPlotSurface::DrawGraphs(void)
                                         if (rect.height() == 0) {
                                             rect.setBottom(rect.bottom() + 1);
                                         }
-                                        m_painter_p->fillRect(rect, color);
+                                        m_painter_p->fillRect(rect, static_cast<QRgb>(color));
                                     } else {
                                         /* combine */
                                         rect = QRect(QPoint(x1_old, y_1), QPoint(x2_old, y_2));
@@ -1654,7 +1655,7 @@ void CSubPlotSurface::DrawGraphs(void)
                                         if (rect.height() == 0) {
                                             rect.setBottom(rect.bottom() + 1);
                                         }
-                                        m_painter_p->fillRect(rect, prevColor);
+                                        m_painter_p->fillRect(rect, static_cast<QRgb>(prevColor));
                                     }
                                 } else {
                                     rect = QRect(QPoint(x_1, y_1), QPoint(x_2, y_2));
@@ -1664,7 +1665,7 @@ void CSubPlotSurface::DrawGraphs(void)
                                     if (rect.height() == 0) {
                                         rect.setBottom(rect.bottom() + 1);
                                     }
-                                    m_painter_p->fillRect(rect, color);
+                                    m_painter_p->fillRect(rect, static_cast<QRgb>(color));
                                 }
 
                                 prevPointsHidden = 0;
@@ -1712,11 +1713,10 @@ void CSubPlotSurface::DrawGraphs(void)
 
                                 int label_x_start;
 
-                                if (relative_X == static_cast<double>(0.0)) {
-                                    label_x_start = x_1 +
-                                                    static_cast<int>(static_cast<double>(x_2 - x_1) / 2.0 -
-                                                                     static_cast<double>(di_p->label_pix_length) /
-                                                                     2.0);
+                                if (almost_equal(relative_X, 0.0)) {
+                                    label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) / 2.0 -
+                                                                           static_cast<double>(di_p->label_pix_length) /
+                                                                           2.0);
                                 } else {
                                     label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
                                 }
@@ -1746,7 +1746,8 @@ void CSubPlotSurface::DrawGraphs(void)
                                     m_painter_p->fillRect(rect, BACKGROUND_COLOR);
                                 }
 
-                                m_painter_p->drawText(QPoint(label_x_start, y_text), QString(di_p->label_p));
+                                m_painter_p->drawText(QPoint(label_x_start, static_cast<int>(y_text)),
+                                                      QString(di_p->label_p));
                                 m_painter_p->setPen(*selectedPen_p); /* Set pen back */
                             }
                         }
@@ -1792,8 +1793,8 @@ void CSubPlotSurface::DrawDecorators(bool over)
         Q_COLORREF color = Q_RGB(0x55, 0x55, 0x55);  /* use red */
 
         /* First align the x2 boundary for all life line boxes */
-        auto life_line_x2 = (int)0;
-        auto objectIndexPreLoop = objectIndex;
+        int life_line_x2 = 0;
+        int objectIndexPreLoop = objectIndex;
         for ( ; objectIndexPreLoop < numOfItems; ++objectIndexPreLoop) {
             const displayItem_t *di_p = &dgraph_p->m_items_a[objectIndexPreLoop];
             auto x_2 = di_p->x2_pix;
@@ -1816,7 +1817,7 @@ void CSubPlotSurface::DrawDecorators(bool over)
             const int y_2 = di_p->y2_pix;
             const short properties = di_p->properties;
             bool checkLabel = false;            /* true if go was painted */
-            double relative_X = (double)0.0;      /* Some graphical object may offset the label */
+            double relative_X = 0.0;      /* Some graphical object may offset the label */
 
             if (properties & (PROPERTIES_BITMASK_VISIBLE | PROPERTIES_BITMASK_VISIBLE_INTERSECT)) {
                 if ((properties & GRAPHICAL_OBJECT_KIND_DECORATOR_LIFELINE)) {
@@ -1828,7 +1829,8 @@ void CSubPlotSurface::DrawDecorators(bool over)
                             rect = QRect(QPoint(x_1, y_2),
                                          QPoint(x_2 - x_1 > 3 ? x_2 : x_1 + 3, y_1 - y_2 > 3 ?
                                                 y_1 : y_2 + 3 /* at least 3 pix height */));
-                            color = ((GraphicalObject_LifeLine_Box_t *)di_p->go_p)->fillColorRGB;
+                            color = static_cast<QRgb>(reinterpret_cast<GraphicalObject_LifeLine_Box_t *>
+                                                      (di_p->go_p)->fillColorRGB);
 
                             m_painter_p->fillRect(rect, color);
                             checkLabel = true;
@@ -1842,8 +1844,10 @@ void CSubPlotSurface::DrawDecorators(bool over)
                             /* lifeline line, drawn under */
                             if (properties & (GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_INDEX |
                                               GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_STR)) {
-                                relative_X = ((GraphicalObject_LifeLine_Line_t *)di_p->go_p)->relative_X;
-                                color = ((GraphicalObject_LifeLine_Line_t *)di_p->go_p)->lineColorRGB;
+                                relative_X = reinterpret_cast<GraphicalObject_LifeLine_Line_t *>
+                                             (di_p->go_p)->relative_X;
+                                color = static_cast<QRgb>(reinterpret_cast<GraphicalObject_LifeLine_Line_t *>
+                                                          (di_p->go_p)->lineColorRGB);
                             }
 
                             /* The life line is drawn as a box to get some thickness and color */
@@ -1860,8 +1864,9 @@ void CSubPlotSurface::DrawDecorators(bool over)
                             /* LINE (normal) */
                             if (properties & (GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_INDEX |
                                               GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_STR)) {
-                                relative_X = ((GraphicalObject_Line_Ex_t *)di_p->go_p)->relative_X;
-                                color = ((GraphicalObject_Line_Ex_t *)di_p->go_p)->lineColorRGB;
+                                relative_X = reinterpret_cast<GraphicalObject_Line_Ex_t *>(di_p->go_p)->relative_X;
+                                color = static_cast<QRgb>(reinterpret_cast<GraphicalObject_Line_Ex_t *>
+                                                          (di_p->go_p)->lineColorRGB);
                             }
                             rect = QRect(QPoint(x_1, y_1), QPoint(x_2, y_1 + 1));
                             m_painter_p->fillRect(rect, color);
@@ -2721,7 +2726,10 @@ const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *r
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CSubPlotSurface::GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double *distance_p, GraphicalObject_t **go_pp)
+bool CSubPlotSurface::GetClosestGraph(QPoint *point_p,
+                                      CGraph_Internal **graph_pp,
+                                      double *distance_p,
+                                      GraphicalObject_t **go_pp)
 {
     if ((graph_pp == nullptr) || (go_pp == nullptr)) {
         TRACEX_E("CSubPlotSurface::GetGraph  INPUT ERROR")
@@ -2761,7 +2769,7 @@ bool CSubPlotSurface::GetClosestGraph(QPoint *point_p, CGraph **graph_pp, double
 /***********************************************************************************************************************
 *   GetClosestGraph
 ***********************************************************************************************************************/
-bool CSubPlotSurface::GetClosestGraph(int row, CGraph **graph_pp, int *distance_p,
+bool CSubPlotSurface::GetClosestGraph(int row, CGraph_Internal **graph_pp, int *distance_p,
                                       GraphicalObject_t **go_pp)
 {
     if ((graph_pp == nullptr) || (go_pp == nullptr)) {
@@ -2789,7 +2797,7 @@ const displayItem_t *CSubPlotSurface::FindClosest_GO(
     const int x,
     const int y,
     double *distance_p,
-    CGraph **graph_pp)
+    CGraph_Internal **graph_pp)
 {
     const displayItem_t *found_di_p = nullptr;
     double smallestDiff = 0.0;
@@ -2865,7 +2873,7 @@ const displayItem_t *CSubPlotSurface::FindClosest_GO(
 GraphicalObject_t *CSubPlotSurface::FindClosest_GO(
     int row,
     int *distance_p,
-    CGraph **graph_pp)
+    CGraph_Internal **graph_pp)
 {
     CList_LSZ *graphList_p;
     GraphicalObject_t *found_GO_p = nullptr;
@@ -2883,7 +2891,7 @@ GraphicalObject_t *CSubPlotSurface::FindClosest_GO(
         return nullptr;
     }
 
-    CGraph *graph_p = reinterpret_cast<CGraph *>(graphList_p->first());
+    CGraph_Internal *graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->first());
 
     while (graph_p != nullptr) {
         if ((graph_p->GetNumOfObjects() > 0) && graph_p->isEnabled()) {
@@ -2939,7 +2947,7 @@ GraphicalObject_t *CSubPlotSurface::FindClosest_GO(
             } /* while go */
         }
 
-        graph_p = reinterpret_cast<CGraph *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
+        graph_p = reinterpret_cast<CGraph_Internal *>(graphList_p->GetNext(reinterpret_cast<CListObject *>(graph_p)));
     } /* while graph */
 
     *distance_p = static_cast<int>(abs(total_smallestDiff));
