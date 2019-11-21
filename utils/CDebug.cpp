@@ -337,10 +337,10 @@ void CRamLog::cleanUp(void)
      * class is destroyed, hence it should be sufficent to just free all items in the list.
      */
 
-    if (m_ramLogPool.count() !=
-        RAM_LOG_MAX_COUNT) {
-        qDebug() << "RamLog not entirely empty ... " << (RAM_LOG_MAX_COUNT - m_ramLogPool.count()) <<
-            " items left\n";
+    m_cleanUpDone = true;
+
+    if (m_ramLogPool.count() != RAM_LOG_MAX_COUNT) {
+        qDebug() << "RamLog not entirely empty ... " << (RAM_LOG_MAX_COUNT - m_ramLogPool.count()) << " items left\n";
     }
 
     while (!m_ramLogPoolTracking.empty()) {
@@ -444,6 +444,9 @@ void CRamLog::UnregisterThread(void)
 {
     tls_data_t *tls_data_p = static_cast<tls_data_t *>(tls_data.localData());
     ramLogData_t *ramLog_p = tls_data_p->ramLogData_p;
+
+    if (m_cleanUpDone)
+        return;
 
     if (ramLog_p != nullptr) {
         QMutexLocker ml(&m_mutex);  /* when ml passes its scope the mutex will automatically be freed */

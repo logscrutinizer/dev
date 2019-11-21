@@ -200,7 +200,7 @@ public:
 
 private:
     void CheckRamLogs(void);
-
+    bool                     m_cleanUpDone = false;
     QMutex                   m_mutex; /**< Protect the lists */
     QList<ramLogData_t*>     m_ramLogPool;
     QList<ramLogData_t*>     m_ramLogPoolTracking;  /**< m_ramLogPool keeps only unused,

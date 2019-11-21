@@ -1150,7 +1150,7 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
         *invalidate_p = true;
     }
 
-    TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  zoom:%4.2 min:%e max:%e offset:%e",
+    TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  zoom:%e min:%e max:%e offset:%e",
              currentZoom, static_cast<double>(zoom.y_min), static_cast<double>(zoom.y_max), y_offset)
 
     subPlot_p->SetSurfaceZoom(&zoom);
