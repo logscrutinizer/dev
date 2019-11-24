@@ -291,13 +291,11 @@ void CPlotWidgetGraphics::FillEmptyWindow(QPainter *painter)
 {
     QSize fontSize = GetTheDoc()->m_fontCtrl.GetFontSize();
     auto br = rect();
-    auto const y_pos_offset = static_cast<int>(static_cast<double>(fontSize.height() * 1.1));
-    auto const y_pos_offset_extra = static_cast<int>(static_cast<double>(fontSize.height() * 1.5));
-    auto const y_pos_offset_extra_extra = static_cast<int>(static_cast<double>(fontSize.height() * 2.0));
-    int x_pos =
-        static_cast<int>(static_cast<double>(br.right() - m_viewRect.left()) * static_cast<double>(0.1));
-    int y_pos =
-        static_cast<int>(static_cast<double>(br.bottom() - m_viewRect.top()) * static_cast<double>(0.1));
+    auto const y_pos_offset = static_cast<int>(fontSize.height() * 1.1);
+    auto const y_pos_offset_extra = static_cast<int>(fontSize.height() * 1.5);
+    auto const y_pos_offset_extra_extra = static_cast<int>(fontSize.height() * 2.0);
+    int x_pos = static_cast<int>((br.right() - m_viewRect.left()) * 0.1);
+    int y_pos = static_cast<int>((br.bottom() - m_viewRect.top()) * 0.1);
 
     painter->drawText(x_pos, y_pos, "This is a Plot View");
     TRACEX_DE(QString("Draw text %1 %2").arg(x_pos).arg(y_pos))
@@ -770,6 +768,7 @@ bool CPlotWidgetGraphics::HandleKeyDown(QKeyEvent *e)
             }
         }
     }
+
     /* */
     else if (m_keyPressedList.contains(Qt::Key_C) && CTRL_Pressed) {
         handled = true;

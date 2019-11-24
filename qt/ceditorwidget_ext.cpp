@@ -1129,7 +1129,7 @@ void CEditorWidget::FillScreenRows(void)
 
     average.start();
 
-    memset(&m_screenRows[0], 0, sizeof(LogScrutinizerView_ScreenRow_t) * static_cast<size_t>(m_maxDisplayRows));
+    memset(&m_screenRows[0], 0, sizeof(m_screenRows));
 
     average.stop(CTimeMeas::micro);
 
@@ -1192,7 +1192,7 @@ void CEditorWidget::FillScreenRows_Filtered(void)
     average.start();
 
     /* clean the screenRows */
-    memset(&m_screenRows[0], 0, sizeof(LogScrutinizerView_ScreenRow_t) * static_cast<size_t>(m_maxDisplayRows));
+    memset(&m_screenRows[0], 0, sizeof(m_screenRows));
 
     average.stop(CTimeMeas::micro);
 

@@ -677,12 +677,12 @@ void CSubPlotSurface::OnPaint_Empty(void)
 
     doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
 
-    const int textRowHeight = lineSize.height() + static_cast<int>(static_cast<double>(lineSize.height()) * 0.05);
+    const int textRowHeight = lineSize.height() + static_cast<int>(lineSize.height() * 0.05);
     const int textBoxHeight = textRowHeight * NUM_OF_NO_SUBPLOT_STRINGS;
     int x;
     int y;
 
-    x = static_cast<int>(static_cast<double>(m_windowRect.width()) * 0.1);
+    x = static_cast<int>(m_windowRect.width() * 0.1);
     y = 15;
 
     const int totalHeight = m_windowRect.height();
@@ -711,9 +711,9 @@ void CSubPlotSurface::OnPaint_1(void)
 
     if (m_setupGraphs) {
         m_lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, g_avg_str);
-        m_avgPixPerLetter = static_cast<double>(m_lineSize.width()) / static_cast<double>(g_avg_str.length());
+        m_avgPixPerLetter = m_lineSize.width() / static_cast<double>(g_avg_str.length());
         m_avgPixPerLetterHeight = static_cast<double>(m_lineSize.height());
-        m_halfLineHeight = static_cast<int>(static_cast<double>(m_lineSize.height()) / static_cast<double>(2.0));
+        m_halfLineHeight = static_cast<int>(m_lineSize.height() / 2.0);
         PRINT_SUBPLOTSURFACE(QString("m_avgPixPerLetter %1 %2").arg(m_lineSize.width()).arg(m_lineSize.height()))
 
         if (m_renderMode == RenderMode_Maximized_en) {
@@ -1001,8 +1001,9 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
                                          ((center - m_surfaceZoom.y_min) * m_unitsPerPixel_Y_inv) - halfLineHeight);
 
                     if ((y_pix > m_windowRect.top()) && (y_pix < (m_windowRect.bottom() - lineSize.height()))) {
-                        m_painter_p->drawText(QPoint(static_cast<int>(m_viewPortRect.left() + m_viewPortRect.width() *
-                                                                      0.05), y_pix), QString(graph_p->GetName()));
+                        m_painter_p->drawText(
+                            QPoint(static_cast<int>(m_viewPortRect.left() + m_viewPortRect.width() * 0.05), y_pix),
+                            QString(graph_p->GetName()));
                     }
 
                     /* Draw graph boarders for schedule plots */
@@ -1294,7 +1295,7 @@ void CSubPlotSurface::Setup_X_Lines(void)
         m_numOf_X_Lines = 0;
     }
 
-    auto numLinesEstimate = static_cast<int>(static_cast<double>(m_viewPortRect.width()) / m_avgPixPerLetter);
+    auto numLinesEstimate = static_cast<int>(m_viewPortRect.width() / m_avgPixPerLetter);
     double x_diff_per_line = abs(x_diff) / numLinesEstimate;
     double base;
     double step = pow(10, floor(log10(x_diff_per_line)));
@@ -1714,11 +1715,10 @@ void CSubPlotSurface::DrawGraphs(void)
                                 int label_x_start;
 
                                 if (almost_equal(relative_X, 0.0)) {
-                                    label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) / 2.0 -
-                                                                           static_cast<double>(di_p->label_pix_length) /
-                                                                           2.0);
+                                    label_x_start = x_1 + static_cast<int>((x_2 - x_1) / 2.0 -
+                                                                           (di_p->label_pix_length) / 2.0);
                                 } else {
-                                    label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
+                                    label_x_start = x_1 + static_cast<int>((x_2 - x_1) * relative_X);
                                 }
 
                                 double y_text;
@@ -1916,11 +1916,10 @@ void CSubPlotSurface::DrawDecorators(bool over)
                     if (relative_X == 0.0) {
                         label_x_start = x_1 + ((x_2 - x_1) >> 1) - (di_p->label_pix_length >> 1);
                     } else {
-                        label_x_start = x_1 + static_cast<int>(static_cast<double>(x_2 - x_1) * relative_X);
+                        label_x_start = x_1 + static_cast<int>((x_2 - x_1) * relative_X);
                     }
 
-                    const int y_text = y_1 - static_cast<int>(static_cast<double>((y_1 - y_2) >> 1) -
-                                                              m_avgPixPerLetterHeight / 2.0);
+                    const int y_text = y_1 - static_cast<int>(((y_1 - y_2) >> 1) - m_avgPixPerLetterHeight / 2.0);
 
                     if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                         /* Erase a small box where the label should be, mainly covering just the own line */

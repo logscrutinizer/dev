@@ -411,8 +411,7 @@ void CPlotWidget::DrawScrollbar(void)
                     m_hscrollFrame.height(), SCROLLBAR_FRAME_COLOR);
 
     m_vscrollSlider.setTop(static_cast<int>(m_vscrollFrame.top() +
-                                            m_vrelPos *
-                                            m_vscrollFrame.height() - m_vscrollSlider_Height));
+                                            m_vrelPos * (m_vscrollFrame.height() - m_vscrollSlider_Height)));
     m_vscrollSlider.setBottom(m_vscrollSlider.top() + m_vscrollSlider_Height);
 
     /* Draw v scroll slider */
@@ -1028,8 +1027,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
 
     subPlot_p->GetViewPortRect(&viewPort);
 
-    double x_rel = static_cast<double>(screenPoint_p->DCBMP.x() - viewPort.left()) /
-                   static_cast<double>(viewPort.width());
+    double x_rel = (screenPoint_p->DCBMP.x() - viewPort.left()) / static_cast<double>(viewPort.width());
     double maxWidth = m_max_X - m_min_X;
     double currentZoom = maxWidth / (m_zoom_right - m_zoom_left);
     double newWidth = 0.0;
@@ -1110,15 +1108,14 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
     subPlot_p->GetMaxExtents(&maxExtents);   /* The sub-plot max/min extents */
     subPlot_p->GetViewPortRect(&viewPort);   /* The viewPort in pixels (for the surface) */
 
-    double y_rel = static_cast<double>(screenPoint_p->DCBMP.y() - viewPort.top()) /
-                   static_cast<double>(viewPort.height());
-    double maxHeight = static_cast<double>(maxExtents.y_max - maxExtents.y_min);
+    double y_rel = (screenPoint_p->DCBMP.y() - viewPort.top()) / static_cast<double>(viewPort.height());
+    double maxHeight = maxExtents.y_max - maxExtents.y_min;
     double currentZoom = maxHeight / static_cast<double>(zoom.y_max - zoom.y_min);
     double newHeight = 0.0;
 
     /* since Y 0 is a the top, however the graph 0 is at the bottom, it is necessary to reverse the
      * y_offset */
-    double y_offset = static_cast<double>(zoom.y_min + (zoom.y_max - zoom.y_min)) * (1.0 - y_rel);
+    double y_offset = zoom.y_min + (zoom.y_max - zoom.y_min) * (1.0 - y_rel);
 
     TRACEX_D("CPlotWidget::ZoomSubPlot_Y_Axis  pt.y:%d rel:%f curr offset:%e",
              screenPoint_p->DCBMP.y(), y_rel, y_offset)
@@ -1132,9 +1129,8 @@ void CPlotWidget::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *screenPoin
         newHeight = maxHeight / currentZoom;
     }
 
-    zoom.y_min = static_cast<double>(y_offset - (newHeight * (1.0 - y_rel)));             /* Maintain the center of zoom
-                                                                                           * */
-    zoom.y_max = static_cast<double>(y_offset + (newHeight * y_rel));
+    zoom.y_min = y_offset - (newHeight * (1.0 - y_rel)); /* Maintain the center of zoom * */
+    zoom.y_max = y_offset + (newHeight * y_rel);
 
 #ifdef PREVENT_Y_AXIS_OUTOF_MAXEXT
     zoom.y_min = zoom.y_min < maxExtents.y_min ? maxExtents.y_min : zoom.y_min;
@@ -1199,8 +1195,8 @@ void CPlotWidget::ZoomSubPlot_Move(const ScreenPoint_t *screenPoint_p, bool *inv
 
     auto new_zoom = zoom;
 
-    new_zoom.y_min += static_cast<double>(y_diff);
-    new_zoom.y_max += static_cast<double>(y_diff);
+    new_zoom.y_min += y_diff;
+    new_zoom.y_max += y_diff;
     new_zoom.x_min += x_diff;
     new_zoom.x_max += x_diff;
 
@@ -1349,8 +1345,8 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
             ZoomSubPlot_Move(&screenPoint, &updateNeeded);
         } else if (m_vscrollSliderGlue) {
             updateNeeded = true;
-            m_vrelPos = static_cast<double>(screenPoint.mouse.y() - m_vscrollSliderGlueOffset) /
-                        (m_windowRect.height() - m_vscrollSlider_Height);
+            m_vrelPos = (screenPoint.mouse.y() - m_vscrollSliderGlueOffset) /
+                        static_cast<double>(m_windowRect.height() - m_vscrollSlider_Height);
 
             if (m_vrelPos < 0.0) {
                 m_vrelPos = 0.0;
@@ -1360,8 +1356,7 @@ void CPlotWidget::mouseMoveEvent(QMouseEvent *event)
             PRINT_SCROLL_INFO("%s m_vrelPos: %f", __FUNCTION__, m_vrelPos)
         } else if (m_hscrollSliderGlue) {
             updateNeeded = true;
-            m_hrelPos = static_cast<double>(screenPoint.mouse.x() - m_hscrollSliderGlueOffset) /
-                        (m_windowRect.width());
+            m_hrelPos = (screenPoint.mouse.x() - m_hscrollSliderGlueOffset) / static_cast<double>(m_windowRect.width());
 
             if (m_hrelPos < 0.0) {
                 m_hrelPos = 0.0;
