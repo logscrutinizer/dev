@@ -22,15 +22,10 @@ class CParseTest_Base
 public:
     CParseTest_Base(void) {m_setup = false;}
 
-    /****/
-    virtual void BaseReset(const char *testInput)
-    {
-        m_setup = true;
+    virtual ~CParseTest_Base(void) {}
 
-        m_parser.ResetParser();
-        m_parser.SetText(testInput, (int)strlen(testInput));
-        SAFE_STR_MEMCPY(m_testInput, MAX_TEST_STRING_LENGTH, testInput, strlen(testInput));
-    }
+    /****/
+    virtual void BaseReset(const char *testInput);
 
     /****/
     bool CheckSetup(void)
@@ -64,7 +59,7 @@ public:
     {
         CParseTest_Base::BaseReset(testInput);
 
-        SAFE_STR_MEMCPY(m_expectedResult, MAX_TEST_STRING_LENGTH, expectedResult, strlen(expectedResult));
+        SAFE_STR_MEMCPY(m_expectedResult, MAX_TEST_STRING_LENGTH, expectedResult, strlen(expectedResult))
         m_start = start;
         m_end = end;
     }

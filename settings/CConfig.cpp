@@ -77,6 +77,24 @@ static const ColorTableItem_t colorTable_DEFAULT[MAX_COLOR_TABLE] =
 const ColorTableItem_t *g_graphColorTable_DEFAULT_p = colorTable_DEFAULT;
 int g_defaultNumOfGraphColorItems = DEFAULT_GRAPH_COLOR_TABLE_SIZE;
 
+/***********************************************************************************************************************
+*   D-tor CSCZ_CfgBase
+***********************************************************************************************************************/
+
+CSCZ_CfgBase::~CSCZ_CfgBase()
+{}
+
+/***********************************************************************************************************************
+*   D-tor CSCZ_CfgSettingBase
+***********************************************************************************************************************/
+
+CSCZ_CfgSettingBase::~CSCZ_CfgSettingBase()
+{}
+
+/***********************************************************************************************************************
+*   Init
+***********************************************************************************************************************/
+
 CConfig::CConfig(void)
 {
     m_buildDate = APP_BUILD_VER; /* will cause the built binary to change each time you rebuild. Time macro is not
@@ -384,8 +402,7 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
             settingsStream << SETTINGS_HEADER << "\n";
         } catch (std::exception &e) {
             qFatal("Error %s writing settings header to file", e.what());
-            TRACEX_E("CConfig::WriteSettings  Failed to write setting header to settings file,  Err:%s",
-                     e.what());
+            TRACEX_E("CConfig::WriteSettings  Failed to write setting header to settings file,  Err:%s", e.what())
             return false;
         } catch (...) {
             qFatal("Unknown Error writting settings to file");
@@ -403,8 +420,7 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
                     setting_p->WriteToFile(&settingsStream);
                 } catch (std::exception &e) {
                     qFatal("Error %s writing settings to file", e.what());
-                    TRACEX_E("CConfig::WriteSettings  Failed to write settings to file,  Err:%s",
-                             e.what());
+                    TRACEX_E("CConfig::WriteSettings  Failed to write settings to file,  Err:%s", e.what())
                     return false;
                 } catch (...) {
                     qFatal("Unknown Error writting settings to file");
@@ -418,8 +434,7 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
             settingsStream << SETTINGS_FOOTER << "\n";
         } catch (std::exception &e) {
             qFatal("Error %s writing settings footer to file", e.what());
-            TRACEX_E("CConfig::WriteSettings  Failed to write setting footer to settings file,  Err:%s",
-                     e.what());
+            TRACEX_E("CConfig::WriteSettings  Failed to write setting footer to settings file,  Err:%s", e.what())
             return false;
         } catch (...) {
             qFatal("Unknown Error writting settings to file");
@@ -482,7 +497,7 @@ void CConfig::GetAppInfo(QString& title, QString& version, QString& buildDate, Q
 bool CConfig::RegisterSetting(CSCZ_CfgSettingBase *setting_p)
 {
     TRACEX_D(QString("RegisterSetting    Name:%1  ParseTag:%2  Description:%3")
-                 .arg(setting_p->m_name).arg(setting_p->m_parseTag).arg(setting_p->m_description));
+                 .arg(setting_p->m_name).arg(setting_p->m_parseTag).arg(setting_p->m_description))
     m_settingsList.append(setting_p);
     setting_p->RestoreDefaultValue();
     return true;
@@ -668,14 +683,12 @@ bool CConfig::SetSetting(QString *parseTag_p, QString *value_p)
             setting_p = m_settingsList[index];
 
             if (setting_p->m_parseTag == *parseTag_p) {
-                TRACEX_I(QString("SetSetting    %1  %2")
-                             .arg(setting_p->m_name).arg(setting_p->m_parseTag));
+                TRACEX_I(QString("SetSetting    %1  %2").arg(setting_p->m_name).arg(setting_p->m_parseTag))
                 setting_p->SetValue(value_p);
                 return true;
             }
         }
-        TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  %s",
-                 parseTag_p->toLatin1().constData());
+        TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  %s", parseTag_p->toLatin1().constData())
     }
     TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  setting")
     return false;

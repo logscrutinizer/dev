@@ -742,7 +742,7 @@ MainWindow::MainWindow(QWidget *parent) :
                      .arg(screen->manufacturer()).arg(screen->model())
                      .arg(screen->availableGeometry().width()).arg(screen->availableGeometry().height())
                      .arg(screen->virtualSize().width()).arg(screen->virtualSize().height()).arg(screen->size().width())
-                     .arg(screen->size().height()));
+                     .arg(screen->size().height()))
     }
 
     /* Print all the stored settings */
@@ -764,7 +764,7 @@ MainWindow::MainWindow(QWidget *parent) :
 ***********************************************************************************************************************/
 void MainWindow::showEvent(QShowEvent *e)
 {
-    PRINT_SIZE(QString("MW showEvent %1 first:%2").arg(e->type()).arg(firstStart));
+    PRINT_SIZE(QString("MW showEvent %1 first:%2").arg(e->type()).arg(firstStart))
     QMainWindow::showEvent(e);
 
     if (firstStart) {
@@ -841,13 +841,13 @@ QSize MainWindow::sizeHint() const
     static QSize windowSize;
     auto refreshMainWindow = makeMyScopeGuard([&] () {
         PRINT_SIZE(QString("MainWindow sizeHint %1,%2 state:%3")
-                       .arg(windowSize.width()).arg(windowSize.height()).arg(windowState()));
+                       .arg(windowSize.width()).arg(windowSize.height()).arg(windowState()))
     });
     windowSize = QMainWindow::sizeHint();
 
     if (CSCZ_AdaptWindowSizes) {
         /*        windowSize = m_adaptWindowSize; */
-        PRINT_SIZE(QString("MainWindow adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+        PRINT_SIZE(QString("MainWindow adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
     }
 
     return windowSize;
@@ -946,9 +946,8 @@ void MainWindow::updatePendingStateGeometry(void)
         }
 
         PRINT_SIZE(QString("Pending %1 before no:%2 max:%3")
-                       .arg(windowState())
-                       .arg(m_pendingGeometryState.count(Qt::WindowNoState))
-                       .arg(m_pendingGeometryState.count(Qt::WindowMaximized)));
+                       .arg(windowState()).arg(m_pendingGeometryState.count(Qt::WindowNoState))
+                       .arg(m_pendingGeometryState.count(Qt::WindowMaximized)))
 
         auto it = m_pendingGeometryState.find(windowState());
         while (it != m_pendingGeometryState.end()) {
@@ -958,7 +957,7 @@ void MainWindow::updatePendingStateGeometry(void)
 
         PRINT_SIZE(QString("Pending after clean no:%1 max:%2")
                        .arg(m_pendingGeometryState.count(Qt::WindowNoState))
-                       .arg(m_pendingGeometryState.count(Qt::WindowMaximized)));
+                       .arg(m_pendingGeometryState.count(Qt::WindowMaximized)))
 
         CGeometryState gs;
         getSettingKeys(gs.geoKey, gs.stateKey);
@@ -976,13 +975,13 @@ void MainWindow::updatePendingStateGeometry(void)
                        .arg(gs.geoKey).arg(windowState()).arg(result.second == false ? QString("Yes") : QString("No"))
                        .arg(isMaximized()).arg(rect().width()).arg(rect().height())
                        .arg(gs.editor.width()).arg(gs.editor.height()).arg(gs.workspace.width()).arg(
-                       gs.workspace.height()));
+                       gs.workspace.height()))
 
         m_pendingGeometryTimer.get()->stop();
 
         PRINT_SIZE(QString("Pending after insert clean no:%1 max:%2")
                        .arg(m_pendingGeometryState.count(Qt::WindowNoState))
-                       .arg(m_pendingGeometryState.count(Qt::WindowMaximized)));
+                       .arg(m_pendingGeometryState.count(Qt::WindowMaximized)))
     });
 
     m_pendingGeometryTimer.get()->start(400);
@@ -1014,11 +1013,11 @@ void MainWindow::savePendingStateGeometry(Qt::WindowStates previousState)
             TRACEX_I(QString("MW Geometry - Save pending  %1  mw(%2,%3) editor(%4,%5) workspace (%6,%7) bytes:%8")
                          .arg(gs.mainWindow.width()).arg(gs.mainWindow.height())
                          .arg(gs.geoKey).arg(gs.editor.width()).arg(gs.editor.height())
-                         .arg(gs.workspace.width()).arg(gs.workspace.height()).arg(ba.size()));
+                         .arg(gs.workspace.width()).arg(gs.workspace.height()).arg(ba.size()))
             return;
         } else {
             TRACEX_I(QString("MW Geometry - Failure, pending Geometry not saved, bad editor size %1,%2")
-                         .arg(gs.editor.width()).arg(gs.editor.height()));
+                         .arg(gs.editor.width()).arg(gs.editor.height()))
         }
     }
     TRACEX_I(QString("MW Geometry - Failure, pending Geometry state:%1 not saved, empty data").arg(previousState))
@@ -1055,7 +1054,7 @@ bool MainWindow::isExitStateMaximized(void)
 
     if (GEOMETRY_VERSION != version) {
         TRACEX_I(QString("MW Exit state wrong geometry version, expected:%1 stored:%2")
-                     .arg(GEOMETRY_VERSION).arg(version));
+                     .arg(GEOMETRY_VERSION).arg(version))
         return false;
     }
 
@@ -1101,7 +1100,7 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
         m_logWindow_p->setSizePolicy(policy);
 
         m_pendingWindowAdaptationTimer_2.get()->start(1000);
-        PRINT_SIZE(QString("MW Geometry Restore ended 1"));
+        PRINT_SIZE(QString("MW Geometry Restore ended 1"))
     });
 
     m_pendingWindowAdaptationTimer_2 = std::make_unique<QTimer>(this);
@@ -1123,7 +1122,7 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
 
     if (GEOMETRY_VERSION != version) {
         TRACEX_I(QString("MW Geometry - Failure, wrong geometry version, expected:%1 stored:%2")
-                     .arg(GEOMETRY_VERSION).arg(version));
+                     .arg(GEOMETRY_VERSION).arg(version))
         goto fallback;
     }
 
@@ -1133,7 +1132,7 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
 
     if (GEOMETRY_VERSION != version) {
         TRACEX_I(QString("MW Geometry - Failure, wrong geometry version, expected:%1 stored:%2")
-                     .arg(GEOMETRY_VERSION).arg(version));
+                     .arg(GEOMETRY_VERSION).arg(version))
         goto fallback;
     }
 
@@ -1142,7 +1141,7 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
     stream >> search;
 
     TRACEX_I(QString("MW Geometry Restore started editor(%1,%2), workspace(%3,%4)")
-                 .arg(editor.width()).arg(editor.height()).arg(workspace.width()).arg(workspace.height()));
+                 .arg(editor.width()).arg(editor.height()).arg(workspace.width()).arg(workspace.height()))
 
     m_editor_p->setAdaptWindowSize(editor);
     m_treeView_p->setAdaptWindowSize(workspace);
@@ -1265,6 +1264,7 @@ void MainWindow::createActions(void)
     m_checkBox_p->setCheckState(g_cfg_p->m_logFileTracking ? Qt::Checked : Qt::Unchecked);
     connect(m_checkBox_p, &QCheckBox::stateChanged, [ = ] (int newValue)
     {
+        Q_UNUSED(newValue)
         auto doc_p = GetTheDoc();
         auto state = m_checkBox_p->checkState();
         g_cfg_p->m_logFileTracking = state == Qt::Unchecked ? false : true;
@@ -1588,15 +1588,6 @@ bool MainWindow::open(void)
     kindList.append(RecentFile_Kind_LogFile_en);
     return CFGCTRL_Load_FileType(QString("Load plugin"), filters, kindList,
                                  GetTheDoc()->m_recentFiles.GetRecentPath(RecentFile_Kind_LogFile_en));
-
-    /*
-     *  if (maybeSave()) {
-     *   QString fileName = QFileDialog::getOpenFileName(this);
-     *   if (!fileName.isEmpty())
-     *       loadFile(fileName);
-     *  }
-     */
-    return true;
 }
 
 /***********************************************************************************************************************
@@ -1767,9 +1758,7 @@ bool MainWindow::adjustSearchStart(bool forward, CSelection& cursorPosition, int
 
         if (startRow < endRow) {
             MW_PlaySystemSound(SYSTEM_SOUND_FAILURE);
-            TRACEX_I(
-                "Search failed, Backward TOO FEW LINES to SEARCH, startRow:%d endRow:%d\n",
-                startRow, endRow);
+            TRACEX_I("Search failed, Backward TOO FEW LINES to SEARCH, startRow:%d endRow:%d\n", startRow, endRow)
             return false;
         }
     } else {
@@ -1797,7 +1786,7 @@ bool MainWindow::adjustSearchStart(bool forward, CSelection& cursorPosition, int
         }
 
         /* Make sure not to start search after of zoom/rowclip */
-        if ((g_cfg_p->m_Log_rowClip_End > -1) && ((int)endRow >= g_cfg_p->m_Log_rowClip_End)) {
+        if ((g_cfg_p->m_Log_rowClip_End > -1) && (endRow >= g_cfg_p->m_Log_rowClip_End)) {
             endRow = g_cfg_p->m_Log_rowClip_End - 1;
         }
 
@@ -1809,9 +1798,7 @@ bool MainWindow::adjustSearchStart(bool forward, CSelection& cursorPosition, int
 
         if (startRow > endRow) {
             MW_PlaySystemSound(SYSTEM_SOUND_FAILURE);
-            TRACEX_I(
-                "Search failed, Forward TOO FEW LINES to SEARCH, startRow:%d endRow:%d\n",
-                startRow, endRow);
+            TRACEX_I("Search failed, Forward TOO FEW LINES to SEARCH, startRow:%d endRow:%d\n", startRow, endRow)
             return false;
         }
     }
@@ -1901,14 +1888,14 @@ bool MainWindow::event(QEvent *event)
     }
 
     if (!msg.isEmpty()) {
-        PRINT_SIZE(msg);
+        PRINT_SIZE(msg)
     }
 
     switch (event->type())
     {
         case QEvent::KeyPress:
         {
-            QKeyEvent *k = (QKeyEvent *)event;
+            QKeyEvent *k = reinterpret_cast<QKeyEvent *>(event);
             if (!(k->modifiers() & (Qt::ControlModifier | Qt::AltModifier))) {
                 if ((k->key() == Qt::Key_Backtab) ||
                     ((k->key() == Qt::Key_Tab) && (k->modifiers() & Qt::ShiftModifier))) {
@@ -1938,7 +1925,7 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
     auto SHIFT_Pressed = QApplication::keyboardModifiers() & Qt::ShiftModifier ? true : false;
     auto CTRL_Pressed = QApplication::keyboardModifiers() & Qt::ControlModifier ? true : false;
 
-    PRINT_KEYPRESS(QString("%1 key:%2").arg(__FUNCTION__).arg(index));
+    PRINT_KEYPRESS(QString("%1 key:%2").arg(__FUNCTION__).arg(index))
 
     if (!MW_GeneralKeyHandler(index, CTRL_Pressed, SHIFT_Pressed)) {
         QMainWindow::keyPressEvent(e);
@@ -1987,7 +1974,7 @@ bool MainWindow::handleSearch(bool forward)
     adjustSearchStart(forward, cursorPosition, startRow, endRow, numOfFastSearchRows, doFullSearch);
 
     TRACEX_I(QString("Search cursor row:%1 col:%2 -> startRow:%3")
-                 .arg(cursorPosition.row).arg(cursorPosition.startCol).arg(startRow));
+                 .arg(cursorPosition.row).arg(cursorPosition.startCol).arg(startRow))
 
 #ifdef QT_TODO
 
@@ -2031,9 +2018,7 @@ bool MainWindow::handleSearch(bool forward)
 
         if (!searchResult && doFullSearch && (startRow != endRow)) {
             /* Full search */
-            TRACEX_I(
-                QString("Full search:%1 startRow:%2 endRow:%3\n")
-                    .arg(searchText).arg(startRow).arg(endRow));
+            TRACEX_I(QString("Full search:%1 startRow:%2 endRow:%3\n").arg(searchText).arg(startRow).arg(endRow))
 
             searchResult = doc_p->StartSearch(
                 searchText,
@@ -2117,7 +2102,7 @@ void MainWindow::changeEvent(QEvent *event)
         return;
     }
     doExit = true;
-    PRINT_SIZE(QString("MW change event %1").arg(event->type()));
+    PRINT_SIZE(QString("MW change event %1").arg(event->type()))
     if (event->type() == QEvent::WindowStateChange) {
         /* Prevent any pending update caused by the state change */
         if (m_pendingGeometryTimer.get() != nullptr) {
@@ -2127,13 +2112,13 @@ void MainWindow::changeEvent(QEvent *event)
         auto ch_event = static_cast<QWindowStateChangeEvent *>(event);
         auto oldState = ch_event->oldState();
         auto newState = windowState();
-        PRINT_SIZE(QString("MW state %1 -> %2").arg(oldState).arg(newState));
+        PRINT_SIZE(QString("MW state %1 -> %2").arg(oldState).arg(newState))
         savePendingStateGeometry(oldState);
         m_activeState = newState;
         restoreSavedStateGeometry();
 
         /*setupAdaptWindowSizes(false); */
-        PRINT_SIZE(QString("MW after restore, active state %1").arg(m_activeState));
+        PRINT_SIZE(QString("MW after restore, active state %1").arg(m_activeState))
         if (newState != m_activeState) {
             TRACEX_W(QString("Restore messed up the window state %1 %2").arg(m_activeState).arg(newState))
         }
@@ -2173,7 +2158,7 @@ void MainWindow::moveEvent(QMoveEvent *event)
     if (m_editor_p != nullptr) {
         m_editor_p->mainWindowIsMoving(event);
     }
-    PRINT_SIZE(QString("MW move x:%1 -> %2").arg(event->oldPos().x()).arg(event->pos().x()));
+    PRINT_SIZE(QString("MW move x:%1 -> %2").arg(event->oldPos().x()).arg(event->pos().x()))
     QMainWindow::moveEvent(event);
 
     /*  updatePendingStateGeometry(); */
@@ -2192,7 +2177,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
                    .arg(event->oldSize().width()).arg(event->oldSize().height())
                    .arg(event->size().width()).arg(event->size().height())
                    .arg(windowState()).arg(rec.width()).arg(rec.height())
-                   .arg(mapToGlobal(QPoint(0, 0)).x()).arg(mapToGlobal(QPoint(0, 0)).y()));
+                   .arg(mapToGlobal(QPoint(0, 0)).x()).arg(mapToGlobal(QPoint(0, 0)).y()))
     updatePendingStateGeometry();
 
     if (CSCZ_AdaptWindowSizes) {

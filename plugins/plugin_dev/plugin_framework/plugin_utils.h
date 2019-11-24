@@ -19,10 +19,8 @@
 #include "plugin_utils_internal.h"
 
 extern void ErrorHook(const char *errorMsg, ...);
-extern void Trace(const char *pcStr, ...);
-
-#undef Q_RGB
-#define Q_RGB(R, G, B) (static_cast<QRgb>((R) << 16 | (G) << 8 | (B)))
+extern void Trace(const char *pcStr,
+                  ...);
 
 /*----------------------------------------------------------------------------------------------------------------------
  *   --- Exported Types
@@ -71,7 +69,7 @@ public:
      *  Input:         label_p,       Character string (0 as EOL not needed). May be nullptr
      *  Input:         labelLength    Number of characters in the label_p string. Length doesn't include any 0 as EOL.
      *                              If label_p is nullptr then length shall be 0
-     *  Input:         lineColorRGB   The color to draw the line with, use Q_RGB macro to define value. Use -1 to let
+     *  Input:         lineColorRGB   The color to draw the line with, use Q_RGB macro to define value. Use 0 to let
      *                              LogScrutinizer chose color
      *  Input:         relative_X     The position of the label in % of the line length, 0.5 means in the middle
      *  Input:         lineEnds       Adds arrow to the line end, default none. Use these in the
@@ -80,7 +78,7 @@ public:
      *                                  PROPERTIES_BITMASK_LINE_ARROW_OPEN_END PROPERTIES_BITMASK_LINE_ARROW_SOLID_END
      */
     bool AddLine(double x1, double y1, double x2, double y2, int row, const char *label_p,
-                 int labelLength, int lineColorRGB, double relative_X, int lineEnds = 0);
+                 int labelLength, Q_COLORREF lineColorRGB, double relative_X, int lineEnds = 0);
 
     /* Function: AddLine
      *
@@ -95,7 +93,7 @@ public:
      *  Input:         row            Specifies the row in the log where this box was extracted from. Used for getting
      *                              to and from log and plot
      *  Input:         laberlIndex    Index to the label, the index was the number provided when calling CPlot::AddLabel
-     *  Input:         lineColorRGB   The color to draw the line with, use Q_RGB macro to define value. Use -1 to let
+     *  Input:         lineColorRGB   The color to draw the line with, use Q_RGB macro to define value. Use 0 to let
      *                              LogScrutinizer chose color
      *  Input:         relative_X     The position of the label in % of the line length, 0.5 means in the middle
      *  Input:         lineEnds       Adds arrow to the line end, default none. Use these in the
@@ -103,7 +101,7 @@ public:
      *                              PROPERTIES_BITMASK_LINE_ARROW_SOLID_START,
      *                                  PROPERTIES_BITMASK_LINE_ARROW_OPEN_END PROPERTIES_BITMASK_LINE_ARROW_SOLID_END
      */
-    bool AddLine(double x1, double y1, double x2, double y2, int row, int labelIndex, int lineColorRGB,
+    bool AddLine(double x1, double y1, double x2, double y2, int row, int labelIndex, Q_COLORREF lineColorRGB,
                  double relative_X, int lineEnds = 0);
 
     /* Function: AddBox
@@ -133,13 +131,13 @@ public:
      *  Input:         row2           As for row but for x2,y2
      *  Input:         label_p,       Character string (0 as EOL not needed)
      *  Input:         labelLength    Number of characters in the label_p string. Length doesn't include any 0 as EOL
-     *  Input:         fillColorRGB   The color to fill the box with, specified in RBG (use Q_RGB macro), -1 to use
+     *  Input:         fillColorRGB   The color to fill the box with, specified in RBG (use Q_RGB macro), 0 to use
      *                              legend color
      *
      *  NOTE: if x2,y2 isn't the upper right corner the box might not be displayed.
      */
     bool AddBox(double x1, double y1, int row, double x2, double y2, int row2, const char *label_p,
-                int labelLength, int fillColorRGB);
+                int labelLength, Q_COLORREF fillColorRGB);
 
     /* Function: AddBox
      *
@@ -153,12 +151,13 @@ public:
      *  Input:         x2,y2          Coordinate of UPPER right box corner
      *  Input:         row2           As for row but for x2,y2
      *  Input:         laberlIndex    Index to the label, the index was the number provided when calling CPlot::AddLabel
-     *  Input:         fillColorRGB   The color to fill the box with, specified in RBG (use Q_RGB macro), -1 to use
+     *  Input:         fillColorRGB   The color to fill the box with, specified in RBG (use Q_RGB macro), 0 to use
      *                              legend color
      *
      *  NOTE: if x2,y2 isn't the upper right corner the box might not be displayed.
      */
-    bool AddBox(double x1, double y1, int row, double x2, double y2, int row2, int labelIndex, int fillColorRGB);
+    bool AddBox(double x1, double y1, int row, double x2, double y2, int row2, int labelIndex,
+                Q_COLORREF fillColorRGB);
 
     /* Function: SetGraphColor
      *
@@ -169,7 +168,7 @@ public:
      *  Parameters
      *  Input:         colorRGB          Color defined as Q_RGB
      */
-    void SetGraphColor(int colorRGB);
+    void SetGraphColor(Q_COLORREF colorRGB);
 
     /* Function: SetLinePattern
      *  Description: Manual override of the LogScrutinizer line pattern enumeration of graphs. This can be used if the
@@ -189,7 +188,7 @@ protected:
     /* IMPORTANT: The dll_plugin shall NOT delete the CGraph* it got when doing AddGraph(...).
      *         This is done at every re-run automatically by the framework
      */
-    virtual ~CGraph() {}
+    virtual ~CGraph() override;
 };
 
 /*
@@ -220,7 +219,7 @@ protected:
 
     /*IMPORTANT: The dll_plugin shall NOT delete the CDecorator* it got when doing AddDecorator(...). This is done at
      * every re-run automatically by the framework*/
-    ~CDecorator() {}
+    virtual ~CDecorator() override;
 };
 
 /*
@@ -258,12 +257,12 @@ public:
      *                               label. IMPORTANT: y2 shall be larger than y1
      *  Input:         label_p,        Character string (0 as EOL not needed)
      *  Input:         labelLength     Number of characters in the label_p string. Length doesn't include any 0 as EOL
-     *  Input:         colorRGB        The color to fill the box with, specified in RBG (use Q_RGB macro), -1 to use
+     *  Input:         colorRGB        The color to fill the box with, specified in RBG (use Q_RGB macro), 0 to use
      *                               legend color
      *  Returns:       lifeLine_h      A handle to a lifeLine that shall typically be supplied in many of the
      *                               CSequenceDiagram functions to add graphical objects
      */
-    lifeLine_h AddLifeLine(double y1, double y2, const char *label_p, int labelLength, int colorRGB);
+    lifeLine_h AddLifeLine(double y1, double y2, const char *label_p, int labelLength, Q_COLORREF colorRGB);
 
     /* Function: AddMessage
      *  Description: This function adds a message from lifeLine1 to lifeLine2, it will result in a line with open arrow
@@ -277,10 +276,10 @@ public:
      *                                 y-led where a corner of the execution box would be added
      */
     bool AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row, int labelIndex,
-                    int colorRGB, bool synched = false, bool startsExecution = false);
+                    Q_COLORREF colorRGB, bool synched = false, bool startsExecution = false);
 
     bool AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row, const char *label_p,
-                    int labelLength, int colorRGB, bool synched = false, bool startsExecution = false);
+                    int labelLength, Q_COLORREF colorRGB, bool synched = false, bool startsExecution = false);
 
     /* Function: AddReturnMessage
      *  Description: This function adds a return message from lifeLine1 to lifeLine2, it will always result in a open
@@ -293,11 +292,12 @@ public:
      *                                 y-led where a corner of the execution box would be added
      */
     bool AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
-                          int labelIndex, int colorRGB, bool fromExecution = false,
+                          int labelIndex, Q_COLORREF colorRGB, bool fromExecution = false,
                           bool startsExecution = false);
 
     bool AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row, const char *label_p,
-                          int labelLength, int colorRGB, bool fromExecution = false, bool startsExecution = false);
+                          int labelLength, Q_COLORREF colorRGB, bool fromExecution = false,
+                          bool startsExecution = false);
 
     /* Function: AddEvent
      *  Description: This is an event that occurs from a "life line" that doesn't exist in the graph. It will be drawn
@@ -309,10 +309,10 @@ public:
      *  Input:         startsExecution   If false, the line will be drawn to the life line, otherwise it will end in
      *                                 y-led where a corner of the execution box would be added
      */
-    bool AddEvent(lifeLine_h lifeLine, double x, int row, int labelIndex, int colorRGB,
+    bool AddEvent(lifeLine_h lifeLine, double x, int row, int labelIndex, Q_COLORREF colorRGB,
                   bool startsExecution = false);
     bool AddEvent(lifeLine_h lifeLine, double x, int row, const char *label_p, int labelLength,
-                  int colorRGB, bool startsExecution = false);
+                  Q_COLORREF colorRGB, bool startsExecution = false);
 
     /* Function: AddExecution
      *  Description: This displays a box on the life line, showing processing time. The height of the execution box will
@@ -323,16 +323,16 @@ public:
      *  Input:         lifeLine          Which lifeLine that shall be assigned the processing
      */
     bool AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, int labelIndex,
-                      int colorRGB);
+                      Q_COLORREF colorRGB);
     bool AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, const char *label_p,
-                      int labelLength, int colorRGB);
+                      int labelLength, Q_COLORREF colorRGB);
 
 protected:
     CSequenceDiagram() = delete;
 
     /*IMPORTANT: The dll_plugin shall NOT delete the CGraph* it got when doing AddGraph(...). This is done at every
      * re-run automatically by the framework*/
-    virtual ~CSequenceDiagram() {}
+    virtual ~CSequenceDiagram() override;
 
     CDecorator *m_decorator_p;
 };

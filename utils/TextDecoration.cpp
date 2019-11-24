@@ -309,7 +309,7 @@ bool CAutoHighLight::SearchAndUpdateNextAutoHighlight(const char *matchString_p,
     int size;
     QList<TextRectElement_t *> elementRefs;
 
-    SetAutoHighlight(MW_GetTick(), matchString_p, caseSensitive, regExp);
+    SetAutoHighlight(static_cast<uint64_t>(MW_GetTick()), matchString_p, caseSensitive, regExp);
     m_rowCache_p->Get(startSelection_p->row, &text_p, &size);
 
     CTextRectElementFactory factory(&m_autoHighlight_Pool);

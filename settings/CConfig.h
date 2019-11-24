@@ -172,7 +172,10 @@ typedef struct {
 
 #undef Q_RGB
 #define Q_RGB(R, G, B) (static_cast<QRgb>((R) << 16 | (G) << 8 | (B)))
-#define Q_COLORREF QRgb
+
+#ifndef Q_COLORREF
+ #define Q_COLORREF QRgb
+#endif
 
 typedef struct {
     QRgb color;
@@ -310,18 +313,14 @@ class CSCZ_CfgBase
 {
 public:
     CSCZ_CfgBase(QString *tag_p) : m_parseTag(*tag_p) {}
-    virtual ~CSCZ_CfgBase() {}
+    virtual ~CSCZ_CfgBase();
 
     /***********************************************************************************************************************
     *   WriteToFile
     *   @param textStream_p TODO
     *   @return TODO
     ***********************************************************************************************************************/
-    virtual bool WriteToFile(QTextStream *textStream_p) {
-        Q_UNUSED(textStream_p)
-        return true;
-    }
-
+    virtual bool WriteToFile(QTextStream *textStream_p) = 0;
     QString m_parseTag;
 };
 
@@ -335,9 +334,9 @@ public:
         m_name = *name_p;
         m_description = *description_p;
     }
-    virtual ~CSCZ_CfgSettingBase() {}
+    virtual ~CSCZ_CfgSettingBase() override;
 
-    virtual bool WriteToFile(QTextStream *textStream_p) = 0;
+    virtual bool WriteToFile(QTextStream *textStream_p) override = 0;
     virtual void RestoreDefaultValue(void) = 0;
     virtual bool isDefaultValue(void) = 0;
     virtual bool SetValue(QString *value_p) = 0;

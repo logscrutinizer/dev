@@ -37,6 +37,7 @@
 #define Y_B 0x08  /* Y bottom */
 #define X_C 0x10  /* X center  (in the middle/surface) */
 #define Y_C 0x20  /* Y center  (in the middle/surface) */
+#define ALL_CENTER (X_C | Y_C)
 
 typedef enum {
     PL_YT_XL_en = Y_T | X_L,
@@ -129,10 +130,10 @@ public:
     int m_numOfItems;
     displayItem_t *m_items_a;
     QPen *m_pen_p;
-    int m_color; /* Enumerated, may be overriden by m_overrideColor */
+    Q_COLORREF m_color; /* int m_color; / * Enumerated, may be overriden by m_overrideColor * / */
     GraphLinePattern_e m_pattern; /* Enumerated, may be overriden by m_overrideLinePattern */
     bool m_isOverrideColorSet; /* If the member m_overrideColor is set or not */
-    int m_overrideColor; /* 0 default */
+    Q_COLORREF m_overrideColor; /* 0 default */
     GraphLinePattern_e m_overrideLinePattern; /* GLP_NONE default */
 };
 
@@ -240,14 +241,13 @@ private:
     bool Intersection_LINE_Out2In(int *x_old_p, int *y_old_p, int x, int y);
 
     /* The two function Intersection_LINE_Out2In and Intersection_LINE_In2Out will determine how the intersection
-     * functions will be called, as
-     * the intersection needs to be against one of the axises. */
+     * functions will be called, as the intersection needs to be against one of the axises. */
 
-    bool Intersection_LINE_Out2In(int pl_1, int pl_2, /* POINT LOCATION - which square */
+    bool Intersection_LINE_Out2In(int pl_0, /* POINT LOCATION - which square the line starts in  */
                                   double *p0_x_p, double *p0_y_p, /* p0 is outside, need to be adjusted */
                                   double p1_x, double p1_y); /* p1 is inside */
 
-    bool Intersection_LINE_In2Out(int pl_0, int pl_1, /* POINT LOCATION - which square */
+    bool Intersection_LINE_In2Out(int pl_1, /* POINT LOCATION - which square the line ends in */
                                   double *p0_x_p, double *p0_y_p,   /* p0 is inside */
                                   double p1_x, double p1_y); /* p1 is outside, need to be adjusted */
 
@@ -255,18 +255,9 @@ private:
                            double p2_x, double p2_y, double p3_x, double p3_y, /* Line 2:   p2 -> p2 */
                            double *i_x, double *i_y); /* Intersection */
 
-    bool Intersection_BOX_Out2In(int pl_1,
-                                 int pl_2,
-                                 double *p0_x_p,
-                                 double *p0_y_p,
-                                 double p1_x,
-                                 double p1_y);
-    bool Intersection_BOX_In2Out(int pl_0,
-                                 int pl_1,
-                                 double *p0_x_p,
-                                 double *p0_y_p,
-                                 double p1_x,
-                                 double p1_y);
+    /* p0 -> p1 */
+    bool Intersection_BOX_Out2In(int pl_0, double *p0_x_p, double *p0_y_p);
+    bool Intersection_BOX_In2Out(int pl_1, double *p1_x_p, double *p1_y_p);
 
 public:
     QRect m_deactivedIconPos; /* when the subplot is deativated its icon is shown somewhere */

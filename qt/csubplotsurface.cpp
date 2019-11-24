@@ -62,7 +62,7 @@ typedef struct {
 } SetupGraph_Data_t;
 
 static SetupGraph_Data_t g_setupGraph_WorkData[MAX_NUM_OF_THREADS];
-void SetupGraph_ThreadAction(volatile void *data_p);
+void SetupGraph_ThreadAction(void *data_p);
 
 const QString g_avg_str("XXXXXXxxxxxZZZZzzzzz");   /* used to calculate size of text in a box/line */
 
@@ -1069,7 +1069,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
         while (graph_p != nullptr) {
             if (graph_p->isEnabled()) {
                 bool isOverrideColorSet;
-                int overrideColor;
+                Q_COLORREF overrideColor;
                 GraphLinePattern_e overrideLinePattern;
                 QRgb color;
 
@@ -1365,8 +1365,8 @@ void CSubPlotSurface::DrawGraphs(void)
         for (graphIndex = 0; graphIndex < numOfGraphs; ++graphIndex) {
             CDisplayGraph *dgraph_p = &m_displayGraphs_a[graphIndex];
             const int numOfItems = dgraph_p->m_numOfItems;
-            int color = 0;
-            int prevColor = 0;
+            Q_COLORREF color = 0;
+            Q_COLORREF prevColor = 0;
             GraphLinePattern_e pattern = GLP_NONE;
 
             if (dgraph_p->m_graph_p->isEnabled() && (numOfItems > 0)) {
@@ -1437,12 +1437,12 @@ void CSubPlotSurface::DrawGraphs(void)
                             /* LINE */
                             if ((properties & GRAPHICAL_OBJECT_KIND_LINE) == 0) {
                                 /* is a special line */
-                                int lineExColor =
+                                Q_COLORREF lineExColor =
                                     reinterpret_cast<GraphicalObject_Line_Ex_t *>(di_p->go_p)->lineColorRGB;
 
-                                /* User may specify -1 to have legend color */
-                                if ((lineExColor != -1) && (color != lineExColor)) {
-                                    selectedPen_p = GetUserDefinedPen(static_cast<QRgb>(lineExColor), pattern);
+                                /* User may specify 0 to have legend color */
+                                if ((lineExColor != 0) && (color != lineExColor)) {
+                                    selectedPen_p = GetUserDefinedPen(lineExColor, pattern);
                                     if (selectedPen_p != nullptr) {
                                         /* Necessary in-case label changed in previously */
                                         m_painter_p->setPen(*selectedPen_p);
@@ -1601,8 +1601,8 @@ void CSubPlotSurface::DrawGraphs(void)
                         } else {
                             /* BOX */
                             if ((properties & GRAPHICAL_OBJECT_KIND_BOX) == 0) {
-                                if (reinterpret_cast<GraphicalObject_Box_Ex_t *>(di_p->go_p)->fillColorRGB != -1) {
-                                    /* User may speficy -1 to have legend color */
+                                if (reinterpret_cast<GraphicalObject_Box_Ex_t *>(di_p->go_p)->fillColorRGB != 0) {
+                                    /* User may speficy 0 to have legend color */
                                     color = reinterpret_cast<GraphicalObject_Box_Ex_t *>(di_p->go_p)->fillColorRGB;
                                 }
                             }
@@ -1940,9 +1940,9 @@ void CSubPlotSurface::DrawDecorators(bool over)
 
 /***********************************************************************************************************************
 *   Intersection_LINE_Out2In
+*   Calculates where the line first is visible going into the visible area, and update/move the point to that place
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_p,
-                                               double *p0_y_p, double p1_x, double p1_y)
+bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, double *p0_x_p, double *p0_y_p, double p1_x, double p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_min = m_surfaceZoom.x_min;
@@ -1952,9 +1952,9 @@ bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_
     double x_intersect;
     double y_intersect;
 
-    switch (pl_0)
+    switch (pl_0) /* (point location) */
     {
-        case PL_YT_XL_en: /* cross either Y_T or X_L */
+        case PL_YT_XL_en: /* cross either Y_T (y top) or X_L (x left) */
             /* Y_T,  check against top horizontal */
             if (!Intersection_LINE(x_min, y_max, x_max, y_max, *p0_x_p, *p0_y_p, p1_x, p1_y, &x_intersect,
                                    &y_intersect)) {
@@ -2001,7 +2001,6 @@ bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_
 
         case PL_YC_XC_en:
             return true;
-            break;
 
         case PL_YB_XC_en:
 
@@ -2028,9 +2027,9 @@ bool CSubPlotSurface::Intersection_LINE_Out2In(int pl_0, int pl_1, double *p0_x_
 
 /***********************************************************************************************************************
 *   Intersection_LINE_In2Out
+*   Calculate where the line ends going out of the visible area
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_LINE_In2Out(int pl_0, int pl_1, double *p0_x_p,
-                                               double *p0_y_p, double p1_x, double p1_y)
+bool CSubPlotSurface::Intersection_LINE_In2Out(int pl_1, double *p0_x_p, double *p0_y_p, double p1_x, double p1_y)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_min = m_surfaceZoom.x_min;
@@ -2125,10 +2124,10 @@ bool CSubPlotSurface::Intersection_LINE(
 
     double s1_x, s1_y, s2_x, s2_y;
 
-    s1_x = (double)(p1_x - p0_x);
-    s1_y = (double)(p1_y - p0_y);
-    s2_x = (double)(p3_x - p2_x);
-    s2_y = (double)(p3_y - p2_y);
+    s1_x = p1_x - p0_x;
+    s1_y = p1_y - p0_y;
+    s2_x = p3_x - p2_x;
+    s2_y = p3_y - p2_y;
 
     double s, t;
     s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / (-s2_x * s1_y + s1_x * s2_y);
@@ -2137,11 +2136,11 @@ bool CSubPlotSurface::Intersection_LINE(
     if ((s >= 0) && (s <= 1) && (t >= 0) && (t <= 1)) {
         /* Collision detected */
         if (i_x != nullptr) {
-            *i_x = p0_x + (double)(t * s1_x);
+            *i_x = p0_x + t * s1_x;
         }
 
         if (i_y != nullptr) {
-            *i_y = p0_y + (double)(t * s1_y);
+            *i_y = p0_y + t * s1_y;
         }
 
         return true;
@@ -2153,8 +2152,7 @@ bool CSubPlotSurface::Intersection_LINE(
 /***********************************************************************************************************************
 *   Intersection_BOX_Out2In
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, int pl_1,
-                                              double *p0_x_p, double *p0_y_p, double p1_x, double p1_y)
+bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, double *p0_x_p, double *p0_y_p)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_min = m_surfaceZoom.x_min;
@@ -2206,8 +2204,7 @@ bool CSubPlotSurface::Intersection_BOX_Out2In(int pl_0, int pl_1,
 /***********************************************************************************************************************
 *   Intersection_BOX_In2Out
 ***********************************************************************************************************************/
-bool CSubPlotSurface::Intersection_BOX_In2Out(int pl_0, int pl_1, double *p0_x_p,
-                                              double *p0_y_p, double p1_x, double p1_y)
+bool CSubPlotSurface::Intersection_BOX_In2Out(int pl_1, double *p1_x_p, double *p1_y_p)
 {
     /* NOTE:  This function checks against original values, and not the Y inverted window locations.  Y_T -> Y_MAX */
     const double x_max = m_surfaceZoom.x_max;
@@ -2220,25 +2217,25 @@ bool CSubPlotSurface::Intersection_BOX_In2Out(int pl_0, int pl_1, double *p0_x_p
     switch (pl_1)
     {
         case PL_YT_XC_en: /* crosses Y_T */
-            *p0_y_p = y_max;
+            *p1_y_p = y_max;
             break;
 
         case PL_YB_XC_en: /* crosses only Y_B */
-            *p0_y_p = y_min;
+            *p1_y_p = y_min;
             break;
 
         case PL_YB_XR_en:  /* cross either Y_B or X_R */
-            *p0_x_p = x_max;
-            *p0_y_p = y_min;
+            *p1_x_p = x_max;
+            *p1_y_p = y_min;
             break;
 
         case PL_YC_XR_en:  /* cross X_R */
-            *p0_x_p = x_max;
+            *p1_x_p = x_max;
             break;
 
         case PL_YT_XR_en:  /* crosses either Y_T or X_R */
-            *p0_x_p = x_max;
-            *p0_y_p = y_max;
+            *p1_x_p = x_max;
+            *p1_y_p = y_max;
             break;
 
         case PL_YC_XC_en:
@@ -2366,7 +2363,7 @@ void CSubPlotSurface::SetupGraphs(void)
 
 #ifdef _DEBUG
     double time = execTime.ms();
-    PRINT_SUBPLOTSURFACE("CSubPlotSurface::SetupGraphs  Time:%f", time);
+    PRINT_SUBPLOTSURFACE("CSubPlotSurface::SetupGraphs  Time:%f", time)
 #endif
 }
 
@@ -2396,23 +2393,24 @@ void CSubPlotSurface::SetupDecorators(void)
                         m_surfaceZoom.x_min + (m_surfaceZoom.x_max - m_surfaceZoom.x_min) * 0.1;
 
                     if (m_displayDecorator.m_items_a[itemIndex].properties & GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_STR) {
-                        GO_Label_t *label_p = &((GraphicalObject_LifeLine_Box_t *)
-                                                m_displayDecorator.m_items_a[itemIndex].go_p)->label;
+                        GO_Label_t *label_p =
+                            &(reinterpret_cast<GraphicalObject_LifeLine_Box_t *>
+                              (m_displayDecorator.m_items_a[itemIndex].go_p)->label);
                         int pix_length =
-                            (int)((double)label_p->labelKind.textLabel.length * m_avgPixPerLetter);
-                        pix_length = (int)((double)pix_length * 1.1);
+                            static_cast<int>(label_p->labelKind.textLabel.length * m_avgPixPerLetter);
+                        pix_length = static_cast<int>(pix_length * 1.1);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
                     } else if (m_displayDecorator.m_items_a[itemIndex].properties &
                                GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_INDEX) {
-                        GO_Label_t *label_p =
-                            &((GraphicalObject_LifeLine_Box_t *)m_displayDecorator.m_items_a[itemIndex].go_p)->label;
-                        int pix_length =
-                            (int)((double)(m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength)
-                                  * m_avgPixPerLetter);
+                        GO_Label_t *label_p = &(reinterpret_cast<GraphicalObject_LifeLine_Box_t *>
+                                                (m_displayDecorator.m_items_a[itemIndex].go_p)->label);
+                        int pix_length = static_cast<int>
+                                         (m_label_refs_a[label_p->labelKind.labelIndex]->m_labelLength *
+                                          m_avgPixPerLetter);
 
-                        pix_length = (int)((double)pix_length * 1.1);
+                        pix_length = static_cast<int>(pix_length * 1.1);
 
                         m_displayDecorator.m_items_a[itemIndex].go_p->x2 =
                             extents.x_min + m_unitsPerPixel_X * pix_length;
@@ -2431,9 +2429,9 @@ void CSubPlotSurface::SetupDecorators(void)
 /***********************************************************************************************************************
 *   SetupGraph_ThreadAction
 ***********************************************************************************************************************/
-void SetupGraph_ThreadAction(volatile void *data_p)
+void SetupGraph_ThreadAction(void *data_p)
 {
-    SetupGraph_Data_t *setupGraphData_p = (SetupGraph_Data_t *)data_p;
+    SetupGraph_Data_t *setupGraphData_p = reinterpret_cast<SetupGraph_Data_t *>(data_p);
 
     setupGraphData_p->subplotSurface_p->SetupGraph(setupGraphData_p->dgraph_p,
                                                    setupGraphData_p->startIndex,
@@ -2459,7 +2457,7 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
 
     const int stopIndex = cfgStopIndex;
 
-    PRINT_SUBPLOTSURFACE("SetupGraph start:%d stop:%d", cfgStartIndex, cfgStopIndex);
+    PRINT_SUBPLOTSURFACE("SetupGraph start:%d stop:%d", cfgStartIndex, cfgStopIndex)
 
     if (dgraph_p->m_graph_p->isEnabled() && (stopIndex > 0)) {
         /* Find first GO inside viewPort/surface */
@@ -2471,7 +2469,8 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
         for (objectIndex = cfgStartIndex; objectIndex <= stopIndex; ++objectIndex) {
             displayItem_t *di_p = &dgraph_p->m_items_a[objectIndex];
 
-            di_p->properties &= (int16_t) ~PROPERTIES_BITMASK_VISIBILITY_MASK;  /*clear the visibility bits */
+            /*clear the visibility bits */
+            di_p->properties &= static_cast<int16_t>(~PROPERTIES_BITMASK_VISIBILITY_MASK);
             GetPointLocation(di_p->go_p, &pl_1, &pl_2);
 
             /* if point 1 or 2 location is within the surface first point is found */
@@ -2487,21 +2486,25 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
 
         if (g_cfg_p->m_pluginDebugBitmask > 10) {
             TRACEX_I("Setting up graph:%s  GraphicalItems:%d->%d",
-                     dgraph_p->m_graph_p->GetName(), objectIndex, stopIndex);
+                     dgraph_p->m_graph_p->GetName(),
+                     objectIndex,
+                     stopIndex)
         }
 
         /* At this step the go_p points at the first graphical object which is the first that has one
          * x_coord within the window */
 
         for ( ; objectIndex <= stopIndex; ++objectIndex) {
-            const int ALL_CENTER = (X_C | Y_C);
             displayItem_t *di_p = &dgraph_p->m_items_a[objectIndex];
             GraphicalObject_t *go_p = di_p->go_p;
 
-            di_p->properties &= (int16_t) ~PROPERTIES_BITMASK_VISIBILITY_MASK;  /*clear the visibility bits */
+            /*clear the visibility bits */
+            di_p->properties &= static_cast<int16_t>(~PROPERTIES_BITMASK_VISIBILITY_MASK);
 
             GetPointLocation(go_p, &pl_1, &pl_2);
 
+            /* Move original values to temporary intersect values that might be updated depending if the
+             *  grapical object isn't fully visible.*/
             x1_intersect = go_p->x1;
             x2_intersect = go_p->x2;
             y1_intersect = go_p->y1;
@@ -2520,19 +2523,14 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
 
                 /* intersection */
 
-                bool outside_in = false;
-                bool inside_out = false;
-
                 if (((pl_1 & X_L) && (pl_2 & (X_C | X_R))) ||  /* Passes from left, to center or to right */
                     ((pl_1 & Y_T) && (pl_2 & (Y_C | Y_B))) ||  /* Passes from top, to center or bottom */
                     ((pl_1 & Y_B) && (pl_2 & (Y_C | Y_T)))) {
                     /* Passes from bottom, to center or top */
                     if (di_p->properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
-                        outside_in =
-                            Intersection_LINE_Out2In(pl_1, pl_2, &x1_intersect, &y1_intersect, go_p->x2, go_p->y2);
+                        Intersection_LINE_Out2In(pl_1, &x1_intersect, &y1_intersect, go_p->x2, go_p->y2);
                     } else {
-                        outside_in =
-                            Intersection_BOX_Out2In(pl_1, pl_2, &x1_intersect, &y1_intersect, go_p->x2, go_p->y2);
+                        Intersection_BOX_Out2In(pl_1, &x1_intersect, &y1_intersect);
                     }
                 }
 
@@ -2542,18 +2540,16 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
                     /* Passes from bottom or center, to top */
 
                     if (di_p->properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
-                        inside_out =
-                            Intersection_LINE_In2Out(pl_1, pl_2, &x2_intersect, &y2_intersect, go_p->x1, go_p->y1);
+                        Intersection_LINE_In2Out(pl_2, &x2_intersect, &y2_intersect, go_p->x1, go_p->y1);
                     } else {
-                        inside_out =
-                            Intersection_BOX_In2Out(pl_1, pl_2, &x2_intersect, &y2_intersect, go_p->x1, go_p->y1);
+                        Intersection_BOX_In2Out(pl_2, &x2_intersect, &y2_intersect);
                     }
                 }
-
-                /* This is a compiler warning fix, not sure what inside_out/outside_in was intended for. */
-                inside_out = inside_out;
-                outside_in = outside_in;
             }
+
+            /* Truncate the graphical objects to fit to the shown area
+             * If the graphical object is fully visible, or partly, draw it with the perhaps modified intersection
+             * values.  */
 
             if (di_p->properties & (PROPERTIES_BITMASK_VISIBLE_INTERSECT | PROPERTIES_BITMASK_VISIBLE)) {
                 di_p->x1_pix = m_viewPortRect.left() +
@@ -2620,8 +2616,9 @@ void CSubPlotSurface::SetupGraph(CDisplayGraph *dgraph_p, int cfgStartIndex, int
 
         for ( ; objectIndex <= stopIndex; ++objectIndex) {
             displayItem_t *di_p = &dgraph_p->m_items_a[objectIndex];
-            di_p->properties &= static_cast<int16_t>(~PROPERTIES_BITMASK_VISIBILITY_MASK);  /*clear the visibility bits
-                                                                                             * */
+
+            /*clear the visibility bits */
+            di_p->properties &= static_cast<int16_t>(~PROPERTIES_BITMASK_VISIBILITY_MASK);
         }
     }
 }
@@ -2705,7 +2702,7 @@ const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *r
             auto x1 = (x - di_p->x1_pix) * (x - di_p->x1_pix);
             auto y1 = (y - di_p->y1_pix) * (y - di_p->y1_pix);
 
-            if (*distance_p == sqrt((double)(x1 + y1))) {
+            if (almost_equal(*distance_p, sqrt(x1 + y1))) {
                 *time = di_p->go_p->x1;
                 *row_p = di_p->go_p->row;
             } else {
@@ -2715,7 +2712,7 @@ const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *r
 
 #ifdef _DEBUG
         PRINT_SUBPLOTSURFACE("CSubPlotSurface::GetCursorRow  %s  x:%d y:%d dist:%3.2 row:%d",
-                             m_subPlotTitle, point_p->x(), point_p->y(), *distance_p, *row_p);
+                             m_subPlotTitle, point_p->x(), point_p->y(), *distance_p, *row_p)
 #endif
         return di_p;
     }
@@ -2756,8 +2753,7 @@ bool CSubPlotSurface::GetClosestGraph(QPoint *point_p,
         }
 
         PRINT_SUBPLOTSURFACE("CSubPlotSurface::GetGraph  %s  x:%d y:%d dist:%3.2 row:%d",
-                             m_subPlotTitle, point_p->x(), point_p->y(), *distance_p,
-                             (*go_pp)->row);
+                             m_subPlotTitle, point_p->x(), point_p->y(), *distance_p, (*go_pp)->row)
 
         return true;
     }
@@ -2785,7 +2781,7 @@ bool CSubPlotSurface::GetClosestGraph(int row, CGraph_Internal **graph_pp, int *
     }
 
     PRINT_SUBPLOTSURFACE(QString("CSubPlotSurface::GetGraph  %1  row:%2 dist:%3")
-                             .arg(m_subPlotTitle).arg(row).arg(*distance_p));
+                             .arg(m_subPlotTitle).arg(row).arg(*distance_p))
     return true;
 }
 

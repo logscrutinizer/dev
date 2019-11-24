@@ -104,7 +104,7 @@ void CGraphicsSubplotSurface::Populate(void)
 
             const auto numOfItems = graph_p->GetNumOfObjects();
             bool isOverrideColorSet;
-            int overrideColor;
+            Q_COLORREF overrideColor;
             GraphLinePattern_e overrideLinePattern;
 
             graph_p->GetOverrides(&isOverrideColorSet, &overrideColor, &overrideLinePattern);

@@ -416,7 +416,7 @@ GraphicalObject_t *CGraph_Internal::GetNextGraphicalObject(void)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-void CGraph_Internal::GetOverrides(bool *isOverrideColorSet_p, int *overrideColor_p,
+void CGraph_Internal::GetOverrides(bool *isOverrideColorSet_p, Q_COLORREF *overrideColor_p,
                                    GraphLinePattern_e *m_overrideLinePattern_p)
 {
     *isOverrideColorSet_p = m_isOverrideColorSet;

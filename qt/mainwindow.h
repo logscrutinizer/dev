@@ -80,13 +80,13 @@ public:
     {
         static QSize windowSize;
         auto refreshEditorWindow = makeMyScopeGuard([&] () {
-            PRINT_SIZE(QString("Log sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+            PRINT_SIZE(QString("Log sizeHint %1,%2").arg(windowSize.width()).arg(windowSize.height()))
         });
         windowSize = QWidget::sizeHint();
 
         if (CSCZ_AdaptWindowSizes) {
             windowSize = m_adaptWindowSize;
-            PRINT_SIZE(QString("Log adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+            PRINT_SIZE(QString("Log adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
         }
 
         return windowSize;
@@ -152,13 +152,13 @@ public:
         static QSize windowSize = QSize();
         auto refreshEditorWindow = makeMyScopeGuard([&] () {
             PRINT_SIZE(QString("TabWidget sizeHint %1,%2 load:%3").arg(windowSize.width()).arg(windowSize.height())
-                           .arg(loadSettings));
+                           .arg(loadSettings))
             loadSettings = false;
         });
 
         if (CSCZ_AdaptWindowSizes) {
             windowSize = m_adaptWindowSize;
-            PRINT_SIZE(QString("TabWidget adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()));
+            PRINT_SIZE(QString("TabWidget adaptWindowSizes %1,%2").arg(windowSize.width()).arg(windowSize.height()))
         }
 
         return windowSize;
@@ -179,8 +179,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    virtual ~MainWindow() override;
 
     void getSettingKeys(QString& geo, QString& state) const;
 
@@ -258,7 +258,7 @@ public:
     virtual void changeEvent(QEvent *event) Q_DECL_OVERRIDE;
     virtual void keyPressEvent(QKeyEvent *e) Q_DECL_OVERRIDE;
     virtual bool event(QEvent *event) Q_DECL_OVERRIDE;
-    virtual QSize sizeHint() const;
+    virtual QSize sizeHint() const override;
     QTreeView *setupModelView(QWidget *parentWidget);
     CWorkspaceTreeView *m_treeView_p;
     CLogWindow *m_logWindow_p;

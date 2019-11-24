@@ -6,6 +6,18 @@
 #include "CParseTesting.h"
 
 /***********************************************************************************************************************
+*   BaseReset
+***********************************************************************************************************************/
+void CParseTest_Base::BaseReset(const char *testInput)
+{
+    m_setup = true;
+
+    m_parser.ResetParser();
+    m_parser.SetText(testInput, static_cast<int>(strlen(testInput)));
+    SAFE_STR_MEMCPY(m_testInput, MAX_TEST_STRING_LENGTH, testInput, strlen(testInput))
+}
+
+/***********************************************************************************************************************
 *   ParseTest
 ***********************************************************************************************************************/
 void CParseTesting::ParseTest(void)
@@ -87,7 +99,7 @@ void CParseTest_Extract::Execute(void)
     }
 
     if (strcmp(m_expectedResult, resultString) != 0) {
-        TRACEX_E("CParseTest_Extract::Execute  test ERROR  Expected:%s Result:%s", m_expectedResult, resultString);
+        TRACEX_E("CParseTest_Extract::Execute  test ERROR  Expected:%s Result:%s", m_expectedResult, resultString)
     }
 }
 
@@ -104,7 +116,7 @@ void CParseTest_Float::Execute(void)
 
     if (!almost_equal(value, m_expectedResult)) {
         TRACEX_E(QString("CParseTest_Float::Execute  test ERROR  Expected:%1 Result:%2")
-                     .arg(static_cast<double>(m_expectedResult), 'f').arg(static_cast<double>(value), 'f'));
+                     .arg(static_cast<double>(m_expectedResult), 'f').arg(static_cast<double>(value), 'f'))
     }
 }
 
@@ -120,7 +132,7 @@ void CParseTest_x64::Execute(void)
     m_parser.Parse_INT64(&value);
 
     if (value != m_expectedResult) {
-        TRACEX_E("CParseTest_x64::Execute  test ERROR  Expected:%f Result:%f \n", m_expectedResult, value);
+        TRACEX_E("CParseTest_x64::Execute  test ERROR  Expected:%f Result:%f \n", m_expectedResult, value)
     }
 }
 
@@ -136,6 +148,6 @@ void CParseTest_HexInt::Execute(void)
     m_parser.ParseHexInt(&value);
 
     if (value != m_expectedResult) {
-        TRACEX_E("CParseTest_HexInt::Execute  test ERROR  Expected:%f Result:%f \n", m_expectedResult, value);
+        TRACEX_E("CParseTest_HexInt::Execute  test ERROR  Expected:%f Result:%f \n", m_expectedResult, value)
     }
 }

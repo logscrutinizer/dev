@@ -145,7 +145,7 @@ void MainTest()
 
     TRACEX_I("\n\n----------- TestFiltering ----------\n\n\n")
 
-    (void)TestFiltering();
+        (void) TestFiltering();
 
     TRACEX_I(QString("TEST SUCCESS"))
 }
@@ -714,8 +714,7 @@ bool TestDocument()
 
     if (doc->m_database.FIRA.filterMatches != expected_matches) {
         TRACEX_E("TestDocument - Filtering failed, wrong match count %d %d\n",
-                 doc->m_database.FIRA.filterMatches,
-                 expected_matches);
+                 doc->m_database.FIRA.filterMatches, expected_matches)
     }
 
     doc->CleanDB();

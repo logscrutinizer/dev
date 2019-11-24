@@ -34,6 +34,14 @@
 
 extern char g_tempTraceString[TEMP_TRACE_STRING_SIZE];
 
+#ifndef Q_COLORREF
+ #define Q_COLORREF unsigned int
+#endif
+
+#ifndef Q_RGB
+ #define Q_RGB(R, G, B) (static_cast<Q_COLORREF>((R) << 16 | (G) << 8 | (B)))
+#endif
+
 /*
  * ----------------------------------------------------------------------------------------------------------------------
  * ---- Exported Functions
@@ -146,7 +154,7 @@ typedef struct
 typedef struct
 {
     GraphicalObject_t go;
-    int lineColorRGB; /* In-case LogScrutinizer should enumerate the colors */
+    Q_COLORREF lineColorRGB; /* In-case LogScrutinizer should enumerate the colors */
     double relative_X; /* 0.0, or in case the label should not be located in the middle of the line this parameter
                         *  shall be used to relatively offset.  0.1 means 10% from the left/start, and 0.6 means 60%
                         * from the left.. that is slightly offset from the middle. */
@@ -165,7 +173,7 @@ typedef struct
 {
     GraphicalObject_t go;
     int row2; /* As a box may come out of two rows */
-    int fillColorRGB; /* -"- -"-  Use Q_RGB(x,x,x) macro */
+    Q_COLORREF fillColorRGB; /* -"- -"-  Use Q_RGB(x,x,x) macro */
     GO_Label_t label; /* The label, must be placed last in the structure */
 }GraphicalObject_Box_Ex_t;
 
@@ -178,7 +186,7 @@ typedef struct
     double y_center;
     double y_execTop; /* Used to determine exec box size */
     double y_execBottom; /* Used to determine exec box size */
-    int fillColorRGB; /* -"- -"-  Use Q_RGB(x,x,x) macro */
+    Q_COLORREF fillColorRGB; /* -"- -"-  Use Q_RGB(x,x,x) macro */
     double relative_X; /* 0.0, or in case the label should not be located in the middle of
                         * the line this parameter shall be used to relatively offset */
     GO_Label_t label; /* The label, must be placed last in the structure */
@@ -188,7 +196,7 @@ typedef struct
 typedef struct
 {
     GraphicalObject_t go;
-    int lineColorRGB;     /* -"- -"-  Use Q_RGB(x,x,x) macro */
+    Q_COLORREF lineColorRGB;     /* -"- -"-  Use Q_RGB(x,x,x) macro */
     double relative_X;       /* 0.0, or in case the label should not be located in the middle of
                               * the line this parameter shall be used to relatively offset */
     GO_Label_t label;            /* The label, must be placed last in the structure */
@@ -525,7 +533,7 @@ public:
     int GetSubPlotID(void) {return m_subPlotID;}
     int GetNumOfObjects(void) {return m_numOfObjects;}
     void GetExtents(GraphicalObject_Extents_t *graphExtent_p) {*graphExtent_p = m_graphExtent;}
-    void GetOverrides(bool *isOverrideColorSet_p, int *overrideColor_p,
+    void GetOverrides(bool *isOverrideColorSet_p, Q_COLORREF *overrideColor_p,
                       GraphLinePattern_e *m_overrideLinePattern_p);
     void SetProperty(GraphProperty_e property) {m_property = property;}
 
@@ -556,7 +564,7 @@ protected:
     int m_id; /* This is a unique ID */
     bool m_enabled; /* Enable/disable presentation of this graph */
     bool m_isOverrideColorSet; /* If the member m_overrideColor is set or not */
-    int m_overrideColor; /* 0 default */
+    Q_COLORREF m_overrideColor; /* 0 default */
     GraphLinePattern_e m_overrideLinePattern; /* GLP_NONE default */
     GraphProperty_e m_property;
 };

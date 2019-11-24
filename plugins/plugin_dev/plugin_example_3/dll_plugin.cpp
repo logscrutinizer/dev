@@ -234,17 +234,6 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
 
                     /* Add the "same" line to all of the three graphs, however these lines will look differently.
                      * Lines added to: */
-
-                    /* Shown in 2nd sub-plot
-                     *  -  m_lines_a,                     will be color and pattern enumerated by logScrutinizer,
-                     *       m_lines_a[0]                  - uses dynamically added label string
-                     *       m_lines_a[1]                  - uses predefined label (index based) *//* Shown in 3rd
-                     * sub-plot
-                     *   m_graph_OverrideColor_1_p,  will have a preset color (but pattern enumerated by logScrutinizer)
-                     *   m_graph_OverrideColor_2_p,     -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-
-                     **//* Shown in 4th sub-plot
-                     *  m_graph_OverridePattern_1_p, will have a preset pattern (but color enumerated by logScrutinizer)
-                     *  m_graph_OverridePattern_2_p,  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"-  -"- */
                     if (index == 1) {
                         /* Add a line to the graph (x1,Y1) -> (x2,y2) */
 
@@ -283,7 +272,7 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                             (double)value,
                             rowIndex,
                             m_subPlot_Lines_labelIndex_0,
-                            -1,
+                            0, /* color is automatic */
                             0.5);
 
                         m_graph_OverrideColor_2_p->AddLine(

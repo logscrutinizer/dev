@@ -161,8 +161,8 @@ void CList_LSZ::DeleteAll(void)
  * */
 bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row)
 {
-    GraphicalObject_Line_t *newLine_p =
-        (GraphicalObject_Line_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_t));
+    auto *newLine_p =
+        reinterpret_cast<GraphicalObject_Line_t *>(m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_t)));
 
     if (newLine_p == nullptr) {
         ErrorHook("CGraph::AddLine failed, out of memory\n");
@@ -205,9 +205,9 @@ bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row)
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, const char *label_p,
-                     int labelLength, int lineColorRGB, double relative_X, int lineEnds)
+                     int labelLength, unsigned int lineColorRGB, double relative_X, int lineEnds)
 {
-    int totalObjectSize = sizeof(GraphicalObject_Line_Ex_t) + labelLength + 1;  /* +1 for EOL */
+    int totalObjectSize = static_cast<int>(sizeof(GraphicalObject_Line_Ex_t)) + labelLength + 1;  /* +1 for EOL */
     GraphicalObject_Line_Ex_t *newLine_p =
         reinterpret_cast<GraphicalObject_Line_Ex_t *>(m_byteStreamManager_p->AddBytes(totalObjectSize));
 
@@ -232,11 +232,11 @@ bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, const 
         x1 = temp;
     }
 
-    memset(newLine_p, 0, totalObjectSize);
+    memset(newLine_p, 0, static_cast<size_t>(totalObjectSize));
 
     GraphicalObject_t *go_p = &newLine_p->go;
 
-    go_p->properties = GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_STR | lineEnds;
+    go_p->properties = static_cast<int16_t>(GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_STR | lineEnds);
 
     go_p->x1 = x1;
     go_p->y1 = y1;
@@ -246,10 +246,10 @@ bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, const 
 
     newLine_p->lineColorRGB = lineColorRGB;
     newLine_p->relative_X = relative_X;
-    newLine_p->label.labelKind.textLabel.length = labelLength;
+    newLine_p->label.labelKind.textLabel.length = static_cast<uint8_t>(labelLength);
 
     if ((label_p != nullptr) && (labelLength > 0)) {
-        memcpy(&newLine_p->label.labelKind.textLabel.label_a, label_p, labelLength);
+        memcpy(&newLine_p->label.labelKind.textLabel.label_a, label_p, static_cast<size_t>(labelLength));
     }
 
     (&newLine_p->label.labelKind.textLabel.label_a)[labelLength] = 0;  /* Add EOL */
@@ -262,10 +262,10 @@ bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, const 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, int labelIndex,
-                     int lineColorRGB, double relative_X, int lineEnds)
+                     Q_COLORREF lineColorRGB, double relative_X, int lineEnds)
 {
-    GraphicalObject_Line_Ex_t *newLine_p =
-        (GraphicalObject_Line_Ex_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_Ex_t));
+    auto *newLine_p = reinterpret_cast<GraphicalObject_Line_Ex_t *>
+                      (m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Line_Ex_t)));
 
     if (newLine_p == nullptr) {
         ErrorHook("CGraph::AddLine_Ex failed, out of memory\n");
@@ -284,7 +284,7 @@ bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, int la
 
     GraphicalObject_t *go_p = &newLine_p->go;
 
-    go_p->properties = GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_INDEX | lineEnds;
+    go_p->properties = static_cast<int16_t>(GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_INDEX | lineEnds);
 
     go_p->x1 = x1;
     go_p->y1 = y1;
@@ -305,8 +305,8 @@ bool CGraph::AddLine(double x1, double y1, double x2, double y2, int row, int la
  * */
 bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2)
 {
-    GraphicalObject_Box_t *newBox_p =
-        (GraphicalObject_Box_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_t));
+    auto *newBox_p = reinterpret_cast<GraphicalObject_Box_t *>
+                     (m_byteStreamManager_p->AddBytes(static_cast<int>(sizeof(GraphicalObject_Box_t))));
 
     if (newBox_p == nullptr) {
         ErrorHook("CGraph::AddBox failed, out of memory\n");
@@ -358,10 +358,10 @@ bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2, const char *label_p,
-                    int labelLength, int fillColorRGB)
+                    int labelLength, Q_COLORREF fillColorRGB)
 {
-    int totalObjectSize = sizeof(GraphicalObject_Box_Ex_t) + labelLength + 1; /* +1 for EOL */
-    GraphicalObject_Box_Ex_t *newBox_p = (GraphicalObject_Box_Ex_t *)m_byteStreamManager_p->AddBytes(totalObjectSize);
+    int totalObjectSize = static_cast<int>(sizeof(GraphicalObject_Box_Ex_t)) + labelLength + 1; /* +1 for EOL */
+    auto *newBox_p = reinterpret_cast<GraphicalObject_Box_Ex_t *>(m_byteStreamManager_p->AddBytes(totalObjectSize));
 
     if (newBox_p == nullptr) {
         ErrorHook("CGraph::AddBox failed, out of memory\n");
@@ -391,7 +391,7 @@ bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row
         ErrorHook("CGraph::AddBox failed, input parameter error\n");
     }
 
-    memset(newBox_p, 0, totalObjectSize);
+    memset(newBox_p, 0, static_cast<size_t>(totalObjectSize));
 
     GraphicalObject_t *go_p = &newBox_p->go;
 
@@ -405,9 +405,9 @@ bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row
     go_p->properties = GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_STR;
 
     newBox_p->fillColorRGB = fillColorRGB;
-    newBox_p->label.labelKind.textLabel.length = labelLength;
+    newBox_p->label.labelKind.textLabel.length = static_cast<uint8_t>(labelLength);
 
-    memcpy(&newBox_p->label.labelKind.textLabel.label_a, label_p, labelLength);
+    memcpy(&newBox_p->label.labelKind.textLabel.label_a, label_p, static_cast<size_t>(labelLength));
 
     (&newBox_p->label.labelKind.textLabel.label_a)[labelLength] = 0;  /* Add EOL */
 
@@ -418,10 +418,11 @@ bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2, int labelIndex, int fillColorRGB)
+bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row2, int labelIndex,
+                    Q_COLORREF fillColorRGB)
 {
-    GraphicalObject_Box_Ex_t *newBox_p =
-        (GraphicalObject_Box_Ex_t *)m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_Ex_t));
+    auto *newBox_p =
+        reinterpret_cast<GraphicalObject_Box_Ex_t *>(m_byteStreamManager_p->AddBytes(sizeof(GraphicalObject_Box_Ex_t)));
 
     if (newBox_p == nullptr) {
         ErrorHook("CGraph::AddBox failed, out of memory\n");
@@ -474,7 +475,7 @@ bool CGraph::AddBox(double x1, double y1, int row, double x2, double y2, int row
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-void CGraph::SetGraphColor(int colorRGB)
+void CGraph::SetGraphColor(Q_COLORREF colorRGB)
 {
     m_isOverrideColorSet = true;
     m_overrideColor = colorRGB;
@@ -490,20 +491,21 @@ void CGraph::SetLinePattern(GraphLinePattern_e pattern)
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label_p, int labelLength,
-                                         int colorRGB)
+                                         Q_COLORREF colorRGB)
 {
     /* 1. Add the life line box
      * 2. Add the life line line */
 
-    int totalObjectSize = sizeof(GraphicalObject_LifeLine_Box_t) + labelLength + 1; /*+1 EOL */
+    int totalObjectSize = static_cast<int>(sizeof(GraphicalObject_LifeLine_Box_t)) + labelLength + 1; /*+1 EOL */
 
     /* Add the lifeline box in the m_decorator member */
-    GraphicalObject_LifeLine_Box_t *newLifeLine_Box_p =
-        (GraphicalObject_LifeLine_Box_t *)m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize);
+    auto *newLifeLine_Box_p =
+        reinterpret_cast<GraphicalObject_LifeLine_Box_t *>
+        (m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize));
 
     if (newLifeLine_Box_p == nullptr) {
         ErrorHook("CSequenceDiagram::AddLifeLine Box failed, out of memory\n");
-        return (lifeLine_h)nullptr;
+        return nullptr;
     }
 
 #ifdef _DEBUG
@@ -516,7 +518,7 @@ lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label
     }
 #endif
 
-    memset(newLifeLine_Box_p, 0, totalObjectSize);
+    memset(newLifeLine_Box_p, 0, static_cast<size_t>(totalObjectSize));
 
     GraphicalObject_t *go_p = &newLifeLine_Box_p->go;
 
@@ -535,26 +537,26 @@ lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label
     go_p->properties = GRAPHICAL_OBJECT_KIND_DECORATOR_LIFELINE | GRAPHICAL_OBJECT_KIND_BOX_EX_LABEL_STR;
 
     newLifeLine_Box_p->fillColorRGB = colorRGB;
-    newLifeLine_Box_p->label.labelKind.textLabel.length = labelLength;
+    newLifeLine_Box_p->label.labelKind.textLabel.length = static_cast<uint8_t>(labelLength);
 
-    memcpy(&newLifeLine_Box_p->label.labelKind.textLabel.label_a, label_p, labelLength);
+    memcpy(&newLifeLine_Box_p->label.labelKind.textLabel.label_a, label_p, static_cast<size_t>(labelLength));
 
     ++m_decorator_p->m_numOfObjects;
 
     /* 2. Add the life line line */
 
-    totalObjectSize = sizeof(GraphicalObject_LifeLine_Line_t) + labelLength;
+    totalObjectSize = static_cast<int>(sizeof(GraphicalObject_LifeLine_Line_t)) + labelLength;
 
     /* Add the lifeline box in the m_decorator member */
-    GraphicalObject_LifeLine_Line_t *newLifeLine_Line_p =
-        (GraphicalObject_LifeLine_Line_t *)m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize);
+    auto *newLifeLine_Line_p = reinterpret_cast<GraphicalObject_LifeLine_Line_t *>
+                               (m_decorator_p->m_byteStreamManager_p->AddBytes(totalObjectSize));
 
     if (newLifeLine_Line_p == nullptr) {
         ErrorHook("CSequenceDiagram::AddLifeLine Line failed, out of memory\n");
-        return (lifeLine_h)nullptr;
+        return nullptr;
     }
 
-    memset(newLifeLine_Line_p, 0, totalObjectSize);
+    memset(newLifeLine_Line_p, 0, static_cast<size_t>(totalObjectSize));
 
     go_p = &newLifeLine_Line_p->go;
 
@@ -567,26 +569,24 @@ lifeLine_h CSequenceDiagram::AddLifeLine(double y1, double y2, const char *label
     go_p->properties = GRAPHICAL_OBJECT_KIND_DECORATOR_LIFELINE | GRAPHICAL_OBJECT_KIND_LINE_EX_LABEL_STR;
 
     newLifeLine_Line_p->lineColorRGB = colorRGB;
-    newLifeLine_Line_p->label.labelKind.textLabel.length = labelLength;
+    newLifeLine_Line_p->label.labelKind.textLabel.length = static_cast<uint8_t>(labelLength);
     newLifeLine_Line_p->relative_X = 0.2;         /* 20% in on the line */
 
-    memcpy(&newLifeLine_Line_p->label.labelKind.textLabel.label_a, label_p, labelLength);
+    memcpy(&newLifeLine_Line_p->label.labelKind.textLabel.label_a, label_p, static_cast<size_t>(labelLength));
     (&newLifeLine_Line_p->label.labelKind.textLabel.label_a)[labelLength] = 0;
 
     ++m_decorator_p->m_numOfObjects;
 
-    return ((lifeLine_h)newLifeLine_Box_p);
+    return reinterpret_cast<lifeLine_h>(newLifeLine_Box_p);
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
-                                  int labelIndex, int colorRGB, bool synched, bool startsExecution)
+                                  int labelIndex, Q_COLORREF colorRGB, bool synched, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine1_p =
-        (GraphicalObject_LifeLine_Box_t *)lifeLine1;
-    GraphicalObject_LifeLine_Box_t *lifeLine2_p =
-        (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    auto *lifeLine1_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine1);
+    auto *lifeLine2_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine2);
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
 
     if (synched) {
@@ -610,8 +610,7 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
         }
     }
 
-    AddLine(x, lifeLine1_p->y_center, x, y_dest, row, labelIndex,
-            colorRGB, 0.5, lineEnds);
+    AddLine(x, lifeLine1_p->y_center, x, y_dest, row, labelIndex, colorRGB, 0.5, lineEnds);
 
     return true;
 }
@@ -619,11 +618,11 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
-                                  const char *label_p, int labelLength, int colorRGB, bool synched,
+                                  const char *label_p, int labelLength, Q_COLORREF colorRGB, bool synched,
                                   bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
-    GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    auto *lifeLine1_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine1);
+    auto *lifeLine2_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine2);
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
 
     if (synched) {
@@ -650,10 +649,10 @@ bool CSequenceDiagram::AddMessage(lifeLine_h lifeLine1, double x, lifeLine_h lif
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
-                                        int labelIndex, int colorRGB, bool fromExecution, bool startsExecution)
+                                        int labelIndex, Q_COLORREF colorRGB, bool fromExecution, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
-    GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    auto *lifeLine1_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine1);
+    auto *lifeLine2_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine2);
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     double y_src = lifeLine1_p->y_center;
     double y_dest = lifeLine2_p->y_center;
@@ -683,11 +682,11 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine_h lifeLine2, int row,
-                                        const char *label_p, int labelLength, int colorRGB,
+                                        const char *label_p, int labelLength, Q_COLORREF colorRGB,
                                         bool fromExecution, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine1_p = (GraphicalObject_LifeLine_Box_t *)lifeLine1;
-    GraphicalObject_LifeLine_Box_t *lifeLine2_p = (GraphicalObject_LifeLine_Box_t *)lifeLine2;
+    auto *lifeLine1_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine1);
+    auto *lifeLine2_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine2);
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     double y_src = lifeLine1_p->y_center;
     double y_dest = lifeLine2_p->y_center;
@@ -717,13 +716,17 @@ bool CSequenceDiagram::AddReturnMessage(lifeLine_h lifeLine1, double x, lifeLine
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, int labelIndex,
-                                int colorRGB, bool startsExecution)
+                                Q_COLORREF colorRGB, bool startsExecution /*TODO*/)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
+    auto *lifeLine_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine);
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     const double start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
-    AddLine(x, start, x, lifeLine_p->y_center, row, labelIndex, colorRGB, 0.5, lineEnds);
+    if (startsExecution) {
+        AddLine(x, start, x, lifeLine_p->y_center, row, labelIndex, colorRGB, 0.5, lineEnds);
+    } else {
+        AddLine(x, start, x, lifeLine_p->y_execBottom, row, labelIndex, colorRGB, 0.5, lineEnds);
+    }
 
     return true;
 }
@@ -731,39 +734,55 @@ bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, int labe
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddEvent(lifeLine_h lifeLine, double x, int row, const char *label_p,
-                                int labelLength, int colorRGB, bool startsExecution)
+                                int labelLength, Q_COLORREF colorRGB, bool startsExecution)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
+    auto *lifeLine_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine);
     Object_Properties_Bitmask_t lineEnds = PROPERTIES_BITMASK_LINE_ARROW_OPEN_END;
     const double start = lifeLine_p->go.y2 + (lifeLine_p->go.y2 - lifeLine_p->y_center);
 
-    AddLine(x, start, x, lifeLine_p->y_center, row, label_p, labelLength, colorRGB, 0.5, lineEnds);
+    if (startsExecution) {
+        AddLine(x, start, x, lifeLine_p->y_center, row, label_p, labelLength, colorRGB, 0.5, lineEnds);
+    } else {
+        AddLine(x, start, x, lifeLine_p->y_execBottom, row, label_p, labelLength, colorRGB, 0.5, lineEnds);
+    }
 
     return true;
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, int labelIndex, int colorRGB)
+bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, int labelIndex,
+                                    Q_COLORREF colorRGB)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
-
+    auto *lifeLine_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine);
     AddBox(x1, lifeLine_p->y_execBottom, row, x2, lifeLine_p->y_execTop, row, labelIndex, colorRGB);
-
     return true;
 }
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
 bool CSequenceDiagram::AddExecution(lifeLine_h lifeLine, double x1, double x2, int row, const char *label_p,
-                                    int labelLength, int colorRGB)
+                                    int labelLength, Q_COLORREF colorRGB)
 {
-    GraphicalObject_LifeLine_Box_t *lifeLine_p = (GraphicalObject_LifeLine_Box_t *)lifeLine;
-
+    auto *lifeLine_p = reinterpret_cast<GraphicalObject_LifeLine_Box_t *>(lifeLine);
     AddBox(x1, lifeLine_p->y_execBottom, row, x2, lifeLine_p->y_execTop, row, label_p, labelLength, colorRGB);
-
     return true;
 }
+
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+CGraph::~CGraph()
+{}
+
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+CDecorator::~CDecorator()
+{}
+
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+CSequenceDiagram::~CSequenceDiagram()
+{}
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
