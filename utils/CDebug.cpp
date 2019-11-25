@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
-** Copyright (C) 2018 Robert Klang
+** Copyright (C) 2019 Robert Klang
 ** Contact: https://www.logscrutinizer.com
 ***********************************************************************************************************************/
 
@@ -445,8 +445,9 @@ void CRamLog::UnregisterThread(void)
     tls_data_t *tls_data_p = static_cast<tls_data_t *>(tls_data.localData());
     ramLogData_t *ramLog_p = tls_data_p->ramLogData_p;
 
-    if (m_cleanUpDone)
+    if (m_cleanUpDone) {
         return;
+    }
 
     if (ramLog_p != nullptr) {
         QMutexLocker ml(&m_mutex);  /* when ml passes its scope the mutex will automatically be freed */
