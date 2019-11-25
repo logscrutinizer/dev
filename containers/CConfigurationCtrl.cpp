@@ -573,14 +573,14 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
     }
 
     DLL_API_GetPluginAPIVersion_t DLL_API_GetPluginAPIVersion =
-        reinterpret_cast<DLL_API_GetPluginAPIVersion_t>(library_p->resolve(__DLL_API_GetPluginAPIVersion__));
+        reinterpret_cast<DLL_API_GetPluginAPIVersion_t>(library_p->resolve(DLL_API_GET_PLUGIN_API_VERSION));
     if (DLL_API_GetPluginAPIVersion != nullptr) {
         DLL_API_GetPluginAPIVersion(&DLL_API_Version);
     } else {
         QString title(tr("Plugin load failed"));
         QString description = tr(
             "Could not find {%1} in library {%2}, the library is probarbly not a valid LogScrutinizer plugin").arg(
-            __DLL_API_GetPluginAPIVersion__).arg(absoluteFileName);
+            DLL_API_GET_PLUGIN_API_VERSION).arg(absoluteFileName);
         TRACEX_W(description)
 
         QMessageBox msgBox(QMessageBox::Critical, title, description, QMessageBox::Ok);
@@ -593,7 +593,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
 
     if (DLL_API_Version.version == DLL_API_VERSION) {
         DLL_API_SetAttachConfiguration_t DLL_API_SetAttachConfiguration =
-            reinterpret_cast<DLL_API_SetAttachConfiguration_t>(library_p->resolve(__DLL_API_SetAttachConfiguration__));
+            reinterpret_cast<DLL_API_SetAttachConfiguration_t>(library_p->resolve(DLL_API_SET_ATTACH_CONFIGURATION));
 
         if (DLL_API_SetAttachConfiguration != nullptr) {
             DLL_API_AttachConfiguration_t attachConfiguration;
@@ -612,7 +612,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
         }
 
         DLL_API_CreatePlugin_t DLL_API_CreatePlugin =
-            reinterpret_cast<DLL_API_CreatePlugin_t>(library_p->resolve(__DLL_API_CreatePlugin__));
+            reinterpret_cast<DLL_API_CreatePlugin_t>(library_p->resolve(DLL_API_CREATE_PLUGIN));
 
         if (DLL_API_CreatePlugin != nullptr) {
             pluginAPI_p = DLL_API_CreatePlugin();

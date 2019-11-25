@@ -10,12 +10,6 @@
  * ----------------------------------------------------------------------------------------------------------------------
  * */
 
-/*
- * ----------------------------------------------------------------------------------------------------------------------
- * Include files
- * ----------------------------------------------------------------------------------------------------------------------
- * */
-
 #include "plugin_api.h"
 #include "plugin_utils.h"
 #include "plugin_utils_internal.h"
@@ -62,10 +56,10 @@ void CPlot_Internal::PlotClean(void)
     pvPlotClean();
 
     /* Keep the registered sub-plots however clean/reset their contents */
-    CSubPlot *subPlot_p = (CSubPlot *)m_subPlots.first();
+    CSubPlot *subPlot_p = reinterpret_cast<CSubPlot *>(m_subPlots.first());
     while (subPlot_p != nullptr) {
         subPlot_p->Clean();
-        subPlot_p = (CSubPlot *)m_subPlots.GetNext((CListObject *)subPlot_p);
+        subPlot_p = reinterpret_cast<CSubPlot *>(m_subPlots.GetNext(subPlot_p));
     }
 }
 
@@ -73,7 +67,7 @@ void CPlot_Internal::PlotClean(void)
  * */
 void CPlot_Internal::PlotEnd(void)
 {
-    CSubPlot *subPlot_p = (CSubPlot *)m_subPlots.first();
+    CSubPlot *subPlot_p = reinterpret_cast<CSubPlot *>(m_subPlots.first());
 
     pvPlotEnd();
 
@@ -101,8 +95,7 @@ void CPlot_Internal::PlotEnd(void)
                 }
 
                 double x_width = extents.x_max - extents.x_min;
-                double x_lifeline_width = x_width * 0.1;  /* 10% of the total width is devoted to the lifeline objects
-                                                           * */
+                double x_lifeline_width = x_width * 0.1;  /*10% of the total width is devoted to the lifeline objects*/
 
                 extents.x_min -= x_lifeline_width;
 
@@ -126,6 +119,6 @@ void CPlot_Internal::PlotEnd(void)
             }
         }
 
-        subPlot_p = (CSubPlot *)m_subPlots.GetNext((CListObject *)subPlot_p);
+        subPlot_p = reinterpret_cast<CSubPlot *>(m_subPlots.GetNext(subPlot_p));
     } /* while subPlots */
 }

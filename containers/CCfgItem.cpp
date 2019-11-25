@@ -1010,7 +1010,7 @@ void CCfgItem_Plugin::PrepareDelete(void)
                                                                                            * dll_api_v1.cpp */
 
     QT_LIB_API_DeletePlugin_t DLL_API_DeletePlugin =
-        reinterpret_cast<QT_LIB_API_DeletePlugin_t>(m_library_p->resolve(__DLL_API_DeletePlugin__));
+        reinterpret_cast<QT_LIB_API_DeletePlugin_t>(m_library_p->resolve(DLL_API_DELETE_PLUGIN));
 
     if (DLL_API_DeletePlugin != nullptr) {
         DLL_API_DeletePlugin(m_dll_api_p);

@@ -4,7 +4,9 @@
 ***********************************************************************************************************************/
 
 #ifndef PLUGIN_API_H
-#define PLUGIN_API_H
+ #define PLUGIN_API_H
+
+/* #CRUSTI-OFF# */
 
 /* ----------------------------------------------------------------------------------------------------------------------
  * File: plugin_api.h
@@ -35,7 +37,7 @@
  *              The function GetPluginAPIVersion will remain unchanged through all
  *              API changes. This function is implemented in the plugin framework and responds with DLL_API_VERSION */
 
-#define __DLL_API_GetPluginAPIVersion__  "DLL_API_GetPluginAPIVersion"
+#define DLL_API_GET_PLUGIN_API_VERSION  "DLL_API_GetPluginAPIVersion"
 
 typedef int (*DLL_API_GetPluginAPIVersion_t)(DLL_API_PluginVersion_t *);         /* Implemented in dll_api_v1.cpp */
 
@@ -44,7 +46,7 @@ typedef int (*DLL_API_GetPluginAPIVersion_t)(DLL_API_PluginVersion_t *);        
  *
  * Description: This function setup attach configuration, such as logging and command channels */
 
-#define __DLL_API_SetAttachConfiguration__  "DLL_API_SetAttachConfiguration"
+#define DLL_API_SET_ATTACH_CONFIGURATION  "DLL_API_SetAttachConfiguration"
 
 typedef void (*DLL_API_SetAttachConfiguration_t)(DLL_API_AttachConfiguration_t *);         /* Implemented in
                                                                                             * dll_api_v1.cpp */
@@ -56,7 +58,7 @@ typedef void (*DLL_API_SetAttachConfiguration_t)(DLL_API_AttachConfiguration_t *
  *              Calls the factory function DLL_API_Factory(...), which must be implemented by the sub-classed dll
  * plugin. */
 
-#define __DLL_API_CreatePlugin__  "DLL_API_CreatePlugin"
+#define DLL_API_CREATE_PLUGIN  "DLL_API_CreatePlugin"
 
 typedef CPlugin_DLL_API * (*DLL_API_CreatePlugin_t)(void);                 /* Implemented in dll_api_v1.cpp */
 
@@ -65,7 +67,7 @@ typedef CPlugin_DLL_API * (*DLL_API_CreatePlugin_t)(void);                 /* Im
  *
  * Description: Triggers the destructor of the sub-classed dll plugin. */
 
-#define __DLL_API_DeletePlugin__  "DLL_API_DeletePlugin"
+#define DLL_API_DELETE_PLUGIN  "DLL_API_DeletePlugin"
 
 typedef void (*DLL_API_DeletePlugin_t)(CPlugin_DLL_API *plugIn_p);        /* Implemented in dll_api_v1.cpp */
 

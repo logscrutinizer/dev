@@ -60,7 +60,7 @@ bool CTextParser::ParseInt(int *value_p)
     const char *loopTextEnd_p = &m_text_p[m_textLength];
     const char *startpoint_p = loopText_p;
 
-    while (loopText_p < loopTextEnd_p && !isDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && !isDigit(static_cast<uint8_t>(*loopText_p))) {
         ++loopText_p;
     }
 
@@ -69,15 +69,15 @@ bool CTextParser::ParseInt(int *value_p)
     }
 
     int index = 0;
-    while (loopText_p < loopTextEnd_p && index < (MAX_INT_STRING - 1) && isDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && index < (MAX_INT_STRING - 1) && isDigit(static_cast<uint8_t>(*loopText_p))) {
         value[index] = *loopText_p;
         ++loopText_p;
         ++index;
     }
 
-    m_parseIndex += (int)(loopText_p - startpoint_p);
+    m_parseIndex += static_cast<int>(loopText_p - startpoint_p);
     value[index] = 0;
-    *value_p = strtol(value, nullptr, 10);
+    *value_p = static_cast<int>(strtol(value, nullptr, 10));
 
     return true;
 }
@@ -106,7 +106,7 @@ bool CTextParser::ParseHexInt(unsigned long *value_p)
         ++index;
     }
 
-    m_parseIndex += (int)(loopText_p - startpoint_p);
+    m_parseIndex += static_cast<int>(loopText_p - startpoint_p);
     value[index] = 0;
     *value_p = strtoul(value, nullptr, 16);
 
@@ -124,7 +124,7 @@ bool CTextParser::Parse_INT64(int64_t *value_p)
     const char *loopTextEnd_p = &m_text_p[m_textLength];
     const char *startpoint_p = loopText_p;
 
-    while (loopText_p < loopTextEnd_p && !isDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && !isDigit(static_cast<uint8_t>(*loopText_p))) {
         ++loopText_p;
     }
 
@@ -133,13 +133,13 @@ bool CTextParser::Parse_INT64(int64_t *value_p)
     }
 
     int index = 0;
-    while (loopText_p < loopTextEnd_p && index < (MAX_INT64_STRING - 1) && isDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && index < (MAX_INT64_STRING - 1) && isDigit(static_cast<uint8_t>(*loopText_p))) {
         value[index] = *loopText_p;
         ++loopText_p;
         ++index;
     }
 
-    m_parseIndex += (int)(loopText_p - startpoint_p);
+    m_parseIndex += static_cast<int>(loopText_p - startpoint_p);
 
     value[index] = 0;
 
@@ -161,7 +161,7 @@ bool CTextParser::ParseDouble(double *value_p)
     const char *loopTextEnd_p = &m_text_p[m_textLength];
     const char *startpoint_p = loopText_p;
 
-    while (loopText_p < loopTextEnd_p && !isDoubleDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && !isDoubleDigit(static_cast<uint8_t>(*loopText_p))) {
         ++loopText_p;
     }
 
@@ -170,13 +170,14 @@ bool CTextParser::ParseDouble(double *value_p)
     }
 
     int index = 0;
-    while (loopText_p < loopTextEnd_p && index < (MAX_INT64_STRING - 1) && isDoubleDigit(*loopText_p)) {
+    while (loopText_p < loopTextEnd_p && index < (MAX_INT64_STRING - 1) &&
+           isDoubleDigit(static_cast<uint8_t>(*loopText_p))) {
         value[index] = *loopText_p;
         ++loopText_p;
         ++index;
     }
 
-    m_parseIndex += (int)(loopText_p - startpoint_p);
+    m_parseIndex += static_cast<int>(loopText_p - startpoint_p);
     value[index] = 0;
 
 #ifdef _WIN32  /* LINUX_TODO */
@@ -202,7 +203,7 @@ void CTextParser::Extract(int startIndex, int endIndex, char *value_p)
     }
 #endif
 
-    memcpy(value_p, &m_text_p[startIndex], endIndex - startIndex + 1);
+    memcpy(value_p, &m_text_p[startIndex], static_cast<size_t>(endIndex - startIndex + 1));
     value_p[endIndex - startIndex + 1] = 0;
 }
 
@@ -213,7 +214,7 @@ bool CTextParser::Search(const char *match_p, int matchLength, int limitSearchOf
     int textLength;
 
 #ifdef _DEBUG
-    if ((match_p == nullptr) || (matchLength == 0) || (m_textLength == 0) || (m_text_p == 0)) {
+    if ((match_p == nullptr) || (matchLength == 0) || (m_textLength == 0) || (m_text_p == nullptr)) {
         ErrorHook("CTextParser::Extract  Bad input parameters\n");
         return false;
     }

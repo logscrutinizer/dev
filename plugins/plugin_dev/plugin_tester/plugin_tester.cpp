@@ -110,21 +110,21 @@ int main(int argc, char *argv[])
         }
 
         DLL_API_GetPluginAPIVersion_t DLL_API_GetPluginAPIVersion =
-            reinterpret_cast<DLL_API_GetPluginAPIVersion_t>(library_p->resolve(__DLL_API_GetPluginAPIVersion__));
+            reinterpret_cast<DLL_API_GetPluginAPIVersion_t>(library_p->resolve(DLL_API_GET_PLUGIN_API_VERSION));
 
         if (DLL_API_GetPluginAPIVersion != nullptr) {
             DLL_API_GetPluginAPIVersion(&DLL_API_Version);
         } else {
             qInfo() << QString("Error: Could not find {%1} in library {%2}, "
                                "the library is probarbly not a valid LogScrutinizer plugin")
-                .arg(__DLL_API_GetPluginAPIVersion__).arg(plugin_filePath);
+                .arg(DLL_API_GET_PLUGIN_API_VERSION).arg(plugin_filePath);
             throw(PLUGIN_VERSION_ASSERT); /* goto library_unload */
         }
 
         if (DLL_API_Version.version == DLL_API_VERSION) {
             DLL_API_SetAttachConfiguration_t DLL_API_SetAttachConfiguration =
                 reinterpret_cast<DLL_API_SetAttachConfiguration_t>
-                (library_p->resolve(__DLL_API_SetAttachConfiguration__));
+                (library_p->resolve(DLL_API_SET_ATTACH_CONFIGURATION));
 
             if (DLL_API_SetAttachConfiguration != nullptr) {
                 DLL_API_AttachConfiguration_t attachConfiguration;
@@ -133,18 +133,18 @@ int main(int argc, char *argv[])
             } else {
                 qInfo() << QString("Error: Could not find {%1} in library {%2}, the library is probarbly not a valid"
                                    "LogScrutinizer plugin")
-                    .arg(__DLL_API_SetAttachConfiguration__).arg(plugin_filePath);
+                    .arg(DLL_API_SET_ATTACH_CONFIGURATION).arg(plugin_filePath);
                 throw(PLUGIN_ATTACH_ASSERT); /*goto library_unload; */
             }
 
             DLL_API_CreatePlugin_t DLL_API_CreatePlugin =
-                reinterpret_cast<DLL_API_CreatePlugin_t>(library_p->resolve(__DLL_API_CreatePlugin__));
+                reinterpret_cast<DLL_API_CreatePlugin_t>(library_p->resolve(DLL_API_CREATE_PLUGIN));
             if (DLL_API_CreatePlugin != nullptr) {
                 pluginAPI_p = DLL_API_CreatePlugin();
             } else {
                 qInfo() << QString("Error: Could not find {%1} in library {%2}, the library is probarbly not a valid"
                                    "LogScrutinizer plugin")
-                    .arg(__DLL_API_CreatePlugin__).arg(plugin_filePath);
+                    .arg(DLL_API_CREATE_PLUGIN).arg(plugin_filePath);
                 throw(PLUGIN_CREATION_ASSERT); /*goto library_unload; */
             }
         } else {
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
             case PLUGIN_TEST_FAIL: /*fall-through */
             {
                 DLL_API_DeletePlugin_t DLL_API_DeletePlugin =
-                    reinterpret_cast<DLL_API_DeletePlugin_t>(library_p->resolve(__DLL_API_DeletePlugin__));
+                    reinterpret_cast<DLL_API_DeletePlugin_t>(library_p->resolve(DLL_API_DELETE_PLUGIN));
                 if ((nullptr != DLL_API_DeletePlugin) && (nullptr != pluginAPI_p)) {
                     DLL_API_DeletePlugin(pluginAPI_p);
                     pluginAPI_p = nullptr;
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
     /*-- Time to exit, unload -- */
 
     DLL_API_DeletePlugin_t DLL_API_DeletePlugin =
-        reinterpret_cast<DLL_API_DeletePlugin_t>(library_p->resolve(__DLL_API_DeletePlugin__));
+        reinterpret_cast<DLL_API_DeletePlugin_t>(library_p->resolve(DLL_API_DELETE_PLUGIN));
 
     if (DLL_API_DeletePlugin != nullptr) {
         DLL_API_DeletePlugin(pluginAPI_p);

@@ -74,7 +74,7 @@
 #define APP_VER_CODE_MINOR         0                          /* If 4: -> vx.4 */
 #define APP_VER_CODE_KIND          APP_VER_CODE_KIND_BETA     /* BETA, RC, */
 /* Patch, Final */
-#define APP_VER_CODE_SUB_VERSION   8                          /* If 1 : -> vx.x */
+#define APP_VER_CODE_SUB_VERSION   9                          /* If 1 : -> vx.x */
 
 /* B1  (for BETA),
  *  vx.x.1 (for

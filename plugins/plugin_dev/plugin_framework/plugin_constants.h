@@ -1,9 +1,16 @@
+/***********************************************************************************************************************
+** Copyright (C) 2018 Robert Klang
+** Contact: https://www.logscrutinizer.com
+***********************************************************************************************************************/
+
 #ifndef PLUGIN_CONSTANTS_H
-#define PLUGIN_CONSTANTS_H
+ #define PLUGIN_CONSTANTS_H
+
+/* #CRUSTI-OFF# */
 
 #include "plugin_constants_internal.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------*/
 // File: plugin_constants.h
 //
 // Description:
@@ -11,10 +18,10 @@
 //
 // IMPORTANT: DO NOT MODIFY THIS FILE
 //
-//----------------------------------------------------------------------------------------------------------------------
+/*--------------------------------------------------------------------------------------------------------------------*/
 
 #define DLL_API_VERSION_TXT "DLL_API_VERSION"
-#define DLL_API_VERSION  23 // Current version of the dll plugin framework. Checked by LogScrutinizer such that it has the same version
+#define DLL_API_VERSION  24 // Current version of the dll plugin framework. Checked by LogScrutinizer such that it has the same version
 
 // DLL_API_VERSION = 7 : v1.2.B4 Pre30
 // DLL_API_VERSION = 8 : v1.2.B4 Pre33
@@ -22,6 +29,7 @@
 // DLL_API_VERSION = 21 : First version based on Qt
 // DLL_API_VERSION = 22 : Removed match strings   v2.0.B2 build1
 // DLL_API_VERSION = 23 : Added painting v2.0.B4
+// DLL_API_VERSION = 24 : Unsigned and float removal, v2.0.B4
 
 #define PLUGIN_INFO_NAME_MAX_SIZE      256
 #define PLUGIN_INFO_VERSION_MAX_SIZE   256
@@ -69,6 +77,5 @@
 #define MAX_GRAPH_NAME_LENGTH                                       256
 
 #define GRAPHICAL_OBJECT_BOX_LABEL_SIZE                             32    // Maximum letters for the box label
-
 
 #endif

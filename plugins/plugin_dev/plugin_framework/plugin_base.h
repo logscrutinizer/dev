@@ -93,6 +93,8 @@ public:
         m_uniqueID = uniqueID;
     }
 
+    virtual ~CDecoder() override;
+
     /* Function:    pvDecode
      *  Description: Decode a single line. The implementation of this function shall return true if the input/output
      *             variable row_p was modified. Modify the text string directly, max total string length is
@@ -131,7 +133,7 @@ public:
     }
 
 private:
-    CDecoder();
+    CDecoder() = delete;
 
 protected:
     char m_matchString[MAX_STRING_LENGTH];
@@ -149,7 +151,7 @@ protected:
 class CPlot : public CPlot_Internal
 {
 public:
-    virtual ~CPlot() {}
+    virtual ~CPlot();
 
     /* Function: pvPlotBegin
      *  Description: Called when a new plot sequence is started. Typically the plugin reset its internal state and
@@ -217,6 +219,13 @@ public:
         char *feedbackText_p,
         const int maxFeedbackTextLength)
     {
+        Q_UNUSED(row_p)
+        Q_UNUSED(length)
+        Q_UNUSED(time)
+        Q_UNUSED(rowIndex)
+        Q_UNUSED(graphRef_p)
+        Q_UNUSED(maxFeedbackTextLength)
+
         feedbackText_p[0] = 0; /* If the derived CPlot doesn't implement an override function this will return
                                 *  an empty string */
         return false; /* Return false to indicate nothing was added */
@@ -236,7 +245,9 @@ public:
      *   Return value:    True if time was successfully be extracted from row_p
      */
     virtual bool vPlotExtractTime(const char *row_p, const int length, double *time_p) {
-        *time_p = 0.0;
+        Q_UNUSED(row_p)
+        Q_UNUSED(length)
+        * time_p = 0.0;
         return false;
     }
 
@@ -415,7 +426,7 @@ protected:
      *     Input: decoder_p, A reference to a subclassed CDecode
      */
     void RegisterDecoder(CDecoder *decoder_p) {
-        m_decoders.InsertTail((CListObject *)(decoder_p));
+        m_decoders.InsertTail(decoder_p);
     }
 
     /* Function:    RegisterPlot
@@ -424,7 +435,7 @@ protected:
      *     Input: plot_p, A reference to a subclassed CPlot
      */
     void RegisterPlot(CPlot *plot_p) {
-        m_plots.InsertTail((CListObject *)(plot_p));
+        m_plots.InsertTail(plot_p);
     }
 
     /* Functions directly called by LogScrutinizer  -- DON'T USE */

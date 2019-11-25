@@ -42,6 +42,10 @@ extern char g_tempTraceString[TEMP_TRACE_STRING_SIZE];
  #define Q_RGB(R, G, B) (static_cast<Q_COLORREF>((R) << 16 | (G) << 8 | (B)))
 #endif
 
+#ifndef Q_UNUSED
+ #define Q_UNUSED(x) (void)x;
+#endif
+
 /*
  * ----------------------------------------------------------------------------------------------------------------------
  * ---- Exported Functions
@@ -251,24 +255,21 @@ class CListObject
 {
 public:
     CListObject() {m_parentList_p = nullptr; m_next_p = nullptr; m_previous_p = nullptr;}
-    virtual ~CListObject() {}
+    virtual ~CListObject();
 
-    bool isInList(void) {return (m_parentList_p != nullptr ? true : false);}
+    /****/
+    bool isInList(void) {
+        return (m_parentList_p != nullptr ? true : false);
+    }
 
 private:
-    /***********************************************************************************************************************
-    *   CList_LSZ
-    ***********************************************************************************************************************/
+    /****/
     class CList_LSZ *m_parentList_p;
 
-    /***********************************************************************************************************************
-    *   CListObject
-    ***********************************************************************************************************************/
+    /****/
     class CListObject *m_previous_p;
 
-    /***********************************************************************************************************************
-    *   CListObject
-    ***********************************************************************************************************************/
+    /****/
     class CListObject *m_next_p;
 
     friend class CList_LSZ;
@@ -288,25 +289,25 @@ public:
 
     bool isEmpty(void) {return (m_items == 0 ? true : false);}
 
-    /***********************************************************************************************************************
-    *   CListObject
-    ***********************************************************************************************************************/
-    class CListObject *first(void) {return m_head_p;}
+    /****/
+    class CListObject *first(void) {
+        return m_head_p;
+    }
 
-    /***********************************************************************************************************************
-    *   CListObject
-    ***********************************************************************************************************************/
-    class CListObject *GetTail(void) {return m_tail_p;}
+    /****/
+    class CListObject *GetTail(void) {
+        return m_tail_p;
+    }
 
-    /***********************************************************************************************************************
-    *   CListObject
-    ***********************************************************************************************************************/
-    class CListObject *GetNext(CListObject *listObject_p) {return listObject_p->m_next_p;}
+    /****/
+    class CListObject *GetNext(CListObject *listObject_p) {
+        return listObject_p->m_next_p;
+    }
 
-    /***********************************************************************************************************************
-    *   CListObject
-    ***********************************************************************************************************************/
-    class CListObject *GetPrevious(CListObject *listObject_p) {return listObject_p->m_previous_p;}
+    /****/
+    class CListObject *GetPrevious(CListObject *listObject_p) {
+        return listObject_p->m_previous_p;
+    }
 
     int count(void) {return m_items;}
 
@@ -346,10 +347,10 @@ public:
         m_labelLength = 0;
 
         if ((label_p != nullptr) && (labelLength != 0)) {
-            m_label_p = (char *)malloc(labelLength + 1);
+            m_label_p = reinterpret_cast<char *>(malloc(static_cast<size_t>(labelLength + 1)));
 
             if (m_label_p != nullptr) {
-                memcpy(m_label_p, label_p, labelLength);
+                memcpy(m_label_p, label_p, static_cast<size_t>(labelLength));
                 m_label_p[labelLength] = 0;
                 m_labelLength = labelLength + 1;
             }
@@ -360,12 +361,7 @@ public:
         }
     }
 
-    ~CGO_Label()
-    {
-        if (m_label_p != nullptr) {
-            free(m_label_p);
-        }
-    }
+    ~CGO_Label() override;
 
     CGO_Label() {m_label_p = nullptr; m_labelLength = 0;}
 
@@ -455,7 +451,7 @@ public:
     {
         m_allocByteStreamSize = allocByteStreamSize;
         m_currentByteStream_p = new CByteStream(m_allocByteStreamSize);
-        m_byteStreamList.InsertTail((CListObject *)m_currentByteStream_p);
+        m_byteStreamList.InsertTail(m_currentByteStream_p);
 
 #ifdef QT_TODO
         InitializeCriticalSectionAndSpinCount(&m_criticalSection, 0x00000400);
@@ -484,7 +480,7 @@ public:
     ***********************************************************************************************************************/
     void ResetRef(void)
     {
-        m_currentByteStream_p = (CByteStream *)m_byteStreamList.first();
+        m_currentByteStream_p = reinterpret_cast<CByteStream *>(m_byteStreamList.first());
 
         if (m_currentByteStream_p != nullptr) {
             m_currentByteStream_p->ResetRef();
@@ -636,7 +632,8 @@ public:
     *   GetTitle
     ***********************************************************************************************************************/
     inline void GetTitle(char **title_pp, char **Y_AxisLabel_pp) {
-        *title_pp = m_title, *Y_AxisLabel_pp = m_Y_AxisLabel;
+        *title_pp = m_title;
+        *Y_AxisLabel_pp = m_Y_AxisLabel;
     }
 
     /***********************************************************************************************************************

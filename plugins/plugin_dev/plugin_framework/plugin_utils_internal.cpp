@@ -33,11 +33,31 @@ static HWND g_hwnd_msgConsumer = 0;
 static HANDLE g_h_msgHeap = 0;
 char g_tempTraceString[TEMP_TRACE_STRING_SIZE];
 
+/****/
+CListObject::~CListObject()
+{}
+
+/****/
+CGO_Label::~CGO_Label()
+{
+    if (m_label_p != nullptr) {
+        free(m_label_p);
+    }
+}
+
 /*
  * ----------------------------------------------------------------------------------------------------------------------
  * ---- Error handling functions -------------------------------------------------------------------
  * ----------------------------------------------------------------------------------------------------------------------
  * */
+
+#ifndef _WIN32
+__attribute__((__format__(__printf__, 1, 0)))
+#endif
+
+/***********************************************************************************************************************
+*   ErrorHook
+***********************************************************************************************************************/
 void ErrorHook(const char *errorMsg, ...)
 {
     va_list tArgumentPointer;
@@ -67,8 +87,9 @@ void EnableMsgTrace(int hwnd_msgConsumer, int h_msgHeap)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
-void Trace(const char *pcStr, ...)
+void Trace(const char *pcStr, ...) /* TODO */
 {
+    Q_UNUSED(pcStr)
 #if 0
  #ifndef _DEBUG
     if (g_h_msgHeap == 0) {
@@ -306,7 +327,7 @@ uint8_t *CByteStreamManager::GetBytes(void)
  * */
 CGraph_Internal::CGraph_Internal(const char *name_p, int subPlotID, int estimatedNumOfObjects)
 {
-    m_byteStreamManager_p = new CByteStreamManager(sizeof(GraphicalObject_t) * estimatedNumOfObjects);
+    m_byteStreamManager_p = new CByteStreamManager(static_cast<int>(sizeof(GraphicalObject_t)) * estimatedNumOfObjects);
 
     m_subPlotID = subPlotID;
     m_numOfObjects = 0;
