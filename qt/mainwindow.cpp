@@ -1203,15 +1203,6 @@ void MainWindow::createActions(void)
     QToolBar *trackingBar = addToolBar(tr("FileTracking"));
     trackingBar->setObjectName("FileTracking");
 
-    /*
-     *  const QIcon newIcon = QIcon::fromTheme("document-new", QIcon(":/images/new.png"));
-     *  QAction *newAct = new QAction(newIcon, tr("&New"), this);
-     *  newAct->setShortcuts(QKeySequence::New);
-     *  newAct->setStatusTip(tr("Create a new file"));
-     *  connect(newAct, &QAction::triggered, this, &MainWindow::newFile);
-     *  fileMenu->addAction(newAct);
-     *  fileToolBar->addAction(newAct);
-     */
     const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(":open-32.png"));
     QAction *openAct = new QAction(openIcon, tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
@@ -1226,22 +1217,93 @@ void MainWindow::createActions(void)
     connect(saveDefaultWorkspaceAct, &QAction::triggered, this, &MainWindow::saveDefaultWorkspace);
     fileMenu->addAction(saveDefaultWorkspaceAct);
 
-    const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":save-32"));
-    m_saveAct = new QAction(saveIcon, tr("&Save"), this);
-    m_saveAct->setShortcuts(QKeySequence::Save);
-    m_saveAct->setStatusTip(tr("Save the document to disk"));
-    connect(m_saveAct, &QAction::triggered, this, &MainWindow::save);
-    fileMenu->addAction(m_saveAct);
-    fileToolBar->addAction(m_saveAct);
-    m_saveAct->setEnabled(false);
+    {
+        QAction *action_p;
+        action_p = fileMenu->addAction(QString("Save Workspace"));
+        action_p->setEnabled(true);
+        connect(action_p, &QAction::triggered, [ = ] () {
+            CFGCTRL_SaveWorkspaceFile();
+        });
+    }
 
-    const QIcon saveAsIcon = QIcon::fromTheme("document-save-as", QIcon(":save-as-32"));
-    m_saveAsAct = fileMenu->addAction(saveAsIcon, tr("Save &As..."), this, &MainWindow::saveAs);
-    m_saveAsAct->setShortcuts(QKeySequence::SaveAs);
-    m_saveAsAct->setStatusTip(tr("Save the document under a new name"));
-    fileMenu->addAction(m_saveAsAct);
-    fileToolBar->addAction(m_saveAsAct);
-    m_saveAsAct->setEnabled(false);
+    {
+        QAction *action_p;
+        action_p = fileMenu->addAction(QString("Save Workspace As..."));
+        action_p->setEnabled(true);
+        connect(action_p, &QAction::triggered, [ = ] () {
+            CFGCTRL_SaveWorkspaceFileAs();
+        });
+    }
+
+    {
+        /*
+         * bool CFGCTRL_SaveFilterFile(QString& fileName, CCfgItem_Filter *filterItem_p);
+         *  bool CFGCTRL_SaveFilterFileAs(QString *fileName_p, CCfgItem_Filter *filterItem_p);
+         */
+        const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":save-32"));
+        if (m_saveFilterAct == nullptr) {
+            m_saveFilterAct = new QAction(saveIcon, "TBD", this);
+        }
+        m_saveFilterAct->setShortcuts(QKeySequence::Save);
+        m_saveFilterAct->setStatusTip(tr("Save the filter(s) to disk"));
+        connect(m_saveFilterAct, &QAction::triggered, [ = ] () {
+            QList<CCfgItem *> selectionList;
+            CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_Filter, selectionList);
+            for (auto& item : selectionList) {
+                auto filter = reinterpret_cast<CCfgItem_Filter *>(item);
+                auto fileName = filter->m_filter_ref_p->GetFileNameRef();
+                CFGCTRL_SaveFilterFile(fileName, filter);
+            }
+        });
+
+        fileMenu->addAction(m_saveFilterAct);
+        fileToolBar->addAction(m_saveFilterAct);
+        m_saveFilterAct->setEnabled(false);
+    }
+
+    {
+        const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(":save-32"));
+        if (m_saveFilterAct == nullptr) {
+            m_saveFilterAct = new QAction(saveIcon, "TBD", this);
+        }
+        m_saveFilterAct->setShortcuts(QKeySequence::Save);
+        m_saveFilterAct->setStatusTip(tr("Save the filter(s) to disk"));
+        connect(m_saveFilterAct, &QAction::triggered, [ = ] () {
+            QList<CCfgItem *> selectionList;
+            CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_Filter, selectionList);
+            for (auto& item : selectionList) {
+                auto filter = reinterpret_cast<CCfgItem_Filter *>(item);
+                auto fileName = filter->m_filter_ref_p->GetFileNameRef();
+                CFGCTRL_SaveFilterFile(fileName, filter);
+            }
+        });
+
+        fileMenu->addAction(m_saveFilterAct);
+        fileToolBar->addAction(m_saveFilterAct);
+        m_saveFilterAct->setEnabled(false);
+    }
+
+    {
+        const QIcon saveAsIcon = QIcon::fromTheme("document-save-as", QIcon(":save-as-32"));
+        if (m_saveFilterAsAct == nullptr) {
+            m_saveFilterAsAct = new QAction(saveAsIcon, "TBD", this);
+        }
+        m_saveFilterAsAct->setShortcuts(QKeySequence::SaveAs);
+        m_saveFilterAsAct->setStatusTip(tr("Save the filter(s) under a new name"));
+        connect(m_saveFilterAsAct, &QAction::triggered, [ = ] () {
+            QList<CCfgItem *> selectionList;
+            CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_Filter, selectionList);
+            for (auto& item : selectionList) {
+                auto filter = reinterpret_cast<CCfgItem_Filter *>(item);
+                auto fileName = filter->m_filter_ref_p->GetFileNameRef();
+                CFGCTRL_SaveFilterFileAs(&fileName, filter);
+            }
+        });
+
+        fileMenu->addAction(m_saveFilterAsAct);
+        fileToolBar->addAction(m_saveFilterAsAct);
+        m_saveFilterAsAct->setEnabled(false);
+    }
 
 #if CSS_SUPPORT == 1 || defined (_DEBUG)
     const QIcon cssIcon = QIcon(":css.png");
@@ -1397,6 +1459,11 @@ void MainWindow::createActions(void)
      *  connect(textEdit, &QPlainTextEdit::copyAvailable, copyAct, &QAction::setEnabled);
      #endif // !QT_NO_CLIPBOARD
      */
+    connect(fileMenu, &QMenu::aboutToShow, [ = ] ()
+    {
+        SetupDynamicFileMenuActions();
+    });
+
     m_recentFileMenu = fileMenu->addMenu(tr("&Recent files..."));
     {
         QAction *action_p = new QAction();
@@ -1405,6 +1472,44 @@ void MainWindow::createActions(void)
             setupRecentFiles();
         });
         m_recentFileMenu->setDefaultAction(action_p);
+    }
+}
+
+/***********************************************************************************************************************
+*   SetupFilterSaveMenuAction
+***********************************************************************************************************************/
+void MainWindow::SetupDynamicFileMenuActions(void)
+{
+    /* Dynamically add save on filter */
+    QString fileName = "";
+    QString saveFilterAsMenuText = "";
+    QString saveFilterMenuText = "";
+    QList<CCfgItem *> selectionList;
+    CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_Filter, selectionList);
+
+    if (selectionList.count() == 1) {
+        auto filter = reinterpret_cast<CCfgItem_Filter *>(selectionList.first());
+        fileName = *filter->m_filter_ref_p->GetFileName();
+        if (fileName.size() > 0) {
+            QFileInfo fileInfo(fileName);
+            saveFilterMenuText = "Save " + fileInfo.fileName();
+            saveFilterAsMenuText = "Save " + fileInfo.fileName() + " As...";
+        }
+    } else if (selectionList.count() > 1) {
+        saveFilterMenuText = "Save Multiple Filters";
+        saveFilterAsMenuText = "Save Multiple Filters As";
+    }
+
+    if (saveFilterMenuText.size() > 0) {
+        m_saveFilterAct->setEnabled(true);
+        m_saveFilterAsAct->setEnabled(true);
+        m_saveFilterAct->setText(saveFilterMenuText);
+        m_saveFilterAsAct->setText(saveFilterAsMenuText);
+    } else {
+        m_saveFilterAct->setEnabled(false);
+        m_saveFilterAsAct->setEnabled(false);
+        m_saveFilterAct->setText("Save Filter");
+        m_saveFilterAsAct->setText("Save Filter As");
     }
 }
 

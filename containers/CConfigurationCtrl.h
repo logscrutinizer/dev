@@ -54,9 +54,9 @@ bool CFGCTRL_SaveWorkspaceFile(QString& fileName, bool force = false);
 bool CFGCTRL_SaveWorkspaceFile(void);
 bool CFGCTRL_SaveWorkspaceFileAs(void);
 bool CFGCTRL_LoadFilterFile(void);
-bool CFGCTRL_SaveFilterFile(QString& fileName, CCfgItem_Filter *filterItem_p);
+bool CFGCTRL_SaveFilterFile(QString& fileName, CCfgItem_Filter *filter_p);
 bool CFGCTRL_SaveFilterFileAs(QString *fileName_p, CCfgItem_Filter *filterItem_p);
-bool CFGCTRL_ReloadFilterFile(QString& fileName, CCfgItem_Filter *filterItem_p);
+bool CFGCTRL_ReloadFilterFile(QString& fileName, CCfgItem_Filter *filter_p);
 bool CFGCTRL_Load_FileType(const QString& title, const QStringList& filters, const QList<RecentFile_Kind_e>& kindList,
                            const QString& defaultDIR);
 QString CFGCTRL_GetWorkingDir();

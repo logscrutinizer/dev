@@ -235,6 +235,7 @@ public:
     void activateSearch(const QString& searchText, bool caseSensitive = false, bool regExp = false);
     void updateSearchParameters(const QString& searchText, bool caseSensitive = false, bool regExp = false);
 
+    void SetupDynamicFileMenuActions(void);
     void updateLogFileTrackState(bool track);
 
     virtual void showEvent(QShowEvent *e) Q_DECL_OVERRIDE;
@@ -278,8 +279,8 @@ private:
     QCheckBox *m_checkBox_p;
     QDockWidget *m_tabPlotPaneDock_p;
     CPlotPane *m_plotPane_p;   /* is a QTabWidget */
-    QAction *m_saveAct;
-    QAction *m_saveAsAct;
+    QAction *m_saveFilterAct;
+    QAction *m_saveFilterAsAct;
     QMenu *m_recentFileMenu;
     QStringList m_commandLine;
     std::map<Qt::WindowStates /*key*/, CGeometryState /*data*/> m_pendingGeometryState;

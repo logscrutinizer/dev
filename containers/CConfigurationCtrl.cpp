@@ -336,24 +336,24 @@ bool CFGCTRL_SaveFilterFileAs(QString *fileName_p, CCfgItem_Filter *filterItem_p
 /***********************************************************************************************************************
 *   CFGCTRL_SaveFilterFile
 ***********************************************************************************************************************/
-bool CFGCTRL_SaveFilterFile(QString& fileName, CCfgItem_Filter *filterItem_p)
+bool CFGCTRL_SaveFilterFile(QString& fileName, CCfgItem_Filter *filter_p)
 {
     if (g_cfg_ctrl_p == nullptr) {
         return false;
     }
-    return g_cfg_ctrl_p->Save_TAT_File(fileName, filterItem_p);
+    return g_cfg_ctrl_p->Save_TAT_File(fileName, filter_p);
 }
 
 /***********************************************************************************************************************
 *   CFGCTRL_ReloadFilterFile
 ***********************************************************************************************************************/
-bool CFGCTRL_ReloadFilterFile(QString& fileName, CCfgItem_Filter *filterItem_p)
+bool CFGCTRL_ReloadFilterFile(QString& fileName, CCfgItem_Filter *filter_p)
 {
     if (g_cfg_ctrl_p == nullptr) {
         return false;
     }
     TRACEX_I(QString("Reloading TAT File  %1").arg(fileName))
-    g_cfg_ctrl_p->Reload_TAT_File(fileName, filterItem_p);
+    g_cfg_ctrl_p->Reload_TAT_File(fileName, filter_p);
     return true;
 }
 
