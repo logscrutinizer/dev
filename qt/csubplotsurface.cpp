@@ -2974,6 +2974,8 @@ void CSubPlotSurface::DisableCursor(void)
 ***********************************************************************************************************************/
 void CSubPlotSurface::CreatePainter(QWidget *widget_p)
 {
+    Q_UNUSED(widget_p)
+
     CLogScrutinizerDoc *doc_p = GetTheDoc();
 
     if (m_double_buffer_image.size() != m_DC_windowRect.size()) {
@@ -2983,7 +2985,7 @@ void CSubPlotSurface::CreatePainter(QWidget *widget_p)
     }
 
     m_painter_p = new LS_Painter(&m_double_buffer_image);
-    m_painter_p->begin(widget_p);
+
     doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
     m_painter_p->setRenderHint(QPainter::Antialiasing, true);
 }

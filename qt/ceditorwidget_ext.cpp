@@ -861,7 +861,7 @@ void CEditorWidget::OnDraw(void)
 
     QImage double_buffer_image(QSize(m_bmpWindow.width(), m_bmpWindow.height()), QImage::Format_ARGB32_Premultiplied);
     LS_Painter painter(&double_buffer_image);
-    painter.begin(this);
+
     painter.setRenderHint(QPainter::Antialiasing, true);
 
     LS_Painter *original_painter = m_painter_p;
@@ -945,7 +945,6 @@ void CEditorWidget::OnDraw(void)
     UpdateCursor(true);
 
     original_painter->drawImage(0, 0, double_buffer_image, m_hbmpOffset);
-    painter.end();
 }
 
 /***********************************************************************************************************************
