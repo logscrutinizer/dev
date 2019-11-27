@@ -84,6 +84,8 @@ void CWorkspaceTreeView::selectionChanged(const QItemSelection& selected, const 
 {
     QList<CCfgItem *> selectionList;
 
+    MW_SelectionUpdated();
+
     if (GetSelections(CFG_ITEM_KIND_FilterItem, selectionList)) {
         auto filterItem = dynamic_cast<CCfgItem_FilterItem *>(selectionList.first());
         MW_UpdateSearchParameters(filterItem->m_itemText,

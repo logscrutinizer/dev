@@ -251,6 +251,16 @@ void MW_ModifyFontSize(int increase)
 }
 
 /***********************************************************************************************************************
+*   MW_SelectionUpdated
+***********************************************************************************************************************/
+void MW_SelectionUpdated(void)
+{
+    if (g_mainWindow_p != nullptr) {
+        g_mainWindow_p->selectionUpdated();
+    }
+}
+
+/***********************************************************************************************************************
 *   MW_GeneralKeyHandler
 ***********************************************************************************************************************/
 bool MW_GeneralKeyHandler(int key, bool ctrl, bool shift)
@@ -591,6 +601,25 @@ void MainWindow::modifyFontSize(int increase)
         m_logWindow_p->zoomOut();
     } else if (increase > 0) {
         m_logWindow_p->zoomIn();
+    }
+}
+
+/***********************************************************************************************************************
+*   selectionUpdated
+***********************************************************************************************************************/
+void MainWindow::selectionUpdated(void)
+{
+    QList<CCfgItem *> selectionList;
+    CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_Filter, selectionList);
+
+    if ((m_saveFilterAct != nullptr) && (m_saveFilterAsAct != nullptr)) {
+        if (selectionList.count() == 1) {
+            m_saveFilterAct->setEnabled(true);
+            m_saveFilterAsAct->setEnabled(true);
+        } else {
+            m_saveFilterAct->setEnabled(false);
+            m_saveFilterAsAct->setEnabled(false);
+        }
     }
 }
 

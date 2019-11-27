@@ -224,6 +224,7 @@ public:
     void startWebPage(const QString& url);
 
     void modifyFontSize(int increase);
+    void selectionUpdated(void);
 
     QItemSelectionModel *selectionModel(void); /* get the selection model for QTreeView (m_treeView_p) */
 

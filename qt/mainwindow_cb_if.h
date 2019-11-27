@@ -59,6 +59,8 @@ void MW_ActivateSearch(const QString& searchText, bool caseSensitive = false, bo
 void MW_UpdateSearchParameters(const QString& searchText, bool caseSensitive = false, bool regExp = false);
 void MW_ModifyFontSize(int increase);
 
+void MW_SelectionUpdated(void);
+
 bool MW_GeneralKeyHandler(int key, bool ctrl, bool shift);
 
 #endif /* MAINWINDOW_CB_IF_H */
