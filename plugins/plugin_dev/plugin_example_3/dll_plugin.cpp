@@ -1,16 +1,7 @@
-/*----------------------------------------------------------------------------------------------------------------------
- * */
-
-/*
- * ----------------------------------------------------------------------------------------------------------------------
- * File: dll_plugin.cpp
- *
- * Description: This is Plugin Example 3
- *              It shows how to create a simple plugin to generate a graph (lines and boxes) out of text rows
- *              matching e.g. "Time:0 Value:1"
- * ----------------------------------------------------------------------------------------------------------------------
- * ----------------------------------------------------------------------------------------------------------------------
- * */
+/***********************************************************************************************************************
+** Copyright (C) 2019 Robert Klang
+** Contact: https://www.logscrutinizer.com
+***********************************************************************************************************************/
 
 #include <stdio.h>
 #include "plugin_api.h"
@@ -25,11 +16,9 @@
 ***********************************************************************************************************************/
 CPlugin_DLL_API *DLL_API_Factory(void)
 {
-    return reinterpret_cast<CPlugin_DLL_API *>(new CPlugin_Example_3);
+    return new CPlugin_Example_3;
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
 CPlugin_Example_3::CPlugin_Example_3()
 {
     SetPluginName("Plugin Example 3");
@@ -41,8 +30,6 @@ CPlugin_Example_3::CPlugin_Example_3()
     RegisterPlot(new CPlot_Example_3());
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
 CPlot_Example_3::CPlot_Example_3()
 {
     SetTitle("Plugin Example 3", "Time");
@@ -65,15 +52,14 @@ CPlot_Example_3::CPlot_Example_3()
     m_subPlot_Lines_labelIndex_0 = AddLabel(m_subPlotID_Lines, "Line:1", 6);
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
 CPlot_Example_3::~CPlot_Example_3()
 {
     PlotClean();
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
+/***********************************************************************************************************************
+*   pvPlotClean
+***********************************************************************************************************************/
 void CPlot_Example_3::pvPlotClean(void)
 {
     memset(&m_lines_a[0], 0, sizeof(graphInfo_t) * 2);
@@ -86,8 +72,9 @@ void CPlot_Example_3::pvPlotClean(void)
     Trace("CPlot_Example_3 pvPlotClean\n");
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
+/***********************************************************************************************************************
+*   pvPlotBegin
+***********************************************************************************************************************/
 void CPlot_Example_3::pvPlotBegin(void)
 {
     Trace("CPlot_Example_3 pvPlotBegin\n");
@@ -109,15 +96,16 @@ void CPlot_Example_3::pvPlotBegin(void)
     m_graph_OverridePattern_2_p->SetLinePattern(GLP_DASH);
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
+/***********************************************************************************************************************
+*   pvPlotRow
+***********************************************************************************************************************/
 void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowIndex)
 {
     bool status = true;
     int index = 0;
 
-    /* If you want to understant what kind of text lines this code is parsing please have a look in the text_data.txt.
-     * */
+    /* If you want to understant what kind of text lines this code is parsing please have a look in
+     * the text_data.txt. * */
 
     /* Initialize the parser with the string */
     m_parser.SetText(row_p, *length_p);
@@ -227,9 +215,9 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
 
                 if (status) {
                     /* If this was the first value we need to initialize the first point of the graph */
-                    if (m_lines_a[index].prevX == -1) {
-                        m_lines_a[index].prevY = (double)value;
-                        m_lines_a[index].prevX = (double)time;
+                    if (m_lines_a[index].prevX < 0) {
+                        m_lines_a[index].prevY = value;
+                        m_lines_a[index].prevX = time;
                     }
 
                     /* Add the "same" line to all of the three graphs, however these lines will look differently.
@@ -249,27 +237,27 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                             temp,
                             static_cast<uint8_t>(strlen(temp)),
                             Q_RGB(150, 255 - time * 20, time * 20),
-                            0.1 * (double)time);
+                            0.1 * static_cast<double>(time));
 
                         m_graph_OverrideColor_1_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
-                            (double)time,
-                            (double)value,
+                            static_cast<double>(time),
+                            static_cast<double>(value),
                             rowIndex);
 
                         m_graph_OverridePattern_1_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
-                            (double)time,
-                            (double)value,
+                            static_cast<double>(time),
+                            static_cast<double>(value),
                             rowIndex);
                     } else {
                         m_lines_a[index].graph_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
-                            (double)time,
-                            (double)value,
+                            static_cast<double>(time),
+                            static_cast<double>(value),
                             rowIndex,
                             m_subPlot_Lines_labelIndex_0,
                             0, /* color is automatic */
@@ -278,20 +266,20 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
                         m_graph_OverrideColor_2_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
-                            (double)time,
-                            (double)value,
+                            static_cast<double>(time),
+                            static_cast<double>(value),
                             rowIndex);
 
                         m_graph_OverridePattern_2_p->AddLine(
                             m_lines_a[index].prevX,
                             m_lines_a[index].prevY,
-                            (double)time,
-                            (double)value,
+                            static_cast<double>(time),
+                            static_cast<double>(value),
                             rowIndex);
                     }
 
-                    m_lines_a[index].prevY = (double)value;
-                    m_lines_a[index].prevX = (double)time;
+                    m_lines_a[index].prevY = static_cast<double>(value);
+                    m_lines_a[index].prevX = static_cast<double>(time);
                 }
 
                 return;
@@ -300,12 +288,10 @@ void CPlot_Example_3::pvPlotRow(const char *row_p, const int *length_p, int rowI
     }
 }
 
-/*----------------------------------------------------------------------------------------------------------------------
- * */
+/***********************************************************************************************************************
+*   pvPlotEnd
+***********************************************************************************************************************/
 void CPlot_Example_3::pvPlotEnd(void)
 {
     Trace("CPlot_Example_3 pvPlotEnd\n");
 }
-
-/*----------------------------------------------------------------------------------------------------------------------
- * */

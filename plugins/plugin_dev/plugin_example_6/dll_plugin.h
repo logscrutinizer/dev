@@ -27,16 +27,8 @@ public:
     virtual void pvPlotRow(const char *row_p, const int *length_p, int rowIndex);
     virtual void pvPlotEnd(void);
     virtual void pvPlotClean(void);
-    virtual bool vPlotGraphicalObjectFeedback(const char *row_p,
-                                              const int length,
-                                              const double time,
-                                              const int rowIndex,
-                                              const CGraph_Internal *graphRef_p,
-                                              char *feedbackText_p,
-                                              const int maxFeedbackTextLength);
 
 private:
-
     int m_subPlotID_boxes;
     int m_subPlotID_lines;
     CTextParser m_parser;
