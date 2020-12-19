@@ -45,9 +45,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "file_streamer")
 # Print info
 #---------------------------------------------------------
 message("moduleList" ${moduleList})
-message("Linker flags " ${CMAKE_EXE_LINKER_FLAGS})
-message("Linker flags " ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
-message("Linker flags " ${CMAKE_EXE_LINKER_FLAGS_RELEASE})
 
 #---------------------------------------------------------
 # Add targets to run the Plugin examples from the plugin_tester

@@ -79,13 +79,14 @@ if (OS_VARIANT STREQUAL "")
     set (OS_VARIANT ${CMAKE_SYSTEM_NAME})
 endif (OS_VARIANT STREQUAL "")
 
-ADD_CUSTOM_COMMAND(OUTPUT ${PRODUCT_VERSION_CMAKE} non_existing_file1.txt
+ADD_CUSTOM_COMMAND(OUTPUT ${PRODUCT_VERSION_CMAKE}
                    COMMAND python ${PRODUCT_VERSION_GEN_SCRIPT_PY} ${PRODUCT_VERSION_CMAKE} ${CCONFIG_H} ${OS_VARIANT}
                    COMMENT "Generating product version cmake")
 
 # Custom target for running the PYTHON scripts
 ADD_CUSTOM_TARGET(gen_product_version ALL
-                  DEPENDS ${PRODUCT_VERSION_CMAKE} non_existing_file1.txt)
+                  #DEPENDS ${PRODUCT_VERSION_CMAKE} non_existing_file1.txt)
+                  DEPENDS ${PRODUCT_VERSION_CMAKE} )
 
 if (EXISTS ${PRODUCT_VERSION_CMAKE})
     message ("Found ${PRODUCT_VERSION_CMAKE}")
@@ -149,7 +150,7 @@ if (WIN32)
 
 else (WIN32)
 
-    ADD_CUSTOM_COMMAND(OUTPUT ${INSTALL_LIB_CMAKE} ${INSTALL_POSTINST} ${INSTALL_PRERM} non_existing_file0.txt
+    ADD_CUSTOM_COMMAND(OUTPUT ${INSTALL_LIB_CMAKE} ${INSTALL_POSTINST} ${INSTALL_PRERM}
                        COMMAND python ${INSTALL_SCRIPT_GEN_PY} ${INSTALL_LIB_CMAKE} ${INSTALL_POSTINST}
                                         ${INSTALL_PRERM} ${QT_PLATFORM_CONF_FILE} ${START_SCRIPT_SH}
                                         ${CPACK_PACKAGING_INSTALL_PREFIX} ${QT_PLATFORM_PLUGIN} ${QT_ADDITIONAL_LIBS}
@@ -161,8 +162,7 @@ endif(WIN32)
 # Custom target for running the PYTHON script generating help files
  ADD_CUSTOM_TARGET(gen_inst_scripts
                    DEPENDS ${INSTALL_LIB_CMAKE} ${INSTALL_POSTINST} ${INSTALL_PRERM}
-                           ${INSTALL_SCRIPT_GEN_PY} ${PRODUCT_VERSION_CMAKE}
-                           non_existing_file0.txt)
+                           ${INSTALL_SCRIPT_GEN_PY} ${PRODUCT_VERSION_CMAKE})
 
 if (EXISTS ${INSTALL_LIB_CMAKE})
     message ("Found ${INSTALL_LIB_CMAKE}")
@@ -415,9 +415,6 @@ endif (WIN32)
 # Print info
 #-------------------------------------------------------------------------------
 message("moduleList" ${moduleList})
-message("Linker flags " ${CMAKE_EXE_LINKER_FLAGS})
-message("Linker flags " ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
-message("Linker flags " ${CMAKE_EXE_LINKER_FLAGS_RELEASE})
 message("ADDITIONAL_LINK_DEP" ${ADDITIONAL_LINK_DEP})
 message("System name: " ${CMAKE_SYSTEM_NAME})
 message("INSTALL_LIBS: " ${INSTALL_LIBS})

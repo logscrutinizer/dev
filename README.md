@@ -72,6 +72,11 @@ This step is optional for Ubuntu 18.10 and Debian 9, as hyperscan is available u
   ./LogScrutinizer
   ```
 
+#### Remarks
+* Warning: If you generated an install package then you will find a qt.conf file in your build folder, that file will prevent you from
+running the binary from the build folder, LogScrutinizer will look for Qt binaries in the install folders. Just remove the qt.conf file.
+
+
 #### build from QtCreator
 * Then from QtCreator, just open the top most CMakeLists.txt (in __dev__ folder)
 * Configure the build folder and a target compiler
@@ -314,3 +319,4 @@ sudo make install
 <p> The purpose of a CLA is that when you contribute, e.g. c++ code, to the LogScrutinizer project you will automatically transfer your ownership of that contribution to the project such that it will be possible to continue to distribute the project with <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPL 3</a>. It also enables an easier transition for distribution under a different licensing model in case of a fork. </p>
 <p> Additionally, the CLA highlights that if you are contributing while working for a company that company will not own that piece of code, rather it has the same rights as all others enjoying GPL 3 software.</p>
 <p> Send an email to robert.klang@softfairy.com for more information. </p>
+
