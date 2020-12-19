@@ -295,15 +295,8 @@ endforeach(module)
 #------------------------------------------------------
 #--- Additional modules
 #------------------------------------------------------
-add_subdirectory(plugins/plugin_dev/plugin_example_1)
-add_subdirectory(plugins/plugin_dev/plugin_example_2)
-add_subdirectory(plugins/plugin_dev/plugin_example_3)
-add_subdirectory(plugins/plugin_dev/plugin_example_3_1)
-add_subdirectory(plugins/plugin_dev/plugin_example_4)
-add_subdirectory(plugins/plugin_dev/plugin_example_5)
-add_subdirectory(plugins/plugin_dev/plugin_example_6)
-add_subdirectory(plugins/plugin_dev/plugin_tester)
-add_subdirectory(plugins/plugin_dev/file_streamer)
+set (PLUGIN_PATH ${CMAKE_SOURCE_DIR}/plugins/plugin_dev)
+include (plugins/plugin_dev/plugins.cmake)
 
 #------------------------------------------------------
 #--- Add the QT folder

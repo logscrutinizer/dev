@@ -196,28 +196,13 @@ else(WIN32)    #---- Linux
 endif(WIN32)
 
 #------------------------------------------------------
-#--- Setup module lists
+#--- Add framework and plugins
 #------------------------------------------------------
-set (MODULE_PATH
-    plugin_framework
-    plugin_example_1
-    plugin_example_2
-    plugin_example_3
-    plugin_example_3_1
-    plugin_example_4
-    plugin_example_5
-    plugin_example_6
-    plugin_tester)
 
-#------------------------------------------------------
-#--- Add other modules, such as the testapp
-#------------------------------------------------------
-foreach(module ${MODULE_PATH})
-    add_subdirectory(${module})
-    get_filename_component(barename ${module} NAME)
-    list(APPEND moduleList ${barename})
-endforeach(module)
+add_subdirectory(plugin_framework)
 
+set (PLUGIN_PATH ${CMAKE_SOURCE_DIR})
+include(plugins.cmake)
 
 #------------------------------------------------------
 #--- Print some general settings
@@ -234,7 +219,6 @@ else (WIN32)
 endif(WIN32)
 
 message ("CMAKE_PREFIX_PATH - ${CMAKE_PREFIX_PATH}")
-message ("Project modules " ${MODULE_PATH})
 message ("SHARED_QT_LIBS: ${SHARED_QT_LIBS}")
 message ("Qt5Widgets_INCLUDE_DIRS ${Qt5Widgets_INCLUDE_DIRS}")
 message ("Qt5Core_INCLUDE_DIRS ${Qt5Core_INCLUDE_DIRS}")
