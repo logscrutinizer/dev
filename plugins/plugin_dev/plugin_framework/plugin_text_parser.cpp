@@ -21,6 +21,17 @@ inline bool isDigit(uint8_t ch)
 
 /*----------------------------------------------------------------------------------------------------------------------
  * */
+inline bool isUDigit(uint8_t ch)
+{
+    if ((ch >= '0') && (ch <= '9')) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
 inline bool isDoubleDigit(uint8_t ch)
 {
     if (((ch >= '0') && (ch <= '9')) ||
@@ -70,6 +81,37 @@ bool CTextParser::ParseInt(int *value_p)
 
     int index = 0;
     while (loopText_p < loopTextEnd_p && index < (MAX_INT_STRING - 1) && isDigit(static_cast<uint8_t>(*loopText_p))) {
+        value[index] = *loopText_p;
+        ++loopText_p;
+        ++index;
+    }
+
+    m_parseIndex += static_cast<int>(loopText_p - startpoint_p);
+    value[index] = 0;
+    *value_p = static_cast<int>(strtol(value, nullptr, 10));
+
+    return true;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------
+ * */
+bool CTextParser::ParseUInt(unsigned int *value_p)
+{
+    char value[MAX_INT_STRING] = "";
+    const char *loopText_p = &m_text_p[m_parseIndex];
+    const char *loopTextEnd_p = &m_text_p[m_textLength];
+    const char *startpoint_p = loopText_p;
+
+    while (loopText_p < loopTextEnd_p && !isUDigit(static_cast<uint8_t>(*loopText_p))) {
+        ++loopText_p;
+    }
+
+    if (loopText_p == loopTextEnd_p) {
+        return false;
+    }
+
+    int index = 0;
+    while (loopText_p < loopTextEnd_p && index < (MAX_INT_STRING - 1) && isUDigit(static_cast<uint8_t>(*loopText_p))) {
         value[index] = *loopText_p;
         ++loopText_p;
         ++index;

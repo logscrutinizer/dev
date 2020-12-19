@@ -107,6 +107,18 @@ public:
 
     /*
      * -----------------------------------------------------------------------------------------------------------------
+     * Function: ParseUInt
+     * Description: The function parses the text string from the current index, it will skip any character that are not
+     * in the
+     *              "integer set"   0-9
+     *              It will stop parsing characters when characters are not in the "integer set"
+     * Parameters
+     *    Input/Ouput:  value_p,  the destination for the parsed INT64 value
+     *    Returns:      true      if successfull */
+    bool ParseUInt(unsigned int *value_p);
+
+    /*
+     * -----------------------------------------------------------------------------------------------------------------
      * Function: ParseHexInt
      * Description: The function parses the text string from the current index, it will skip any character that are not
      * in the
