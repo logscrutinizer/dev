@@ -1312,12 +1312,8 @@ void CSubPlotSurface::Setup_X_Lines(void)
         base = 0.0;
     } else {
         /* No negative numbers.. */
-        int steps_to_xmin = static_cast<int>(floor(x_min / step));
-        base = (steps_to_xmin - (steps_to_xmin % 10)) * step;
-
-        while (base < x_min) {
-            base += step * 10;
-        }
+        double steps_to_xmin = floor(x_min / step);
+        base = (steps_to_xmin + 1) * step;
     }
 
     int index = 0;
