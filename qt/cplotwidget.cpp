@@ -1072,7 +1072,7 @@ void CPlotWidget::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *screenPoin
         *invalidate_p = true;
     }
 
-    TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  zoom:%4.2 zoom_left:%f "
+    TRACEX_D("CPlotWidget::ZoomSubPlot_X_Axis  zoom:%4.2f zoom_left:%f "
              "zoom_right:%f min:%e max:%e offset:%e",
              currentZoom, m_zoom_left, m_zoom_right, m_min_X, m_max_X, m_offset_X)
 

@@ -155,7 +155,7 @@ private:
     /* A thread never works on memory more than 2^31 */
     void AddThread(char *start_p, int64_t size, int64_t fileStartIndex);
 
-    CFileCtrl_FileHandle_t *m_fileHandle_pr;
+    CFileCtrl_FileHandle_t *m_fileHandle_p;
     int64_t m_fileSize = 0;                                   /* The total size of the file */
     int64_t m_size = 0;                                       /* Number of bytes to read */
     char *m_workMem_p = nullptr;
