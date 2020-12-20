@@ -112,7 +112,6 @@ public:
 class CParseCmd
 {
 public:
-    CParseCmd(void) {}
     ~CParseCmd(void)
     {
         EmptyThreads();
@@ -147,19 +146,19 @@ public:
     int GetNumOf_TI(void);
 
     QList <CTIA_Thread *> m_threadList;                   /* Each thread is configured with start and length */
-    double m_seekTime;
-    int64_t m_fileLoadTime;
-    double m_processTime;
-    int64_t m_fileStart;                                  /* File index to seek to */
+	double m_seekTime {0.0};
+	int64_t m_fileLoadTime {0};
+	double m_processTime{0.0};
+	int64_t m_fileStart{0};                                  /* File index to seek to */
 
 private:
     /* A thread never works on memory more than 2^31 */
     void AddThread(char *start_p, int64_t size, int64_t fileStartIndex);
 
-    CFileCtrl_FileHandle_t *m_fileHandle_p;
-    int64_t m_fileSize;                                   /* The total size of the file */
-    int64_t m_size;                                       /* Number of bytes to read */
-    char *m_workMem_p;
+    CFileCtrl_FileHandle_t *m_fileHandle_pr;
+    int64_t m_fileSize = 0;                                   /* The total size of the file */
+    int64_t m_size = 0;                                       /* Number of bytes to read */
+    char *m_workMem_p = nullptr;
     QList <double> m_threadExecTimeList;
     CTIA_FileStorage m_fileStorage;                                /* Storage of the result of the parse command (TIAs)
                                                                     * */

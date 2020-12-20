@@ -274,15 +274,15 @@ private:
     std::unique_ptr<QTimer> m_pendingWindowAdaptationTimer_2;
 
     /*bool m_pendingAdaptationSetup = false; */
-    CEditorWidget *m_editor_p;
-    CTabWidget *m_tabWidget_p;
-    CSearchWidget *m_searchWidget_p;
-    QCheckBox *m_checkBox_p;
-    QDockWidget *m_tabPlotPaneDock_p;
-    CPlotPane *m_plotPane_p;   /* is a QTabWidget */
-    QAction *m_saveFilterAct;
-    QAction *m_saveFilterAsAct;
-    QMenu *m_recentFileMenu;
+    CEditorWidget *m_editor_p = nullptr;
+    CTabWidget *m_tabWidget_p = nullptr;
+    CSearchWidget *m_searchWidget_p = nullptr;
+    QCheckBox *m_checkBox_p = nullptr;
+    QDockWidget *m_tabPlotPaneDock_p = nullptr;
+    CPlotPane *m_plotPane_p = nullptr;   /* is a QTabWidget */
+    QAction *m_saveFilterAct = nullptr;
+    QAction *m_saveFilterAsAct = nullptr;
+    QMenu *m_recentFileMenu = nullptr;
     QStringList m_commandLine;
     std::map<Qt::WindowStates /*key*/, CGeometryState /*data*/> m_pendingGeometryState;
     Qt::WindowStates m_activeState = Qt::WindowNoState; /* to keep track of what has been given by event */
