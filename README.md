@@ -166,7 +166,8 @@ sudo make install
 ### Build LogScrutinizer
 * Fetch LogScrutinizer from GitHub
   * `git clone https://github.com/logscrutinizer/dev.git`
-* Create __local.cmake__ in LogScrutinizer root folder (dev)
+* Create __local.cmake__ in LogScrutinizer root folder (dev). 
+  * Note: the local.cmake is not part of the repository since its content is dependent on your install directories
 * Add the following lines to __local.cmake__ (make sure that the paths are updated to your system setup/paths).
   ```
   set(CMAKE_PREFIX_PATH "/home/user/Qt/5.10.0/gcc_64")
@@ -196,9 +197,10 @@ sudo make install
     * The Qt Company requires that you have an account
     * You only need to enable the 2015/2017 VisualStudio 64-bit build variants under 5.10.0 (to minimize the HDD impact)
     * > Add the Qt binary path as Win10 environment variable (PATH). To find the Qt dlls when running locally __(C:\Qt\5.10.0\msvc2017_64\bin)__
-* __Visual Studio 2017__
+* __Visual Studio 2017 or 2019__
   * Download from [https://visualstudio.microsoft.com/vs/community](https://visualstudio.microsoft.com/vs/community)
     * Check/Use "Desktop development with C++"
+    * Note: When you select your Visual Studio version ensure that the Qt5 download has support for your version. E.g. newer releases of Qt hasn't option for pre-build binaries for  doesn't support 17
 * __Git__
   * Download from [https://github.com/git-for-windows/git/releases/download/v2.20.1.windows.1/Git-2.20.1-64-bit.exe](https://github.com/git-for-windows/git/releases/download/v2.20.1.windows.1/Git-2.20.1-64-bit.exe)
 * __CMake (cmake-gui)__
@@ -210,9 +212,10 @@ sudo make install
   * Download from [http://prdownloads.sourceforge.net/nsis/nsis-3.04-setup.exe?download](http://prdownloads.sourceforge.net/nsis/nsis-3.04-setup.exe?download)
 
 ### Build hyperscan library
-There is no pre-built download for this component, hence you need to build it yourself. However to build it you need some other components first, Boost and Ragel.
+There is no pre-built download for this component, hence you need to build it yourself. However, to build it you need some other components first, Boost and Ragel.
 * Download and install boost
     * Download from [https://sourceforge.net/projects/boost/files/boost-binaries/1.69.0/boost_1_69_0-msvc-14.1-64.exe/download](https://sourceforge.net/projects/boost/files/boost-binaries/1.69.0/boost_1_69_0-msvc-14.1-64.exe/download)
+      * Or just take the newest...
 * Fetch Ragel from GitHub (contains ragel.exe)
   * `git clone https://github.com/eloraiby/ragel-windows.git`
   * You do not need to build anything really, this repo contains a pre-built exe file that we use later on.
@@ -259,23 +262,40 @@ There is no pre-built download for this component, hence you need to build it yo
   * Build LogScrutinizer from Visual Studio
     * Start Visual Studio 2017
     * Open the LogScrutinizer.sln solution file from the cmake-gui build directory
-    * Select the LogScrutinizer target as "Set as Startup project"
+    * ___Select the LogScrutinizer target as "Set as Startup project"__
     * Select __Release x64__ build variant
     * Build solution
+    
   * Run LogScrutinizer from Visual Studio
-    * LogScrutinizer is Qt5 dependent, and you need first to copy the Qt5 dlls to the same location as your logscrutinizer.exe when e.g. starting the debugger, or running in release mode. You typically find the Dlls in your Qt5 install directory under
+    * LogScrutinizer is based on Qt5 and during startup loads several of Qt5 dlls. When running LogScrutinizer from VisualStudio these Qt5 dlls needs to the be located in the same folder as LogScrutinizer.exe. You typically find the Dlls in your Qt5 install directory under e.g.
 
     ```
     C:\Qt\5.13.0\msvc2017_64\bin
 
     ```
-
-    dependent on your installation.
+     * However, you also needs to create a __qt.conf__ file and locate it in the same folder as the exe and the dlls. The qt.conf file is used by the Qt5 dlls to locate other required binaries. Create the qt.conf file containing the following
+     ``` 
+      [Paths]
+      Prefix = C:/Qt/5.14.2/msvc2017_64
+    ```
+   
     * Press Ctrl-F5 to run (run Release version).
     * Note, if you want to run in Debug you need to build HyperScan in Debug as well, and vice-versa for release. Then you run the HyperScan install project as well again to have it installed to "program files".
 
+_Notes:_
 
-#### Make an installation package)
+* When building with Visual Studio some of the build targets are actually performing tests on the plugin examples. The plugin tester requires the Qt DLL to be located in the same directory as the exe. Hence, you will probarbly get a few build errors that is releated to this. You find the dll test application under: 
+   ``` 
+    ...\build\plugins\plugin_dev\plugin_tester\Debug
+   ```
+* You need to locate the qt dll into this folder for it to be able to execute. You also need to put the qt.conf there such that when the Qt dll loads it find the platform libraries.
+* You need to create the qt.conf file yourself and locate it there, it should contain the same lines as for the qt.conf used for starting the LogScrutinizer application
+   ```
+   [Paths]
+   Prefix = C:/Qt/5.14.2/msvc2017_64
+   ```
+
+#### Make an installation package
 
 * Select the PACKAGE project in the solution file and build
 Note, if the version gets wrong in the installation package its because the file product_version.cmake hasn't be re-created. Just remove it, build the gen_product_version project (where it will be re-created), and then build the PACKAGE project again.
