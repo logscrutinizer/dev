@@ -542,7 +542,7 @@ void MainWindow::appStateChanged(Qt::ApplicationState state)
 ***********************************************************************************************************************/
 bool MainWindow::hasPlotPane(void)
 {
-    return m_tabPlotPaneDock_p != nullptr && m_plotPane_p != nullptr ? true : false;
+    return m_plotPane_p != nullptr ? true : false;
 }
 
 /***********************************************************************************************************************
@@ -550,16 +550,12 @@ bool MainWindow::hasPlotPane(void)
 ***********************************************************************************************************************/
 void MainWindow::addPlotPane(void)
 {
-    Q_ASSERT(m_tabPlotPaneDock_p == nullptr); /* m_tabPlotPaneWidget_p shall be null when calling this function */
+    if (m_plotPane_p == nullptr) {
+        m_plotPane_p = new CPlotPane(m_tabWidget_p);
+    }
 
-    m_tabPlotPaneDock_p = new QDockWidget("Plot Pane", this);
-    m_tabPlotPaneDock_p->setFeatures(QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
-    m_tabPlotPaneDock_p->setObjectName("Plot Pane");
-
-    m_plotPane_p = new CPlotPane(m_tabPlotPaneDock_p);
-    m_tabPlotPaneDock_p->setWidget(m_plotPane_p);
-    m_tabPlotPaneDock_p->setAllowedAreas(Qt::AllDockWidgetAreas);
-    addDockWidget(Qt::LeftDockWidgetArea, m_tabPlotPaneDock_p);
+    const QIcon icon	 = QIcon(":plugin_32x32.png");
+    m_tabWidget_p->addTab(m_plotPane_p, icon, "Plugin plots");
 }
 
 /***********************************************************************************************************************
@@ -629,12 +625,8 @@ void MainWindow::selectionUpdated(void)
 void MainWindow::removePlotPane(void)
 {
     Q_ASSERT(nullptr != m_plotPane_p);
-    Q_ASSERT(m_tabPlotPaneDock_p != nullptr);
-    removeDockWidget(m_tabPlotPaneDock_p);
     delete m_plotPane_p;
     m_plotPane_p = nullptr;
-    delete m_tabPlotPaneDock_p;
-    m_tabPlotPaneDock_p = nullptr;
 }
 
 /***********************************************************************************************************************
@@ -655,10 +647,7 @@ CPlotWidgetInterface *MainWindow::attachPlot(CPlot *plot_p)
     } else {
         widgetInterface = m_plotPane_p->addPlot("No name", plot_p);
     }
-    m_tabPlotPaneDock_p->show();
-    m_tabPlotPaneDock_p->raise();
     update();
-
     return widgetInterface;
 }
 
@@ -708,7 +697,7 @@ void MainWindow::redrawPlot(CPlot *plot_p)
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), m_treeView_p(nullptr), m_logWindow_p(nullptr), m_editor_p(nullptr), m_tabWidget_p(nullptr),
-    m_searchWidget_p(nullptr), m_tabPlotPaneDock_p(nullptr), m_plotPane_p(nullptr)
+    m_searchWidget_p(nullptr), m_plotPane_p(nullptr)
 {
     Ui::UI_SearchForm ui;
     const QIcon mainIcon = QIcon(":logo.png");
@@ -750,6 +739,7 @@ MainWindow::MainWindow(QWidget *parent) :
     tabDockWidget_p->setWidget(m_tabWidget_p);
     tabDockWidget_p->setAllowedAreas(Qt::AllDockWidgetAreas);
 
+    //PANEW
     m_logWindow_p = new CLogWindow();
     m_tabWidget_p->addTab(m_logWindow_p, mainIcon, "Log window");
     m_searchWidget_p = new CSearchWidget();
@@ -1127,6 +1117,9 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
         m_searchWidget_p->setSizePolicy(policy);
         m_tabWidget_p->setSizePolicy(policy);
         m_logWindow_p->setSizePolicy(policy);
+        if (m_plotPane_p != nullptr) {
+            m_plotPane_p->setSizePolicy(policy);
+        }
 
         m_pendingWindowAdaptationTimer_2.get()->start(1000);
         PRINT_SIZE(QString("MW Geometry Restore ended 1"))
@@ -1177,6 +1170,9 @@ void MainWindow::restoreSavedStateGeometry(bool enable_fallback)
     m_logWindow_p->setAdaptWindowSize(QSize());
     m_searchWidget_p->setAdaptWindowSize(QSize());
     m_tabWidget_p->setAdaptWindowSize(QSize());
+    if (m_plotPane_p != nullptr) {
+        m_plotPane_p->setAdaptWindowSize(QSize());
+    }
 
     CWorkspace_LayoutAboutToBeChanged();
 

@@ -278,7 +278,6 @@ private:
     CTabWidget *m_tabWidget_p = nullptr;
     CSearchWidget *m_searchWidget_p = nullptr;
     QCheckBox *m_checkBox_p = nullptr;
-    QDockWidget *m_tabPlotPaneDock_p = nullptr;
     CPlotPane *m_plotPane_p = nullptr;   /* is a QTabWidget */
     QAction *m_saveFilterAct = nullptr;
     QAction *m_saveFilterAsAct = nullptr;

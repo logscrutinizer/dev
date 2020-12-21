@@ -56,7 +56,7 @@ public:
     void setPlotCursor(const double time); /* Called when time IS known, apply as is */
     void setSubPlotUpdated(CSubPlot *subPlot_p);
     void redrawPlot(CPlot *plot_p);
-    void setAdaptWindowSize(QSize& size) {m_adaptWindowSize = size;}
+    void setAdaptWindowSize(const QSize& size) {m_adaptWindowSize = size;}
 
     virtual bool CanBeClosed() const {return false;}
 
