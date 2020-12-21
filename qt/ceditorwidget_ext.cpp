@@ -522,6 +522,9 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
     m_numOf_1_PixelBonus = 0;
 
     m_maxDisplayRows = ((m_textWindow.bottom() - m_textWindow.top()) / m_rowHeigth);
+    if (m_maxDisplayRows < 1) {
+        m_maxDisplayRows = 1;
+    }
 
     if (m_maxDisplayRows > m_totalNumOfRows) {
         m_maxDisplayRows = m_totalNumOfRows;
