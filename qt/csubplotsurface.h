@@ -178,6 +178,7 @@ public:
 
     void GetSurfaceZoom(SurfaceZoom_t *zoom_p) {*zoom_p = m_surfaceZoom;}
     void SetSurfaceZoom(SurfaceZoom_t *zoom_p);
+    int  GetObjectCount(void) const noexcept;
 
     /****/
     void GetUnitsPerPixel(double *unitsPerPixel_X_p, double *unitsPerPixel_Y_p,

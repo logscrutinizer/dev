@@ -674,11 +674,15 @@ void CPlotPane::align_Reset_Zoom(void)
     /* loop through and take the extents of all graphs and make it largest possible */
 
     for (auto& plotWidget_p : m_plotWnds) {
-        if (!plotWidget_p->isInitialized()) {
+
+        if (!plotWidget_p->isInitialized() || plotWidget_p->isEmpty()) {
             continue;
         }
 
         QRectF rect = plotWidget_p->GetMinMax();
+
+        if (rect.width() == 0)
+            continue;
 
         if (init) {
             init = false;

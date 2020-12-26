@@ -139,6 +139,7 @@ public:
     virtual bool GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p) override;
     virtual void SetFocusTime(const double time) override;
     virtual bool isInitialized(void) override {return m_surfacesInitialized;}
+    virtual bool isEmpty(void) const noexcept override {return false;} // TODO
     virtual void SetUpdateSubplots(void) override {m_restoreSubPlotSize = true;}
 
     virtual bool isSurfaceInList(QList<CSubPlotSurface *> *list_p, CSubPlotSurface *surface_p) override;

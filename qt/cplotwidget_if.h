@@ -41,6 +41,7 @@ public:
     virtual bool GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p) = 0;
     virtual void SetFocusTime(const double time) = 0;
     virtual bool isInitialized(void) = 0;
+    virtual bool isEmpty(void) const noexcept = 0; // returns true if plot Widget has no objects
     virtual void SetUpdateSubplots(void) = 0;
     virtual bool isSurfaceInList(QList<CSubPlotSurface *> *list_p, CSubPlotSurface *surface_p) = 0;
     virtual void SetSurfaceFocus(CSubPlot *subPlot_p) = 0;

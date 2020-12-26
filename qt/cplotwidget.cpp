@@ -728,9 +728,6 @@ void CPlotWidget::InitilizeSubPlots(void)
 
     m_zoom_left = m_min_X;
     m_zoom_right = m_max_X;
-
-    extern void CPlotPane_Align_Reset_Zoom(void);
-    CPlotPane_Align_Reset_Zoom();
 }
 
 /***********************************************************************************************************************
@@ -1516,6 +1513,29 @@ bool CPlotWidget::GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distanc
 
     *distance_p = distance_Best;
     *go_pp = goBest_p;
+
+    return true;
+}
+
+/***********************************************************************************************************************
+*   isEmpty
+***********************************************************************************************************************/
+bool CPlotWidget::isEmpty(void) const noexcept
+{
+    // If there is any display graph then the plot isn't empty
+    if (m_surfaces.isEmpty()) {
+        return true;
+    }
+
+    for (auto& surface_p : m_surfaces) {
+       if (surface_p->m_numOfDisplayGraphs > 0) {
+           auto count = 0;
+           for (auto i = 0; i < surface_p->m_numOfDisplayGraphs; i++) {
+              count += surface_p->m_displayGraphs_a[i].m_numOfItems;
+           }
+           return count > 0 ? false : true;
+       }
+    }
 
     return true;
 }

@@ -186,6 +186,8 @@ void CCfgItem::PlotAllChildren(QList<CCfgItem *> *cfgPlotList_p, QList<CPlot *> 
                 static_cast<CCfgItem_Plot *>(plot_p)->PostRunPlot();
             }
 
+            extern void CPlotPane_Align_Reset_Zoom(void);
+            CPlotPane_Align_Reset_Zoom();
             extern void CPlotPane_SetPlotFocus(CPlot * plot_p);   /* Set focus the first in the list */
             CPlotPane_SetPlotFocus(plotList_p->first());
         }
@@ -627,6 +629,9 @@ void CCfgItem_Plot::RunPlot(void)
     doc_p->StartPlot(&plotList);
 
     PostRunPlot();
+
+    extern void CPlotPane_Align_Reset_Zoom(void);
+    CPlotPane_Align_Reset_Zoom();
 
     extern void CPlotPane_SetPlotFocus(CPlot * plot_p);  /* Set focus the first in the list */
     CPlotPane_SetPlotFocus(m_plot_ref_p);
