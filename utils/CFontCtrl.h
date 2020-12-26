@@ -29,7 +29,7 @@ public:
     int GetLogFontLetterHeight(void) {return m_fontLetterHeight;}
     int GetLogFontLetterWidth(void) {return m_fontLetterWidth;} /* Width should be the same for all letters when using a
                                                                  * fixed size font */
-    QSize GetFontSize(void) {return QSize(m_fontLetterHeight, m_fontLetterWidth);}
+    QSize GetFontSize(void) {return QSize(m_fontLetterWidth,m_fontLetterHeight);}
     int GetSize(void) {return m_size;}
     void UpdateAllFonts(void);
     void UpdateAllFontsWith_fontMod(FontMod_t fontMod);

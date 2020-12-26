@@ -671,11 +671,10 @@ void CSubPlotSurface::OnPaint_Empty(void)
 
     m_painter_p->fillRect(m_windowRect, BACKGROUND_COLOR);
 
+    doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
     m_lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, g_avg_str);
 
     const QSize lineSize = m_lineSize;
-
-    doc_p->m_fontCtrl.SetFont(m_painter_p, g_plotWnd_BlackFont_p);
 
     const int textRowHeight = lineSize.height() + static_cast<int>(lineSize.height() * 0.05);
     const int textBoxHeight = textRowHeight * NUM_OF_NO_SUBPLOT_STRINGS;
