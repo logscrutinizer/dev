@@ -1197,7 +1197,15 @@ void CSubPlotSurface::Draw_X_Axis(void)
                 m_painter_p->drawLine(longStartPoint, endPoint);
 
                 /* temp = QString("+%.2e(s)", (double)(m_lines_X[index] - m_lines_X[0])); */
-                temp = QString("%1(s)").arg(m_lines_X[index], 0, 'E', 2);
+                if (m_features | SUPPORTED_FEATURE_PLOT_UNIX_TIME) {
+                    auto unixTime = static_cast<uint>(m_lines_X[index]);
+                    QDateTime timestamp;
+                    timestamp.setTime_t(unixTime);
+                    temp = timestamp.toString(Qt::ISODateWithMs/*SystemLocaleShortDate*/);
+
+                } else {
+                   temp = QString("%1(s)").arg(m_lines_X[index], 0, 'E', 2);
+                }
                 lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, temp);
                 m_painter_p->drawText(QPoint(startPoint.x() - lineSize.width() / 2, xaxis_label_y), temp);
             } else {

@@ -59,6 +59,10 @@ public:
         }
     }
 
+    virtual void SetPluginSupportedFeatures(Supported_Features_t features) {
+        m_features = features;
+    }
+
     /****/
     virtual void RemoveShadowSubPlotsMatching(QList<CSubPlotSurface *> *matchSurfaces) override {
         if (!matchSurfaces->isEmpty()) {
@@ -187,6 +191,8 @@ private:
     QList<int> m_keyPressedList; /* store the pressed/released keys */
     std::unique_ptr<QTimer> m_toolTipTimer;
     ToolTipState m_toolTipState;
+
+    Supported_Features_t m_features; // From plugin
 
     /* Contains tooltip strings and extra info that plugins might provide */
     QList<QString> m_toolTipStrings;

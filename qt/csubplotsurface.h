@@ -201,6 +201,7 @@ public:
 
     void ForceRedraw(void) {m_setupGraphs = true;}
     void SetRenderMode(RenderMode_e renderMode) {m_renderMode = renderMode;}
+    void SetPluginSupportedFeatures(Supported_Features_t features) { m_features = features; }
 
     QImage& getImage(void) {return m_double_buffer_image;}
 
@@ -282,6 +283,7 @@ public:
     bool m_shadow; /* A shadow is a unique instance having a the m_subPlot_p referencing to some others
                     * m_subPlot_p. As such, this CSubPlotSurface doesn't own the m_subPlot_p */
     RenderMode_e m_renderMode;
+    Supported_Features_t m_features; // From plugin
 
 private:
     SurfaceZoom_t m_surfaceZoom;
