@@ -53,10 +53,8 @@ typedef enum {
 
 typedef enum {
     RenderMode_Maximized_en,
-
     /* The sub-plot is shown in full */
     RenderMode_Maximized_Pending_en,
-
     /* The sub-plot desires to be shown full, however because of small plotWnd it is (minimized) */
     RenderMode_Minimized_en             /* Use decision to minimize the sub-plot */
 }RenderMode_e;
@@ -137,6 +135,165 @@ public:
     GraphLinePattern_e m_overrideLinePattern; /* GLP_NONE default */
 };
 
+/* ------- */
+
+enum class TimePeriod {
+    NA = -1,
+    Year = 0,
+    Month = 1,
+    Week = 2,
+    Day = 3,
+    HalfDay = 4,
+    Hour = 5,
+    HalfHour = 6,
+    TenMin = 7,
+    Min = 8,
+    HalfMin = 9,
+    Sec = 10,
+    HalfSec = 11,
+    Milli100 = 12,
+    Milli10 = 13,
+    Milli = 14
+};
+
+const int64_t SEC_PER_HALFMIN = 30;
+const int64_t SEC_PER_MIN = 60;
+const int64_t SEC_PER_TEN_MIN = SEC_PER_MIN * 10;
+const int64_t SEC_PER_HALF_HOUR = SEC_PER_MIN * 30;
+const int64_t SEC_PER_HOUR = SEC_PER_MIN * 60;
+const int64_t SEC_PER_HALFDAY = SEC_PER_HOUR * 12;
+const int64_t SEC_PER_DAY = SEC_PER_HOUR * 24;
+const int64_t SEC_PER_WEEK = SEC_PER_DAY * 7;
+const int64_t SEC_PER_MONTH = SEC_PER_WEEK * 4;
+const int64_t SEC_PER_YEAR = SEC_PER_MONTH * 12;
+
+typedef struct {
+    double msecInPeriod = -1;
+    TimePeriod period;
+    int idx;
+    bool micro_allowed = true;
+
+    /*****  periodToStr **/
+    QString periodToStr(void) {
+        QString name;
+        switch (period)
+        {
+            case TimePeriod::NA:
+                name = "NA";
+                break;
+
+            case TimePeriod::Year:
+                name = "Year";
+                break;
+
+            case TimePeriod::Month:
+                name = "Month";
+                break;
+
+            case TimePeriod::Week:
+                name = "Week";
+                break;
+
+            case TimePeriod::HalfDay:
+                name = "Half-Day";
+                break;
+
+            case TimePeriod::Day:
+                name = "Day";
+                break;
+
+            case TimePeriod::Hour:
+                name = "Hour";
+                break;
+
+            case TimePeriod::HalfHour:
+                name = "Half-Hour";
+                break;
+
+            case TimePeriod::TenMin:
+                name = "10 Minute";
+                break;
+
+            case TimePeriod::Min:
+                name = "Minute";
+                break;
+
+            case TimePeriod::HalfMin:
+                name = "Half-Minute";
+                break;
+
+            case TimePeriod::Sec:
+                name = "Second";
+                break;
+
+            case TimePeriod::HalfSec:
+                name = "HalfSecond";
+                break;
+
+            case TimePeriod::Milli100:
+                name = "Milli100";
+                break;
+
+            case TimePeriod::Milli10:
+                name = "Milli10";
+                break;
+
+            case TimePeriod::Milli:
+                name = "Milli";
+                break;
+
+            default:
+                name = "NA";
+        }
+        return name;
+    }
+}TimeConfig_t;
+
+const TimeConfig_t allowedTimePeriods[] =
+{
+    {SEC_PER_YEAR * 1000.0, TimePeriod::Year, 0}
+    , {SEC_PER_MONTH * 1000.0, TimePeriod::Month, 1}
+    , {SEC_PER_WEEK * 1000.0, TimePeriod::Week, 2}
+    , {SEC_PER_DAY * 1000.0, TimePeriod::Day, 3}
+    , {SEC_PER_HALFDAY * 1000.0, TimePeriod::HalfDay, 4, false}
+    , {SEC_PER_HOUR * 1000.0, TimePeriod::Hour, 5, 0}
+    , {SEC_PER_HALF_HOUR * 1000.0, TimePeriod::HalfHour, 6, false}
+    , {SEC_PER_TEN_MIN * 1000.0, TimePeriod::TenMin, 7, false}
+    , {SEC_PER_MIN * 1000.0, TimePeriod::Min, 8}
+    , {SEC_PER_HALFMIN * 1000.0, TimePeriod::HalfMin, 9, false}
+    , {1 * 1000, TimePeriod::Sec, 10}
+    , {1 * 500, TimePeriod::HalfSec, 11}
+    , {100.0, TimePeriod::Milli100, 12}
+    , {10.0, TimePeriod::Milli10, 13}
+    , {1.0, TimePeriod::Milli, 14}
+};
+
+/* A table is created matching the allowedTimePeriods, such that it becomes possible to
+ * figure out how large a string becomes */
+typedef struct {
+    int majorWidth;
+    int majorMaxWordCount;
+    int minorWidth;
+    int minorMaxWordCount;
+} PixelLength_t;
+
+typedef struct XLineConfig {
+    TimeConfig_t anchorCfg;
+    std::tm anchorTime;
+    TimeConfig_t majorCfg;
+    TimeConfig_t minorCfg;
+    TimeConfig_t microCfg;
+
+    /* Ctor */
+    XLineConfig() {
+        memset(&anchorTime, 0, sizeof(anchorTime));
+        anchorTime.tm_mday = 1;
+        majorCfg.period = TimePeriod::NA;
+        minorCfg.period = TimePeriod::NA;
+        microCfg.period = TimePeriod::NA;
+    }
+} XLineConfig_t;
+
 /***********************************************************************************************************************
 *   CSubPlotSurface
 ***********************************************************************************************************************/
@@ -178,7 +335,7 @@ public:
 
     void GetSurfaceZoom(SurfaceZoom_t *zoom_p) {*zoom_p = m_surfaceZoom;}
     void SetSurfaceZoom(SurfaceZoom_t *zoom_p);
-    int  GetObjectCount(void) const noexcept;
+    int GetObjectCount(void) const noexcept;
 
     /****/
     void GetUnitsPerPixel(double *unitsPerPixel_X_p, double *unitsPerPixel_Y_p,
@@ -201,7 +358,7 @@ public:
 
     void ForceRedraw(void) {m_setupGraphs = true;}
     void SetRenderMode(RenderMode_e renderMode) {m_renderMode = renderMode;}
-    void SetPluginSupportedFeatures(Supported_Features_t features) { m_features = features; }
+    void SetPluginSupportedFeatures(Supported_Features_t features) {m_features = features;}
 
     QImage& getImage(void) {return m_double_buffer_image;}
 
@@ -225,7 +382,19 @@ private:
     void Draw_Y_Axis_Schedule(void);
 
     void Draw_X_Axis(void);
+    bool Draw_X_Axis_UnixTime(void);
 
+    void EnumerateUnixTimeStringLengths(std::vector<PixelLength_t>& a);
+    void Draw_UnixTimeXLine(qint64 ts);
+    void Draw_UniXTimeLabel(const QStringList& labels, qint64 ts);
+
+    QString GetMilliSecsString(const QDateTime& dtime, int numDecimals);
+    QStringList GetMajorStrings(const QDateTime& dtime,
+                                const TimePeriod& period,
+                                bool isAnchor = false,
+                                int appendEmptyCount = 1);
+    QStringList GetMinorStrings(const QDateTime& dtime, const TimePeriod& period);
+    bool StepTime(QDateTime& dtime, const TimePeriod period, const bool forward = true);
     void DrawGraphs(void);
     void DrawDecorators(bool over = true);  /* if over is set the drawDecorators are called */
 
@@ -262,6 +431,7 @@ private:
     bool Intersection_BOX_In2Out(int pl_1, double *p1_x_p, double *p1_y_p);
 
 public:
+
     QRect m_deactivedIconPos; /* when the subplot is deativated its icon is shown somewhere */
     CSubPlot *m_subPlot_p;
     CPlot *m_parentPlot_p;
@@ -283,9 +453,10 @@ public:
     bool m_shadow; /* A shadow is a unique instance having a the m_subPlot_p referencing to some others
                     * m_subPlot_p. As such, this CSubPlotSurface doesn't own the m_subPlot_p */
     RenderMode_e m_renderMode;
-    Supported_Features_t m_features; // From plugin
+    Supported_Features_t m_features; /* From plugin */
 
 private:
+
     SurfaceZoom_t m_surfaceZoom;
 
 #define MAX_Y_LINES 1080
@@ -312,9 +483,11 @@ private:
     QRect m_DC_windowRect; /* The window (coordinates) within the DC Bitmap, including the boarders */
 
 public:
+
     QRect m_DC_viewPortRect; /* The viewPort (coordinates) within the DC Bitmap, exluding boarders */
 
 private:
+
     QRect m_windowRect; /* Normalized window, where x1,y1 is always 0, and the width is as
                          * m_DC_windowRect. The last known window extent coordinates (includes all but the
                          * viewPort) */

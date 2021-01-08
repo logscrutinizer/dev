@@ -32,7 +32,9 @@ CDebug::CDebug(void)
 
     /* Default initalization of log level should be done in the module who own the value, as such here */
 #ifdef _DEBUG
-    m_traceCategory = LOG_TRACE_CATEGORY_SIZE | LOG_TRACE_CATEGORY_NONE;
+
+/*    m_traceCategory = LOG_TRACE_CATEGORY_SIZE | LOG_TRACE_CATEGORY_NONE; */
+    m_traceCategory = LOG_TRACE_CATEGORY_CPLOTWIDGET_GRAPHICS;
     m_logLevel = LOG_LEVEL_INFO;
 #else
     m_traceCategory = LOG_TRACE_CATEGORY_NONE;
