@@ -281,13 +281,18 @@ const TimeConfig_t allowedTimePeriods[] =
     , {1.0, TimePeriod::Milli, 14, &skip_1_5_10_100}
 };
 
+const auto MAX_ALLOWED_TIME_PERIODS = static_cast<int>(sizeof(allowedTimePeriods) / sizeof(allowedTimePeriods[0]));
+
 /* A table is created matching the allowedTimePeriods, such that it becomes possible to
  * figure out how large a string becomes */
-typedef struct {
+typedef struct PixelLength {
     int majorWidth;
     int majorMaxWordCount;
     int minorWidth;
     int minorMaxWordCount;
+
+	PixelLength() : majorWidth(0), majorMaxWordCount(0), minorWidth(0), minorMaxWordCount(0) {}
+
 } PixelLength_t;
 
 typedef struct XLineConfig {
@@ -397,7 +402,7 @@ private:
     void Draw_X_Axis(void);
     bool Draw_X_Axis_UnixTime(void);
 
-    void EnumerateUnixTimeStringLengths(std::vector<PixelLength_t>& a);
+    void EnumerateUnixTimeStringLengths(void);
     void Draw_UnixTimeXLine(qint64 ts);
     void Draw_UniXTimeLabel(const QStringList& labels, qint64 ts);
 
@@ -487,6 +492,7 @@ private:
     LS_Painter m_painter;
     LS_Painter *m_painter_p;                /* Valid only during OnPaint */
     QImage m_double_buffer_image;
+	std::vector<PixelLength_t> m_maxLengthArray; // (MAX_ALLOWED_TIME_PERIODS);
 
     /* The Normalized window is used such that painting to a temporary bitmap is always from top,left at point 0,0...
      * even if the subPlot is located

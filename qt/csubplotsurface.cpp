@@ -68,36 +68,40 @@ void SetupGraph_ThreadAction(void *data_p);
 const QString g_avg_str("XXXXXXxxxxxZZZZzzzzz");   /* used to calculate size of text in a box/line */
 
 CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool shadow)
-    :
-    m_deactivedIconPos(0, 0, 0, 0), m_subPlot_p(subPlot_p), m_parentPlot_p(parentPlot_p), m_subPlotTitle_len(0),
-    m_subPlotTitle_Size(0, 0), m_parentPlotTitle_len(0), m_parentPlotTitle_Size(0, 0), m_Y_Label_len(0),
-    m_Y_Label_Size(0, 0), m_X_Label_len(0), m_X_Label_Size(0, 0),
-    m_numOfDisplayGraphs(0), m_displayGraphs_a(nullptr), m_shadow(shadow), m_renderMode(RenderMode_Maximized_en),
-    m_numOf_Y_Lines(0), m_numOf_X_Lines(0), m_cursorRowEnabled(false), m_cursorRow(0), m_cursorTimeEnabled(false),
-    m_cursorTime(0.0), m_painter_p(nullptr), m_DC_windowRect(0, 0, 0, 0), m_DC_viewPortRect(0, 0, 0, 0),
-    m_windowRect(0, 0, 0, 0), m_viewPortRect(0, 0, 0, 0), m_zoomEnabled(false), m_unitsPerPixel_X(0.0),
-    m_unitsPerPixel_Y(0.0), m_unitsPerPixel_X_inv(0.0), m_unitsPerPixel_Y_inv(0.0),
-    m_viewPort_Width(0.0), m_viewPort_Height(0.0), m_viewPort_X_Center(0.0), m_viewPort_Y_Center(0.0),
-    m_bgBrush_p(nullptr), m_bgPen_p(nullptr), m_graphPenArray_p(nullptr), m_graphPenArraySize(0),
-    m_colorTable_p(nullptr), m_graphColors(0), m_numOfGraphUserColors(0),
-    m_linePen_Y_p(nullptr), m_cursorPen_Y_p(nullptr), m_resourcesLoaded(false), m_setupGraphs(false),
-    m_label_refs_a(nullptr), m_numOfLabelRefs(0), m_lineSize(0, 0), m_halfLineHeight(0), m_subplot_properties(0),
-    m_avgPixPerLetter(0), m_avgPixPerLetterHeight(0.0),
-    m_hasFocus(false)
+	:
+	m_deactivedIconPos(0, 0, 0, 0), m_subPlot_p(subPlot_p), m_parentPlot_p(parentPlot_p), m_subPlotTitle_len(0),
+	m_subPlotTitle_Size(0, 0), m_parentPlotTitle_len(0), m_parentPlotTitle_Size(0, 0), m_Y_Label_len(0),
+	m_Y_Label_Size(0, 0), m_X_Label_len(0), m_X_Label_Size(0, 0),
+	m_numOfDisplayGraphs(0), m_displayGraphs_a(nullptr), m_shadow(shadow), m_renderMode(RenderMode_Maximized_en),
+	m_numOf_Y_Lines(0), m_numOf_X_Lines(0), m_cursorRowEnabled(false), m_cursorRow(0), m_cursorTimeEnabled(false),
+	m_cursorTime(0.0), m_painter_p(nullptr), m_DC_windowRect(0, 0, 0, 0), m_DC_viewPortRect(0, 0, 0, 0),
+	m_windowRect(0, 0, 0, 0), m_viewPortRect(0, 0, 0, 0), m_zoomEnabled(false), m_unitsPerPixel_X(0.0),
+	m_unitsPerPixel_Y(0.0), m_unitsPerPixel_X_inv(0.0), m_unitsPerPixel_Y_inv(0.0),
+	m_viewPort_Width(0.0), m_viewPort_Height(0.0), m_viewPort_X_Center(0.0), m_viewPort_Y_Center(0.0),
+	m_bgBrush_p(nullptr), m_bgPen_p(nullptr), m_graphPenArray_p(nullptr), m_graphPenArraySize(0),
+	m_colorTable_p(nullptr), m_graphColors(0), m_numOfGraphUserColors(0),
+	m_linePen_Y_p(nullptr), m_cursorPen_Y_p(nullptr), m_resourcesLoaded(false), m_setupGraphs(false),
+	m_label_refs_a(nullptr), m_numOfLabelRefs(0), m_lineSize(0, 0), m_halfLineHeight(0), m_subplot_properties(0),
+	m_avgPixPerLetter(0), m_avgPixPerLetterHeight(0.0),
+	m_hasFocus(false)
 {
-    m_surfaceZoom.x_max = 0.0;
-    m_surfaceZoom.x_min = 0.0;
-    m_surfaceZoom.x_offset = 0.0;
-    m_surfaceZoom.y_max = 0.0;
-    m_surfaceZoom.y_min = 0.0;
-    m_surfaceZoom.y_offset = 0.0;
+	m_surfaceZoom.x_max = 0.0;
+	m_surfaceZoom.x_min = 0.0;
+	m_surfaceZoom.x_offset = 0.0;
+	m_surfaceZoom.y_max = 0.0;
+	m_surfaceZoom.y_min = 0.0;
+	m_surfaceZoom.y_offset = 0.0;
 
-    char *title_p;
-    char *subTitle_p;
-    char *X_AxisLabel_p;
-    char *Y_AxisLabel_p;
+	char *title_p;
+	char *subTitle_p;
+	char *X_AxisLabel_p;
+	char *Y_AxisLabel_p;
 
-    m_subPlot_p->GetTitle(&subTitle_p, &Y_AxisLabel_p);
+	m_maxLengthArray = std::vector<PixelLength_t>(MAX_ALLOWED_TIME_PERIODS);
+
+	std::fill(m_maxLengthArray.begin(), m_maxLengthArray.end(), PixelLength_t());
+ 
+	m_subPlot_p->GetTitle(&subTitle_p, &Y_AxisLabel_p);
     m_parentPlot_p->GetTitle(&title_p, &X_AxisLabel_p);
 
     strcpy_s(m_subPlotTitle, CFG_TEMP_STRING_MAX_SIZE, subTitle_p);

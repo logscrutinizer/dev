@@ -68,10 +68,9 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
      *  tm_isdst    int Daylight Saving Time flag
      */
 
-    const auto MAX_ALLOWED_TIME_PERIODS = static_cast<int>(sizeof(allowedTimePeriods) / sizeof(allowedTimePeriods[0]));
-    auto x_min_sec = static_cast<std::time_t>(m_surfaceZoom.x_min);
+    auto x_min_sec = std::max(static_cast<std::time_t>(0), static_cast<std::time_t>(m_surfaceZoom.x_min));
     auto x_max_sec = static_cast<std::time_t>(m_surfaceZoom.x_max);
-    auto x_min_msec = static_cast<qint64>(std::round(m_surfaceZoom.x_min * 1000.0));
+    auto x_min_msec = std::max(static_cast<qint64>(0), static_cast<qint64>(std::round(m_surfaceZoom.x_min * 1000.0)));
     auto x_max_msec = static_cast<qint64>(std::round(m_surfaceZoom.x_max * 1000.0));
     auto span_ms = x_max_msec - x_min_msec;
     auto x_min_tm = *std::localtime(&x_min_sec);
@@ -167,8 +166,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
         }
     }
 
-    std::vector<PixelLength_t> maxLengthArray(MAX_ALLOWED_TIME_PERIODS);
-    EnumerateUnixTimeStringLengths(maxLengthArray);
+    EnumerateUnixTimeStringLengths();
 
     /* seconds since epoc */
     if (anchor_ms == 0) {
@@ -198,14 +196,14 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
     /* Decide the best sized Major time step. There should be at least one Major label */
     while (idx < MAX_ALLOWED_TIME_PERIODS) {
         auto lines = span_ms / allowedTimePeriods[idx].msecInPeriod;
-        if (lines <= maxLengthArray[idx].majorMaxWordCount) {
+        if (lines <= m_maxLengthArray[idx].majorMaxWordCount) {
             xconfig.majorCfg = allowedTimePeriods[idx];
             PRINT_CPLOTWIDGET_GRAPHICS(
                 QString("major:%1 lines:%2 idx:%3 req_max:%4")
                     .arg(xconfig.majorCfg.periodToStr())
                     .arg(lines)
                     .arg(idx)
-                    .arg(maxLengthArray[idx].majorMaxWordCount));
+                    .arg(m_maxLengthArray[idx].majorMaxWordCount));
             if (lines >= 1) {
                 break;
             }
@@ -228,7 +226,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
     idx++;
     while (idx < MAX_ALLOWED_TIME_PERIODS) {
         auto lines = span_ms / allowedTimePeriods[idx].msecInPeriod;
-        if (lines > maxLengthArray[idx].minorMaxWordCount) {
+        if (lines > m_maxLengthArray[idx].minorMaxWordCount) {
             /* If no minor step config has been found previously we configure time/step skipping.
              * This isn't necessary if we in previous loop found a config that would fit. */
             if (xconfig.minorCfg.period == TimePeriod::NA) {
@@ -237,7 +235,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
                 auto less_lines = lines;
                 int skipConfigIdx = 0;
 
-                while (less_lines > maxLengthArray[idx].minorMaxWordCount) {
+                while (less_lines > m_maxLengthArray[idx].minorMaxWordCount) {
                     if ((allowedTimePeriods[idx].skipConfig_p != nullptr) &&
                         (skipConfigIdx < allowedTimePeriods[idx].skipConfig_p->length)) {
                         minorSkips = allowedTimePeriods[idx].skipConfig_p->recSkips[skipConfigIdx];
@@ -315,7 +313,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
      * 3. After reaching the end of the visible zoom step backwards from the anchor and do the same as
      *      in (2).
      */
-    auto slist = GetMajorStrings(anchor_dt, xconfig.majorCfg.period, true, 3);
+    auto slist = GetMajorStrings(anchor_dt, xconfig.majorCfg.period, true, 1);
     Draw_UniXTimeLabel(slist, anchor_ms);
 
     auto tempSkips = minorSkips;
@@ -325,7 +323,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
 
     while (ts < x_max_msec) {
         if (ts >= major_ts) {
-            auto appendCount = xconfig.majorCfg.period == xconfig.minorCfg.period ? 1 : 2;
+            auto appendCount = xconfig.majorCfg.period == xconfig.minorCfg.period ? 0 : 1;
             auto slist = GetMajorStrings(nextMajor_dt, xconfig.majorCfg.period, false, appendCount);
             Draw_UniXTimeLabel(slist, major_ts);
             PRINT_CPLOTWIDGET_GRAPHICS(QString("major ts: %1").arg(nextMajor_dt.toString("hh:mm:ss.zzz")));
@@ -414,19 +412,24 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
 * In order to identify how many pixels the different major/minor lables would require the allowedTimePeriods array
 * is decorated with the values, based on the different time periods (stepping).
 ***********************************************************************************************************************/
-void CSubPlotSurface::EnumerateUnixTimeStringLengths(std::vector<PixelLength_t>& a)
+void CSubPlotSurface::EnumerateUnixTimeStringLengths(void)
 {
     QDate date(2021, 1, 12);
     QDateTime dt;
     dt.setDate(date);
 
     CLogScrutinizerDoc *doc_p = GetTheDoc();
-    for (size_t i = 0; i < a.size(); i++) {
-        a[i].minorWidth = 0;
-        a[i].majorWidth = 0;
-    }
 
-    for (auto month = 0; month < 12; month++) {
+	auto& a = m_maxLengthArray;
+
+	auto hasValues = true;
+	for (auto& item : a) {
+		if (item.majorMaxWordCount == 0 || item.majorWidth == 0 || item.minorMaxWordCount == 0 || item.minorWidth == 0) {
+			hasValues = false;
+		}
+	}
+
+	for (auto month = 0; month < 12; month++) {
         dt = dt.addMonths(1);
 
         for (size_t idx = 0; idx < a.size(); idx++) {
@@ -439,7 +442,13 @@ void CSubPlotSurface::EnumerateUnixTimeStringLengths(std::vector<PixelLength_t>&
             }
 
             auto lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, max_s);
-            a[idx].majorWidth = std::max(a[idx].majorWidth, lineSize.width()) + 5;
+            auto w = std::max(a[idx].majorWidth, lineSize.width() + 5);
+
+			if (hasValues && w == a[idx].majorWidth) {
+				return; // early exit
+			}
+
+			a[idx].majorWidth = w;
 
             sl = GetMinorStrings(dt, allowedTimePeriods[idx].period);
             max_s = QString("");
@@ -449,7 +458,12 @@ void CSubPlotSurface::EnumerateUnixTimeStringLengths(std::vector<PixelLength_t>&
                 }
             }
             lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, max_s);
-            a[idx].minorWidth = std::max(a[idx].minorWidth, lineSize.width()) + 5;
+
+			if (lineSize.width() > 640) {
+				return;
+			}
+
+            a[idx].minorWidth = std::max(a[idx].minorWidth, lineSize.width() + 5);
         }
     }
 
@@ -645,9 +659,7 @@ QStringList CSubPlotSurface::GetMajorStrings(const QDateTime& dtime,
 
     if (isAnchor) {
         slist.append(dtime.toString("yyyy"));
-        slist.append(dtime.toString("MMM"));
-        slist.append(dtime.toString("d"));
-        slist.append(QString(""));
+        slist.append(dtime.toString("MMM d"));
     }
 
     switch (period)
@@ -687,7 +699,6 @@ QStringList CSubPlotSurface::GetMajorStrings(const QDateTime& dtime,
             if (!isAnchor) {
                 slist.append(dtime.toString("MMMM"));
                 slist.append(dtime.toString("d"));
-                slist.append(QString(""));
             }
             break;
 
@@ -696,7 +707,6 @@ QStringList CSubPlotSurface::GetMajorStrings(const QDateTime& dtime,
                 slist.append(dtime.toString("yyyy"));
                 slist.append(dtime.toString("MMM"));
                 slist.append(dtime.toString("d"));
-                slist.append(QString(""));
             }
             break;
 
