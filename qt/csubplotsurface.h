@@ -168,9 +168,16 @@ const int64_t SEC_PER_MONTH = SEC_PER_WEEK * 4;
 const int64_t SEC_PER_YEAR = SEC_PER_MONTH * 12;
 
 typedef struct {
+	int recSkips[10] = { 1 };
+	int length = 1;
+}skipConfig_t;
+
+typedef struct {
     double msecInPeriod = -1;
     TimePeriod period;
     int idx;
+	const skipConfig_t * skipConfig_p;
+
     bool micro_allowed = true;
 
     /*****  periodToStr **/
@@ -249,23 +256,29 @@ typedef struct {
     }
 }TimeConfig_t;
 
+const skipConfig_t skip_1_5_10_15_30 = { {4, 9, 14, 29}, 4 };
+const skipConfig_t skip_1_5_10_100 = { {4, 9, 99}, 3};
+const skipConfig_t skip_1_3_6_12 = { {2, 5, 11}, 3};
+const skipConfig_t skip_1_2_4_8 = { {1, 3, 7}, 3};
+const skipConfig_t skip_1_2_7_14 = { {1, 6, 13}, 3};
+
 const TimeConfig_t allowedTimePeriods[] =
 {
-    {SEC_PER_YEAR * 1000.0, TimePeriod::Year, 0}
-    , {SEC_PER_MONTH * 1000.0, TimePeriod::Month, 1}
-    , {SEC_PER_WEEK * 1000.0, TimePeriod::Week, 2}
-    , {SEC_PER_DAY * 1000.0, TimePeriod::Day, 3}
-    , {SEC_PER_HALFDAY * 1000.0, TimePeriod::HalfDay, 4, false}
-    , {SEC_PER_HOUR * 1000.0, TimePeriod::Hour, 5, 0}
-    , {SEC_PER_HALF_HOUR * 1000.0, TimePeriod::HalfHour, 6, false}
-    , {SEC_PER_TEN_MIN * 1000.0, TimePeriod::TenMin, 7, false}
-    , {SEC_PER_MIN * 1000.0, TimePeriod::Min, 8}
-    , {SEC_PER_HALFMIN * 1000.0, TimePeriod::HalfMin, 9, false}
-    , {1 * 1000, TimePeriod::Sec, 10}
-    , {1 * 500, TimePeriod::HalfSec, 11}
-    , {100.0, TimePeriod::Milli100, 12}
-    , {10.0, TimePeriod::Milli10, 13}
-    , {1.0, TimePeriod::Milli, 14}
+    {SEC_PER_YEAR * 1000.0, TimePeriod::Year, 0, &skip_1_5_10_100}
+    , {SEC_PER_MONTH * 1000.0, TimePeriod::Month, 1, &skip_1_3_6_12}
+    , {SEC_PER_WEEK * 1000.0, TimePeriod::Week, 2, &skip_1_2_4_8}
+    , {SEC_PER_DAY * 1000.0, TimePeriod::Day, 3, &skip_1_2_7_14}
+    , {SEC_PER_HALFDAY * 1000.0, TimePeriod::HalfDay, 4, nullptr, false}
+    , {SEC_PER_HOUR * 1000.0, TimePeriod::Hour, 5, &skip_1_3_6_12}
+    , {SEC_PER_HALF_HOUR * 1000.0, TimePeriod::HalfHour, 6, nullptr, false}
+    , {SEC_PER_TEN_MIN * 1000.0, TimePeriod::TenMin, 7, &skip_1_3_6_12, false}
+    , {SEC_PER_MIN * 1000.0, TimePeriod::Min, 8, &skip_1_5_10_15_30}
+    , {SEC_PER_HALFMIN * 1000.0, TimePeriod::HalfMin, 9, nullptr, false}
+    , {1 * 1000, TimePeriod::Sec, 10, &skip_1_5_10_15_30}
+    , {1 * 500, TimePeriod::HalfSec, 11, nullptr, false}
+    , {100.0, TimePeriod::Milli100, 12, &skip_1_5_10_100}
+    , {10.0, TimePeriod::Milli10, 13, &skip_1_5_10_100}
+    , {1.0, TimePeriod::Milli, 14, &skip_1_5_10_100}
 };
 
 /* A table is created matching the allowedTimePeriods, such that it becomes possible to

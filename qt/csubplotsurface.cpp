@@ -1537,8 +1537,15 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
                 xconfig.minorCfg = allowedTimePeriods[idx];
 
                 auto less_lines = lines;
+				int skipConfigIdx = 0;
                 while (less_lines > maxLengthArray[idx].minorMaxWordCount) {
-                    minorSkips += 1;
+					if (allowedTimePeriods[idx].skipConfig_p != nullptr && skipConfigIdx < allowedTimePeriods[idx].skipConfig_p->length) {
+						minorSkips = allowedTimePeriods[idx].skipConfig_p->recSkips[skipConfigIdx];
+						skipConfigIdx++;
+					} else {
+						minorSkips += 1;
+					}
+
                     less_lines = lines / (1.0 + minorSkips);
                 }
                 PRINT_CPLOTWIDGET_GRAPHICS(QString("minor:%1 lines:%2 less_lines:%3 idx:%4 skips:%5").arg(

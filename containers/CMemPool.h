@@ -9,6 +9,7 @@
 #include "errno.h"
 
 #ifdef _WIN32
+ #define NOMINMAX
  #include "Windows.h"
 #else
  #include <sys/mman.h>
