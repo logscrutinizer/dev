@@ -468,7 +468,7 @@ private:
     DLL_API_PluginInfo_t m_info;
     CList_LSZ m_decoders;   /* a list of CDecoder */
     CList_LSZ m_plots;      /* a list of CPlot */
-    Supported_Features_t m_features; /* SUPPORTED_FEATURE_xxx  A bitmask of the supported features or:ed together */
+    Supported_Features_t m_features = 0; /* SUPPORTED_FEATURE_xxx  A bitmask of the supported features or:ed together */
 };
 
 #endif

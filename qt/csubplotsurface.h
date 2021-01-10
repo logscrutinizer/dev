@@ -376,7 +376,9 @@ public:
 
     void ForceRedraw(void) {m_setupGraphs = true;}
     void SetRenderMode(RenderMode_e renderMode) {m_renderMode = renderMode;}
-    void SetPluginSupportedFeatures(Supported_Features_t features) {m_features = features;}
+    void SetPluginSupportedFeatures(Supported_Features_t features) {
+		m_features = features;
+	}
 
     QImage& getImage(void) {return m_double_buffer_image;}
 

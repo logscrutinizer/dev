@@ -710,6 +710,7 @@ void CPlotWidget::InitilizeSubPlots(void)
         }
 
         subPlotSurface_p = new CSubPlotSurface(subPlot_p, m_plot_p);
+		subPlotSurface_p->SetPluginSupportedFeatures(m_features);
         m_surfaces.append(subPlotSurface_p);
         subPlot_p->GetExtents(&extents);
 
