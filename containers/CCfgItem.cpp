@@ -984,6 +984,8 @@ CCfgItem_Plugin::CCfgItem_Plugin(
             CCfgItem_Plot *CfgPlot_p = new CCfgItem_Plot(plot_p, CfgPlots_p);
             CfgPlot_p->InsertItem();
 
+            CfgPlot_p->m_plotWidget_p->SetPluginSupportedFeatures(m_info.supportedFeatures);
+
             /* Subplots - start */
 
             CList_LSZ *subPlotList_p;
@@ -1079,6 +1081,11 @@ QString CCfgItem_Plugin::GetInfo(void)
     if (m_info.supportedFeatures & SUPPORTED_FEATURE_HELP_URL) {
         info += QString("    Help URL\n");
     }
+
+    if (m_info.supportedFeatures & SUPPORTED_FEATURE_PLOT_UNIX_TIME) {
+        info += QString("    Unix time\n");
+    }
+
     return info;
 }
 

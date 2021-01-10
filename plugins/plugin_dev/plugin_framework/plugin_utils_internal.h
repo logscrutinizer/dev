@@ -72,8 +72,8 @@ extern void EnableMsgTrace(int hwnd_msgConsumer, int h_msgHeap);
  * ----------------------------------------------------------------------------------------------------------------------
  * */
 
-typedef int SubPlot_Properties_t; /* Use SUB_PLOT_PROPERTY_XXX, combine multiple properies with OR */
-typedef int Supported_Features_t; /* SUPPORTED_FEATURE_xxx */
+typedef unsigned int SubPlot_Properties_t; /* Use SUB_PLOT_PROPERTY_XXX, combine multiple properies with OR */
+typedef unsigned int Supported_Features_t; /* SUPPORTED_FEATURE_xxx */
 typedef int16_t Object_Properties_Bitmask_t; /* PROPERTIES_BITMASK_xxx */
 
 typedef enum

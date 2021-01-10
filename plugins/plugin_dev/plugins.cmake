@@ -11,6 +11,7 @@ add_subdirectory(${PLUGIN_PATH}/plugin_example_3_1)
 add_subdirectory(${PLUGIN_PATH}/plugin_example_4)
 add_subdirectory(${PLUGIN_PATH}/plugin_example_5)
 add_subdirectory(${PLUGIN_PATH}/plugin_example_6)
+add_subdirectory(${PLUGIN_PATH}/plugin_example_7)
 add_subdirectory(${PLUGIN_PATH}/plugin_tester)
 add_subdirectory(${PLUGIN_PATH}/file_streamer)
 

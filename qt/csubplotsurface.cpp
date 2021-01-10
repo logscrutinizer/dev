@@ -4,6 +4,7 @@
 ***********************************************************************************************************************/
 
 #include <stdlib.h>
+#include <array>
 
 #include "math.h"
 
@@ -95,6 +96,10 @@ CSubPlotSurface::CSubPlotSurface(CSubPlot *subPlot_p, CPlot *parentPlot_p, bool 
     char *subTitle_p;
     char *X_AxisLabel_p;
     char *Y_AxisLabel_p;
+
+    m_maxLengthArray = std::vector<PixelLength_t>(MAX_ALLOWED_TIME_PERIODS);
+
+    std::fill(m_maxLengthArray.begin(), m_maxLengthArray.end(), PixelLength_t());
 
     m_subPlot_p->GetTitle(&subTitle_p, &Y_AxisLabel_p);
     m_parentPlot_p->GetTitle(&title_p, &X_AxisLabel_p);
@@ -675,7 +680,6 @@ void CSubPlotSurface::OnPaint_Empty(void)
     m_lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, g_avg_str);
 
     const QSize lineSize = m_lineSize;
-
     const int textRowHeight = lineSize.height() + static_cast<int>(lineSize.height() * 0.05);
     const int textBoxHeight = textRowHeight * NUM_OF_NO_SUBPLOT_STRINGS;
     int x;
@@ -1168,6 +1172,13 @@ void CSubPlotSurface::Draw_X_Axis(void)
 
     /* avoid x-lines (time) if plot is too small */
     if (m_viewPortRect.height() > 50) {
+        if (m_features & SUPPORTED_FEATURE_PLOT_UNIX_TIME) {
+            /* if we cannot draw using UnixTime, use legacy */
+            if (Draw_X_Axis_UnixTime()) {
+                return;
+            }
+        }
+
         Setup_X_Lines();
 
         m_painter_p->setPen(*g_plotWnd_defaultPen_p);
@@ -1197,7 +1208,14 @@ void CSubPlotSurface::Draw_X_Axis(void)
                 m_painter_p->drawLine(longStartPoint, endPoint);
 
                 /* temp = QString("+%.2e(s)", (double)(m_lines_X[index] - m_lines_X[0])); */
-                temp = QString("%1(s)").arg(m_lines_X[index], 0, 'E', 2);
+                if (m_features & SUPPORTED_FEATURE_PLOT_UNIX_TIME) {
+                    auto unixTime = static_cast<uint>(m_lines_X[index]);
+                    QDateTime timestamp;
+                    timestamp.setTime_t(unixTime);
+                    temp = timestamp.toString(Qt::ISODateWithMs /*SystemLocaleShortDate*/);
+                } else {
+                    temp = QString("%1(s)").arg(m_lines_X[index], 0, 'E', 2);
+                }
                 lineSize = doc_p->m_fontCtrl.GetTextPixelLength(m_painter_p, temp);
                 m_painter_p->drawText(QPoint(startPoint.x() - lineSize.width() / 2, xaxis_label_y), temp);
             } else {

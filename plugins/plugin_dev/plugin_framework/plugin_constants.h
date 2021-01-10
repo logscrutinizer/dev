@@ -45,6 +45,7 @@
 #define SUPPORTED_FEATURE_HELP_URL                          (1 << 6)  // 64     Supply a URL for help
 #define SUPPORTED_FEATURE_PLOT_TIME                         (1 << 7)  // 128    The plugin may try to extract current time from the row string
 #define SUPPORTED_FEATURE_PLOT_GRAPHICAL_OBJECT_FEEDBACK    (1 << 9)  // 512    The plugin may provide additional information when user is hovering the mouse over a graphical object (graph object)
+#define SUPPORTED_FEATURE_PLOT_UNIX_TIME                    (1 << 10) // 1024   The plugin provided time is Unix Time Stamp, counting sec from 1970-01-01 00:00:00
 
 // Subplot properties
 

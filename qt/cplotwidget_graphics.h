@@ -138,6 +138,9 @@ public:
                                  CSubPlot **subPlot_pp) override;
     virtual bool GetClosest_GO(int row, GraphicalObject_t **go_pp, int *distance_p) override;
     virtual void SetFocusTime(const double time) override;
+    virtual void SetPluginSupportedFeatures(Supported_Features_t features) override {
+        m_features = features;
+    }
     virtual bool isInitialized(void) override {return m_surfacesInitialized;}
     virtual bool isEmpty(void) const noexcept override {return false;} // TODO
     virtual void SetUpdateSubplots(void) override {m_restoreSubPlotSize = true;}
@@ -254,8 +257,9 @@ private:
     bool m_rescale = false;
     QList<CGraphicsSubplotSurface *> m_surfaces;
     std::unique_ptr<QTimer> m_toolTipTimer;
-    ToolTipState m_toolTipState
-    ;
+    ToolTipState m_toolTipState;
+
+    Supported_Features_t m_features; // From plugin
 
     /* Contains tooltip strings and extra info that plugins might provide */
     QList<QString> m_toolTipStrings;

@@ -1,0 +1,47 @@
+-- Logs begin at Mon 2020-08-17 20:56:35 UTC, end at Sat 2020-11-14 11:41:53 UTC. --
+Aug 17 20:56:35 raspberrypi4 kernel: Booting Linux on physical CPU 0x0
+Nov 14 10:40:43 raspberrypi4 systemservice[1450]: temp:29.9
+Nov 14 10:40:44 raspberrypi4 systemservice[1450]: temp:29.8
+Nov 14 10:40:45 raspberrypi4 systemservice[1450]: temp:29.7
+Nov 14 10:40:46 raspberrypi4 systemservice[1450]: temp:29.6
+Nov 15 10:40:46 raspberrypi4 systemservice[1450]: temp:29.0
+Nov 16 10:40:46 raspberrypi4 systemservice[1450]: temp:29.1
+Nov 17 10:40:46 raspberrypi4 systemservice[1450]: temp:29.2
+Dec 17 10:40:46 raspberrypi4 systemservice[1450]: temp:29.3
+Dec 17 10:40:47 raspberrypi4 systemservice[1450]: temp:29.4
+Dec 17 10:40:48 raspberrypi4 systemservice[1450]: temp:29.1
+Dec 17 10:40:49 raspberrypi4 systemservice[1450]: temp:29.1
+Dec 17 10:40:50 raspberrypi4 systemservice[1450]: temp:29.2
+Dec 17 10:40:51 raspberrypi4 systemservice[1450]: temp:29.1
+Dec 17 10:40:52 raspberrypi4 systemservice[1450]: temp:29.2
+Dec 17 10:40:53 raspberrypi4 systemservice[1450]: temp:29.2
+Dec 17 10:40:54 raspberrypi4 systemservice[1450]: temp:29.3
+Dec 17 10:40:56 raspberrypi4 systemservice[1450]: temp:29.4
+Dec 17 10:40:57 raspberrypi4 systemservice[1450]: temp:29.5
+Dec 17 10:40:58 raspberrypi4 systemservice[1450]: temp:29.5
+Dec 17 10:40:59 raspberrypi4 systemservice[1450]: temp:29.5
+Dec 17 10:41:00 raspberrypi4 systemservice[1450]: temp:29.5
+Dec 17 10:41:01 raspberrypi4 systemservice[1450]: temp:29.6
+Feb 17 10:41:01 raspberrypi4 systemservice[1450]: temp:29.7
+Feb 18 10:41:01 raspberrypi4 systemservice[1450]: temp:29.8
+Feb 19 10:41:01 raspberrypi4 systemservice[1450]: temp:29.2
+Feb 20 10:41:01 raspberrypi4 systemservice[1450]: temp:29.1
+Feb 21 10:41:01 raspberrypi4 systemservice[1450]: temp:29.2
+Feb 22 10:41:01 raspberrypi4 systemservice[1450]: temp:29.3
+Feb 23 10:41:01 raspberrypi4 systemservice[1450]: temp:29.4
+Feb 24 10:41:01 raspberrypi4 systemservice[1450]: temp:29.1
+Feb 26 10:41:01 raspberrypi4 systemservice[1450]: temp:29.7
+Feb 27 10:41:01 raspberrypi4 systemservice[1450]: temp:29.8
+April 1 10:41:01 raspberrypi4 systemservice[1450]: temp:29.1
+April 2 10:41:01 raspberrypi4 systemservice[1450]: temp:29.2
+April 2 10:41:02 raspberrypi4 systemservice[1450]: temp:29.3
+April 2 10:41:03 raspberrypi4 systemservice[1450]: temp:29.2
+April 2 10:41:04 raspberrypi4 systemservice[1450]: temp:29.3
+April 2 10:41:05 raspberrypi4 systemservice[1450]: temp:29.1
+April 2 10:41:06 raspberrypi4 systemservice[1450]: temp:29.3
+April 2 10:41:07 raspberrypi4 systemservice[1450]: temp:29.4
+April 2 10:41:08 raspberrypi4 systemservice[1450]: temp:29.3
+April 2 10:41:09 raspberrypi4 systemservice[1450]: temp:29.9
+April 2 10:41:10 raspberrypi4 systemservice[1450]: temp:29.2
+April 2 10:41:11 raspberrypi4 systemservice[1450]: temp:29.2
+

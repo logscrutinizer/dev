@@ -44,7 +44,7 @@
 #endif
 
 #ifdef WIN32
-
+#define NOMINMAX
 /* AllowSetForegroundWindow */
  #include "Windows.h"
 #endif

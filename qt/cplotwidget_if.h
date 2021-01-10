@@ -28,6 +28,7 @@ public:
     virtual QRectF GetMinMax(void) = 0;
     virtual void SetMinMax(QRectF& rect) = 0;
     virtual void SetUpdated(CSubPlot *subPlot_p) = 0;
+    virtual void SetPluginSupportedFeatures(Supported_Features_t features) = 0;
     virtual void RemoveShadowSubPlotsMatching(QList<CSubPlotSurface *> *matchSurfaces) = 0;
     virtual void GetSurfaces(QList<CSubPlotSurface *> **active, QList<CSubPlotSurface *> **deactivated) = 0;
     virtual void Initialize(void) = 0;
