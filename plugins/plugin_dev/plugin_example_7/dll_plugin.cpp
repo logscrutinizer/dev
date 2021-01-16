@@ -22,7 +22,7 @@ CPlugin_DLL_API *DLL_API_Factory(void)
 
 CPlugin_Example_7::CPlugin_Example_7()
 {
-    SetPluginName("Plugin BST");
+    SetPluginName("Plugin Example 7");
     SetPluginVersion("v1.0");
     SetPluginAuthor("Robert Klang");
 
@@ -161,7 +161,7 @@ void CPlot_Example_7::parse_journalctl_row_time(CTextParser& parser, std::tm& tm
         }
     }
 
-    tm.tm_mon = std::min(11, month_idx) + 1;
+    tm.tm_mon = std::min(11, month_idx);
 
     unsigned int ui;
 
