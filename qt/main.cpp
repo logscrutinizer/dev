@@ -217,6 +217,12 @@ int main(int argc, char *argv[])
     /* Process the actual command line arguments given by the user */
     parser.process(app);
 
+    QString rawArgs("Start command: ");
+    for (int i = 0; i < argc; i++) {
+        rawArgs += QString("<argv[%1]=%2> ").arg(i).arg(argv[i]);
+    }
+    TRACEX_I(rawArgs);
+
     const QStringList args = parser.positionalArguments();
     MainWindow w;
     w.setCommandLineParams(args);

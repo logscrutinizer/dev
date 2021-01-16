@@ -790,6 +790,11 @@ void MainWindow::showEvent(QShowEvent *e)
         GetTheDoc()->m_recentFiles.ReadFromFile();
         CFGCTRL_LoadDefaultWorkspace();
         if (!m_commandLine.isEmpty()) {
+            QString cmdLine = QString("CommandLine (%1 args): ").arg(m_commandLine.length());
+            for (auto& item : m_commandLine) {
+                cmdLine += QString(" ") + item;
+            }
+            TRACEX_I(cmdLine);
             CFGCTRL_LoadFiles(m_commandLine);
         }
 
