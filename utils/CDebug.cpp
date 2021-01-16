@@ -135,7 +135,7 @@ void CDebug::Initialize(void)
     m_file_p = new QFile(fileName);
     if (!m_file_p->open(openFlags)) {
         QString errorMsg = m_file_p->errorString();
-        textStream << "Log file could not be opened: " << fileName << " Error:" << errorMsg << endl;
+        textStream << "Log file could not be opened: " << fileName << " Error:" << errorMsg << Qt::endl;
         qDebug() << logString;
         return;
     }
@@ -144,9 +144,9 @@ void CDebug::Initialize(void)
     textStream << dateString;
 
 #ifdef _DEBUG
-    textStream << QString(" - DEBUG - Log File") << endl << endl;
+    textStream << QString(" - DEBUG - Log File") << Qt::endl << Qt::endl;
 #else
-    textStream << QString(" - RELEASE - Log File") << endl << endl;
+    textStream << QString(" - RELEASE - Log File") << Qt::endl << Qt::endl;
 #endif
 
     QTextStream out(m_file_p);
@@ -264,7 +264,7 @@ void CDebug::TRACEX(int logLevel, const QString *msgString_p)
 
             if (m_traceWindowEnabled && (logLevel <= m_logLevel)) {}
 
-            fileStream << logString << endl;
+            fileStream << logString << Qt::endl;
         }
 
         extern bool MW_AppendLogMsg(const QString & message);
@@ -643,7 +643,7 @@ void CRamLog::fileDump(bool updateTimeStamp)
 
     if (!file.open(QIODevice::WriteOnly)) {
         QString errorMsg = file.errorString();
-        textStream << "Debug could not be opened: " << fileName << " Error:" << errorMsg << endl;
+        textStream << "Debug could not be opened: " << fileName << " Error:" << errorMsg << Qt::endl;
         qDebug() << logString;
         return;
     }

@@ -418,9 +418,9 @@ void CRecentFile::ReadFromFile(void)
 
         if (file.exists()) {
             msgStream << "Could not open recent file database, " << recentFileName
-                      << ", it exists but might be locked use by some other application." << endl;
+                      << ", it exists but might be locked use by some other application." << Qt::endl;
         } else {
-            msgStream << "Could not open recent file database, " << recentFileName << ", it DO NOT exist" << endl;
+            msgStream << "Could not open recent file database, " << recentFileName << ", it DO NOT exist" << Qt::endl;
         }
 
         TRACEX_W(&msg)
@@ -458,10 +458,10 @@ void CRecentFile::WriteToFile(bool sync)
 
         if (file.exists()) {
             msgStream << "Could not open recent file database, " << recentFileName
-                      << ", it exists but might be locked use by some other application." << endl;
+                      << ", it exists but might be locked use by some other application." << Qt::endl;
         } else {
             msgStream << "Could not open recent file database, " << recentFileName
-                      << ", it DO NOT exist" << endl;
+                      << ", it DO NOT exist" << Qt::endl;
         }
         TRACEX_W(&msg)
         return;
@@ -472,9 +472,9 @@ void CRecentFile::WriteToFile(bool sync)
     QTextStream fileStream(&file);
 
     try {
-        fileStream << XML_FILE_HEADER << endl; /* "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" */
-        fileStream << LCZ_HEADER << endl; /* "<LogScrutinizer version=\"2\">"   // file format version */
-        fileStream << RECENTFILE_HEADER << endl; /* "<recentfiles>" */
+        fileStream << XML_FILE_HEADER << Qt::endl; /* "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" */
+        fileStream << LCZ_HEADER << Qt::endl; /* "<LogScrutinizer version=\"2\">"   // file format version */
+        fileStream << RECENTFILE_HEADER << Qt::endl; /* "<recentfiles>" */
 
         RecentFileInfo_t *fileInfo_p;
 
@@ -484,11 +484,11 @@ void CRecentFile::WriteToFile(bool sync)
             fileStream << "  <recentfile path=\"" << fileInfo_p->filePath <<
                 "\" kind=\"" << fileInfo_p->kind <<
                 "\" timestamp=\"" << fileInfo_p->lastAccessed <<
-                "\" />" << endl;
+                "\" />" << Qt::endl;
         }
 
-        fileStream << RECENTFILE_FOOTER << endl; /* </recentfiles> */
-        fileStream << LCZ_FOOTER << endl; /* </LogScrutinizer> */
+        fileStream << RECENTFILE_FOOTER << Qt::endl; /* </recentfiles> */
+        fileStream << LCZ_FOOTER << Qt::endl; /* </LogScrutinizer> */
     } catch (std::exception &e) {
         qFatal("Error %s writing recent file database to file", e.what());
         TRACEX_E("CRecentFile::WriteToFile  Failed to write recent file database to file,  Err:%s", e.what())

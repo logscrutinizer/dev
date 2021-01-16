@@ -344,10 +344,10 @@ void CConfig::writeDefaultSettings(void)
 
         QTextStream fileStream(&xmlFile);
 
-        fileStream << XML_FILE_HEADER << endl;
-        fileStream << LCZ_HEADER << endl;
+        fileStream << XML_FILE_HEADER << Qt::endl;
+        fileStream << LCZ_HEADER << Qt::endl;
         WriteSettings(&xmlFile, true);
-        fileStream << LCZ_FOOTER << endl;
+        fileStream << LCZ_FOOTER << Qt::endl;
         fileStream.flush();
     }
 }
@@ -609,7 +609,7 @@ bool CSCZ_CfgSettingColorTable::WriteToFile(QTextStream *textStream_p)
                       << "\" name=\"" << item_p->m_colorTableItem.name
                       << "\" index=\"" << (dec) << item_p->m_index
                       << "\""
-                      << SETTING_FOOTER << endl;
+                      << SETTING_FOOTER << Qt::endl;
     }
 
     return true;
@@ -700,7 +700,7 @@ bool CConfig::SetSetting(QString *parseTag_p, QString *value_p)
 bool CSCZ_CfgSearchItem::WriteToFile(QTextStream *textStream_p)
 {
     if (!m_name.isEmpty()) {
-        *textStream_p << SEARCH_ITEM_HEADER << " " << " name=\"" << m_name << "\"" << SEARCH_ITEM_FOOTER << endl;
+        *textStream_p << SEARCH_ITEM_HEADER << " " << " name=\"" << m_name << "\"" << SEARCH_ITEM_FOOTER << Qt::endl;
         return true;
     }
 
@@ -712,7 +712,9 @@ bool CSCZ_CfgSearchItem::WriteToFile(QTextStream *textStream_p)
 ***********************************************************************************************************************/
 bool CSCZ_SettingInt::WriteToFile(QTextStream *textStream_p)
 {
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER << endl;
+    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER <<
+
+    Qt::endl;
     return true;
 }
 
@@ -731,7 +733,9 @@ bool CSCZ_SettingInt::SetValue(QString *value_p)
 ***********************************************************************************************************************/
 bool CSCZ_SettingUInt::WriteToFile(QTextStream *textStream_p)
 {
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER << endl;
+    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER <<
+
+    Qt::endl;
     return true;
 }
 
@@ -751,7 +755,7 @@ bool CSCZ_SettingUInt::SetValue(QString *value_p)
 bool CSCZ_SettingBool::WriteToFile(QTextStream *textStream_p)
 {
     *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << (*m_valueRef_p == true ? "y" : "n") << "\""
-                  << SETTING_FOOTER << endl;
+                  << SETTING_FOOTER << Qt::endl;
     return true;
 }
 
@@ -777,7 +781,9 @@ bool CSCZ_SettingBool::SetValue(QString *value_p)
 ***********************************************************************************************************************/
 bool CSCZ_SettingString::WriteToFile(QTextStream *textStream_p)
 {
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER << endl;
+    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER <<
+
+    Qt::endl;
     return true;
 }
 

@@ -5904,7 +5904,7 @@ bool CEditorWidget::SaveSelectionsToFile(QString& fileName)
         if (selection_p->startCol != 0) {
             text.remove(0, selection_p->startCol);
         }
-        fileStream << text << endl;
+        fileStream << text << Qt::endl;
     }
 
     fileStream.flush();
