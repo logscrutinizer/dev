@@ -1,6 +1,5 @@
 /***********************************************************************************************************************
-** Copyright (C) 2019 Robert Klang
-** Contact: https://www.logscrutinizer.com
+** Copyright (C) 2019 Robert Klang Contact: https://www.logscrutinizer.com
 ***********************************************************************************************************************/
 
 #include <stdlib.h>
@@ -520,8 +519,8 @@ void CSubPlotSurface::SetupGraphPens(void)
 
 #define MAX_GRAPH_TYPES 5
 
-    m_graphColors = g_cfg_p->m_graph_ColorTable_p->GetCurrentNumberOfColors();
-    m_colorTable_p = g_cfg_p->m_graph_ColorTable_p->GetTable();
+    m_colorTable_p = g_cfg_p->getColorTable();
+    m_graphColors = m_colorTable_p->size();
 
     Qt::PenStyle graphLineType = Qt::SolidLine;
     GraphLinePattern_e graphLinePattern = GLP_SOLID;
@@ -566,10 +565,10 @@ void CSubPlotSurface::SetupGraphPens(void)
         for (int colorIndex = 0;
              colorIndex < m_graphColors && m_graphPenArraySize < MAX_GRAPH_TYPES;
              ++colorIndex, ++m_graphPenArraySize) {
-            m_graphPenArray_p[m_graphPenArraySize].pen_p = new QPen(m_colorTable_p[colorIndex].color);
+            m_graphPenArray_p[m_graphPenArraySize].pen_p = new QPen((*m_colorTable_p)[colorIndex].color);
             m_graphPenArray_p[m_graphPenArraySize].pen_p->setWidth(g_cfg_p->m_plot_GraphLineSize);
             m_graphPenArray_p[m_graphPenArraySize].pen_p->setStyle(graphLineType);
-            m_graphPenArray_p[m_graphPenArraySize].color = m_colorTable_p[colorIndex].color;
+            m_graphPenArray_p[m_graphPenArraySize].color = (*m_colorTable_p)[colorIndex].color;
             m_graphPenArray_p[m_graphPenArraySize].pattern = graphLinePattern;
         }
     }
@@ -717,6 +716,7 @@ void CSubPlotSurface::OnPaint_1(void)
         m_avgPixPerLetter = m_lineSize.width() / static_cast<double>(g_avg_str.length());
         m_avgPixPerLetterHeight = static_cast<double>(m_lineSize.height());
         m_halfLineHeight = static_cast<int>(m_lineSize.height() / 2.0);
+
         PRINT_SUBPLOTSURFACE(QString("m_avgPixPerLetter %1 %2").arg(m_lineSize.width()).arg(m_lineSize.height()))
 
         if (m_renderMode == RenderMode_Maximized_en) {
@@ -984,7 +984,7 @@ void CSubPlotSurface::Draw_Y_Axis_Schedule(void)
         while (graph_p != nullptr) {
             if (graph_p->isEnabled()) {
                 if ((subplot_properties & SUB_PLOT_PROPERTY_NO_LEGEND_COLOR) == 0) {
-                    m_painter_p->setPen(m_colorTable_p[graphColorIndex % m_graphColors].color);
+                    m_painter_p->setPen((*m_colorTable_p)[graphColorIndex % m_graphColors].color);
                 } else {
                     m_painter_p->setPen(Q_RGB(g_cfg_p->m_plot_GrayIntensity,
                                               g_cfg_p->m_plot_GrayIntensity,
@@ -1081,7 +1081,7 @@ void CSubPlotSurface::Draw_Y_Axis_Graphs(void)
                 if (isOverrideColorSet) {
                     color = static_cast<QRgb>(overrideColor); /*m_painter_p->setPen(QColor(overrideColor)); */
                 } else if ((subplot_properties & SUB_PLOT_PROPERTY_NO_LEGEND_COLOR) == 0) {
-                    color = m_colorTable_p[graphColorIndex % m_graphColors].color;
+                    color = (*m_colorTable_p)[graphColorIndex % m_graphColors].color;
                 } else {
                     color = Q_RGB(g_cfg_p->m_plot_GrayIntensity,
                                   g_cfg_p->m_plot_GrayIntensity,
@@ -1196,8 +1196,8 @@ void CSubPlotSurface::Draw_X_Axis(void)
             endPoint.setX(startPoint.x());
 
             if (index == m_base_X_right_count) {
-                /* When starting to plot the lines to the left of 0 (or the base)then we must restart the
-                 * skip line counter */
+                /* When starting to plot the lines to the left of 0 (or the base)then we must restart the skip line
+                 * counter */
                 skipLineCount = 1;
             }
 
@@ -1434,8 +1434,8 @@ void CSubPlotSurface::DrawGraphs(void)
                         y_dist = y2_old >= y_1 ? y2_old - y_1 : y_1 - y2_old;
 
                         if (prevPointsHidden) {
-                            /* make sure that the point farthest from previous is considered, assume that
-                             * previous line was drawn if y1_old and y2_old diff was large */
+                            /* make sure that the point farthest from previous is considered, assume that previous line
+                             * was drawn if y1_old and y2_old diff was large */
                             int y11 = ABS(y1_old - y_1);
                             int y12 = ABS(y1_old - y_2);
 
@@ -1786,15 +1786,13 @@ void CSubPlotSurface::DrawGraphs(void)
 ***********************************************************************************************************************/
 void CSubPlotSurface::DrawDecorators(bool over)
 {
-    /* lifeline box is drawn over
-     * lifeline liness are drawn under */
+    /* lifeline box is drawn over lifeline liness are drawn under */
 
     if (m_displayDecorator.m_numOfItems == 0) {
         return;
     }
 
-    /* Define the avgPixPerLetter
-     * In-case lines and boxes are labelled */
+    /* Define the avgPixPerLetter In-case lines and boxes are labelled */
     m_painter_p->setBackgroundMode(Qt::TransparentMode);
 
     int objectIndex = 0;
@@ -2366,7 +2364,6 @@ void CSubPlotSurface::SetupGraphs(void)
     } /* for graphs */
 
 #ifdef MULTIPROC_SETUPGRAPH
-
     /* Check for remainder */
     if (threadIndex > 0) {
         g_CPlotPane_ThreadMananger_p->StartConfiguredThreads();
@@ -2376,6 +2373,7 @@ void CSubPlotSurface::SetupGraphs(void)
 
 #ifdef _DEBUG
     double time = execTime.ms();
+
     PRINT_SUBPLOTSURFACE("CSubPlotSurface::SetupGraphs  Time:%f", time)
 #endif
 }
@@ -2708,8 +2706,7 @@ const displayItem_t *CSubPlotSurface::GetCursorRow(const QPoint *point_p, int *r
         *time = di_p->go_p->x2;
 
         if (di_p->go_p->properties & PROPERTIES_BITMASK_KIND_BOX_MASK) {
-            /* A box can refer to two different rows, one for where it started and the other were it
-             * ended. */
+            /* A box can refer to two different rows, one for where it started and the other were it ended. */
             auto x = translatedPoint.x();
             auto y = translatedPoint.y();
             auto x1 = (x - di_p->x1_pix) * (x - di_p->x1_pix);

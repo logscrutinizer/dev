@@ -110,7 +110,7 @@ void MainTest()
     }
 
     CTimeMeas measTime;
-    g_cfg_p->WriteSettings(file_p);
+    g_cfg_p->WriteSettings(file_p, SettingScope_t::all);
 
     file_p->flush();
     file_p->close();

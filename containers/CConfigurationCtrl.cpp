@@ -161,6 +161,7 @@ QStringList CFGCTRL_GetUserPickedFileNames(const QString& proposedFileName,
 
     doc_p->m_recentFiles.GetRecentPaths(list, kindList, true /*dir-only*/); /* append list with recent used paths to
                                                                              * files */
+
     for (auto& string : list) {
         urls << QUrl::fromLocalFile(string);
     }
@@ -202,6 +203,7 @@ void CFGCTRL_RemoveDuplicateUrls(QList<QUrl>& urlList)
     }
 
     int mainIndex = 0;
+
     while (mainIndex < urlList.count()) {
         QString path = urlList[mainIndex].path();
         int searchIndex = mainIndex + 1;
@@ -574,6 +576,7 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
 
     DLL_API_GetPluginAPIVersion_t DLL_API_GetPluginAPIVersion =
         reinterpret_cast<DLL_API_GetPluginAPIVersion_t>(library_p->resolve(DLL_API_GET_PLUGIN_API_VERSION));
+
     if (DLL_API_GetPluginAPIVersion != nullptr) {
         DLL_API_GetPluginAPIVersion(&DLL_API_Version);
     } else {
@@ -604,7 +607,6 @@ void CConfigurationCtrl::LoadPlugin(const QString& fileName)
             attachConfiguration.hwnd_traceConsumer = g_hwndOutputWnd;
             attachConfiguration.h_traceHeap = g_DebugLib->GetPluginMsgHeap();
 #else
-
             /* attachConfiguration.hwnd_traceConsumer = 0;
              * attachConfiguration.h_traceHeap = 0; */
 #endif
@@ -858,7 +860,8 @@ bool CConfigurationCtrl::LoadFileList(QList<QString>& fileList)
             QMessageBox msgBox(QMessageBox::Warning,
                                QString("Warning, not supported file extension"),
                                QString(
-                                   "The file extension *.%1 is not supported.\n Supported is: *.txt, *.log, *." DLL_EXT " *.lsz").arg(
+                                   "The file extension *.%1 is not supported.\n Supported is: *.txt, *.log, *." DLL_EXT
+                                   " *.lsz").arg(
                                    ext),
                                QMessageBox::Ok);
             msgBox.exec();
@@ -881,6 +884,7 @@ void CConfigurationCtrl::CleanAll(void)
 
     /* Clean all */
     doc_p->CleanDB(true);  /*Do not unload filters */
+
     if (g_workspace_p != nullptr) {
         /* ----------------------------------  1. FILTERs ------------------------------------------ */
 #ifdef ASSERT_ON_NULL
@@ -970,7 +974,7 @@ bool CConfigurationCtrl::Save_WorkspaceFile(const QString& fileName, bool asDefa
          * including bookmarks */
 
         /* ----------------------------------  0. SETTINGS ------------------------------------------ */
-        g_cfg_p->WriteSettings(&file, true);
+        g_cfg_p->WriteSettings(&file, SettingScope_t::workspace, true);
         fileStream.flush();
 
         /* ----------------------------------  1. Log ------------------------------------------
@@ -1665,6 +1669,7 @@ void CConfigurationCtrl::Element_Attribute_FilterItem(char *name_p, char *value_
         } else if (strcmp(name_p, "color") == 0) {
             Q_COLORREF color;
             QString value_s(value_p);
+
             if (!value_s.contains("0x", Qt::CaseInsensitive)) {
                 value_s.insert(0, 'x');
                 value_s.insert(0, '0');
@@ -1677,6 +1682,7 @@ void CConfigurationCtrl::Element_Attribute_FilterItem(char *name_p, char *value_
         } else if (strcmp(name_p, "bg_color") == 0) {
             Q_COLORREF color;
             QString value_s(value_p);
+
             if (!value_s.contains("0x", Qt::CaseInsensitive)) {
                 value_s.insert(0, 'x');
                 value_s.insert(0, '0');
@@ -1767,37 +1773,8 @@ void CConfigurationCtrl::Element_Attribute_Setting(char *name_p, char *value_p)
 {
     QString tag = name_p;
     QString value = value_p;
+    g_cfg_p->SetSetting(&tag, &value);
 
-    switch (m_inSetting)
-    {
-        case inSetting_colorTable_e:
-            if (strcmp(name_p, "id") == 0) {
-                /* Which table  GRAPH_COLOR_TABLE or FONT_COLOR_TABLE */
-                strcpy_s(m_tempText, CFG_TEMP_STRING_MAX_SIZE, value_p);
-            } else if (strcmp(name_p, "index") == 0) {
-                /* Index in the table */
-                m_tempIndex = atoi(value_p);
-            } else if (strcmp(name_p, "name") == 0) {
-                /* Color name */
-                strcpy_s(m_tempText_2, CFG_TEMP_STRING_MAX_SIZE, value_p);
-            }
-            break;
-
-        default:
-            if (strcmp(name_p, "color") == 0) {
-                m_inSetting = inSetting_colorTable_e;
-
-                Q_COLORREF color;
-                QTextStream reader(value_p);
-                reader >> color;
-
-                /* Value is low byte first, so lets shift them around */
-                m_tempColor = ((color & 0xff0000) >> 16) | (color & 0xff00) | ((color & 0x0000FF) << 16);
-            } else {
-                g_cfg_p->SetSetting(&tag, &value);
-            }
-            break;
-    }
     TRACEX_D("Element_Attribute_Setting %s=%s", name_p, value_p)
 }
 
@@ -1832,10 +1809,6 @@ void CConfigurationCtrl::ElementEnd_Setting(void)
 {
     switch (m_inSetting)
     {
-        case inSetting_colorTable_e:
-            g_cfg_p->ReplaceColorInTable(m_tempText, m_tempIndex, m_tempColor, m_tempText_2);
-            break;
-
         default:
             break;
     }

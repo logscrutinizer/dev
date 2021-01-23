@@ -21,7 +21,7 @@ CFG_PADDING_t CFG_SCREEN_TEXT_ROW_PADDING_persistent = {1.0, 1.0, 0.05, 0.05};
 CFG_PADDING_t CFG_SCREEN_TEXT_WINDOW_PADDING_persistent = {1.0, 1.0, 1.0, 1.0};
 
 /* Color table */
-static const ColorTableItem_t fontColorTable_DEFAULT[MAX_COLOR_TABLE] =
+static const std::vector<ColorTableItem_t> g_fontColorTable =
 {
     {0x000080, "Maroon"},            /* 0 */
     {0x006400, "DarkGreen"},         /* 1 */
@@ -57,11 +57,7 @@ static const ColorTableItem_t fontColorTable_DEFAULT[MAX_COLOR_TABLE] =
     {0x000000, "Black"}              /* 31 */
 };
 
-#define           DEFAULT_COLOR_TABLE_SIZE  32
-
-const ColorTableItem_t *g_fontColorTable_DEFAULT_p = fontColorTable_DEFAULT;
-int g_defaultNumOfFontColorItems = DEFAULT_COLOR_TABLE_SIZE;
-static const ColorTableItem_t colorTable_DEFAULT[MAX_COLOR_TABLE] =
+static const std::vector<ColorTableItem_t> g_colorTable =
 {
     {Q_RGB(231, 47, 39), "RED"},           /* 0 */
     {Q_RGB(46, 20, 141), "BLUE"},          /* 1 */
@@ -71,25 +67,6 @@ static const ColorTableItem_t colorTable_DEFAULT[MAX_COLOR_TABLE] =
     {Q_RGB(160, 160, 160), "GRAY"},        /* 5 */
     {Q_RGB(101, 55, 55), "DARK_RED_GRAY"}, /* 6 */
 };
-
-#define DEFAULT_GRAPH_COLOR_TABLE_SIZE 7
-
-const ColorTableItem_t *g_graphColorTable_DEFAULT_p = colorTable_DEFAULT;
-int g_defaultNumOfGraphColorItems = DEFAULT_GRAPH_COLOR_TABLE_SIZE;
-
-/***********************************************************************************************************************
-*   D-tor CSCZ_CfgBase
-***********************************************************************************************************************/
-
-CSCZ_CfgBase::~CSCZ_CfgBase()
-{}
-
-/***********************************************************************************************************************
-*   D-tor CSCZ_CfgSettingBase
-***********************************************************************************************************************/
-
-CSCZ_CfgSettingBase::~CSCZ_CfgSettingBase()
-{}
 
 /***********************************************************************************************************************
 *   Init
@@ -151,6 +128,47 @@ CConfig::CConfig(void)
     m_v_scrollGraphSpeed = 10; /* Value is used as procentage (10%) */
 }
 
+/***/
+template <>
+int CSCZ_CfgT<int>::toValue(const QString *str, bool& ok)
+{
+    auto value = str->toInt(&ok);
+    if (ok) {
+        return value;
+    }
+    return *m_valueRef_p; /* fallback */
+}
+
+/***/
+template <>
+double CSCZ_CfgT<double>::toValue(const QString *str, bool& ok)
+{
+    auto value = str->toDouble(&ok);
+    if (ok) {
+        return value;
+    }
+    return *m_valueRef_p; /* fallback */
+}
+
+/***/
+template <>
+bool CSCZ_CfgT<bool>::toValue(const QString *str, bool& ok)
+{
+    ok = true;
+
+    const QString& s = *str;
+    if ((s.compare("true", Qt::CaseInsensitive) == 0) || (s == "1") || (s.compare("yes", Qt::CaseInsensitive)) ||
+        (s.compare("y", Qt::CaseInsensitive) == 0)) {
+        return true;
+    } else if ((s.compare("false", Qt::CaseInsensitive) == 0) || (s.compare("no", Qt::CaseInsensitive)) ||
+               (s == "0") || (s.compare("n", Qt::CaseInsensitive) == 0)) {
+        return false;
+    } else {
+        ok = false;
+    }
+    return *m_valueRef_p; /* fallback */
+}
+
 /***********************************************************************************************************************
 *   Init
 ***********************************************************************************************************************/
@@ -158,150 +176,146 @@ void CConfig::Init(void)
 {
     LoadSystemSettings();
 
-    RegisterSetting_INT("NUM_OF_THREADS", "NUM_OF_THREADS", &m_numOfThreads,
-                        m_numOfThreads, "Number of threads to use (common value)");
+    RegisterSetting(new CSCZ_CfgT<int>("NUM_OF_THREADS", "NUM_OF_THREADS", &m_numOfThreads,
+                                       m_numOfThreads, "Number of threads to use (common value)"));
 
-    RegisterSetting_INT("THREAD_PRIO", "THREAD_PRIO", &m_threadPriority,
-                        QThread::NormalPriority, "The default thread priority");
+    RegisterSetting(new CSCZ_CfgT<int>("THREAD_PRIO", "THREAD_PRIO", &m_threadPriority,
+                                       QThread::NormalPriority, "The default thread priority"));
 
-    RegisterSetting_INT("WORK_MEM_SIZE", "WORK_MEM_SIZE", &(g_cfg_p->m_workMemSize),
-                        0, "Override max used memory when parsing log and filtering");
+    RegisterSetting(new CSCZ_CfgT<int>("WORK_MEM_SIZE", "WORK_MEM_SIZE", &(g_cfg_p->m_workMemSize),
+                                       0, "Override max used memory when parsing log and filtering"));
 
-    RegisterSetting_INT("PLOT_LINE_ENDS", "PLOT_LINE_ENDS", &(g_cfg_p->m_plot_lineEnds),
-                        2, "Which line end to use");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_LINE_ENDS", "PLOT_LINE_ENDS", &(g_cfg_p->m_plot_lineEnds),
+                                       2, "Which line end to use"));
 
-    RegisterSetting_INT("PLOT_LINE_END_MIN_PIXEL_DIST", "PLOT_LINE_END_MIN_PIXEL_DIST",
-                        &(g_cfg_p->m_plot_LineEnds_MinPixelDist), 2,
-                        "Line ends are only drawn if at least these many pixels distance");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_LINE_END_MIN_PIXEL_DIST", "PLOT_LINE_END_MIN_PIXEL_DIST",
+                                       &(g_cfg_p->m_plot_LineEnds_MinPixelDist), 2,
+                                       "Line ends are only drawn if at least these many pixels distance"));
 
-    RegisterSetting_INT("PLOT_LINE_COMBINE_MAX_PIXEL_DIST", "PLOT_LINE_COMBINE_MAX_PIXEL_DIST",
-                        &(g_cfg_p->m_plot_LineEnds_MaxCombinePixelDist), 5,
-                        "Line ends are only combined if closer than these many pixels");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_LINE_COMBINE_MAX_PIXEL_DIST", "PLOT_LINE_COMBINE_MAX_PIXEL_DIST",
+                                       &(g_cfg_p->m_plot_LineEnds_MaxCombinePixelDist), 5,
+                                       "Line ends are only combined if closer than these many pixels"));
 
-    RegisterSetting_INT("PLOT_TEXT_FONT_SIZE", "PLOT_TEXT_FONT_SIZE", &(g_cfg_p->m_plot_TextFontSize),
-                        8, "Font size of text in plots");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_TEXT_FONT_SIZE", "PLOT_TEXT_FONT_SIZE", &(g_cfg_p->m_plot_TextFontSize),
+                                       8, "Font size of text in plots"));
 
-    RegisterSetting_INT("PLOT_TEXT_COLOR", "PLOT_TEXT_COLOR", &(g_cfg_p->m_plot_TextFontColor),
-                        0, "Color of text in plots");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_TEXT_COLOR", "PLOT_TEXT_COLOR", &(g_cfg_p->m_plot_TextFontColor),
+                                       0, "Color of text in plots"));
 
-    RegisterSetting_INT("PLOT_GRAPH_LINE_SIZE", "PLOT_GRAPH_LINE_SIZE", &(g_cfg_p->m_plot_GraphLineSize),
-                        1, "Pixel size of the graph lines");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_GRAPH_LINE_SIZE", "PLOT_GRAPH_LINE_SIZE", &(g_cfg_p->m_plot_GraphLineSize),
+                                       1, "Pixel size of the graph lines"));
 
-    RegisterSetting_INT("PLOT_GRAPH_LINE_AXIS_SIZE", "PLOT_GRAPH_LINE_AXIS_SIZE",
-                        &(g_cfg_p->m_plot_GraphAxisLineSize), 1, "Pixel size of the graph axis lines");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_GRAPH_LINE_AXIS_SIZE", "PLOT_GRAPH_LINE_AXIS_SIZE",
+                                       &(g_cfg_p->m_plot_GraphAxisLineSize), 1, "Pixel size of the graph axis lines"));
 
     /* 1 means not set (gray intensity is used instead) */
-    RegisterSetting_INT("PLOT_GRAPH_LINE_AXIS_COLOR", "PLOT_GRAPH_LINE_AXIS_COLOR",
-                        &(g_cfg_p->m_plot_GraphAxisLineColor), 1, "Color of graph axis lines");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_GRAPH_LINE_AXIS_COLOR", "PLOT_GRAPH_LINE_AXIS_COLOR",
+                                       &(g_cfg_p->m_plot_GraphAxisLineColor), 1, "Color of graph axis lines"));
 
-    RegisterSetting_INT("PLOT_GRAPH_CURSOR_LINE_SIZE", "PLOT_GRAPH_CURSOR_LINE_SIZE",
-                        &(g_cfg_p->m_plot_GraphCursorLineSize), 1, "Pixel size of the cursor line");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_GRAPH_CURSOR_LINE_SIZE", "PLOT_GRAPH_CURSOR_LINE_SIZE",
+                                       &(g_cfg_p->m_plot_GraphCursorLineSize), 1, "Pixel size of the cursor line"));
 
-    RegisterSetting_INT("PLOT_GRAPH_CURSOR_LINE_COLOR", "PLOT_GRAPH_CURSOR_LINE_COLOR",
-                        &(g_cfg_p->m_plot_GraphCursorLineColor), 0, "Color of the cursor line");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_GRAPH_CURSOR_LINE_COLOR", "PLOT_GRAPH_CURSOR_LINE_COLOR",
+                                       &(g_cfg_p->m_plot_GraphCursorLineColor), 0, "Color of the cursor line"));
 
-    RegisterSetting_INT("PLOT_FOCUS_LINE_SIZE", "PLOT_FOCUS_LINE_SIZE",
-                        &(g_cfg_p->m_plot_FocusLineSize), 3, "Size of the sub-plot highlightning");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_FOCUS_LINE_SIZE", "PLOT_FOCUS_LINE_SIZE",
+                                       &(g_cfg_p->m_plot_FocusLineSize), 3, "Size of the sub-plot highlightning"));
 
-    RegisterSetting_INT("PLOT_FOCUS_LINE_COLOR", "PLOT_FOCUS_LINE_COLOR",
-                        &(g_cfg_p->m_plot_FocusLineColor), PLOT_FOCUS_LINE_COLOR,
-                        "Color of the sub-plot highlightning when having focus");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_FOCUS_LINE_COLOR", "PLOT_FOCUS_LINE_COLOR",
+                                       &(g_cfg_p->m_plot_FocusLineColor), PLOT_FOCUS_LINE_COLOR,
+                                       "Color of the sub-plot highlightning when having focus"));
 
-    RegisterSetting_INT("PLOT_NO_FOCUS_LINE_COLOR", "PLOT_PASSIVE_FOCUS_LINE_COLOR",
-                        &(g_cfg_p->m_plot_PassiveFocusLineColor), PLOT_PASSIVE_FOCUS_LINE_COLOR,
-                        "Color of the sub-plot highlightning when having passive focus");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_NO_FOCUS_LINE_COLOR", "PLOT_PASSIVE_FOCUS_LINE_COLOR",
+                                       &(g_cfg_p->m_plot_PassiveFocusLineColor), PLOT_PASSIVE_FOCUS_LINE_COLOR,
+                                       "Color of the sub-plot highlightning when having passive focus"));
 
-    RegisterSetting_INT("PLOT_GRAPH_GRAY_INTENSITY", "PLOT_GRAPH_GRAY_INTENSITY",
-                        &(g_cfg_p->m_plot_GrayIntensity), 64, "Intensity of labels and delimiters in plots");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_GRAPH_GRAY_INTENSITY", "PLOT_GRAPH_GRAY_INTENSITY",
+                                       &(g_cfg_p->m_plot_GrayIntensity), 64,
+                                       "Intensity of labels and delimiters in plots"));
 
-    RegisterSetting_INT("LOG_TEXT_GRAY_INTENSITY", "LOG_TEXT_GRAY_INTENSITY",
-                        &(g_cfg_p->m_log_GrayIntensity), FILTERED_TEXT_LTGRAY_COLOR,
-                        "Intensity of log text that is filtered out");
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_TEXT_GRAY_INTENSITY", "LOG_TEXT_GRAY_INTENSITY",
+                                       &(g_cfg_p->m_log_GrayIntensity), FILTERED_TEXT_LTGRAY_COLOR,
+                                       "Intensity of log text that is filtered out"));
 
-    RegisterSetting_INT("LOG_FILTER_MATCH_COLOR_MODIFY", "LOG_FILTER_MATCH_COLOR_MODIFY",
-                        &(g_cfg_p->m_log_FilterMatchColorModify), 20,
-                        "How much filter matches shall be color modified to be easier spotted");
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_FILTER_MATCH_COLOR_MODIFY", "LOG_FILTER_MATCH_COLOR_MODIFY",
+                                       &(g_cfg_p->m_log_FilterMatchColorModify), 20,
+                                       "How much filter matches shall be color modified to be easier spotted"));
 
-    RegisterSetting_INT("SCROLL_ARROW_ICON_SCALE", "SCROLL_ARROW_ICON_SCALE",
-                        &(g_cfg_p->m_scrollArrowScale), DEFAULT_SCROLL_ARROW_SCALE,
-                        "How much to scale the scroll icon, in parts of 100. 40 means 40% of original");
+    RegisterSetting(new CSCZ_CfgT<int>("SCROLL_ARROW_ICON_SCALE", "SCROLL_ARROW_ICON_SCALE",
+                                       &(g_cfg_p->m_scrollArrowScale), DEFAULT_SCROLL_ARROW_SCALE,
+                                       "How much to scale the scroll icon, in parts of 100. 40 means 40% of original"));
 
-    RegisterSetting_INT("TAB_STOP_LENGTH_NUM_CHAR", "TAB_STOP_LENGTH_NUM_CHAR",
-                        &(g_cfg_p->m_default_tab_stop_char_length), DEFAULT_TAB_STOP_CHARS,
-                        "The size in chars between the text TAB stops");
+    RegisterSetting(new CSCZ_CfgT<int>("TAB_STOP_LENGTH_NUM_CHAR", "TAB_STOP_LENGTH_NUM_CHAR",
+                                       &(g_cfg_p->m_default_tab_stop_char_length), DEFAULT_TAB_STOP_CHARS,
+                                       "The size in chars between the text TAB stops"));
 
     /*"Consolas",  "Default font, use monospace fonts only"); */
-    RegisterSetting_STRING("DEFAULT_FONT", "DEFAULT_FONT", &(g_cfg_p->m_default_Font),
-                           "Courier New", "Default font, use monospace fonts only");
+    RegisterSetting(new CSCZ_CfgT<QString>("DEFAULT_FONT", "DEFAULT_FONT", &(g_cfg_p->m_default_Font),
+                                           "Courier New", "Default font, use monospace fonts only"));
 
-    RegisterSetting_INT("DEFAULT_FONT_SIZE", "DEFAULT_FONT_SIZE", &(g_cfg_p->m_default_FontSize),
-                        TEXT_WINDOW_CHAR_SIZE, "The default font size");
+    RegisterSetting(new CSCZ_CfgT<int>("DEFAULT_FONT_SIZE", "DEFAULT_FONT_SIZE", &(g_cfg_p->m_default_FontSize),
+                                       TEXT_WINDOW_CHAR_SIZE, "The default font size"));
 
-    RegisterSetting_INT("WORKSPACE_FONT_SIZE", "WORKSPACE_FONT_SIZE", &(g_cfg_p->m_workspace_FontSize),
-                        WORKSPACE_TEXT_WINDOW_CHAR_SIZE, "The default workspace font size");
+    RegisterSetting(new CSCZ_CfgT<int>("WORKSPACE_FONT_SIZE", "WORKSPACE_FONT_SIZE", &(g_cfg_p->m_workspace_FontSize),
+                                       WORKSPACE_TEXT_WINDOW_CHAR_SIZE, "The default workspace font size"));
 
-    RegisterSetting_INT("COPY_PASTE_FONT_SIZE", "COPY_PASTE_FONT_SIZE", &(g_cfg_p->m_copyPaste_FontSize),
-                        COPY_PASTE_CHAR_SIZE, "The font sized used when formatting Rich to clipboard");
+    RegisterSetting(new CSCZ_CfgT<int>("COPY_PASTE_FONT_SIZE", "COPY_PASTE_FONT_SIZE", &(g_cfg_p->m_copyPaste_FontSize),
+                                       COPY_PASTE_CHAR_SIZE, "The font sized used when formatting Rich to clipboard"));
 
-    RegisterSetting_INT("LOG_ROW_CLIP_START", "LOG_ROW_CLIP_START", &(g_cfg_p->m_Log_rowClip_Start),
-                        -1, "Clips the start of the log");
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_ROW_CLIP_START", "LOG_ROW_CLIP_START", &(g_cfg_p->m_Log_rowClip_Start),
+                                       -1, "Clips the start of the log", SettingScope_t::workspace));
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_ROW_CLIP_START", "LOG_ROW_CLIP_START", &(g_cfg_p->m_Log_rowClip_Start),
+                                       -1, "Clips the start of the log", SettingScope_t::workspace));
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_ROW_CLIP_END", "LOG_ROW_CLIP_END", &(g_cfg_p->m_Log_rowClip_End),
+                                       -1, "Clips the end of the log", SettingScope_t::workspace));
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_COL_CLIP_START", "LOG_COL_CLIP_START", &(g_cfg_p->m_Log_colClip_Start),
+                                       -1, "Clips the start of the row", SettingScope_t::workspace));
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_COL_CLIP_END", "LOG_COL_CLIP_END", &(g_cfg_p->m_Log_colClip_End),
+                                       -1, "Clips the end of the row", SettingScope_t::workspace));
 
-    RegisterSetting_INT("LOG_ROW_CLIP_END", "LOG_ROW_CLIP_END", &(g_cfg_p->m_Log_rowClip_End),
-                        -1, "Clips the end of the log");
+    RegisterSetting(new CSCZ_CfgT<int>("RECENT_FILE_MAX_HISTORY", "RECENT_FILE_MAX_HISTORY",
+                                       &(g_cfg_p->m_recentFile_MaxHistory), MAX_NUM_OF_RECENT_FILES,
+                                       "Number of recent files used to remeber"));
 
-    RegisterSetting_INT("LOG_COL_CLIP_START", "LOG_COL_CLIP_START", &(g_cfg_p->m_Log_colClip_Start),
-                        -1, "Clips the start of the row");
-    RegisterSetting_INT("LOG_COL_CLIP_END", "LOG_COL_CLIP_END", &(g_cfg_p->m_Log_colClip_End),
-                        -1, "Clips the end of the row");
+    RegisterSetting(new CSCZ_CfgT<QString>("DEFAULT_WORKSPACE", "DEFAULT_WORKSPACE", &(g_cfg_p->m_defaultWorkspace),
+                                           "default.lsz", "Default workspace, loaded at startup"));
 
-    RegisterSetting_INT("RECENT_FILE_MAX_HISTORY", "RECENT_FILE_MAX_HISTORY",
-                        &(g_cfg_p->m_recentFile_MaxHistory), MAX_NUM_OF_RECENT_FILES,
-                        "Number of recent files used to remeber");
+    RegisterSetting(new CSCZ_CfgT<QString>("DEFAULT_RECENT_FILE", "DEFAULT_RECENT_FILE",
+                                           &(g_cfg_p->m_defaultRecentFileDB),
+                                           "recentFiles.rcnt", "File database of recent files"));
 
-    RegisterSetting_STRING("DEFAULT_WORKSPACE", "DEFAULT_WORKSPACE", &(g_cfg_p->m_defaultWorkspace),
-                           "default.lsz", "Default workspace, loaded at startup");
+    RegisterSetting(new CSCZ_CfgT<bool>("KEEP_TIA_FILE", "KEEP_TIA_FILE", &(g_cfg_p->m_keepTIA_File), true,
+                                        "If TIA files should be deleted or not"));
 
-    RegisterSetting_STRING("DEFAULT_RECENT_FILE", "DEFAULT_RECENT_FILE", &(g_cfg_p->m_defaultRecentFileDB),
-                           "recentFiles.rcnt", "File database of recent files");
+    RegisterSetting(new CSCZ_CfgT<bool>("ROCK_SCROLL_ENABLED", "ROCK_SCROLL_ENABLED", &(g_cfg_p->m_rockSrollEnabled),
+                                        true, "If rock scroll should be enabled"));
 
-    RegisterSetting_BOOL("KEEP_TIA_FILE", "KEEP_TIA_FILE", &(g_cfg_p->m_keepTIA_File), true,
-                         "If TIA files should be deleted or not");
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_V_SCROLL_SPEED", "LOG_V_SCROLL_SPEED", &(g_cfg_p->m_v_scrollSpeed),
+                                       m_v_scrollSpeed,
+                                       "The number of lines to scroll when using mouse wheel"));
 
-    RegisterSetting_BOOL("ROCK_SCROLL_ENABLED", "ROCK_SCROLL_ENABLED", &(g_cfg_p->m_rockSrollEnabled), true,
-                         "If rock scroll should be enabled");
+    RegisterSetting(new CSCZ_CfgT<int>("PLOT_V_SCROLL_SPEED", "PLOT_V_SCROLL_SPEED", &(g_cfg_p->m_v_scrollGraphSpeed),
+                                       m_v_scrollGraphSpeed, "Procentage of subplot to scroll when using mouse wheel"));
 
-    RegisterSetting_INT("LOG_V_SCROLL_SPEED", "LOG_V_SCROLL_SPEED", &(g_cfg_p->m_v_scrollSpeed), m_v_scrollSpeed,
-                        "The number of lines to scroll when using mouse wheel");
+    RegisterSetting(new CSCZ_CfgT<int>("PLUGIN_DEBUG_BITMASK", "PLUGIN_DEBUG_BITMASK", &(g_cfg_p->m_pluginDebugBitmask),
+                                       0, "Enables more information about plugin plots and decoders"));
 
-    RegisterSetting_INT("PLOT_V_SCROLL_SPEED", "PLOT_V_SCROLL_SPEED", &(g_cfg_p->m_v_scrollGraphSpeed),
-                        m_v_scrollGraphSpeed, "Procentage of subplot to scroll when using mouse wheel");
+    RegisterSetting(new CSCZ_CfgT<bool>("AUTO_CLOSE_PROGRESS_DLG", "AUTO_CLOSE_PROGRESS_DLG",
+                                        &(g_cfg_p->m_autoCloseProgressDlg),
+                                        true, "Automatically close progress dlg when processing is done"));
 
-    RegisterSetting_UINT("PLUGIN_DEBUG_BITMASK", "PLUGIN_DEBUG_BITMASK", &(g_cfg_p->m_pluginDebugBitmask),
-                         0, "Enables more information about plugin plots and decoders");
+    RegisterSetting(new CSCZ_CfgT<bool>("DEV_TOOLS_ENABLED", "DEV_TOOLS_ENABLED", &(g_cfg_p->m_devToolsMenu),
+                                        g_cfg_p->m_devToolsMenu, "Enable the developer tools menu"));
 
-    RegisterSetting_BOOL("AUTO_CLOSE_PROGRESS_DLG", "AUTO_CLOSE_PROGRESS_DLG", &(g_cfg_p->m_autoCloseProgressDlg),
-                         true, "Automatically close progress dlg when processing is done");
+    RegisterSetting(new CSCZ_CfgT<bool>("DUMP_AT_ERROR", "DUMP_AT_ERROR", &(g_cfg_p->m_throwAtError),
+                                        g_cfg_p->m_throwAtError, "Dump if a critical error was detected"));
 
-    RegisterSetting_BOOL("DEV_TOOLS_ENABLED", "DEV_TOOLS_ENABLED", &(g_cfg_p->m_devToolsMenu),
-                         g_cfg_p->m_devToolsMenu, "Enable the developer tools menu");
+    RegisterSetting(new CSCZ_CfgT<int>("LOG_LEVEL", "LOG_LEVEL", &(g_DebugLib->m_logLevel), g_DebugLib->m_logLevel,
+                                       "Defines what prints that should be present in the log"));
 
-    RegisterSetting_BOOL("DUMP_AT_ERROR", "DUMP_AT_ERROR", &(g_cfg_p->m_throwAtError),
-                         g_cfg_p->m_throwAtError, "Dump if a critical error was detected");
-
-    RegisterSetting_INT("LOG_LEVEL", "LOG_LEVEL", &(g_DebugLib->m_logLevel), g_DebugLib->m_logLevel,
-                        "Defines what prints that should be present in the log");
-
-    RegisterSetting_INT("TRACE_CATEGORY", "TRACE_CATEGORY", &(g_DebugLib->m_traceCategory),
-                        g_DebugLib->m_traceCategory,
-                        "Enable debugging of certain categories (0 None, 1 Focus, 2 Threads)");
-
-    m_font_ColorTable_p = RegisterColorTable("FONT_COLOR_TABLE", "FONT_COLOR_TABLE", "Colors for filters",
-                                             g_fontColorTable_DEFAULT_p, g_defaultNumOfFontColorItems);
-    m_graph_ColorTable_p = RegisterColorTable("GRAPH_COLOR_TABLE", "GRAPH_COLOR_TABLE", "Colors for graphs",
-                                              g_graphColorTable_DEFAULT_p, g_defaultNumOfGraphColorItems);
-
-    m_font_ColorTable_p->RestoreColorTable();
-    m_graph_ColorTable_p->RestoreColorTable();
+    RegisterSetting(new CSCZ_CfgT<int>("TRACE_CATEGORY", "TRACE_CATEGORY", &(g_DebugLib->m_traceCategory),
+                                       g_DebugLib->m_traceCategory,
+                                       "Enable debugging of certain categories (0 None, 1 Focus, 2 Threads)"));
 }
 
 /***********************************************************************************************************************
@@ -333,6 +347,22 @@ void CConfig::readDefaultSettings(void)
 }
 
 /***********************************************************************************************************************
+*   getFontColorTable
+***********************************************************************************************************************/
+const std::vector<ColorTableItem_t> *CConfig::getFontColorTable(void)
+{
+    return &g_fontColorTable;
+}
+
+/***********************************************************************************************************************
+*   getColorTable
+***********************************************************************************************************************/
+const std::vector<ColorTableItem_t> *CConfig::getColorTable(void)
+{
+    return &g_colorTable;
+}
+
+/***********************************************************************************************************************
 *   writeDefaultSettings
 ***********************************************************************************************************************/
 void CConfig::writeDefaultSettings(void)
@@ -346,7 +376,7 @@ void CConfig::writeDefaultSettings(void)
 
         fileStream << XML_FILE_HEADER << Qt::endl;
         fileStream << LCZ_HEADER << Qt::endl;
-        WriteSettings(&xmlFile, true);
+        WriteSettings(&xmlFile, SettingScope_t::user, true);
         fileStream << LCZ_FOOTER << Qt::endl;
         fileStream.flush();
     }
@@ -393,7 +423,7 @@ void CConfig::SetupApplicationVersion(void)
 /***********************************************************************************************************************
 *   WriteSettings
 ***********************************************************************************************************************/
-bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
+bool CConfig::WriteSettings(QFile *file_h, SettingScope_t scope, bool onlyChanged)
 {
     if (!m_settingsList.isEmpty()) {
         QTextStream settingsStream(file_h);
@@ -415,7 +445,8 @@ bool CConfig::WriteSettings(QFile *file_h, bool onlyChanged)
         for (int index = 0; index < m_settingsList.count(); ++index) {
             setting_p = m_settingsList[index];
 
-            if (!onlyChanged || !setting_p->isDefaultValue()) {
+            if (((scope == SettingScope_t::all) || (scope == setting_p->m_scope)) &&
+                (!onlyChanged || !setting_p->isDefaultValue())) {
                 try {
                     setting_p->WriteToFile(&settingsStream);
                 } catch (std::exception &e) {
@@ -504,52 +535,6 @@ bool CConfig::RegisterSetting(CSCZ_CfgSettingBase *setting_p)
 }
 
 /***********************************************************************************************************************
-*   RegisterSetting_INT
-***********************************************************************************************************************/
-bool CConfig::RegisterSetting_INT(QString tag, QString name, int *ref_p, int defaultValue, QString description)
-{
-    CSCZ_SettingInt *setting_p = new CSCZ_SettingInt(&tag, &name, ref_p, defaultValue, &description);
-
-    RegisterSetting(setting_p);
-    return true;
-}
-
-/***********************************************************************************************************************
-*   RegisterSetting_UINT
-***********************************************************************************************************************/
-bool CConfig::RegisterSetting_UINT(QString tag, QString name, int *ref_p,
-                                   int defaultValue, QString description)
-{
-    CSCZ_SettingUInt *setting_p = new CSCZ_SettingUInt(&tag, &name, ref_p, defaultValue, &description);
-
-    RegisterSetting(setting_p);
-    return true;
-}
-
-/***********************************************************************************************************************
-*   RegisterSetting_BOOL
-***********************************************************************************************************************/
-bool CConfig::RegisterSetting_BOOL(QString tag, QString name, bool *ref_p, bool defaultValue, QString description)
-{
-    CSCZ_SettingBool *setting_p = new CSCZ_SettingBool(&tag, &name, ref_p, defaultValue, &description);
-
-    RegisterSetting(setting_p);
-    return true;
-}
-
-/***********************************************************************************************************************
-*   RegisterSetting_STRING
-***********************************************************************************************************************/
-bool CConfig::RegisterSetting_STRING(QString tag, QString name, QString *ref_p,
-                                     QString defaultValue, QString description)
-{
-    CSCZ_SettingString *setting_p = new CSCZ_SettingString(&tag, &name, ref_p, defaultValue, &description);
-
-    RegisterSetting(setting_p);
-    return true;
-}
-
-/***********************************************************************************************************************
 *   GetSetting
 ***********************************************************************************************************************/
 CSCZ_CfgSettingBase *CConfig::GetSetting(QString *name_p)
@@ -565,83 +550,6 @@ CSCZ_CfgSettingBase *CConfig::GetSetting(QString *name_p)
     }
 
     return nullptr;
-}
-
-/***********************************************************************************************************************
-*   RegisterColorTable
-***********************************************************************************************************************/
-CSCZ_CfgSettingColorTable *CConfig::RegisterColorTable(
-    QString tag, QString name, QString description, const ColorTableItem_t *colorTable_DEFAULT_p,
-    const int defaultNumColors)
-{
-    CSCZ_CfgSettingColorTable *cfgSettingColorTable_p =
-        new CSCZ_CfgSettingColorTable(&tag, &name, &description, colorTable_DEFAULT_p, defaultNumColors);
-
-    RegisterSetting(cfgSettingColorTable_p);
-
-    return cfgSettingColorTable_p;
-}
-
-/***********************************************************************************************************************
-*   ReplaceColorInTable
-***********************************************************************************************************************/
-void CConfig::ReplaceColorInTable(char *id_p, int index, Q_COLORREF color, char *name_p)
-{
-    QString id = id_p;
-    CSCZ_CfgSettingColorTable *colorTable_p = reinterpret_cast<CSCZ_CfgSettingColorTable *>(GetSetting(&id));
-
-    if (colorTable_p != nullptr) {
-        colorTable_p->ReplaceColorInTable(index, color, name_p);
-    }
-}
-
-/***********************************************************************************************************************
-*   WriteToFile
-***********************************************************************************************************************/
-bool CSCZ_CfgSettingColorTable::WriteToFile(QTextStream *textStream_p)
-{
-    for (int index = 0; index < colorChangeList.count(); ++index) {
-        CSCZ_CfgColorItem *item_p = colorChangeList[index];
-
-        *textStream_p << SETTING_HEADER
-                      << " color=\"0x" << (hex) << item_p->m_colorTableItem.color
-                      << "\" id=\"" << m_parseTag
-                      << "\" name=\"" << item_p->m_colorTableItem.name
-                      << "\" index=\"" << (dec) << item_p->m_index
-                      << "\""
-                      << SETTING_FOOTER << Qt::endl;
-    }
-
-    return true;
-}
-
-/***********************************************************************************************************************
-*   RestoreDefaultValue
-***********************************************************************************************************************/
-void CSCZ_CfgSettingColorTable::RestoreDefaultValue(void)
-{
-    memcpy(m_colorTable, m_colorTable_DEFAULT_p, sizeof(ColorTableItem_t) * MAX_COLOR_TABLE);
-}
-
-/***********************************************************************************************************************
-*   isDefaultValue
-***********************************************************************************************************************/
-bool CSCZ_CfgSettingColorTable::isDefaultValue(void)
-{
-    if (colorChangeList.isEmpty()) {
-        return true;
-    }
-
-    return false;
-}
-
-/***********************************************************************************************************************
-*   SetValue
-***********************************************************************************************************************/
-bool CSCZ_CfgSettingColorTable::SetValue(QString *value_p)
-{
-    Q_UNUSED(value_p)
-    return false;
 }
 
 /***********************************************************************************************************************
@@ -692,175 +600,4 @@ bool CConfig::SetSetting(QString *parseTag_p, QString *value_p)
     }
     TRACEX_W("CSCZ_CfgFilter::SetSetting    Failed to find  setting")
     return false;
-}
-
-/***********************************************************************************************************************
-*   WriteToFile
-***********************************************************************************************************************/
-bool CSCZ_CfgSearchItem::WriteToFile(QTextStream *textStream_p)
-{
-    if (!m_name.isEmpty()) {
-        *textStream_p << SEARCH_ITEM_HEADER << " " << " name=\"" << m_name << "\"" << SEARCH_ITEM_FOOTER << Qt::endl;
-        return true;
-    }
-
-    return false;
-}
-
-/***********************************************************************************************************************
-*   WriteToFile
-***********************************************************************************************************************/
-bool CSCZ_SettingInt::WriteToFile(QTextStream *textStream_p)
-{
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER <<
-
-    Qt::endl;
-    return true;
-}
-
-/***********************************************************************************************************************
-*   SetValue
-***********************************************************************************************************************/
-bool CSCZ_SettingInt::SetValue(QString *value_p)
-{
-    *m_valueRef_p = static_cast<int>(strtol(value_p->toLatin1().constData(), nullptr, 10));
-    valueUpdated(value_p);
-    return true;
-}
-
-/***********************************************************************************************************************
-*   WriteToFile
-***********************************************************************************************************************/
-bool CSCZ_SettingUInt::WriteToFile(QTextStream *textStream_p)
-{
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER <<
-
-    Qt::endl;
-    return true;
-}
-
-/***********************************************************************************************************************
-*   SetValue
-***********************************************************************************************************************/
-bool CSCZ_SettingUInt::SetValue(QString *value_p)
-{
-    *m_valueRef_p = static_cast<int>(strtol(value_p->toLatin1().constData(), nullptr, 10));
-    valueUpdated(value_p);
-    return true;
-}
-
-/***********************************************************************************************************************
-*   WriteToFile
-***********************************************************************************************************************/
-bool CSCZ_SettingBool::WriteToFile(QTextStream *textStream_p)
-{
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << (*m_valueRef_p == true ? "y" : "n") << "\""
-                  << SETTING_FOOTER << Qt::endl;
-    return true;
-}
-
-/***********************************************************************************************************************
-*   SetValue
-***********************************************************************************************************************/
-bool CSCZ_SettingBool::SetValue(QString *value_p)
-{
-    *value_p = value_p->toLower();
-
-    if ((*value_p == "true") || (*value_p == "1") || (*value_p == "y")) {
-        *m_valueRef_p = true;
-    } else {
-        *m_valueRef_p = false;
-    }
-
-    valueUpdated(value_p);
-    return true;
-}
-
-/***********************************************************************************************************************
-*   WriteToFile
-***********************************************************************************************************************/
-bool CSCZ_SettingString::WriteToFile(QTextStream *textStream_p)
-{
-    *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" << SETTING_FOOTER <<
-
-    Qt::endl;
-    return true;
-}
-
-/***********************************************************************************************************************
-*   SetValue
-***********************************************************************************************************************/
-bool CSCZ_SettingString::SetValue(QString *value_p)
-{
-    *m_valueRef_p = *value_p;
-    valueUpdated(value_p);
-    return true;
-}
-
-CSCZ_CfgSettingColorTable::~CSCZ_CfgSettingColorTable()
-{
-    while (!colorChangeList.isEmpty()) {
-        delete colorChangeList.takeLast();
-    }
-}
-
-/***********************************************************************************************************************
-*   ReplaceColorInTable
-***********************************************************************************************************************/
-void CSCZ_CfgSettingColorTable::ReplaceColorInTable(int index, Q_COLORREF color, char *name_p)
-{
-    CSCZ_CfgColorItem *foundItem_p = nullptr;
-
-    if (!colorChangeList.isEmpty()) {
-        for (int index = 0; index < colorChangeList.count() && foundItem_p == nullptr; ++index) {
-            if (colorChangeList[index]->m_index == index) {
-                foundItem_p = colorChangeList[index];
-            }
-        }
-    }
-
-    if (foundItem_p == nullptr) {
-        foundItem_p = new CSCZ_CfgColorItem();
-        colorChangeList.append(foundItem_p);
-    }
-
-    foundItem_p->m_index = index;
-    foundItem_p->m_colorTableItem.color = color;
-
-    strcpy(foundItem_p->m_colorTableItem.name, name_p);
-
-    /* replace the color in the used color table */
-
-    if ((index == 256) || ((index < MAX_COLOR_TABLE) && (index >= m_currentNumColors))) {
-        /* Add a new color to the end */
-        index = m_currentNumColors;
-        ++(m_currentNumColors);
-        TRACEX_I("ReplaceColor  ADD Index:%d", index)
-    } else if (index > MAX_COLOR_TABLE) {
-        TRACEX_E("ReplaceColor  Index:%d to large", index)
-        return;
-    } else {
-        /* Replace an existing color */
-        TRACEX_I("ReplaceColor  Index:%d Color:%d name:%s ", index, color, name_p)
-    }
-
-    if (color > 0xffffff) {
-        TRACEX_E("ReplaceColor  Color:%d invalid", color)
-        return;
-    }
-
-    if (index < MAX_COLOR_TABLE) {
-        m_colorTable[index].color = color;
-        strcpy(m_colorTable[index].name, name_p);
-    } else {
-        TRACEX_W("ReplaceColorInTable  index error")
-    }
-}
-
-/***********************************************************************************************************************
-*   RestoreColorTable
-***********************************************************************************************************************/
-void CSCZ_CfgSettingColorTable::RestoreColorTable(void)
-{
-    memcpy(m_colorTable, m_colorTable_DEFAULT_p, sizeof(m_colorTable));
 }

@@ -1,6 +1,5 @@
 /***********************************************************************************************************************
-** Copyright (C) 2019 Robert Klang
-** Contact: https://www.logscrutinizer.com
+** Copyright (C) 2019 Robert Klang Contact: https://www.logscrutinizer.com
 ***********************************************************************************************************************/
 
 #pragma once
@@ -34,7 +33,6 @@ typedef enum {
 }inElement_en;
 
 typedef enum {
-    inSetting_colorTable_e,
     inSetting_none_e,
 }inSetting_en;
 

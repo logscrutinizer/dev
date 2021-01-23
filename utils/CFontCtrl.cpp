@@ -217,12 +217,3 @@ int CFontCtrl::EnhanceColorContrast(FontItem_t *fontItem_p)
 
     return static_cast<int>((Q_RGB(red, green, blue)));
 }
-
-/***********************************************************************************************************************
-*   GetFontColorTable
-***********************************************************************************************************************/
-void GetFontColorTable(ColorTableItem_t **colorTable_pp, int *colorTableItems_p)
-{
-    *colorTable_pp = g_cfg_p->m_font_ColorTable_p->GetTable();
-    *colorTableItems_p = static_cast<int>(g_cfg_p->m_font_ColorTable_p->GetCurrentNumberOfColors());
-}

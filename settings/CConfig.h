@@ -51,19 +51,19 @@
 #define APP_VER_CODE_KIND_PATCH    (0x03)
 
 /*
- * An example of version numbering that could occur when developing a new Final version would then start with some
- * Beta versions: 1.2 B1 -> 1.2 B2 ... then one or several Release Candidates: 1.2 RC1, and then the Final: 1.2. If bug
- * corrections are needed for a Final release these will show up as Patch versions, and version numbering would
- * start as 1.2.1 -> 1.2.2 etc.
+ * An example of version numbering that could occur when developing a new Final version would then start with some Beta
+ * versions: 1.2 B1 -> 1.2 B2 ... then one or several Release Candidates: 1.2 RC1, and then the Final: 1.2. If bug
+ * corrections are needed for a Final release these will show up as Patch versions, and version numbering would start as
+ * 1.2.1 -> 1.2.2 etc.
  *
  * ---------- Product Version Status
  *
  * Status             Info
  *
- * Planned            The product version has been planned, however development has not started yet
- * Development    The product version is being developed, there are no public downloads
- * Evaluation     The product version developed, however its being tested, it is possible to download it
- * Released         The product version is considered well tested
+ * Planned            The product version has been planned, however development has not started yet Development    The
+ * product version is being developed, there are no public downloads Evaluation     The product version developed,
+ * however its being tested, it is possible to download it Released         The product version is considered well
+ * tested
  */
 
 /* CHANGE BELOW TO UPDATE RELEASE VERSION */
@@ -77,17 +77,16 @@
 #define APP_VER_CODE_SUB_VERSION   9                          /* If 1 : -> vx.x */
 
 /* B1  (for BETA),
- *  vx.x.1 (for
- * PATCH), vx.x
- * RC1 (for
- * Release
- * Candidate) */
+ * vx.x.1 (for PATCH),
+ * vx.x RC1 (for Release Candidate)
+ */
+
 #define APP_VER_CODE_BUILD         0                          /* If 1 : -> vx.x */
 /* Bx build1 */
 
 /*
- * SLOGAN on the LogScrutinizer Logo:           It is there, you just have to find it
- *                              (in latin)   Is est illic, vos iustus have ut reperio is
+ * SLOGAN on the LogScrutinizer Logo:
+ * It is there, you just have to find it (in latin)   Is est illic, vos iustus have ut reperio is
  *
  * The greenish color in the logo DCF62D
  */
@@ -108,9 +107,6 @@
 #define PLUGIN_MSG_HEAP_SIZE_MAX   (1024 * 10000)   /* 10MB max heap size */
 
 #define MAX_COLOR_TABLE                   48                  /* Maximum number */
-
-/* of colors in
- * the Font table */
 
 #define CACHE_CMEM_POOL_SIZE_SMALLEST     (1024)
 #define CACHE_CMEM_POOL_SIZE_1            (2048)
@@ -135,8 +131,7 @@
 #define XML_FILE_HEADER               "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>"
 #define LCZ_HEADER                    "<LogScrutinizer version=\"2\">"   /* file */
 
-/* format
- * version */
+/* format version */
 #define LCZ_FOOTER                    "</LogScrutinizer>"
 
 #define LCZ_FILE_VERSION              (2)
@@ -177,16 +172,12 @@ typedef struct {
  #define Q_COLORREF QRgb
 #endif
 
-typedef struct {
+typedef struct ct {
     QRgb color;
-    char name[MAX_COLOR_NAME];
-}ColorTableItem_t;
+    QString name;
 
-struct CSCZ_CfgColorItem {
-public:
-    ColorTableItem_t m_colorTableItem;
-    int m_index;
-};
+    ct(unsigned int inColor, const QString& inName) : color(QRgb(inColor)), name(inName) {}
+}ColorTableItem_t;
 
 /*--------------  from cfontctrl ----------------------- */
 
@@ -205,8 +196,8 @@ typedef struct {
     QPen *pen_p;
     FontMod_t fontMod;
 
-    /* Used when color is modified to create a certain effect. Then if all fonts with
-     * this effect shall be modified it is essential to know how to modify from the original */
+    /* Used when color is modified to create a certain effect. Then if all fonts with this effect shall be modified it
+     * is essential to know how to modify from the original */
     Q_COLORREF originalColor;
 }FontItem_t;
 
@@ -224,16 +215,16 @@ typedef struct {
 
 #define FONT_DEFAULT_SIZE   8
 
-/*WHEEL_DELTA , A positive value indicates that the wheel was rotated forward
- * (scroll value / WHEEL_DELTA ) × lines-to-scroll user setting = lines to scroll */
+/* WHEEL_DELTA , A positive value indicates that the wheel was rotated forward (scroll value / WHEEL_DELTA ) ×
+ * lines-to-scroll user setting = lines to scroll */
 #define WHEEL_ANGLE_PER_TICK 15
 
 #define SCROLL_FRAME_THICKNESS 20
 
 #define SELECTION_COLOR_IN_FOCUS          (Q_RGB(0x97, 0xD2, 0xFC))  /* Color * used * when * something * has been
                                                                       * selected */
-#define SELECTION_COLOR_PASSIVE_FOCUS     (Q_RGB(0xF0, 0xF0, 0xF0))  /* Color used when the selection remains but
-                                                                      * the window is not in focus anymore */
+#define SELECTION_COLOR_PASSIVE_FOCUS     (Q_RGB(0xF0, 0xF0, 0xF0))  /* Color used when the selection remains but the
+                                                                      * window is not in focus anymore */
 
 #define PLOT_FOCUS_LINE_COLOR             (Q_RGB(0x47, 0x92, 0xAC))
 #define PLOT_PASSIVE_FOCUS_LINE_COLOR     (Q_RGB(0x97, 0xD2, 0xFC))
@@ -301,10 +292,6 @@ extern int FILECTRL_ROW_SIZE_ESTIMATE_persistent;
 extern int FILECTRL_ROW_MAX_SIZE_persistent;
 extern CFG_PADDING_t CFG_SCREEN_TEXT_ROW_PADDING_persistent;
 extern CFG_PADDING_t CFG_SCREEN_TEXT_WINDOW_PADDING_persistent;
-extern const ColorTableItem_t *g_fontColorTable_DEFAULT_p;
-extern int g_defaultNumOfFontColorItems;
-extern const ColorTableItem_t *g_graphColorTable_DEFAULT_p;
-extern int g_defaultNumOfGraphColorItems;
 
 /***********************************************************************************************************************
 *   CSCZ_CfgBase
@@ -312,8 +299,11 @@ extern int g_defaultNumOfGraphColorItems;
 class CSCZ_CfgBase
 {
 public:
-    CSCZ_CfgBase(QString *tag_p) : m_parseTag(*tag_p) {}
-    virtual ~CSCZ_CfgBase();
+    CSCZ_CfgBase() = delete;
+    virtual ~CSCZ_CfgBase() = default;
+
+    CSCZ_CfgBase(const QString *tag_p) : m_parseTag(*tag_p) {}
+    CSCZ_CfgBase(const QString& tag) : m_parseTag(tag) {}
 
     /***********************************************************************************************************************
     *   WriteToFile
@@ -324,245 +314,89 @@ public:
     QString m_parseTag;
 };
 
+enum class SettingScope_t {
+    all,
+    user,
+    workspace
+};
+
 /***********************************************************************************************************************
 *   CSCZ_CfgSettingBase
 ***********************************************************************************************************************/
 class CSCZ_CfgSettingBase : public CSCZ_CfgBase
 {
 public:
-    CSCZ_CfgSettingBase(QString *tag_p, QString *name_p, QString *description_p) : CSCZ_CfgBase(tag_p) {
-        m_name = *name_p;
-        m_description = *description_p;
-    }
-    virtual ~CSCZ_CfgSettingBase() override;
+    CSCZ_CfgSettingBase() = delete;
+    virtual ~CSCZ_CfgSettingBase() = default;
+
+    CSCZ_CfgSettingBase(const QString& tag, const QString& name, const QString& description,
+                        const SettingScope_t scope) :
+        CSCZ_CfgBase(tag), m_name(name), m_description(description), m_scope(scope) {}
 
     virtual bool WriteToFile(QTextStream *textStream_p) override = 0;
     virtual void RestoreDefaultValue(void) = 0;
     virtual bool isDefaultValue(void) = 0;
     virtual bool SetValue(QString *value_p) = 0;
 
-    /*******************************************************************************************************************
-    *   valueUpdated
-    *   @param value TODO
-    *******************************************************************************************************************/
+    /**/
     void valueUpdated(QString *value) {
         TRACEX_I(QString("Setting:%1 -> %2").arg(m_parseTag).arg(*value))
     }
 
-    /*******************************************************************************************************************
-    *   isComplex
-    *   @return TODO
-    *******************************************************************************************************************/
+    /**/
     virtual bool isComplex(void) {
         return false;
     }
 
     QString m_name;
     QString m_description;
+    SettingScope_t m_scope;
 };
 
 /***********************************************************************************************************************
-*   CSCZ_CfgSettingColorTable
+*   CSCZ_CfgT
 ***********************************************************************************************************************/
-class CSCZ_CfgSettingColorTable : public CSCZ_CfgSettingBase
+template <typename T>
+class CSCZ_CfgT : public CSCZ_CfgSettingBase
 {
 public:
-    CSCZ_CfgSettingColorTable(
-        QString *tag_p,
-        QString *name_p,
-        QString *description_p,
-        const ColorTableItem_t *colorTable_DEFAULT_p,
-        const int defaultNumOfColors) : CSCZ_CfgSettingBase(tag_p, name_p, description_p)
+    CSCZ_CfgT() = delete;
+
+    CSCZ_CfgT(const QString& tag, const QString& identity, T *ref_p, T defaultValue, const QString& description,
+              const SettingScope_t scope = SettingScope_t::user)
+        : CSCZ_CfgSettingBase(tag, identity, description, scope), m_defaultValue(defaultValue), m_valueRef_p(ref_p) {}
+
+    /***/
+    virtual bool WriteToFile(QTextStream *textStream_p)
     {
-        m_colorTable_DEFAULT_p = colorTable_DEFAULT_p;
-        m_currentNumColors = defaultNumOfColors;
+        *textStream_p << SETTING_HEADER << " " << m_parseTag << "=\"" << *m_valueRef_p << "\"" \
+                      << SETTING_FOOTER << Qt::endl;
+        return true;
     }
-
-    virtual ~CSCZ_CfgSettingColorTable();
-
-    virtual bool WriteToFile(QTextStream *textStream_p);
-    virtual void RestoreDefaultValue(void);
-    virtual bool isDefaultValue(void);
-    virtual bool SetValue(QString *value_p);
-    virtual bool isComplex(void) {return true;}
-
-    void RestoreColorTable(void);
-    void ReplaceColorInTable(int index, Q_COLORREF color, char *name_p);
-
-    /*******************************************************************************************************************
-    *   GetTable
-    *   @return TODO
-    *******************************************************************************************************************/
-    ColorTableItem_t *GetTable(void) {
-        return m_colorTable;
-    }
-
-    /*******************************************************************************************************************
-    *   GetCurrentNumberOfColors
-    *   @return TODO
-    *******************************************************************************************************************/
-    int GetCurrentNumberOfColors(void) {
-        return m_currentNumColors;
-    }
-
-    QList<CSCZ_CfgColorItem *> colorChangeList;
-    ColorTableItem_t m_colorTable[MAX_COLOR_TABLE];
-    int m_currentNumColors;
-    const ColorTableItem_t *m_colorTable_DEFAULT_p;    /* Used for restore */
-};
-
-/***********************************************************************************************************************
-*   CSCZ_CfgSearchItem
-***********************************************************************************************************************/
-class CSCZ_CfgSearchItem : public CSCZ_CfgBase
-{
-public:
-    CSCZ_CfgSearchItem(QString *tag_p, QString *name_p) : CSCZ_CfgBase(tag_p) {
-        m_name = *name_p;
-    }
-    ~CSCZ_CfgSearchItem() {}
-
-    virtual bool WriteToFile(QTextStream *textStream_p);
-
-private:
-/*  CSCZ_CfgSearchItem() {}; */
-
-    QString m_name;
-};
-
-/***********************************************************************************************************************
-*   CSCZ_SettingInt
-***********************************************************************************************************************/
-class CSCZ_SettingInt : public CSCZ_CfgSettingBase
-{
-public:
-    CSCZ_SettingInt(QString *tag_p, QString *identity_p, int *ref_p, int defaultValue, QString *description_p)
-        : CSCZ_CfgSettingBase(tag_p, identity_p, description_p)
-    {
-        m_valueRef_p = ref_p;
-        m_defaultValue = defaultValue;
-        *ref_p = defaultValue;
-    }
-
-    ~CSCZ_SettingInt() {}
-
-    virtual bool WriteToFile(QTextStream *textStream_p);
     virtual void RestoreDefaultValue(void) {*m_valueRef_p = m_defaultValue;}
     virtual bool isDefaultValue(void) {return (*m_valueRef_p == m_defaultValue ? true : false);}
-    virtual bool SetValue(QString *value_p);
 
-private:
-/*CSCZ_SettingInt() {}; */
+    /** There are template specializations */
+    T toValue(const QString *str, bool& ok) {
+        ok = true;
+        return *str;
+    }
 
-    int m_defaultValue;
-    int *m_valueRef_p;
-};
-
-/***********************************************************************************************************************
-*   CSCZ_SettingUInt
-***********************************************************************************************************************/
-class CSCZ_SettingUInt : public CSCZ_CfgSettingBase
-{
-public:
-    CSCZ_SettingUInt(QString *tag_p,
-                     QString *identity_p,
-                     int *ref_p,
-                     int defaultValue,
-                     QString *description_p)
-        : CSCZ_CfgSettingBase(tag_p, identity_p, description_p)
+    /**/
+    virtual bool SetValue(QString *value_p)
     {
-        m_valueRef_p = ref_p;
-        m_defaultValue = defaultValue;
-        *ref_p = defaultValue;
+        bool ok = false;
+        auto value = toValue(value_p, ok);
+        if (ok && (value != *m_valueRef_p)) {
+            *m_valueRef_p = value;
+            valueUpdated(value_p);
+        }
+        return ok;
     }
-
-    ~CSCZ_SettingUInt() {}
-
-    virtual bool WriteToFile(QTextStream *textStream_p);
-
-    /*******************************************************************************************************************
-    *   RestoreDefaultValue
-    *
-    *******************************************************************************************************************/
-    virtual void RestoreDefaultValue(void) {
-        *m_valueRef_p = m_defaultValue;
-    }
-
-    /*******************************************************************************************************************
-    *   isDefaultValue
-    *   @return TODO
-    *******************************************************************************************************************/
-    virtual bool isDefaultValue(void) {
-        return (*m_valueRef_p == m_defaultValue ? true : false);
-    }
-    virtual bool SetValue(QString *value_p);
 
 private:
-    int m_defaultValue;
-    int *m_valueRef_p;
-};
-
-/***********************************************************************************************************************
-*   CSCZ_SettingBool
-***********************************************************************************************************************/
-class CSCZ_SettingBool : public CSCZ_CfgSettingBase
-{
-public:
-    CSCZ_SettingBool(QString *tag_p, QString *identity_p, bool *ref_p, bool defaultValue, QString *description_p)
-        : CSCZ_CfgSettingBase(tag_p, identity_p, description_p)
-    {
-        m_valueRef_p = ref_p;
-        m_defaultValue = defaultValue;
-        *ref_p = defaultValue;
-    }
-
-    ~CSCZ_SettingBool() {}
-
-    virtual bool WriteToFile(QTextStream *textStream_p);
-
-    /**< RestoreDefaultValue **/
-    virtual void RestoreDefaultValue(void) {
-        *m_valueRef_p = m_defaultValue;
-    }
-
-    /**< isDefaultValue **/
-    virtual bool isDefaultValue(void) {
-        return (*m_valueRef_p == m_defaultValue ? true : false);
-    }
-    virtual bool SetValue(QString *value_p);
-
-private:
-/*CSCZ_SettingBool() {}; */
-
-    bool m_defaultValue;
-    bool *m_valueRef_p;
-};
-
-/***********************************************************************************************************************
-*   CSCZ_SettingString
-***********************************************************************************************************************/
-class CSCZ_SettingString : public CSCZ_CfgSettingBase
-{
-public:
-    CSCZ_SettingString(QString *tag_p, QString *identity_p, QString *ref_p, QString defaultValue,
-                       QString *description_p)
-        : CSCZ_CfgSettingBase(tag_p, identity_p, description_p)
-    {
-        m_valueRef_p = ref_p;
-        m_defaultValue = defaultValue;
-        *ref_p = defaultValue;
-    }
-
-    ~CSCZ_SettingString() {}
-
-    virtual bool WriteToFile(QTextStream *textStream_p);
-    virtual void RestoreDefaultValue(void) {*m_valueRef_p = m_defaultValue;}
-    virtual bool isDefaultValue(void) {return (*m_valueRef_p == m_defaultValue ? true : false);}
-    virtual bool SetValue(QString *value_p);
-
-private:
-    QString m_defaultValue;
-    QString *m_valueRef_p;
+    T m_defaultValue;
+    T *const m_valueRef_p;
 };
 
 /***********************************************************************************************************************
@@ -581,6 +415,9 @@ public:
     void writeDefaultSettings(void);
     void SetupApplicationVersion(void);
 
+    const std::vector<ColorTableItem_t> *getFontColorTable(void);
+    const std::vector<ColorTableItem_t> *getColorTable(void);
+
     void ReloadSettings(void);
     void UnloadSettings(void);
     void LoadSystemSettings(void);  /**< This function is run after ReloadSettings, and "tune" parameters from HW and
@@ -597,13 +434,9 @@ public:
     bool RegisterSetting_STRING(QString tag, QString name, QString *ref_p, QString defaultValue, QString description);
 
     CSCZ_CfgSettingBase *GetSetting(QString *name_p);
-    CSCZ_CfgSettingColorTable *RegisterColorTable(QString tag, QString name, QString description,
-                                                  const ColorTableItem_t *colorTable_DEFAULT_p,
-                                                  const int defaultNumColors);
 
-    void ReplaceColorInTable(char *id_p, int index, Q_COLORREF color, char *name_p);
     bool RemoveSetting(QString *identity_p);
-    bool WriteSettings(QFile *file_h, bool onlyChanged = false);
+    bool WriteSettings(QFile *file_h, SettingScope_t scope, bool onlyChanged = false);
 
     /****/
     QString GetApplicationVersion(void) {
@@ -628,8 +461,8 @@ public:
     int m_maxWorkMemSize;
     int m_plot_lineEnds; /**< Determine with which line end  to use */
     int m_plot_LineEnds_MinPixelDist; /**< Minimal number of pixels that there must be between line ends */
-    int m_plot_LineEnds_MaxCombinePixelDist; /**< Maximal number of pixels between lines that are
-                                              *  combined, after this they will be * seperatly drawn */
+    int m_plot_LineEnds_MaxCombinePixelDist; /**< Maximal number of pixels between lines that are combined, after this
+                                              * they will be * seperatly drawn */
     int m_plot_TextFontSize; /**< Size of font used for text in  plots */
     int m_plot_TextFontColor; /**< Size of font used for text in plots */
     int m_plot_GraphLineSize; /**< Thinkness of graphs */
@@ -639,8 +472,8 @@ public:
     int m_plot_GraphCursorLineColor; /**< Color */
     int m_plot_FocusLineSize;
     int m_plot_FocusLineColor; /**< When a subPlot has focus this color is drawn around the * subPlot */
-    int m_plot_PassiveFocusLineColor; /**< When a subPlot has focus, but  not the PlotWnd, this color is
-                                       * drawn around the subPlot */
+    int m_plot_PassiveFocusLineColor; /**< When a subPlot has focus, but  not the PlotWnd, this color is drawn around
+                                       * the subPlot */
     int m_scrollArrowScale; /**< Used to resize the vertial scroll arrow. 10  -> 0.1 */
     int m_plot_GrayIntensity;
     int m_log_GrayIntensity;
@@ -654,8 +487,6 @@ public:
     int m_default_FontSize = TEXT_WINDOW_CHAR_SIZE;
     int m_workspace_FontSize = TEXT_WINDOW_CHAR_SIZE;
     int m_copyPaste_FontSize = COPY_PASTE_CHAR_SIZE;
-    CSCZ_CfgSettingColorTable *m_font_ColorTable_p;
-    CSCZ_CfgSettingColorTable *m_graph_ColorTable_p;
     int m_Log_rowClip_Start;
     int m_Log_rowClip_End;
     int m_Log_colClip_Start;
