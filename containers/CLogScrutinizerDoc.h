@@ -245,7 +245,6 @@ public:
     QString m_textBuffer;
     char m_delayedErrorMsg[CFG_TEMP_STRING_MAX_SIZE];
     CFontCtrl m_fontCtrl;
-    int m_topLine;
     QFile m_qFile_Log; /*HANDLE                    m_file_h;   //Loaded text file */
     QFile m_qFile_TIA; /* m_TIA_MemMapped_File_h; */
     QFile m_qFile_FIRA; /*  HANDLE                    m_FIRA_MemMapped_File_h; */

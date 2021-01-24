@@ -1614,7 +1614,7 @@ void CWorkspace::ToggleBookmark(QWidget *parent, QString *comment_p, int row)
     bool found = false;
     bool insert = true;
     CCfgItem_Bookmark *bookmark_p = nullptr;
-    CCfgItem *itemBefore_p = m_bookmarks_p;
+    CCfgItem *itemBefore_p = nullptr;
 
     if (row > doc_p->m_database.TIA.rows) {
         TRACEX_W("CWorkspace::ToggleBookmark  Trying to toggle bookmark to row outside "
@@ -1634,18 +1634,18 @@ void CWorkspace::ToggleBookmark(QWidget *parent, QString *comment_p, int row)
          * is possible that this bookmark should be infront, then it is directly found and itemBefore_p would then keep
          *  its (m_bookmarks_p) value. If none is found then it itemBefore_p contains the current last bookmark in the
          * list. */
-        while (iter != m_bookmarks_p->m_cfgChildItems.end() && !found) {
-            CCfgItem_Bookmark *bookmark_p = static_cast<CCfgItem_Bookmark *>(*iter);
+        for (auto& item : m_bookmarks_p->m_cfgChildItems) {
+            CCfgItem_Bookmark *bookmark_p = static_cast<CCfgItem_Bookmark *>(item);
             if (bookmark_p->m_row == row) {
                 /*m_bookmarks_p->m_cfgChildItems.erase(iter);  --> this should be done by prepare delete instead */
                 CCfgItem_Delete(bookmark_p);
                 insert = false;
-                found = true;
+                break;
             } else if (bookmark_p->m_row > row) {
                 found = true;
+                break;
             } else {
-                itemBefore_p = *iter;
-                ++iter;
+                itemBefore_p = item;
             }
         } /* while */
     }

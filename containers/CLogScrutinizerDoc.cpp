@@ -466,6 +466,7 @@ void CLogScrutinizerDoc::CleanDB(bool reload, bool unloadFilters)
     /* First thing */
     m_database.TIA.rows = 0;
     m_database.FIRA.filterMatches = 0;
+    m_database.fileSize = 0;
 
     m_fileChangeTimer.get()->stop();
     m_logFileInfo = QFileInfo();
@@ -492,8 +493,6 @@ void CLogScrutinizerDoc::CleanDB(bool reload, bool unloadFilters)
                                                                                                * */
         m_database.FIRA.FIR_Array_p = nullptr;
     }
-
-    memset(&m_database, 0, sizeof(DB_t)); /*  This cannot be done when filters are not reloaded ...why ?? */
 
     if (m_qFile_Log.isOpen()) {
         TRACEX_I("Closed Log file: %s", m_qFile_Log.fileName().toLatin1().constData())

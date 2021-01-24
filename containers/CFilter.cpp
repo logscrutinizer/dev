@@ -179,9 +179,11 @@ namespace FilterMgr
         const int numOfTextItems = TIA.rows;
 
         for (index = 0; index < numOfTextItems; ++index) {
-            if (FIRA_p[index].LUT_index != 0) {
-                if (!filterItem_LUT_pp[FIRA_p[index].LUT_index]->m_exclude) {
-                    FIRA_p[index].index = FIR_Count;
+            const auto fira_p = &FIRA_p[index];
+            const auto lut_index = fira_p->LUT_index;
+            if (lut_index != 0) {
+                if (!filterItem_LUT_pp[lut_index]->m_exclude) {
+                    fira_p->index = FIR_Count;
                     ++FIR_Count;
                 } else {
                     ++FIR_Exclude_Count;
