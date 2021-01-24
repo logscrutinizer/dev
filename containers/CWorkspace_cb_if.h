@@ -24,6 +24,7 @@ void CWorkspace_FilterItemProperties(int uniqueID, QWidget *widget_p);
 void CWorkspace_GetMatchingFilters(QList<CCfgItem_FilterItem *> *filterItemList_p,
                                    const QString& match);
 void CWorkspace_GetBookmarks(QList<int> *bookmarks);
+bool CWorkspace_isBookmarked(int row);
 
 CCfgItem_Plugin *CWorkspace_GetSelectedPlugin(CCfgItem *selection_p = nullptr);
 QList<CCfgItem *> *CWorkspace_GetFilterList(void);

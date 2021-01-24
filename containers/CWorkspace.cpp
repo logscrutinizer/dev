@@ -330,6 +330,21 @@ void CWorkspace_GetBookmarks(QList<int> *bookmarks)
 }
 
 /***********************************************************************************************************************
+   CWorkspace_isBookmarked
+***********************************************************************************************************************/
+bool CWorkspace_isBookmarked(int row)
+{
+    if (g_workspace_p == nullptr) {
+        Q_ASSERT(CSCZ_SystemState != SYSTEM_STATE_RUNNING);
+        return false;
+    }
+    if (g_workspace_p != nullptr) {
+        return g_workspace_p->isBookmarked(row);
+    }
+    return false;
+}
+
+/***********************************************************************************************************************
 *   CWorkspace_RemoveAllBookmarks
 ***********************************************************************************************************************/
 void CWorkspace_RemoveAllBookmarks(void)
@@ -459,6 +474,7 @@ bool CWorkspace_GetLastSelectedFilterItem(QString *string_p)
     *string_p = "";
 
     QList<CCfgItem *> selectionList;
+
     if (!CWorkspace_TreeView_GetSelections(CFG_ITEM_KIND_None, selectionList)) {
         return false;
     }
@@ -881,6 +897,7 @@ void CWorkspace_SearchAndUnloadPlugin(CPlot *childPlot_p)
 
     for (auto pluginIter = pluginList.begin(); pluginIter != pluginList.end(); ++pluginIter) {
         auto plugin_p = static_cast<CCfgItem_Plugin *>(*pluginIter);
+
         if (plugin_p->m_cfgChildItems.isEmpty()) {
             continue;
         }
@@ -930,6 +947,7 @@ CCfgItem_Plot *CWorkspace_SearchPlot(CPlot *childPlot_p)
 
         if ((cfgPlotRootItem_p != nullptr) && !cfgPlotRootItem_p->m_cfgChildItems.isEmpty()) {
             QList<CCfgItem *>& plotList = cfgPlotRootItem_p->m_cfgChildItems;
+
             for (auto plotIter = plotList.begin(); plotIter != plotList.end(); ++plotIter) {
                 /* loop inside the plotRoot... there should be only Plots */
                 auto cfgItem_Plot_p = static_cast<CCfgItem_Plot *>(*plotIter);
@@ -1026,6 +1044,7 @@ void CWorkspace::SetQuickSearch(int nChar)
 
     /* Assign the filter the letter for quick search */
     auto cfgItem_p = selectionList.first();
+
     if (cfgItem_p->m_itemKind == CFG_ITEM_KIND_FilterItem) {
         static_cast<CCfgItem_FilterItem *>(cfgItem_p)->m_quickSearchNum = nChar;
     } else {
@@ -1036,6 +1055,7 @@ void CWorkspace::SetQuickSearch(int nChar)
     for (auto cfgFilter_p : m_filters_p->m_cfgChildItems) {
         for (auto cfgItem_p : cfgFilter_p->m_cfgChildItems) {
             auto cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(cfgItem_p);
+
             if (cfgFilterItem_p->m_quickSearchNum == nChar) {
                 cfgFilterItem_p->m_quickSearchNum = -1;
                 MW_Refresh();
@@ -1459,6 +1479,7 @@ void CWorkspace::DisableFilterItem(int uniqueID)
     for (auto& filter : m_filters_p->m_cfgChildItems) {
         for (auto& item : filter->m_cfgChildItems) {
             CCfgItem_FilterItem *cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(item);
+
             if (cfgFilterItem_p->m_filterItem_ref_p->m_uniqueID == uniqueID) {
                 cfgFilterItem_p->m_filterItem_ref_p->m_enabled = false;
                 m_model_p->itemUpdated(cfgFilterItem_p);
@@ -1476,6 +1497,7 @@ void CWorkspace::FilterItemProperties(int uniqueID, QWidget *widget_p)
     for (auto& filter : m_filters_p->m_cfgChildItems) {
         for (auto& item : filter->m_cfgChildItems) {
             CCfgItem_FilterItem *cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(item);
+
             if (cfgFilterItem_p->m_filterItem_ref_p->m_uniqueID == uniqueID) {
                 cfgFilterItem_p->PropertiesDlg(widget_p);
                 m_model_p->itemUpdated(cfgFilterItem_p);
@@ -1494,6 +1516,7 @@ int CWorkspace::GetEnabledFilterItemCount(void)
     for (auto& filter : m_filters_p->m_cfgChildItems) {
         for (auto& item : filter->m_cfgChildItems) {
             CCfgItem_FilterItem *cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(item);
+
             if (cfgFilterItem_p->m_filterItem_ref_p->m_enabled) {
                 count++;
             }
@@ -1512,6 +1535,7 @@ void CWorkspace::GetMatchingFilters(QList<CCfgItem_FilterItem *> *filterItemList
         for (auto& item : filter->m_cfgChildItems) {
             CCfgItem_FilterItem *cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(item);
             auto filterItem = QString(cfgFilterItem_p->m_filterItem_ref_p->m_start_p);
+
             if (filterItem.indexOf(match, 0, Qt::CaseInsensitive) != -1) {
                 filterItemList_p->append(cfgFilterItem_p);
             }
@@ -1723,6 +1747,7 @@ int CWorkspace::GetClosestBookmark(int row)
     for (auto cfgItem_p : m_bookmarks_p->m_cfgChildItems) {
         auto bookmark_p = static_cast<CCfgItem_Bookmark *>(cfgItem_p);
         diff = bookmark_p->m_row > row ? bookmark_p->m_row - row : row - bookmark_p->m_row;
+
         if (first || (diff < min_diff)) {
             min_diff = diff;
             min_row = bookmark_p->m_row;
@@ -1759,6 +1784,7 @@ bool CWorkspace::NextBookmark(int currentRow, int *bookmarkRow_p, bool backward)
         iter = m_bookmarks_p->m_cfgChildItems.begin();
         for (auto item_p : m_bookmarks_p->m_cfgChildItems) {
             auto bookmark_p = static_cast<CCfgItem_Bookmark *>(item_p);
+
             if (bookmark_p->m_row > currentRow) {
                 *bookmarkRow_p = bookmark_p->m_row;
                 return true;
@@ -1850,6 +1876,7 @@ void CWorkspace::CloseAllSelectedPlugins(void)
 void CWorkspace::TakeFocus(void)
 {
     MW_SetWorkspaceWidgetFocus();
+
     TRACEX_DE(QString("%1 SetFocus").arg(__FUNCTION__))
 }
 
@@ -1932,6 +1959,7 @@ QModelIndex Model::parent(const QModelIndex &child) const
 {
     if (child.isValid()) {
         CCfgItem *childItem = static_cast<CCfgItem *>(child.internalPointer());
+
         if (childItem->m_tag != CCFG_ITEM_TAG) {
             return QModelIndex();
         }
@@ -1952,7 +1980,6 @@ int Model::rowCount(const QModelIndex &parent) const
 {
     int rowCount = 0;
 #ifdef _DEBUG
-
     /*TRACEX_D(QString("rowCount")) */
 #endif
     if (parent.isValid()) {
@@ -1962,15 +1989,14 @@ int Model::rowCount(const QModelIndex &parent) const
         if ((current_p != nullptr) && !current_p->m_cfgChildItems.isEmpty()) {
             rowCount = current_p->m_cfgChildItems.count();
 #ifdef _DEBUG
-
             /*TRACEX_D(QString("    current:%1 kind:%2 rowCount:%3")
              * .arg(QString(QString::number(reinterpret_cast<int>(current_p), 16)))
              * .arg(current_p->m_itemKind).arg(rowCount));*/
 #endif
         } else {
             rowCount = 1;
-#ifdef _DEBUG
 
+#ifdef _DEBUG
             /*  TRACEX_D(QString("    ERROR current:nullptr rowCount:%1").arg(rowCount)) */
 #endif
         }
@@ -1978,7 +2004,6 @@ int Model::rowCount(const QModelIndex &parent) const
         /* give the count of the children of root */
         rowCount = g_workspace_p->m_root_p->m_cfgChildItems.count();
 #ifdef _DEBUG
-
         /*TRACEX_D(QString("    root rowCount:%1").arg(rowCount)) */
 #endif
     }
@@ -2187,6 +2212,7 @@ bool Model::setData(const QModelIndex &index, const QVariant &value, int role)
                 bool enabled = static_cast<CCfgItem_FilterItem *>(item_p)->m_filterItem_ref_p->m_enabled;
                 auto filterItem = static_cast<CCfgItem_FilterItem *>(item_p);
                 filterItem->m_filterItem_ref_p->m_enabled = enabled ? false : true;
+
                 TRACEX_I(QString("FilterItem: %1 - %2")
                              .arg(filterItem->m_itemText)
                              .arg(filterItem->m_filterItem_ref_p->m_enabled ? QString("Enabled") : QString("Disabled")))
@@ -2358,6 +2384,7 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
     }
 
     CCfgItem *parentItem_p = static_cast<CCfgItem *>(parent.internalPointer());
+
     TRACEX_DE(QString("drop rows row:%1 action:%2 Parent:%3")
                   .arg(row).arg(action).arg(parentItem_p->m_itemText))
 
@@ -2512,6 +2539,7 @@ void Model::itemUpdated(CCfgItem *item_p)
     }
 
     QModelIndex qindex = createIndex(item_p->index(), 0, item_p);
+
     TRACEX_D("IN %s", __FUNCTION__)
 
     emit dataChanged(qindex, qindex);

@@ -120,6 +120,7 @@ ReloadStrategy_e CLogScrutinizerDoc::decideReloadStrategy(const QFileInfo& newFi
 
     /* Close and Reopen to prevent file caching to "destroy" the file change validation. */
     m_qFile_Log.close();
+
     if (!m_qFile_Log.open(QIODevice::ReadOnly)) {
         TRACEX_W(QString("Failied to reopen log file at file validation"))
         return RS_Full;
@@ -136,6 +137,7 @@ ReloadStrategy_e CLogScrutinizerDoc::decideReloadStrategy(const QFileInfo& newFi
     /* (1) Check tail */
     auto index = lastIndex - NUM_TAIL_ROWS_TO_CHECK - NUM_TAIL_ROWS_TO_RELOAD;
     index = index < 0 ? 0 : index;
+
     for ( ; index < lastIndex; index++) {
         const auto eol_size = ti_p[index].size;
         if (!m_rowCache_p->rawFromFile(ti_p[index].fileIndex + eol_size,
@@ -256,6 +258,7 @@ void CLogScrutinizerDoc::logFileUpdated(const QString &path, bool useSavedReload
 bool CLogScrutinizerDoc::loadLogIncrement(void)
 {
     auto pendingUpdateScopeGuard = makeMyScopeGuard([&] () {CSZ_DB_PendingUpdate = false;});
+
     CSZ_DB_PendingUpdate = true;
 
     if (m_workMem.Operation(WORK_MEM_OPERATION_COMMIT)) {
@@ -710,6 +713,7 @@ void CLogScrutinizerDoc::CreateFiltersFromCCfgItems(void)
             /* Loop over the CCfgItem_Filter children and store copies of filterItems into m_allEnabledFilterItems. */
             for (auto& filterItem_p : cfgItemFilter_p->m_cfgChildItems) {
                 CCfgItem_FilterItem *cfgFilterItem_p = static_cast<CCfgItem_FilterItem *>(filterItem_p);
+
                 if (cfgFilterItem_p->m_filterItem_ref_p->m_enabled) {
                     /* Adding filter items to allEnabledFilterItems, note that first filter will end up LUT index 1 */
                     m_allEnabledFilterItems.append(new CFilterItem(cfgFilterItem_p->m_filterItem_ref_p));
@@ -794,6 +798,7 @@ void CLogScrutinizerDoc::replaceFileSysWatcherFile(QString& fileName)
 
     /* Print all the adds */
     QStringList files = m_fileSysWatcher.files();
+
     if (!files.empty()) {
         for (auto& file : files) {
             TRACEX_I(QString("Tracked file: %1").arg(file))
@@ -1088,6 +1093,7 @@ void CLogScrutinizerDoc::PostProcFiltering(void)
                                QMessageBox::Ok,
                                MW_Parent());
             msgBox.exec();
+
             TRACEX_I("There are no filterItems matching at all, check your filterItems")
         }
     }
@@ -1198,6 +1204,22 @@ void CLogScrutinizerDoc::ExecuteIncrementalFiltering(int startRow)
     CSZ_DB_PendingUpdate = false;
     CEditorWidget_Repaint();
     CleanRowCache();
+}
+
+/***********************************************************************************************************************
+   GetFilterMatch
+   Minimalistic approach
+***********************************************************************************************************************/
+CFilterItem *CLogScrutinizerDoc::GetFilterMatch(char *text_p, int textLength)
+{
+    QList<int> bookmarkList;
+    CWorkspace_GetBookmarks(&bookmarkList);
+
+    if (m_database.TIA.rows == 0) {
+        return nullptr;
+    }
+    CFilterProcCtrl filterCtrl;
+    return filterCtrl.GetFilterMatch(text_p, textLength, &m_allEnabledFilterItems, &m_database.filterItem_LUT[0]);
 }
 
 /***********************************************************************************************************************

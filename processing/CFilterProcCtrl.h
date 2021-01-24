@@ -121,6 +121,12 @@ public:
         QList<int> *bookmarkList_p,
         bool isBookmarkRemove);
 
+    CFilterItem *GetFilterMatch(
+        char *text_p,
+        int textLength,
+        QList<CFilterItem *> *filterItems_p,
+        CFilterItem **filterItem_LUT_p);
+
     void PackFilters(void);
     void ClearFilterRefs(void);
     void NumerateFIRA(void);

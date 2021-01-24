@@ -42,6 +42,7 @@ struct info_text_elem {
     char text[256];
     double y_rel;
 };
+
 const struct info_text_elem welcome[] =
 {
     {"Welcome to LogScrutinizer", 1.0},
@@ -202,6 +203,7 @@ void CEditorWidget::Initialize_0(void)
     }
 
     m_bitmap_bug = MakeTransparantImage(":IDB_BUG_BITMAP_24", Q_RGB(0x7C, 0xFC, 0x00));
+
     if (m_bitmap_bug.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BUG_BITMAP_24 load FAILED")
     }
@@ -222,6 +224,11 @@ void CEditorWidget::Initialize_0(void)
     m_bmp_bookmark_48_36 = QImage(":IDB_BOOKMARK_48_36");
     if (m_bmp_bookmark_48_36.isNull()) {
         TRACEX_W("CEditorWidget::CEditorWidget  Bitmap IDB_BOOKMARK_48_36 load FAILED")
+    }
+
+    m_bookmark_icon = QImage(":blue_bookmark.ico");
+    if (m_bookmark_icon.isNull()) {
+        TRACEX_W("CEditorWidget::CEditorWidget  Bitmap blue_bookmark icon load FAILED")
     }
 
     m_colClip_Bitmap_ClipStart = MakeTransparantImage(":IDB_CLIP_START", Q_RGB(0xff, 0xff, 0xff));
@@ -522,6 +529,7 @@ void CEditorWidget::SetupScreenProperties_Step1(void)
     m_numOf_1_PixelBonus = 0;
 
     m_maxDisplayRows = ((m_textWindow.bottom() - m_textWindow.top()) / m_rowHeigth);
+
     if (m_maxDisplayRows < 1) {
         m_maxDisplayRows = 1;
     }
@@ -723,6 +731,7 @@ void CEditorWidget::DrawTextPart(const QRect *screenRowRect_p, const QString& te
         /* find where in the original tab list we should start, find the clostest tab index infront of the
          * current pixel position. */
         auto tabIndex = startPixel / m_tabSize;
+
         if (startPixel > m_tabStops[tabIndex].position) {
             while (tabIndex < MAX_COUNT && startPixel > m_tabStops[tabIndex].position) {
                 tabIndex++;
@@ -1314,7 +1323,6 @@ void CEditorWidget::DrawRows(void)
     QRect screenRowRect;
     QRect headRect;
     CSelection* selection_p;
-    bool bookmark;
     bool selected;
     QSize  lineSize(0, 0);
     FontItem_t* currentFont_p = nullptr;
@@ -1330,11 +1338,14 @@ void CEditorWidget::DrawRows(void)
     m_numOfHighLights = 0;
     debug_numOfRowsForHighLight = 0;
     for (index = 0; m_screenRows[index].valid; ++index) {
+        bool bookmark = false;
         row = m_screenRows[index].row;
         auto &rect = m_screenRows[index].screenRect;
         screenRowRect = QRect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 
         filterItem_p = nullptr;
+        doc_p->GetTextItem(row, &start_p, &size, &rowProperties);
+        size = size > DISPLAY_MAX_ROW_SIZE ? DISPLAY_MAX_ROW_SIZE : size;
 
         if ((m_screenRows[index].presentation != ROW_PRESENTATION_HEAD_FRAME_e) &&
                 (m_screenRows[index].presentation != ROW_PRESENTATION_FOOTER_FRAME_e)) {
@@ -1349,8 +1360,16 @@ void CEditorWidget::DrawRows(void)
             case ROW_PRESENTATION_FOOTER_FRAME_e:
                 continue; /* next item in the for loop... don't care about the head/foot here */
 
-            default:
             case ROW_PRESENTATION_BOOKMARKED_e:
+                bookmark = true;
+                currentFont_p = m_blackFont_p;
+                filterItem_p = doc_p->GetFilterMatch(start_p, size);
+                if (filterItem_p != nullptr && filterItem_p->m_font_p != nullptr) {
+                    currentFont_p = filterItem_p->m_font_p;
+                }
+                break;
+
+            default:
             case ROW_PRESENTATION_NORMAL_e:
                 currentFont_p = m_blackFont_p;
                 break;
@@ -1387,13 +1406,10 @@ void CEditorWidget::DrawRows(void)
             doc_p->m_fontCtrl.SetFont(m_painter_p, currentFont_p);
         }
 
-        bookmark = m_screenRows[index].presentation == ROW_PRESENTATION_BOOKMARKED_e ? true : false;
         selected = isRowSelected(row, &selection_p);
 
         /* ---- Format text about to be shown ---- */
 
-        doc_p->GetTextItem(row, &start_p, &size, &rowProperties);
-        size = size > DISPLAY_MAX_ROW_SIZE ? DISPLAY_MAX_ROW_SIZE : size;
         lineSize = QSize(0, 0);
         memcpy(m_tempStr, start_p, static_cast<size_t>(size));
         if (size >= DISPLAY_MAX_ROW_SIZE - 3) {
@@ -1635,10 +1651,12 @@ void CEditorWidget::DrawModifiedFontRow(FontModification_RowInfo_t *fontModRowIn
 ***********************************************************************************************************************/
 void CEditorWidget::DrawBookmark(QRect *rect_p)
 {
-    QBrush bookmarkBrush = QBrush(QColor(BOOKMARK_COLOR /*BOOKMARK_COLOR_FRAME*/));
-
-    m_painter_p->setBrush(bookmarkBrush);
-    m_painter_p->drawRoundedRect(*rect_p, 2, 2);
+    /*
+       QBrush bookmarkBrush = QBrush(QColor(BOOKMARK_COLOR));
+       m_painter_p->setBrush(bookmarkBrush);
+       m_painter_p->drawRoundedRect(*rect_p, 2, 2);
+     */
+    m_painter_p->drawImage(*rect_p, m_bookmark_icon);
 }
 
 /***********************************************************************************************************************
@@ -1734,6 +1752,7 @@ void CEditorWidget::SearchNewTopLine(bool checkDisplayCache, int focusRow)
         if (isRowVisible(focusRow)) {
             /* Ensure the same offset to topline for the focusRow */
             int offset = GetScreenRowOffset(focusRow);
+
             if (!SearchFilteredRows_TIA(focusRow, offset + 1, true, &m_topLine)) {
                 m_topLine = doc_p->m_database.packedFIRA_p[m_minFIRAIndex].row;
             }
@@ -2217,6 +2236,7 @@ void CEditorWidget::OnFilterItemProperties(void)
 {
     auto *doc_p = GetDocument();
     CFilterItem *filterItem_p = doc_p->m_rowCache_p->GetFilterRef(m_cursorSel.row);
+
     if ((filterItem_p != nullptr) && (g_workspace_p != nullptr)) {
         CWorkspace_FilterItemProperties(filterItem_p->m_uniqueID, this);
         TRACEX_D("%s %d", __FUNCTION__, filterItem_p->m_uniqueID)
@@ -2410,6 +2430,7 @@ void CEditorWidget::OnFileSaveSelectionsAs(void)
 
     QStringList fileNames = CFGCTRL_GetUserPickedFileNames(QString("cutout.txt"), QFileDialog::AcceptSave,
                                                            filters, kindList, list.first());
+
     if (!fileNames.empty() && !fileNames.first().isEmpty()) {
         SaveSelectionsToFile(fileNames.first());
     }
@@ -3685,7 +3706,6 @@ bool CEditorWidget::SetVScrollBitmap(bool enabled)
     if ((m_vscrollSliderGlue || m_vscrollBitmapForce) && !m_vscrollBitmapEnabled) {
         /* override, align to vscroll glue */
 #ifdef _DEBUG
-
         /*TRACEX_DE("CEditorWidget::SetVScrollBitmap  %d", 1) */
 #endif
         m_vscrollBitmapEnabled = true;
@@ -4659,6 +4679,7 @@ void CEditorWidget::EmptySelectionListAbove(CSelection *selection_p)
     }
 
     SelectionUpdated();
+
     PRINT_SELECTION("EmptySelectionListAbove, count:%d", count)
 }
 
@@ -5423,6 +5444,7 @@ QString CEditorWidget::GetSelectionText(void)
     }
 
     CSelection *selection_p = m_selectionList.first();
+
     if ((selection_p->endCol - selection_p->startCol) > 0) {
         doc_p->GetTextItem(selection_p->row, &start_p, &textSize);
 
@@ -5972,8 +5994,17 @@ void CEditorWidget::SelectionsToClipboard(void)
     html_text += QString("<p>");
     try {
         for (auto& selection_p : m_selectionList) {
-            auto text = doc_p->GetTextItem(selection_p->row);
-            auto filterItem_p = doc_p->m_rowCache_p->GetFilterRef(selection_p->row);
+            char *text_p = nullptr;
+            int size = 0;
+            doc_p->GetTextItem(selection_p->row, &text_p, &size);
+            QString text = QString(text_p);
+
+            CFilterItem *filterItem_p = nullptr;
+            if (CWorkspace_isBookmarked(selection_p->row)) {
+                filterItem_p = doc_p->GetFilterMatch(text_p, size);
+            } else {
+                filterItem_p = doc_p->m_rowCache_p->GetFilterRef(selection_p->row);
+            }
 
             /* #define BACKGROUND_COLOR                    Q_RGB(255, 250, 240)          //FLORALWHITE */
             if (filterItem_p == nullptr) {
@@ -6028,6 +6059,7 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
 
     *screenRow_p = 0;
     *screenCol_p = 0;
+
     if (overHalf != nullptr) {
         *overHalf = false;
     }
@@ -6066,7 +6098,6 @@ bool CEditorWidget::PointToCursor(ScreenPoint_t *screenPoint_p, int *screenRow_p
         TIA_row = m_screenRows[*screenRow_p].row;
     } else {
 #ifdef _DEBUG
-
         /* Until the screen is as large as the text the below print cannot be a WARNING */
         TRACEX_DE("CEditorWidget::PointToCursor  WARNING screenRow:%d NOT VALID y:%d w_top:%d height:%d",
                   *screenRow_p, screenPoint_p->DCBMP.y(), m_textWindow.top(), m_rowHeigth)
@@ -6773,6 +6804,7 @@ void CEditorWidget::FillRockScroll(void)
     }
 
     QTextStream fileStream(&file);
+
     for (int index = 0; index < m_rockScrollInfo.numberOfItems; ++index) {
         RockScrollItem_t *rsi = &m_rockScrollInfo.itemArray_p[index];
         fileStream << QString("[%1] br:%2 sr:%3 er:%4 ypix:%5 color:%6\n")
@@ -6837,7 +6869,6 @@ void CEditorWidget::InvalidateRockScroll(void)
 void CEditorWidget::CheckRockScroll(void)
 {
  #ifdef QT_TODO
-
     /* check the scrollSlider and the rockScroll */
 
     if ((m_rockScrollInfo.numberOfItems == 0) || (m_rockScrollInfo.itemArray_p == nullptr)) {
@@ -7392,6 +7423,7 @@ void CEditorWidget::keyPressEvent(QKeyEvent *e)
                                              tr("Row clip end not set"),
                                              tr("Row clip end not set, (use Ctrl-F9)", "LogScrutinizer - Row Clip"),
                                              QMessageBox::Ok);
+
                     TRACEX_I("Row clip end not set, (use Ctrl-F9)")
                 }
             }

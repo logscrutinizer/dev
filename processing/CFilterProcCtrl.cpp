@@ -287,6 +287,84 @@ void CFilterProcCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t w
 /***********************************************************************************************************************
 *   StartOneLine
 ***********************************************************************************************************************/
+CFilterItem *CFilterProcCtrl::GetFilterMatch(char *text_p, int textLength,
+                                             QList<CFilterItem *> *filterItems_p, CFilterItem **filterItem_LUT_p)
+{
+    bool match = false;
+    Match_Description_t matchDescr;
+    uint8_t filterIndex = 0;
+
+    m_execTimes_p = nullptr;
+    m_bookmarkList_p = nullptr;
+
+    m_filterItems_p = filterItems_p;
+    m_filterItem_LUT_p = filterItem_LUT_p;
+    m_priority = 0;
+
+    memset(&matchDescr, 0, sizeof(Match_Description_t));
+
+    /* Number of filters (which contains filterItems) */
+    if (filterItems_p->count() > 0) {
+        PackFilters();  /* Put all filter texts together to minimize cache misses -> m_numOfFilterItems */
+
+        matchDescr.textLength = textLength;
+        matchDescr.text_p = text_p;
+
+        while (filterIndex < m_numOfFilterItems && !match) {
+            packedFilterItem_t *packedFilterItem_p = &m_packedFilterItems_p[filterIndex];
+            const bool regExp = m_packedFilterItems_p[filterIndex].filterRef_p->m_regexpr;
+            matchDescr.filter_p = packedFilterItem_p->start_p;
+
+            if (regExp) {
+                hs_compile_error_t *compile_err;
+                hs_database_t *database;
+                hs_scratch_t *scratch;
+
+                matchDescr.filterLength = packedFilterItem_p->length;
+
+                if (hs_compile(packedFilterItem_p->start_p,
+                               REGEXP_HYPERSCAN_FLAGS,
+                               HS_MODE_BLOCK,
+                               nullptr,
+                               &database,
+                               &compile_err) != HS_SUCCESS) {
+                    TRACEX_I(QString("RegExp failed %1").arg(compile_err->message))
+                    g_processingCtrl_p->AddProgressInfo(QString("Regular expression contains error: %1")
+                                                            .arg(packedFilterItem_p->start_p));
+                    g_processingCtrl_p->m_abort = true;
+                    hs_free_compile_error(compile_err);
+                }
+
+                if (hs_alloc_scratch(database, &scratch) != HS_SUCCESS) {
+                    TRACEX_I(QString("ERROR: Unable to allocate scratch space. Exiting."))
+                    fprintf(stderr, "ERROR: Unable to allocate scratch space. Exiting.");
+                }
+
+                matchDescr.regexp_database = database;
+                matchDescr.regexp_scratch = scratch;
+                match = thread_Match_RegExp_HyperScan(&matchDescr);
+                hs_free_database(database);
+                hs_free_scratch(scratch);
+            } else if (m_packedFilterItems_p[filterIndex].filterRef_p->m_caseSensitive) {
+                matchDescr.filterLength = packedFilterItem_p->length - 1;
+                match = thread_Match_CS(&matchDescr);
+            } else {
+                matchDescr.filterLength = packedFilterItem_p->length - 1;
+                match = thread_Match(&matchDescr);
+            }
+
+            if (match) {
+                return m_packedFilterItems_p[filterIndex].filterRef_p;
+            }
+            ++filterIndex;
+        }
+    }
+    return nullptr;
+}
+
+/***********************************************************************************************************************
+*   StartOneLine
+***********************************************************************************************************************/
 void CFilterProcCtrl::StartOneLine(TIA_t *TIA_p, FIR_t *FIRA_p, int row, char *text_p, int textLength,
                                    QList<CFilterItem *> *filterItems_p, CFilterItem **filterItem_LUT_p,
                                    int *totalFilterMatches_p, int *totalExcludeFilterMatches_p,
@@ -434,6 +512,10 @@ void CFilterProcCtrl::WrapUp(void)
         VirtualMem::Free(m_filterStrings_p);
     }
 
+    if (m_packedFilterItems_p != nullptr) {
+        VirtualMem::Free(m_packedFilterItems_p);
+    }
+
     if (m_execTimes_p != nullptr) {
         m_execTimes_p->totalFilterTime = m_timeExec.ms();
     }
@@ -475,7 +557,15 @@ void CFilterProcCtrl::PackFilters(void)
         ++m_numOfFilterItems;
     }
 
+    if (m_filterStrings_p != nullptr) {
+        VirtualMem::Free(m_filterStrings_p);
+    }
     m_filterStrings_p = static_cast<char *>(VirtualMem::Alloc(totalFilterTextSize));
+
+    if (m_packedFilterItems_p != nullptr) {
+        VirtualMem::Free(m_packedFilterItems_p);
+    }
+
     m_packedFilterItems_p =
         static_cast<packedFilterItem_t *>(VirtualMem::Alloc(m_numOfFilterItems *
                                                             static_cast<int>(sizeof(packedFilterItem_t))));
@@ -538,6 +628,7 @@ void CFilterProcCtrl::PackFilters(void)
             memcpy(tempString, m_packedFilterItems_p[index].start_p,
                    static_cast<size_t>(m_packedFilterItems_p[index].length));
             tempString[m_packedFilterItems_p[index].length] = 0;
+
             TRACEX_D("CFilterProcCtrl::Filter[%d] Length:%-5d Text:%s",
                      index, m_packedFilterItems_p[index].length, tempString)
         }
@@ -620,6 +711,7 @@ struct test_vector_element {
     char text[64];
     char valid;
 };
+
 static char global_match = 0;
 
 /****/

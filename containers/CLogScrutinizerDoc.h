@@ -66,10 +66,8 @@ typedef struct {
 typedef enum {
     /* The order is important */
     RS_Skip,
-
     /* Reload not necessary */
     RS_Incremental,
-
     /* Just incrementally add the new tail of the log */
     RS_Full /* Clean DB and reload entire log */
 } ReloadStrategy_e;
@@ -180,6 +178,7 @@ public:
 
     void ExecuteIncrementalFiltering(int startRow);
     void StartOneLineFiltering(int row, bool isBookmarkRemove = false);
+    CFilterItem *GetFilterMatch(char *text_p, int textLength);
 
     bool StartSearch(const QString& searchText, int startRow, int endRow,
                      int *row_p, bool backward, bool onlyFiltered, bool regExp, bool caseSensitive);

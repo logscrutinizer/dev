@@ -65,10 +65,8 @@ const int NUM_TAB_STOBS = DISPLAY_MAX_ROW_SIZE / 4;
 
 typedef enum {
     PRESENTATION_MODE_ALL_e,
-
     /* Show all, if there are filtered lines these are in gray */
     PRESENTATION_MODE_ONLY_FILTERED_e,
-
     /* Show only filtered lines */
 } LogScrutinizerView_PresentaiontMode_t;
 
@@ -101,14 +99,12 @@ typedef struct {
 typedef enum {
     LS_LG_EVENT_NONE_e = 0,
     LS_LG_EVENT_MOUSE_e = 0x80,
-
     /* Group */
     LS_LG_EVENT_LMOUSE_DOWN_e,
     LS_LG_EVENT_LMOUSE_UP_e,
     LS_LG_EVENT_LMOUSE_DBL_e,
     LS_LG_EVENT_MOUSE_MOVE_e,
     LS_LG_EVENT_KEY_e = 0x100,
-
     /* Group */
     LS_LG_EVENT_KEY_CTRL_C_e,
     LS_LG_EVENT_KEY_CTRL_A_e
@@ -116,21 +112,17 @@ typedef enum {
 
 typedef enum {
     HCursorScrollAction_Left_en,
-
     /* Make sure that the cursor is visible, and if needed scroll screen such that the cursor is at the far left
      * position */
     HCursorScrollAction_Right_en,
-
     /* Make sure that the cursor is visible, and if needed scroll screen such that the cursor is at the far right
      * position */
     HCursorScrollAction_Home_en,
-
     /* If cursorCol is 0, then scroll max left.
      * special
      * If cursorCol is not 0, but within 10% of left, then scroll max left.
      * Or, scroll such that cursor ends up at 10% left of the screen */
     HCursorScrollAction_End_en,
-
     /* if cursorCol is max, and longest line on screen, then scroll max right
      * if not longest line on screen scroll, but less than 10% from the right
      * if scrolled to the max right, scroll max right
@@ -164,6 +156,7 @@ class CEditorWidget : public QWidget /*QOpenGLWidget */
 
 public:
     explicit CEditorWidget(QWidget *parent = nullptr);
+
     ~CEditorWidget() override {CleanUp_0();}
 
 private:
@@ -242,6 +235,7 @@ protected:
     QImage m_bitmap_bug;
     QImage m_bitmap_bug_horiz;
     QImage m_bmp_bookmark_48_36;
+    QImage m_bookmark_icon;
     int m_bookmarkWidth;
     int m_decodedRectWidth;
     QRect m_vScrollBMP_Rect;
