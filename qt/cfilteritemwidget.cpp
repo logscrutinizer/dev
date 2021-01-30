@@ -55,7 +55,7 @@ CFilterItemWidget::CFilterItemWidget(
     setWindowTitle("Filter Item Editor");
     setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowSystemMenuHint);
 
-    const QIcon mainIcon = QIcon(":main_icon");
+    const QIcon mainIcon = QIcon(":logo.png");
     setWindowIcon(mainIcon);
 
     /* Use filteritemeditor.ui to setup the layout */

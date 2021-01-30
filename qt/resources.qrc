@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="main_icon">../media/icons/Logo_icon_26_26_2.png</file>
-        <file alias="logo.png">../media/icons/logo2.png</file>
+        <file alias="main_icon">../media/icons/ls.ico</file>
+        <file alias="logo.png">../media/icons/ls.ico</file>
         <file alias="hdd_64.bmp">../media/icons/hdd_64.bmp</file>
         <file alias="ok_64.bmp">../media/icons/ok_64.bmp</file>
         <file alias="fail_64.bmp">../media/icons/fail_64.bmp</file>
