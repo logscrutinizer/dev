@@ -397,7 +397,7 @@ set (ADDITIONAL_LINK_DEP Qt5::Widgets Qt5::Gui Qt5::Core ${ADDITIONAL_LINK_DEP})
 
 target_link_libraries(${PROJECT_NAME} ${moduleList} ${ADDITIONAL_LINK_DEP} ${SPECIAL_LINK_DEP})
 
-add_dependencies(${PROJECT_NAME} ${moduleList} plugin_example_1 plugin_example_2 plugin_example_3)
+add_dependencies(${PROJECT_NAME} ${moduleList} ${global_deplist})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME ${PROJECT_NAME}) # Not really needed

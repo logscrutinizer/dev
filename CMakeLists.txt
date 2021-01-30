@@ -35,7 +35,6 @@ if (NOT DEFINED CMAKE_PREFIX_PATH)
     if (WIN32)
         set(CMAKE_PREFIX_PATH "C:\\Qt\\5.10.0\\msvc2017_64")
     else (WIN32)
-#        set(CMAKE_PREFIX_PATH "/home/klang/workspace/qt510_opt_clang_debug")
     endif(WIN32)
 endif()
 
@@ -49,14 +48,6 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
 elseif (${MSVC})
     message("MSVC compiler")
 endif()
-
-# Specific compiler (CLANG/GCC)
-if (WIN32)
-else (WIN32)
-    if (NOT DEFINED USE_CLANG)
-        #set (USE_CLANG 1)
-    endif()
-endif(WIN32)
 
 #------------------------------------------------------
 #--- Setup QT base
@@ -118,12 +109,6 @@ endif (USE_WEB_ENGINE)
 
 if(WIN32)
     include_directories(${Qt5WinExtras_INCLUDE_DIRS})
-else (WIN32)
-    if (USE_CLANG)
-        include_directories(/usr/include/llvm-5.0/llvm/Support) #type_traits
-        include_directories(/usr/include/c++/v1)
-    else (USE_CLANG)
-    endif (USE_CLANG)
 endif(WIN32)
 
 #------------------------------------------------------
@@ -283,9 +268,6 @@ set (MODULE_PATH
     testing
     plugins/plugin_dev/plugin_framework)
 
-#------------------------------------------------------
-#--- Add all sub-module source and header files
-#------------------------------------------------------
 foreach(module ${MODULE_PATH})
     add_subdirectory(${module})
     get_filename_component(barename ${module} NAME)
@@ -293,8 +275,9 @@ foreach(module ${MODULE_PATH})
 endforeach(module)
 
 #------------------------------------------------------
-#--- Additional modules
+#--- Add plugins
 #------------------------------------------------------
+list (APPEND global_deplist "")
 set (PLUGIN_PATH ${CMAKE_SOURCE_DIR}/plugins/plugin_dev)
 include (plugins/plugin_dev/plugins.cmake)
 
@@ -337,3 +320,4 @@ message ("LIBHS " ${HS_INCLUDEDIR} "  " ${HS_LIBDIR})
 message ("QtCoreLocation " ${QtCore_location})
 message ("CMAKE_SYSTEM_NAME: " ${CMAKE_SYSTEM_NAME})
 message ("CMAKE_SYSTEM_VERSION: " ${CMAKE_SYSTEM_VERSION})
+message ("global_deplist: " ${global_deplist})
