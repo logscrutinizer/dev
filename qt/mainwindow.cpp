@@ -702,6 +702,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Ui::UI_SearchForm ui;
     const QIcon mainIcon = QIcon(":logo.png");
     setWindowIcon(mainIcon);
+
     createActions();
 
     g_workspace_p->FillWorkspace();
@@ -812,12 +813,6 @@ void MainWindow::showEvent(QShowEvent *e)
         setupRecentFiles();
 
         TRACEX_I(QString("Ready"))
-
-#ifdef _WIN32
-        QWinTaskbarButton *button = new QWinTaskbarButton(this);
-        button->setWindow(this->windowHandle());
-        button->setOverlayIcon(QIcon(":main_icon"));
-#endif
     }
 }
 
@@ -1636,7 +1631,7 @@ void MainWindow::setupRecentFiles(void)
 
     if (!list.isEmpty()) {
         for (auto& path : list) {
-            auto act = m_recentFileMenu->addAction(QIcon(":main_icon"), path, this,
+            auto act = m_recentFileMenu->addAction(QIcon(":logo.png"), path, this,
                                                    [ = ] () {
                 QList<QString> fileList;
                 fileList.append(path);

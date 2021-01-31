@@ -85,7 +85,7 @@ class Model : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    Model(QObject *parent = nullptr) : QAbstractItemModel(parent), services(QPixmap(":main_icon")) {}
+    Model(QObject *parent = nullptr) : QAbstractItemModel(parent), services(QPixmap(":logo.png")) {}
     virtual ~Model() override {}
 
     QModelIndex toIndex(CCfgItem *cfgItem_p);
