@@ -100,8 +100,7 @@ public:
 class CFilter /*: public CXMLBase */
 {
 public:
-    CFilter(void);
-    virtual ~CFilter(void);
+    CFilter(void) = default;
 
     CFilter(const CFilter& from)
     {
@@ -113,14 +112,44 @@ public:
         copy(from_p);
     }
 
+    /*
+       CFilter(QString&& fileName, QList<CFilterItem *>&& filterItemList)
+       {
+        m_fileName = fileName;
+        m_filterItemList = filterItemList;
+
+        QFileInfo fileInfo(m_fileName);
+        m_fileName_short = fileInfo.fileName();
+       }
+     */
+    ~CFilter(void)
+    {
+        while (!m_filterItemList.isEmpty()) {
+            auto item = m_filterItemList.takeLast();
+
+            if (nullptr != item) {
+                delete(item);
+            }
+        }
+    }
+
+    /**/
+    void Init(const char *name_p)
+    {
+        m_fileName = name_p;
+        SetFileName(name_p);
+    }
+
+    /**/
+    void GetFileNameOnly(QString *fileName_p)
+    {
+        QFileInfo fileInfo(m_fileName);
+        *fileName_p = fileInfo.fileName(); /* its actually the same as m_fileName_short */
+    }
+
     /****/
     void copy(const CFilter *from_p)
     {
-        m_ID = -1;
-
-        m_fontCtrl_p = from_p->m_fontCtrl_p;
-        m_fontCtrl_p = from_p->m_fontCtrl_p;
-
         m_fileName = from_p->m_fileName;
         m_fileName_short = from_p->m_fileName_short;
 
@@ -132,11 +161,6 @@ public:
             m_filterItemList.append(filterItemCopy_p);
         }
     }
-
-    void Init(const char *name_p, int ID, CFontCtrl *fontCtrl_p);
-
-    char *AllocateMemory(int size);
-    void Reorder(CFilterItem *moveItem_p, CFilterItem *afterItem_p);
 
     /****/
     void SetFileName(const QString& fileName)
@@ -151,17 +175,12 @@ public:
     QString& GetFileNameRef() {return m_fileName;}
     QString *GetShortFileName(void) {return &m_fileName_short;}
 
-    void GetFileNameOnly(QString *fileName_p);
-
 public:
     QList<CFilterItem *> m_filterItemList;
-    CFontCtrl *m_fontCtrl_p;
-    int m_ID;
-    QString m_fileName; /* for file save */
-    QString m_fileName_short; /* for presentation */
-    char *m_mem_p;
-    bool m_inFilterTag; /* Used for XML parsing */
-    CFilterItem *m_newFilterItem_p; /* Used for XML parsing */
+    QString m_fileName = ""; /* for file save */
+    QString m_fileName_short = ""; /* for presentation */
+    bool m_inFilterTag = false; /* Used for XML parsing */
+    CFilterItem *m_newFilterItem_p = nullptr; /* Used for XML parsing */
 };
 
 /* TODO: Shrink the TIA array

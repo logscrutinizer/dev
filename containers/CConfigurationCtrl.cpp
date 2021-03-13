@@ -1125,7 +1125,7 @@ bool CConfigurationCtrl::Reload_TAT_File(const QString& fileName, CCfgItem_Filte
         return false;
     }
 
-    cfgFilter_p->m_filter_ref_p->Init(fileName.toLatin1().data(), 0, &doc_p->m_fontCtrl);
+    cfgFilter_p->m_filter_ref_p->Init(fileName.toLatin1().data());
 
     InitTempFileNames();
 
@@ -1315,13 +1315,11 @@ void CConfigurationCtrl::ElementStart(char *name_p)
     } else if (m_inElement_L1 == inElement_logscrutinizer_e) {
         if (strcmp(name_p, "filters") == 0) {
             /* 0 means equal */
-            CLogScrutinizerDoc *doc_p = GetTheDoc();
             if (!m_reloadingFilter) {
                 /* In-case of NOT re-load operation, for Reload the m_newFilter_p is already setup */
                 m_newFilter_p = new CFilter();
-
                 /* this will be * done twice, * once now and * once again at * end tag */
-                m_newFilter_p->Init(m_filterFileName.toLatin1().constData(), 0, &doc_p->m_fontCtrl);
+                m_newFilter_p->Init(m_filterFileName.toLatin1().constData());
             }
 
             m_inElement_L1 = inElement_filters_e;
@@ -1432,13 +1430,13 @@ void CConfigurationCtrl::ElementEnd(void)
                 CLogScrutinizerDoc *doc_p = GetTheDoc();
 
                 if (m_reloadingFilter && (m_newFilter_p != nullptr)) {
-                    m_newFilter_p->Init(m_filterFileName.toLatin1().constData(), 0, &doc_p->m_fontCtrl);
+                    m_newFilter_p->Init(m_filterFileName.toLatin1().constData());
                     (void)g_workspace_p->ReinsertCfgFilter(m_cfgFilterReload_p);
                 } else if (m_newFilter_p != nullptr) {
                     /* put it into treeview */
                     doc_p->m_recentFiles.AddFile(m_filterFileName, false);
 
-                    m_newFilter_p->Init(m_filterFileName.toLatin1().constData(), 0, &doc_p->m_fontCtrl);
+                    m_newFilter_p->Init(m_filterFileName.toLatin1().constData());
 
                     if (m_inWorkspace) {
                         m_newFilter_p->m_fileName_short += " #workspace";
@@ -1502,10 +1500,10 @@ void CConfigurationCtrl::ElementEnd(void)
 
             case inElement_filter_e:   /* Add filter item */
                 if ((m_newFilter_p != nullptr) && (m_newFilterItem_p != nullptr)) {
-                    m_newFilterItem_p->m_font_p =
-                        m_newFilter_p->m_fontCtrl_p->RegisterFont(m_newFilterItem_p->m_color,
-                                                                  m_newFilterItem_p->m_bg_color);
+                    CLogScrutinizerDoc *doc_p = GetTheDoc();
 
+                    m_newFilterItem_p->m_font_p = doc_p->m_fontCtrl.RegisterFont(m_newFilterItem_p->m_color,
+                                                                                 m_newFilterItem_p->m_bg_color);
                     /* This will not affect the current model * as it is added to a stand alone object */
                     m_newFilter_p->m_filterItemList.append(m_newFilterItem_p);
                 }

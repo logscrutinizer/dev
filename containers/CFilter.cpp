@@ -9,50 +9,6 @@
 #include "CDebug.h"
 #include <hs/hs.h>
 
-CFilter::CFilter(void)
-{
-    m_ID = -1;
-
-    m_fontCtrl_p = nullptr;
-
-    m_fileName = "";
-    m_fileName_short = "";
-
-    m_newFilterItem_p = nullptr;
-    m_inFilterTag = false;
-}
-
-CFilter::~CFilter(void)
-{
-    while (!m_filterItemList.isEmpty()) {
-        auto item = m_filterItemList.takeLast();
-        if (nullptr != item) {
-            delete(item);
-        }
-    }
-}
-
-/***********************************************************************************************************************
-*   Init
-***********************************************************************************************************************/
-void CFilter::Init(const char *name_p, int ID, CFontCtrl *fontCtrl_p)
-{
-    m_fileName = name_p;
-    m_ID = ID;
-    m_fontCtrl_p = fontCtrl_p;
-
-    SetFileName(name_p);
-}
-
-/***********************************************************************************************************************
-*   GetFileNameOnly
-***********************************************************************************************************************/
-void CFilter::GetFileNameOnly(QString *fileName_p)
-{
-    QFileInfo fileInfo(m_fileName);
-    *fileName_p = fileInfo.fileName(); /* its actually the same as m_fileName_short */
-}
-
 /***********************************************************************************************************************
 *   ~CFilterItem
 ***********************************************************************************************************************/
