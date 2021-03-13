@@ -35,6 +35,7 @@
 #define LOG_TRACE_CATEGORY_SELECTION (1 << 11)
 #define LOG_TRACE_CATEGORY_KEYPRESS (1 << 12)
 #define LOG_TRACE_CATEGORY_CPLOTWIDGET_GRAPHICS (1 << 13)
+#define LOG_TRACE_CATEGORY_WORKSPACE_MODEL (1 << 14)
 
 #define LOG_TRACE_CATEGORY_ALL        (0xffffff)
 #define FOO(fmt, ...) printf(fmt, ## __VA_ARGS__)
@@ -65,7 +66,7 @@
 #define PRINT_FOCUS(STRING) {if (g_DebugLib != nullptr && g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_FOCUS) \
                              {g_DebugLib->TRACEX(LOG_LEVEL_INFO, (STRING));}}
 #define PRINT_ROCKSCROLL(...) {if (g_DebugLib != nullptr && g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_ROCKSCROLL) \
-                             {g_DebugLib->TRACEX(LOG_LEVEL_INFO, __VA_ARGS__);}}
+                               {g_DebugLib->TRACEX(LOG_LEVEL_INFO, __VA_ARGS__);}}
 #define PRINT_SIZE(...) {if (g_DebugLib != nullptr && g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_SIZE) \
                          {g_DebugLib->TRACEX(LOG_LEVEL_INFO, __VA_ARGS__);}}
 #define PRINT_SUBPLOTSURFACE(...) {if (g_DebugLib != nullptr && \
@@ -91,6 +92,9 @@
                                              g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_CPLOTWIDGET_GRAPHICS) \
                                          {g_DebugLib->TRACEX(LOG_LEVEL_INFO, __VA_ARGS__);}}
 #define PRINT_KEYPRESS(...) {if (g_DebugLib != nullptr && g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_KEYPRESS) \
+                             {g_DebugLib->TRACEX(LOG_LEVEL_INFO, __VA_ARGS__);}}
+#define PRINT_WS_MODEL(...) {if (g_DebugLib != nullptr && \
+                                 g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_WORKSPACE_MODEL) \
                              {g_DebugLib->TRACEX(LOG_LEVEL_INFO, __VA_ARGS__);}}
 
 #ifdef _DEBUG
@@ -171,7 +175,9 @@ typedef struct {
     ramLogData_t *ramLogData_p;
 }tls_data_t;
 
-
+/***********************************************************************************************************************
+   CRamLog
+***********************************************************************************************************************/
 class CRamLog
 {
 public:
@@ -180,9 +186,12 @@ public:
 
     void cleanUp(void);
 
-    bool AddBuffer(char* buffer_p, size_t size);
+    bool AddBuffer(char *buffer_p, size_t size);
 
-    bool AddBuffer(char* buffer_p)
+    /***********************************************************************************************************************
+       AddBuffer
+    ***********************************************************************************************************************/
+    bool AddBuffer(char *buffer_p)
     {
         return AddBuffer(buffer_p, strlen(buffer_p));
     }
@@ -193,18 +202,19 @@ public:
     void TestRamLogs(void);
 
     /* returns number of strings in the RamLog transfered to pointerArray_pp */
-    int  GetRamLog(int index, char** pointerArray_pp, int pointerArraySize);
+    int GetRamLog(int index, char **pointerArray_pp, int pointerArraySize);
 
     /* Dump whats ever in the RAM log to file */
     void fileDump(bool updateTimeStamp = true);
 
 private:
     void CheckRamLogs(void);
-    bool                     m_cleanUpDone = false;
-    QMutex                   m_mutex; /**< Protect the lists */
-    QList<ramLogData_t*>     m_ramLogPool;
-    QList<ramLogData_t*>     m_ramLogPoolTracking;  /**< m_ramLogPool keeps only unused,
-                                                         m_ramLogPoolTracking keeps all */
+
+    bool m_cleanUpDone = false;
+    QMutex m_mutex; /**< Protect the lists */
+    QList<ramLogData_t *> m_ramLogPool;
+    QList<ramLogData_t *> m_ramLogPoolTracking;  /**< m_ramLogPool keeps only unused,
+                                                      m_ramLogPoolTracking keeps all */
 };
 
 extern CRamLog *g_RamLog;
