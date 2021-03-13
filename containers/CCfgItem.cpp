@@ -188,6 +188,7 @@ void CCfgItem::PlotAllChildren(QList<CCfgItem *> *cfgPlotList_p, QList<CPlot *> 
 
             extern void CPlotPane_Align_Reset_Zoom(void);
             CPlotPane_Align_Reset_Zoom();
+
             extern void CPlotPane_SetPlotFocus(CPlot * plot_p);   /* Set focus the first in the list */
             CPlotPane_SetPlotFocus(plotList_p->first());
         }
@@ -219,6 +220,7 @@ void CCfgItem::InsertItem(bool select, bool expand, bool insert, CCfgItem *itemB
     Q_UNUSED(expand)
 
     Q_ASSERT(m_tag == CCFG_ITEM_TAG);
+
     if (itemBefore_p != nullptr) {
         /* For QT the assumption is that maintaining the view is not done from the model, but vice-versa. Hence there
          * will not be any item manipulations from
@@ -1899,9 +1901,10 @@ void CCfgItem_FilterItem::hash(QDataStream& dstream) const
 ***********************************************************************************************************************/
 void CCfgItem_FilterItem::Serialize(QDataStream& dstream, bool pack)
 {
+    PRINT_WS_MODEL(QString("Serialize filterItem pack:%1").arg(pack))
     if (pack) {
         CCfgItem::Serialize(dstream, pack);
-        dstream << (m_itemKind | MIME_CFG_ITEM_KIND_TAG); /* This it put twice in the stream */
+        dstream << static_cast<quint32>(m_itemKind | MIME_CFG_ITEM_KIND_TAG);
         dstream << m_filterItem_ref_p->m_enabled;
         dstream << m_filterItem_ref_p->m_exclude;
         dstream << m_filterItem_ref_p->m_color;
@@ -1915,13 +1918,13 @@ void CCfgItem_FilterItem::Serialize(QDataStream& dstream, bool pack)
     } else {
         m_filterItem_ref_p = new CFilterItem();
 
-        int temp_kind;
+        quint32 temp_kind;
         dstream >> temp_kind;
 
         /* This is a sort of stamp to ensure correct data is being loaded */
-        Q_ASSERT(temp_kind == (static_cast<int>(CFG_ITEM_KIND_FilterItem) | MIME_CFG_ITEM_KIND_TAG));
-
         m_itemKind = static_cast<CfgItemKind_t>(temp_kind & MIME_CFG_ITEM_KIND_BITS);
+        Q_ASSERT(m_itemKind == CFG_ITEM_KIND_FilterItem);
+
         dstream >> m_filterItem_ref_p->m_enabled;
         dstream >> m_filterItem_ref_p->m_exclude;
         dstream >> m_filterItem_ref_p->m_color;
@@ -1932,9 +1935,12 @@ void CCfgItem_FilterItem::Serialize(QDataStream& dstream, bool pack)
         dstream >> m_filterItem_ref_p->m_caseSensitive;
         dstream >> m_filterItem_ref_p->m_size;
 
-        int temp = m_filterItem_ref_p->m_size;
-        m_filterItem_ref_p->m_start_p = static_cast<char *>(malloc(size_t(temp) + 1));
-        if (dstream.readRawData(m_filterItem_ref_p->m_start_p, temp) != temp) {
+        Q_ASSERT(m_filterItem_ref_p->m_size > 0 && m_filterItem_ref_p->m_size < 100);
+
+        int len = m_filterItem_ref_p->m_size;
+        m_filterItem_ref_p->m_start_p = static_cast<char *>(malloc(len + 1));
+        memset(m_filterItem_ref_p->m_start_p, 0, len + 1);
+        if (dstream.readRawData(m_filterItem_ref_p->m_start_p, len) != len) {
             Q_ASSERT(false);
         }
         m_filterItem_ref_p->m_start_p[m_filterItem_ref_p->m_size] = 0;
@@ -1978,6 +1984,7 @@ int CCfgItem_Filter::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
         {
             /* Add filter item */
             QAction *action_p = menu_p->addAction(tr("Add filter item..."));
+
             if (selectionList_p->count() == 1) {
                 treeview_p->connect(action_p, &QAction::triggered, [ = ] () {
                     CWorkspace_AddFilterItem(nullptr, nullptr, this, treeview_p);
@@ -2016,6 +2023,7 @@ int CCfgItem_Filter::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
         {
             /* Save */
             QAction *action_p = menu_p->addAction(tr("Save"));
+
             if (cfgItem_p->m_filter_ref_p->m_fileName.indexOf(tr("default_filter")) >= 0) {
                 action_p->setEnabled(false);
             } else {
@@ -2061,6 +2069,61 @@ int CCfgItem_Filter::OnPopupMenu(QList<CCfgItem *> *selectionList_p, QTreeView *
 }
 
 /***********************************************************************************************************************
+   Serialize
+***********************************************************************************************************************/
+void CCfgItem_Filter::Serialize(QDataStream& dstream, bool pack)
+{
+    PRINT_WS_MODEL(QString("Serialize filter pack:%1").arg(pack))
+    if (pack) {
+        CCfgItem::Serialize(dstream, pack); // Puts item kind in the stream (this is checked in the dropMime data loop
+
+        dstream << static_cast<quint32>(m_itemKind | MIME_CFG_ITEM_KIND_TAG);
+        dstream << m_cfgChildItems.length();
+
+        for (auto& filterItem : m_cfgChildItems) {
+            filterItem->Serialize(dstream, pack);
+        }
+
+        auto str = m_filter_ref_p->GetFileName();
+        dstream << str->length();
+        dstream.writeRawData(str->toLatin1().constData(), str->length());
+    } else {
+        quint32 kind_tag;
+        int count = 0;
+
+        dstream >> kind_tag;
+        dstream >> count;
+
+        Q_ASSERT(kind_tag == (static_cast<int>(CFG_ITEM_KIND_Filter) | MIME_CFG_ITEM_KIND_TAG));
+
+        m_filter_ref_p = new CFilter();
+        m_itemKind = static_cast<CfgItemKind_t>(kind_tag & MIME_CFG_ITEM_KIND_BITS);
+
+        for (auto i = 0; i < count; i++) {
+            auto filterItem_p = new CCfgItem_FilterItem(m_filter_ref_p, nullptr, this);
+            quint32 kind;
+            dstream >> kind;
+            filterItem_p->Serialize(dstream, pack);
+            PRINT_WS_MODEL(QString("CFG_ITEM_KIND_FilterItem %1").arg(filterItem_p->m_itemText))
+            m_cfgChildItems.append(filterItem_p);
+        }
+
+        int len;
+        dstream >> len;
+
+        Q_ASSERT(len < 512);
+
+        char file_name[len + 1];
+        memset(file_name, 0, len + 1);
+        if (dstream.readRawData(file_name, len) != len) {
+            Q_ASSERT(false);
+        }
+        m_filter_ref_p->SetFileName(file_name);
+        Set(*m_filter_ref_p->GetShortFileName(), 0, CFG_ITEM_KIND_Filter);
+    }
+}
+
+/***********************************************************************************************************************
 *   SaveAs
 ***********************************************************************************************************************/
 void CCfgItem_Filter::SaveAs(void)
@@ -2080,6 +2143,7 @@ void CCfgItem_Filter::Save(QList<CCfgItem *> *selectionList_p)
         CFGCTRL_SaveFilterFile(m_filter_ref_p->GetFileNameRef(), this);
     } else {
         QList<CCfgItem *>::iterator iter = selectionList_p->begin();
+
         for ( ; iter != selectionList_p->end(); ++iter) {
             CCfgItem_Filter *cfgFilter_p = static_cast<CCfgItem_Filter *>(*iter);
 
@@ -2130,6 +2194,7 @@ void CCfgItem_Filter::Reload(QList<CCfgItem *> *selectionList_p)
 
         for (auto& cfgItem : selectionList_temp) {
             CCfgItem_Filter *cfgFilter_p = static_cast<CCfgItem_Filter *>(cfgItem);
+
             if ((cfgFilter_p->m_itemKind == CFG_ITEM_KIND_Filter) && cfgFilter_p->isFileExisting()) {
                 cfgFilter_p->RemoveAllChildren();
                 CFGCTRL_ReloadFilterFile(cfgFilter_p->m_filter_ref_p->GetFileNameRef(), cfgFilter_p);
