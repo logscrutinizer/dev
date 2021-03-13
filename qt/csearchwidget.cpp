@@ -72,6 +72,7 @@ void CSearchWidget::on_pushButton_Back_clicked(void)
 void CSearchWidget::addCurrentToHistory(void)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
+
     if (combo_p->findText(combo_p->currentText(), Qt::MatchCaseSensitive) == -1) {
         combo_p->insertItem(0, combo_p->currentText(), QVariant());
     }
@@ -100,11 +101,13 @@ void CSearchWidget::updateSearchParameters(const QString& searchText, bool caseS
     combo_p->setCurrentText(searchText);
 
     QCheckBox *caseOption_p = findChild<QCheckBox *>("case_option");
+
     if (caseOption_p != nullptr) {
         caseOption_p->setChecked(caseSensitive);
     }
 
     QCheckBox *regextOption_p = findChild<QCheckBox *>("regext_option");
+
     if (regextOption_p != nullptr) {
         regextOption_p->setChecked(regExp);
     }
@@ -118,8 +121,8 @@ void CSearchWidget::getSearchParameters(QString& searchString, bool *caseSensiti
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
     searchString = combo_p->currentText();
 
-    Q_ASSERT(findChild<QCheckBox *>("case_option"));
-    Q_ASSERT(findChild<QCheckBox *>("regext_option"));
+    Q_ASSERT(findChild<QCheckBox *>("case_option")); // simple test in debug, not really used
+    Q_ASSERT(findChild<QCheckBox *>("regext_option")); // simple test in debug, not really used
 
     QCheckBox *caseOption_p = findChild<QCheckBox *>("case_option");
     *caseSensitive = caseOption_p->isChecked();

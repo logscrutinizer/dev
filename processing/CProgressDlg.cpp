@@ -40,7 +40,7 @@ CProgressDlg::CProgressDlg(QString title, ProgressCmd_t cmd, bool autoCloseOverr
     connect(m_buttonBox_p, SIGNAL(rejected()), this, SLOT(reject()));
 
     m_abortButton_p = new QPushButton("&Abort", this);
-    Q_ASSERT(connect(m_abortButton_p, SIGNAL(released()), this, SLOT(OnBnClickedAbort())));
+    connect(m_abortButton_p, SIGNAL(released()), this, SLOT(OnBnClickedAbort()));
 
     std::unique_ptr<QFontMetrics> fontMetric = std::make_unique<QFontMetrics>(QFont());
     QRect rect =
