@@ -23,7 +23,7 @@
 #define MakeEnumStringItem(A) {A, # A}
 
 typedef enum {
-    CFG_ITEM_KIND_None = 0,
+    CFG_ITEM_KIND_None = 1024,
     CFG_ITEM_KIND_Root = 1,
     CFG_ITEM_KIND_FilterRoot = 2,
     CFG_ITEM_KIND_Filter = 3,
@@ -50,7 +50,7 @@ typedef struct {
     char enumName[64];
 } enumStringItem;
 
-extern enumStringItem CfgItemKindStringArray[];
+extern const enumStringItem CfgItemKindStringArray[];
 #define CfgItemGetKindString(A) CfgItemKindStringArray[A].enumName
 
 #define CFGITEM_FILE_OPERATION_NONE     0
@@ -220,6 +220,7 @@ public:
     bool WriteTagToFile(QTextStream& fileStream, const QString& tag);
 
     virtual void UpdateName(void) {} /* This will be called by UpdateChildNames */
+    void TraceTree(const QString& rspaces);
     void UpdateTreeName(const QString& name); /* This is a helper function which the sub-classes may use */
     virtual QString GetFileName(void) {return QString();}
 
@@ -301,8 +302,9 @@ public:
 class CCfgItem_Filter : public CCfgItem
 {
 public:
-    CCfgItem_Filter() = default;
+    CCfgItem_Filter() = delete;
 
+    CCfgItem_Filter(CCfgItem *itemParent_p) : CCfgItem(itemParent_p) {}
     CCfgItem_Filter(CFilter *filter_p, CCfgItem *itemParent_p)
         : CCfgItem(itemParent_p), m_filter_ref_p(filter_p) {
         Set(*filter_p->GetShortFileName(), 0, CFG_ITEM_KIND_Filter);

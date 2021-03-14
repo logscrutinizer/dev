@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <QIcon>
 #include <QPixmap>
+#include <typeinfo>
 
 CWorkspace *g_workspace_p = nullptr;
 
@@ -128,7 +129,9 @@ void CWorkspace_LayoutAboutToBeChanged(void)
     if (g_workspace_p->m_model_p == nullptr) {
         return;
     }
-    g_workspace_p->m_model_p->layoutAboutToBeChanged();
+
+    auto m = g_workspace_p->m_model_p;
+    m->layoutAboutToBeChanged();
 }
 
 /***********************************************************************************************************************
@@ -968,7 +971,7 @@ CCfgItem_Plot *CWorkspace_SearchPlot(CPlot *childPlot_p)
 CWorkspace::CWorkspace() :
     m_dragOngoing(false), m_pendingSingleSelection(false), m_singleSelection_p(nullptr),
     m_dragImageIndex(0), m_inFocus(false), m_needKillMenuOperation(false), m_EraseBackGroundDisabled(false),
-    m_root_p(nullptr), m_workspaceRoot_p(nullptr), m_filters_p(nullptr), m_plugins_p(nullptr), m_logs_p(nullptr),
+    m_dummy_root_p(nullptr), m_workspaceRoot_p(nullptr), m_filters_p(nullptr), m_plugins_p(nullptr), m_logs_p(nullptr),
     m_comments_p(nullptr), m_bookmarks_p(nullptr), m_model_p(nullptr)
 {
     g_workspace_p = this;
@@ -988,10 +991,11 @@ void CWorkspace::cleanAll(void)
     m_logs_p = nullptr;
     m_comments_p = nullptr;
     m_bookmarks_p = nullptr;
+    m_workspaceRoot_p = nullptr;
 
-    if (m_root_p != nullptr) {
-        CCfgItem_Delete(m_root_p);
-        m_root_p = nullptr;
+    if (m_dummy_root_p != nullptr) {
+        CCfgItem_Delete(m_dummy_root_p);
+        m_dummy_root_p = nullptr;
     }
 
     g_workspace_p = nullptr;
@@ -1002,12 +1006,12 @@ void CWorkspace::cleanAll(void)
 ***********************************************************************************************************************/
 void CWorkspace::FillWorkspace(void)
 {
-    m_root_p = new CCfgItem(nullptr);
+    m_dummy_root_p = new CCfgItem(nullptr);
 
     /* Dummy construction to handle the header in QT tree which we may not expand etc. So adding one extra level to
      * achive a way to interact with root item */
-    m_workspaceRoot_p = new CCfgItem_Root(m_root_p);
-    m_root_p->m_cfgChildItems.append(m_workspaceRoot_p);
+    m_workspaceRoot_p = new CCfgItem_Root(m_dummy_root_p);
+    m_dummy_root_p->m_cfgChildItems.append(m_workspaceRoot_p);
 
     /* All of the following items are at their own top level items, however inserted into the root item list, but said
      * to have no parent item. Then if taking the item row position it is the index into the root child item list. */
@@ -1925,28 +1929,38 @@ CCfgItem *CWorkspace::GetCfgItem(const QString& fileName)
 ***********************************************************************************************************************/
 QModelIndex Model::index(int row, int column, const QModelIndex &parent) const
 {
-    /*
+    /*  PURE VIRTUAL from base-class
+     *
      *  Returns the index of the item in the model specified by the given row, column and parent index.
      *  When reimplementing this function in a subclass, call createIndex() to generate model indexes that
      *  other components can use to refer to items in your model.
      */
-    if ((column != 0) || (row < 0)) {
+    if ((column < 0) || (row < 0)) {
+        PRINT_WS_MODEL("index():ROOT");
         return QModelIndex();
     }
 
-    if (parent.isValid() && (parent.internalPointer() != nullptr)) {
-        CCfgItem *parentItem = static_cast<CCfgItem *>(parent.internalPointer());
-        CCfgItem *childItem = parentItem->GetChildAt(row);
+    if (!parent.isValid() || (parent.internalPointer() == nullptr)) {
+        return toIndex(g_workspace_p->m_workspaceRoot_p);
+    }
 
-        if (childItem) {
-            return createIndex(row, column, childItem);
+    CCfgItem *parentItem = static_cast<CCfgItem *>(parent.internalPointer());
+    CCfgItem *childItem = parentItem->GetChildAt(row);
+
+    Q_ASSERT(childItem);
+
+    if (childItem) {
+        auto str = QString("index():");
+        auto ptr = childItem;
+        while (ptr->m_itemParent_p != nullptr && ptr->m_itemKind != CFG_ITEM_KIND_Root) {
+            str += QString("  ");
+            ptr = ptr->m_itemParent_p;
         }
+        str += childItem->m_itemText;
+        PRINT_WS_MODEL(str);
+        return createIndex(row, column, childItem);
     } else {
-        CCfgItem *childItem = g_workspace_p->m_root_p->GetChildAt(row);
-
-        if (childItem) {
-            return createIndex(row, column, childItem);
-        }
+        PRINT_WS_MODEL(QString("No item at row %1").arg(row))
     }
 
     return QModelIndex();
@@ -1957,20 +1971,24 @@ QModelIndex Model::index(int row, int column, const QModelIndex &parent) const
 ***********************************************************************************************************************/
 QModelIndex Model::parent(const QModelIndex &child) const
 {
-    if (child.isValid()) {
-        CCfgItem *childItem = static_cast<CCfgItem *>(child.internalPointer());
-
-        if (childItem->m_tag != CCFG_ITEM_TAG) {
-            return QModelIndex();
-        }
-
-        CCfgItem *parentItem = childItem->Parent();
-        if (parentItem) {
-            int row = itemRow(parentItem);
-            return createIndex(row, 0, parentItem);
-        }
+    if (!child.isValid()) {
+        return QModelIndex();
     }
-    return QModelIndex();
+
+    CCfgItem *childItem = static_cast<CCfgItem *>(child.internalPointer());
+
+    if ((childItem == nullptr) || (childItem->m_tag != CCFG_ITEM_TAG)) {
+        return QModelIndex();
+    }
+
+    CCfgItem *parentItem = childItem->Parent();
+
+    if ((parentItem == nullptr) || (parentItem == g_workspace_p->m_dummy_root_p)) {
+        return QModelIndex();
+    }
+
+    int row = itemRow(parentItem);
+    return createIndex(row, 0, parentItem);
 }
 
 /***********************************************************************************************************************
@@ -2002,7 +2020,7 @@ int Model::rowCount(const QModelIndex &parent) const
         }
     } else {
         /* give the count of the children of root */
-        rowCount = g_workspace_p->m_root_p->m_cfgChildItems.count();
+        rowCount = g_workspace_p->m_dummy_root_p->m_cfgChildItems.count();
 #ifdef _DEBUG
         /*TRACEX_D(QString("    root rowCount:%1").arg(rowCount)) */
 #endif
@@ -2266,10 +2284,13 @@ Qt::ItemFlags Model::flags(const QModelIndex &index) const
                 flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
                 break;
 
+            case CFG_ITEM_KIND_FilterRoot:
+                flags |= Qt::ItemIsDropEnabled;
+                break;
+
             case CFG_ITEM_KIND_Log:
             case CFG_ITEM_KIND_LogRoot:
             case CFG_ITEM_KIND_Root:
-            case CFG_ITEM_KIND_FilterRoot:
             case CFG_ITEM_KIND_BookmarkRoot:
             case CFG_ITEM_KIND_Bookmark:
             case CFG_ITEM_KIND_PlugInRoot:
@@ -2299,9 +2320,12 @@ Qt::ItemFlags Model::flags(const QModelIndex &index) const
 int Model::itemRow(CCfgItem *item_p) const
 {
     if (item_p->Parent() != nullptr) {
-        return item_p->Parent()->m_cfgChildItems.indexOf(item_p);
+        auto index = item_p->Parent()->m_cfgChildItems.indexOf(item_p);
+        Q_ASSERT(index > -1);
+        return index;
     } else {
-        return g_workspace_p->m_root_p->m_cfgChildItems.indexOf(item_p);
+        // The dummy root is the top most node and has no parent, is always at index 0
+        return 0; // 0 index
     }
 }
 
@@ -2352,22 +2376,144 @@ QMimeData *Model::mimeData(const QModelIndexList &indexes) const
     QModelIndexList sorted_list = indexes;
     std::sort(sorted_list.begin(), sorted_list.end());
 
+    // got through the selection list, if there is a mixture of childs and parents we need to revert to just the parents
+    CfgItemKind_t kind_filter = CFG_ITEM_KIND_None;
+    for (auto& index : sorted_list) {
+        if (index.isValid()) {
+            CfgItemKind_t kind = reinterpret_cast<CCfgItem *>(index.internalPointer())->m_itemKind;
+            if ((kind == CFG_ITEM_KIND_Filter) ||
+                (((kind_filter == CFG_ITEM_KIND_None) && (kind == CFG_ITEM_KIND_FilterItem)))) {
+                kind_filter = kind;
+            }
+        }
+    }
+
+    PRINT_WS_MODEL(QString("mimeData kind filter: %1").arg(CfgItemGetKindString(kind_filter)))
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
     stream << MIME_STREAM_START_TAG; /* start tag */
     for (auto& index : sorted_list) {
-        TRACEX_DE(QString("mime row:%1").arg(index.row()))
+        PRINT_WS_MODEL(QString("mime row:%1").arg(index.row()))
         if (index.isValid()) {
             CCfgItem *cfgItem_p = reinterpret_cast<CCfgItem *>(index.internalPointer());
-            stream << MIME_ITEM_START_TAG;
-            stream << reinterpret_cast<qulonglong>(cfgItem_p);
-            cfgItem_p->Serialize(stream, true);
-            stream << MIME_ITEM_END_TAG;
+            if (cfgItem_p->m_itemKind == kind_filter) {
+                stream << MIME_ITEM_START_TAG;
+                stream << reinterpret_cast<qulonglong>(cfgItem_p);
+                cfgItem_p->Serialize(stream, true);
+                stream << MIME_ITEM_END_TAG;
+            }
         }
     }
     stream << MIME_STREAM_END_TAG;
 
     mimeData->setData("application/lsz.bytestream", encodedData);
     return mimeData;
+}
+
+/***********************************************************************************************************************
+   AdjustParent
+***********************************************************************************************************************/
+std::tuple<CCfgItem *, QModelIndex, int> Model::AdjustParent(const QModelIndex &parent,
+                                                             CCfgItem *parentItem_p,
+                                                             int row,
+                                                             int column,
+                                                             CfgItemKind_t insert_kind)
+{
+    /* When row and column are -1 it means that the dropped data should be considered as dropped directly on
+     * parent/item. Usually this will mean appending the data as child items of parent.
+     *
+     * If row and column are greater than or equal zero, it means that the drop occurred just before the specified row and column in the specified
+     *  parent.
+     *
+       https://doc.qt.io/qt-5/qabstractitemmodel.html#dropMimeData
+       When row and column are -1 it means that the dropped data should be considered as dropped directly
+       on parent. Usually this will mean appending the data as child items of parent. If row and column are greater
+       than or equal zero, it means that the drop occurred just before the specified row and column in the specified parent.
+
+       AdjustParent is called from the dropMimeData function, and may be called multiple times if the mime data contains multiple nodes. At the first call
+       the parent model index is not previously modified, however at next call it has been corrected. When copy/moving multiple nodes at the same time
+       the row index will need to be increased such that they are appended in the correct order. In this function it means that the row number must
+       be honored if not -1.
+     */
+
+    QModelIndex trueParentIndex = parent;
+
+    if (insert_kind == CFG_ITEM_KIND_FilterItem) {
+        switch (parentItem_p->m_itemKind)
+        {
+            case CFG_ITEM_KIND_FilterItem:
+                /* The item was dropped onto a filterItem, this shall not be the parent, but it is the item infront. Instead,
+                 * find their common filter parent */
+                if (row == -1) {
+                    row = parentItem_p->index() + 1; /* start after the filterItem we are dropping onto */
+                }
+                parentItem_p = parentItem_p->m_itemParent_p;
+                break;
+
+            case CFG_ITEM_KIND_Filter:
+                /* The item was dropped onto a filter */
+                if (row == -1) {
+                    row = 0;
+                }
+                break;
+
+            /* NOTE OBSERVED: Special case, happens when you select a filter item and creates a small line under it, then suddenly the parent is root and the
+             * index is for the filter, however starting at 1 */
+            case CFG_ITEM_KIND_FilterRoot:
+                if ((row == 0) || (row == -1)) {
+                    parentItem_p = parentItem_p->m_cfgChildItems.first();
+                    row = 0;
+                } else {
+                    CCfgItem *item_p;
+                    auto count = 1;
+                    for (auto& ip : parentItem_p->m_cfgChildItems) {
+                        item_p = ip;
+                        if (count == row) {
+                            break;
+                        }
+                        count++;
+                    }
+                    parentItem_p = item_p;
+                    row = 0;
+                }
+
+                break;
+
+            default:
+                break;
+        }
+        if (row == -1) {
+            row = 0;
+        }
+    } else if (insert_kind == CFG_ITEM_KIND_Filter) {
+        switch (parentItem_p->m_itemKind)
+        {
+            case CFG_ITEM_KIND_FilterItem:
+                /* The item was dropped onto a filterItem, this shall not be the parent, but it is the item infront. Instead,
+                 * find their common filter parent */
+                row = parentItem_p->m_itemParent_p->index() + 1; /* start after the filterItem we are dropping onto */
+                parentItem_p = parentItem_p->m_itemParent_p->m_itemParent_p;
+                break;
+
+            case CFG_ITEM_KIND_Filter:
+                /* The item was dropped onto a filter, this shall not be the parent, only the item after.
+                 * Instead, find their common true parent which should be a filter root */
+                row = parentItem_p->index() + 1;
+                parentItem_p = parentItem_p->m_itemParent_p;
+                break;
+
+            case CFG_ITEM_KIND_FilterRoot:
+                /* The item was dropped onto a filter */
+                if (row == -1) {
+                    row = 0;
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+    trueParentIndex = toIndex(parentItem_p);
+    return std::make_tuple(parentItem_p, trueParentIndex, row);
 }
 
 /***********************************************************************************************************************
@@ -2383,42 +2529,16 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
         return true;
     }
 
+    layoutAboutToBeChanged();
+
+    auto layoutScopeGuard = makeMyScopeGuard([&] () {layoutChanged();});
     CCfgItem *parentItem_p = static_cast<CCfgItem *>(parent.internalPointer());
+    QModelIndex local_parent = parent;
 
-    TRACEX_DE(QString("drop rows row:%1 action:%2 Parent:%3")
-                  .arg(row).arg(action).arg(parentItem_p->m_itemText))
-
-    QModelIndex trueParentIndex;
+    PRINT_WS_MODEL(QString("dropMimeData row:%1 column:%2 action:%2 Parent:%3")
+                       .arg(row).arg(column).arg(action).arg(parentItem_p->m_itemText))
 
     CWorkspace_TreeView_UnselectAll();
-
-    /* When row and column are -1 it means that the dropped data should be considered as dropped directly on
-     * parent/item. Usually this will mean appending the data as child items of parent. If row and column are greater
-     * than or equal zero, it means that the drop occurred just before the specified row and column in the specified
-     *  parent. */
-    if ((row == -1) && (column == -1)) {
-        switch (parentItem_p->m_itemKind)
-        {
-            case CFG_ITEM_KIND_FilterItem:
-
-                /* The item was dropped onto a filterItem, this shall not be the parent, only the item after. Instead,
-                 * find the true parent */
-                row = parentItem_p->index() + 1; /* start after the filterItem we are dropping onto */
-                parentItem_p = parentItem_p->m_itemParent_p;
-                trueParentIndex = toIndex(parentItem_p);
-                break;
-
-            case CFG_ITEM_KIND_Filter:
-
-                /* The item was dropped onto a filter */
-                row = 0;
-                trueParentIndex = toIndex(parentItem_p);
-                break;
-
-            default:
-                return false;
-        }
-    }
 
 #if 0 /* TODO, support general text drag and drop */
     if (data->hasFormat("application/vnd.text.list")) {
@@ -2471,59 +2591,85 @@ bool Model::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, 
             stream >> pointer;
             src = reinterpret_cast<CCfgItem *>(pointer);
 
-            qint32 kind;
-            stream >> kind;
+            qint32 kind_tag;
+            stream >> kind_tag;
 
-            if ((kind & 0xffff00) != 0xfeed00) {
+            if ((kind_tag & 0xffff00) != 0xfeed00) {
                 TRACEX_W(QString("Bad kind tag in dropped data"))
                 return false;
             }
 
-            switch (static_cast<CfgItemKind_t>(kind & 0xff))
+            CfgItemKind_t kind = static_cast<CfgItemKind_t>(kind_tag & 0xff);
+            Q_ASSERT(kind == src->m_itemKind);
+
+            auto adjustedParent = AdjustParent(local_parent, parentItem_p, row, column, kind);
+            local_parent = std::get<QModelIndex>(adjustedParent);
+            parentItem_p = std::get<CCfgItem *>(adjustedParent);
+            row = std::get<int>(adjustedParent);
+
+            PRINT_WS_MODEL(QString("Parent: %1").arg(CfgItemGetKindString(parentItem_p->m_itemKind)));
+
+            CCfgItem *cfgItem_p = nullptr;
+
+            switch (kind)
             {
                 case CFG_ITEM_KIND_FilterItem:
                 {
                     CCfgItem_Filter *filter_p = static_cast<CCfgItem_Filter *>(parentItem_p);
                     Q_ASSERT(filter_p->m_itemKind == CFG_ITEM_KIND_Filter);
 
-                    beginInsertRows(trueParentIndex, row, row);
-
                     CCfgItem_FilterItem *filterItem_p =
                         new CCfgItem_FilterItem(filter_p->m_filter_ref_p, nullptr, filter_p);
                     filterItem_p->Serialize(stream, false);
-                    TRACEX_DE(QString("Begin insert row %1").arg(row))
+                    PRINT_WS_MODEL(QString("CFG_ITEM_KIND_FilterItem Begin insert row %1").arg(row))
+
                     filter_p->m_cfgChildItems.insert(row, filterItem_p);
+                    cfgItem_p = filterItem_p;
+                    break;
+                }
 
-                    endInsertRows();
-                    src_list.append(src);
-                    dest_list.append(filterItem_p);
-
-                    row++;
-
+                case CFG_ITEM_KIND_Filter:
+                {
+                    auto *filters_p = static_cast<CCfgItem_Filters *>(parentItem_p);
+                    Q_ASSERT(filters_p->m_itemKind == CFG_ITEM_KIND_FilterRoot);
+                    auto filter_p = new CCfgItem_Filter(filters_p);
+                    filter_p->Serialize(stream, false);
+                    PRINT_WS_MODEL(QString("CFG_ITEM_KIND_Filter Begin insert row %1").arg(row))
+                    filters_p->m_cfgChildItems.insert(row, filter_p);
+                    cfgItem_p = filter_p;
                     break;
                 }
 
                 default:
-                    return false;
+                    PRINT_WS_MODEL(QString("Unknown item kind in insert %1").arg(CfgItemGetKindString(kind)))
+                    break;
             } /* switch */
+
+            if (cfgItem_p != nullptr) {
+                src_list.append(src);
+                dest_list.append(cfgItem_p);
+                row++;
+            }
+
+            if (LOG_TRACE_CAT_IS_ENABLED(LOG_TRACE_CATEGORY_WORKSPACE_MODEL)) {
+                parentItem_p->TraceTree("");
+            }
 
             stream >> streamTag;
 
             if (streamTag != MIME_ITEM_END_TAG) {
                 return false;
             }
-        } /* while  (true) */
+        }
 
         if (action == Qt::MoveAction) {
             for (auto& src : src_list) {
                 CCfgItem_Delete(src);
             }
         }
-
         for (auto& dest : dest_list) {
             CWorkspace_TreeView_Select(dest);
         }
-
         return true;
     }
     return false;
@@ -2609,9 +2755,9 @@ void Model::startInsertRows(CCfgItem *parent, const CCfgItem *before, int count)
 /***********************************************************************************************************************
 *   toIndex
 ***********************************************************************************************************************/
-QModelIndex Model::toIndex(CCfgItem *cfgItem_p)
+QModelIndex Model::toIndex(CCfgItem *cfgItem_p) const
 {
-    return createIndex(cfgItem_p->index(), 0, cfgItem_p);
+    return createIndex(cfgItem_p->index(), 0, reinterpret_cast<void *>(cfgItem_p));
 }
 
 extern void MW_TV_Expand(QModelIndex& modelIndex);

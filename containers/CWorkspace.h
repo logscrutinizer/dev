@@ -10,6 +10,8 @@
 #include "CCfgItem.h"
 #include "plugin_api.h"
 
+#include <tuple>
+
 #include <QBitmap>
 #include <QFont>
 #include <QSurfaceFormat>
@@ -88,7 +90,7 @@ public:
     Model(QObject *parent = nullptr) : QAbstractItemModel(parent), services(QPixmap(":logo.png")) {}
     virtual ~Model() override {}
 
-    QModelIndex toIndex(CCfgItem *cfgItem_p);
+    QModelIndex toIndex(CCfgItem *cfgItem_p) const;
     void itemUpdated(CCfgItem *item_p);
     void beginReset(void);
     void endReset(void);
@@ -109,11 +111,15 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
     Qt::DropActions supportedDragActions() const Q_DECL_OVERRIDE;
     Qt::DropActions supportedDropActions() const Q_DECL_OVERRIDE;
+
     virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) Q_DECL_OVERRIDE;
     QModelIndex index(int row, int column, const QModelIndex &parent) const Q_DECL_OVERRIDE;
     QModelIndex parent(const QModelIndex &child) const Q_DECL_OVERRIDE;
     int rowCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
     int columnCount(const QModelIndex &parent) const Q_DECL_OVERRIDE;
+
+    std::tuple<CCfgItem *, QModelIndex, int /*row*/>
+    AdjustParent(const QModelIndex &parent, CCfgItem *parentItem_p, int row, int column, CfgItemKind_t insert_kind);
 
 private:
     QIcon services;
@@ -173,7 +179,6 @@ public:
     bool isItemSelected(CCfgItem *cfgItem_p);
     bool isSingleKindSelections(CfgItemKind_t *kind_p = nullptr);
     void PopupAction(int action);
-    void Reorder(CCfgItem *afterItem_p);
 
 private:
     QBitmap m_bmp_tree_closed;
@@ -197,7 +202,7 @@ private:
     bool m_dragEnabled;
     bool m_dragOngoing;
     bool m_pendingSingleSelection;
-    CCfgItem *m_singleSelection_p;
+    CCfgItem *m_singleSelection_p = nullptr;
     QPoint m_point;
     int m_dragImageIndex;
     bool m_inFocus;
@@ -205,14 +210,14 @@ private:
     bool m_EraseBackGroundDisabled;
 
 public:
-    CCfgItem *m_root_p;
-    CCfgItem_Root *m_workspaceRoot_p;
-    CCfgItem_Filters *m_filters_p;
-    CCfgItem_Plugins *m_plugins_p;
-    CCfgItem_Logs *m_logs_p;
-    CCfgItem_Comments *m_comments_p;
-    CCfgItem_Bookmarks *m_bookmarks_p;
-    Model *m_model_p;
+    CCfgItem *m_dummy_root_p = nullptr; // extra level required to show workspace root as item
+    CCfgItem_Root *m_workspaceRoot_p = nullptr;
+    CCfgItem_Filters *m_filters_p = nullptr;
+    CCfgItem_Plugins *m_plugins_p = nullptr;
+    CCfgItem_Logs *m_logs_p = nullptr;
+    CCfgItem_Comments *m_comments_p = nullptr;
+    CCfgItem_Bookmarks *m_bookmarks_p = nullptr;
+    Model *m_model_p = nullptr;
 };
 
 extern CWorkspace *g_workspace_p;

@@ -32,8 +32,8 @@ CDebug::CDebug(void)
 
     /* Default initalization of log level should be done in the module who own the value, as such here */
 #ifdef _DEBUG
-
-/*    m_traceCategory = LOG_TRACE_CATEGORY_SIZE | LOG_TRACE_CATEGORY_NONE; */
+//  m_traceCategory = LOG_TRACE_CATEGORY_SIZE | LOG_TRACE_CATEGORY_NONE;
+//  m_traceCategory = LOG_TRACE_CATEGORY_NONE | LOG_TRACE_CATEGORY_WORKSPACE_MODEL;
     m_traceCategory = LOG_TRACE_CATEGORY_NONE;
     m_logLevel = LOG_LEVEL_INFO;
 #else
@@ -369,7 +369,6 @@ bool CRamLog::AddBuffer(char *buffer_p, size_t size)
     ramLogData_t *ramLog_p = tls_data_p->ramLogData_p;
 
 #ifdef _DEBUG
-
     /* Qualify the RAM Log setup */
     if (!ramLog_p->used || (ramLog_p->stamp != 0xbeefbeef)) {
         return false;
@@ -622,6 +621,7 @@ void CRamLog::fileDump(bool updateTimeStamp)
     if (updateTimeStamp) {
         time_t timeNow;
         time(&timeNow);
+
         if (timeNow - lastDumpTime > 2) {
             lastDumpTime = timeNow;
         } else {
