@@ -25,7 +25,7 @@
 #include <QList>
 
 static char g_cfgItem_tempString[CFG_TEMP_STRING_MAX_SIZE];
-enumStringItem CfgItemKindStringArray[] =
+const enumStringItem CfgItemKindStringArray[] =
 {
     MakeEnumStringItem(CFG_ITEM_KIND_None),
     MakeEnumStringItem(CFG_ITEM_KIND_Root),
@@ -195,6 +195,17 @@ void CCfgItem::PlotAllChildren(QList<CCfgItem *> *cfgPlotList_p, QList<CPlot *> 
 
         delete plotList_p;
         delete cfgPlotList_p;
+    }
+}
+
+/***********************************************************************************************************************
+   TraceTree
+***********************************************************************************************************************/
+void CCfgItem::TraceTree(const QString& rspaces)
+{
+    TRACEX_I(QString("T%1%2").arg(rspaces).arg(m_itemText));
+    for (auto& child : m_cfgChildItems) {
+        child->TraceTree(rspaces + "  ");
     }
 }
 
@@ -2111,9 +2122,10 @@ void CCfgItem_Filter::Serialize(QDataStream& dstream, bool pack)
         int len;
         dstream >> len;
 
-        Q_ASSERT(len < 512);
+        Q_ASSERT(len < 1024);
 
-        char file_name[len + 1];
+        len = std::min(len, 1023);
+        char file_name[1024];
         memset(file_name, 0, len + 1);
         if (dstream.readRawData(file_name, len) != len) {
             Q_ASSERT(false);

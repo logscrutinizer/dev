@@ -62,6 +62,7 @@
 #endif /*_DEBUG */
 
 #define LOG_TRACE_SELECTION (g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_SELECTION)
+#define LOG_TRACE_CAT_IS_ENABLED(CAT) ((g_DebugLib->m_traceCategory & (CAT)) > 0) ? true : false
 
 #define PRINT_FOCUS(STRING) {if (g_DebugLib != nullptr && g_DebugLib->m_traceCategory & LOG_TRACE_CATEGORY_FOCUS) \
                              {g_DebugLib->TRACEX(LOG_LEVEL_INFO, (STRING));}}

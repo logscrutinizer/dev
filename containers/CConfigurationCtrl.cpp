@@ -941,7 +941,7 @@ bool CConfigurationCtrl::Save_WorkspaceFile(const QString& fileName, bool asDefa
     QFile file(fileName);
 
 #ifdef ASSERT_ON_NULL
-    Q_ASSERT(g_workspace_p->m_root_p != nullptr);
+    Q_ASSERT(g_workspace_p->m_workspaceRoot_p != nullptr);
 #endif
 
     if (!file.open(QIODevice::WriteOnly)) {
