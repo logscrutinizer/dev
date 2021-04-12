@@ -124,6 +124,8 @@ void CPlot_Example_7::parse_journalctl_header(CTextParser& parser, std::tm& tm) 
 
     parser.ParseUInt(&ui);
     tm.tm_sec = ui;
+
+    tm.tm_isdst = -1;
 }
 
 /***********************************************************************************************************************
@@ -139,6 +141,7 @@ void CPlot_Example_7::parse_journalctl_row_time(CTextParser& parser, std::tm& tm
     static const char months[12][4] =
     {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
     auto p = parser.GetText();
+
     while (*p == ' ') {
         p++; /* skip initial spaces */
     }
@@ -147,6 +150,7 @@ void CPlot_Example_7::parse_journalctl_row_time(CTextParser& parser, std::tm& tm
     memset(month, 0, sizeof(month));
 
     auto i = 0;
+
     while (*p >= 'A' && *p <= 'z' && i < 3) {
         month[i] = *p;
         p++;
@@ -178,10 +182,13 @@ void CPlot_Example_7::parse_journalctl_row_time(CTextParser& parser, std::tm& tm
     tm.tm_sec = ui;
 
     tm.tm_year = m_log_start_time.tm_year;
+
     if (tm.tm_mon < m_log_start_time.tm_mon) {
         /* year wrap */
         tm.tm_year++;
     }
+
+    tm.tm_isdst = -1;
 }
 
 /***********************************************************************************************************************
