@@ -90,7 +90,7 @@ bool CFGCTRL_LoadLogFile(void)
 bool CFGCTRL_LoadPluginFile(void)
 {
     QStringList filters;
-    filters << "Plugin (*." << DLL_EXT;
+    filters << QString("Plugin (*.%1)").arg(DLL_EXT);
 
     QList<RecentFile_Kind_e> kindList;
     kindList.append(RecentFile_Kind_PluginFile_en);
