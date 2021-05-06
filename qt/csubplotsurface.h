@@ -304,6 +304,7 @@ typedef struct XLineConfig {
     XLineConfig() {
         memset(&anchorTime, 0, sizeof(anchorTime));
         anchorTime.tm_mday = 1;
+        anchorTime.tm_isdst = -1;
         majorCfg.period = TimePeriod::NA;
         minorCfg.period = TimePeriod::NA;
         microCfg.period = TimePeriod::NA;
