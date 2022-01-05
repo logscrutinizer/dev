@@ -35,6 +35,7 @@
 #include <QClipboard>
 #include <QEvent>
 #include <QGraphicsTextItem>
+#include <algorithm>
 
 extern QPen *g_plotWnd_defaultPen_p;
 extern QPen *g_plotWnd_defaultDotPen_p;
@@ -386,7 +387,7 @@ void CPlotWidgetGraphics::InitilizeSubPlots(void)
     /* Distribute initial equal height */
     auto winRect = rect();
     auto subPlotHeight = winRect.height() / m_surfaces.count();
-    subPlotHeight = std::max(20, subPlotHeight);
+    subPlotHeight = std::max(20ll, subPlotHeight);
 
     QList<int> sizes;
     for (int i = 0; i < m_surfaces.count(); i++) {
@@ -580,18 +581,12 @@ void CPlotWidgetGraphics::ZoomSubPlot_X_Axis(int zDelta, const ScreenPoint_t *sc
         return;
     }
 
-    QMatrix matrix;
-
-    if (zDelta < 0) {
-        /* zoom out */
-        matrix.translate(m_viewRect.width() * -0.2, 1.0);
-        matrix.scale(0.8, 1.0);
-    } else {
-        matrix.translate(m_viewRect.width() * 0.2, 1.0);
-        matrix.scale(1.2, 1.0);
-    }
-
-    m_surfaces.first()->view()->setMatrix(matrix, true);
+    QTransform trans;
+    double scaleX = zDelta < 0 ? 0.8 : 1.2;
+    double shiftX = m_viewRect.width() * (zDelta < 0 ? -0.2 : 0.2);
+    trans.translate(shiftX, 1.0);
+    trans.scale(scaleX, 1.0);
+    m_surfaces.first()->view()->setTransform(trans, true);
     if (invalidate_p != nullptr) {
         *invalidate_p = true;
     }
@@ -608,18 +603,12 @@ void CPlotWidgetGraphics::ZoomSubPlot_Y_Axis(int zDelta, const ScreenPoint_t *sc
         return;
     }
 
-    QMatrix matrix;
-
-    if (zDelta < 0) {
-        /* zoom out */
-        matrix.translate(1.0, m_viewRect.height() * -0.2);
-        matrix.scale(1.0, 0.8);
-    } else {
-        matrix.translate(1.0, m_viewRect.height() * 0.2);
-        matrix.scale(1.0, 1.2);
-    }
-
-    m_surfaces.first()->view()->setMatrix(matrix, true);
+    QTransform trans;
+    double scaleY = zDelta < 0 ? 0.8 : 1.2;
+    double shiftY = m_viewRect.height() * (zDelta < 0 ? -0.2 : 0.2);
+    trans.translate(1.0, shiftY);
+    trans.scale(1.0, scaleY);
+    m_surfaces.first()->view()->setTransform(trans, true);
 
     if (invalidate_p != nullptr) {
         *invalidate_p = true;
@@ -768,7 +757,6 @@ bool CPlotWidgetGraphics::HandleKeyDown(QKeyEvent *e)
             }
         }
     }
-
     /* */
     else if (m_keyPressedList.contains(Qt::Key_C) && CTRL_Pressed) {
         handled = true;

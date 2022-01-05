@@ -1211,7 +1211,7 @@ void CSubPlotSurface::Draw_X_Axis(void)
                 if (m_features & SUPPORTED_FEATURE_PLOT_UNIX_TIME) {
                     auto unixTime = static_cast<uint>(m_lines_X[index]);
                     QDateTime timestamp;
-                    timestamp.setTime_t(unixTime);
+                    timestamp.setSecsSinceEpoch(unixTime);
                     temp = timestamp.toString(Qt::ISODateWithMs /*SystemLocaleShortDate*/);
                 } else {
                     temp = QString("%1(s)").arg(m_lines_X[index], 0, 'E', 2);
@@ -1914,7 +1914,6 @@ void CSubPlotSurface::DrawDecorators(bool over)
                     if (properties & PROPERTIES_BITMASK_KIND_LINE_MASK) {
                         (void)m_painter_p->setPen(QRgb(0x0));
                     }
-
                     /* lighter colors require a black label */
                     else if (totalColor > (0x85 * 3)) {
                         (void)m_painter_p->setPen(QRgb(0x0));

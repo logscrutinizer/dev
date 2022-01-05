@@ -7,6 +7,8 @@
 #include <QXmlStreamReader>
 #include <QFile>
 #include <QFileInfo>
+#include <QStringView>
+#include <QString>
 
 #include "CConfig.h"
 #include "CDebug.h"
@@ -326,11 +328,11 @@ void CConfig::readDefaultSettings(void)
     QFile xmlFile("settings.xml");
 
     if (xmlFile.open(QIODevice::ReadOnly)) {
-        QXmlStreamReader xmlReader(&xmlFile);
+        QXmlStreamReader  xmlReader(&xmlFile);
 
         TRACEX_I(QString("Settings file read: %1").arg(QFileInfo(xmlFile).absoluteFilePath()))
         while (!xmlReader.atEnd() && xmlReader.readNext()) {
-            if (xmlReader.isStartElement() && xmlReader.name().contains("setting")) {
+            if (xmlReader.isStartElement() && xmlReader.name().contains(QString("setting"))) {
                 auto attributes = xmlReader.attributes();
 
                 for (auto& setting : m_settingsList) {

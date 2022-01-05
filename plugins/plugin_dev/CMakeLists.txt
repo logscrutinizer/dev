@@ -57,9 +57,9 @@ get_target_property(QtCore_location Qt5::Core LOCATION)
 #--- Setup general include directories for all modules
 #------------------------------------------------------
 
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
+#include_directories(${CMAKE_SOURCE_DIR})
+#include_directories(${Qt5Core_INCLUDE_DIRS})
+#include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 if(WIN32)
     include_directories(${Qt5WinExtras_INCLUDE_DIRS})

@@ -171,7 +171,8 @@ void TestLoadAndFilter(void)
     QStringList logFiles = dir.entryList(nameLogFilter);
 
     if ((logFiles.count() == 0) || (fltFiles.count() == 0)) {
-        TRACEX_E("Files missing for tests")
+        TRACEX_W("Files missing for tests");
+        return;
     }
 
     TRACEX_I(QString("   Filter file:%1").arg(fltFiles.first()))
@@ -839,6 +840,173 @@ bool GenerateFilterTestLog(const QString& fileName, const QString& repetitionPat
     return true;
 }
 
+/***********************************************************************************************************************
+*   GenerateFileWithLongLines
+***********************************************************************************************************************/
+bool GenerateFileWithLongLines(const QString& fileName, int totalNumOfRows, int maxRowLength, bool useIfExist)
+{
+    QFile LogFile(fileName);
+
+    if (LogFile.exists()) {
+        if (useIfExist) {
+            TRACEX_I(QString("%1 file exists %2").arg(__FUNCTION__).arg(QFileInfo(LogFile).absoluteFilePath()))
+            return true;
+        } else {
+            LogFile.remove();
+        }
+    }
+
+    if (!LogFile.open(QIODevice::ReadWrite)) {
+        TRACEX_E("%s Failed - Log couldn't be created", __FUNCTION__)
+        return false;
+    }
+
+    QTextStream outStream(&LogFile);
+
+    try {
+        for (int index = 0; index < totalNumOfRows; ++index) {
+            std::string base = "";
+            auto wordCount = maxRowLength / sizeof("word ");
+            for (int wc = 0; wc < wordCount; wc++) {
+                outStream << "word ";
+            }
+            outStream << "\r\n";
+        }
+    } catch (std::exception &e) {
+        TRACEX_E(QString("%1 Failed - ASSERT %2").arg(__FUNCTION__).arg(e.what()))
+        qFatal("  ");
+    } catch (...) {
+        TRACEX_E("%s - ASSERT", __FUNCTION__)
+        qFatal("  ");
+    }
+
+    TRACEX_I(QString("Generated file %1").arg(QFileInfo(LogFile).absoluteFilePath()))
+
+    LogFile.close();
+
+    return true;
+}
+
+/***********************************************************************************************************************
+*   TestFileCtrl
+***********************************************************************************************************************/
+void TestFileCtrl(void)
+{
+    CFileCtrl fileCtrl;
+    const int c_rows = 10;
+
+    if (GenerateFileWithLongLines("long_lines.txt", c_rows, 50 * 1024, true)) {
+        char *mem_p = static_cast<char *>(VirtualMem::Alloc(1024 * 1000));
+        QFile logFile("long_lines.txt");
+        char tia_name[] = "long_lines.txt.tia";
+        int rows;
+
+        if (!logFile.open(QIODevice::ReadWrite)) {
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open test log", &logFile)
+        }
+
+        fileCtrl.Search_TIA(&logFile, tia_name, mem_p, 1024 * 1000, &rows);
+
+        VirtualMem::Free(mem_p);
+
+        if (c_rows != rows) {
+            TRACEX_E("Wrong numbers of rows in TIA");
+        }
+    }
+}
+
+/***********************************************************************************************************************
+*   GenerateSeekLog
+***********************************************************************************************************************/
+bool GenerateSeekLog(const QString& fileName, const QString& repetitionPattern, int totalNumOfRows, int lineEndingCount)
+{
+    QFile LogFile(fileName);
+
+    if (LogFile.exists()) {
+        if (!LogFile.remove()) {
+            TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be removed", &LogFile)
+            return false;
+        }
+    }
+
+    if (!LogFile.open(QIODevice::ReadWrite)) {
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be open", &LogFile)
+        return false;
+    }
+
+    QTextStream outStream(&LogFile);
+
+    try {
+        for (int index = 0; index < totalNumOfRows; ++index) {
+            if (lineEndingCount == 2) {
+                outStream << repetitionPattern << "\r\n";
+            } else {
+                outStream << repetitionPattern << "\n";
+            }
+        } /* for */
+    } catch (std::exception &e) {
+        TRACEX_E(QString("GenerateTestLog Failed - ASSERT %1 ").arg(e.what()))
+        qFatal("  ");
+    } catch (...) {
+        TRACEX_E("GenerateTestLog Failed - ASSERT")
+        qFatal("  ");
+    }
+
+    LogFile.close();
+
+    return true;
+}
+
+/***********************************************************************************************************************
+*   TestSeek
+***********************************************************************************************************************/
+void TestSeek()
+{
+    int numOfRows = 1000;
+    QString fileName = "seektest.txt";
+    QString repetitionPattern = "Test Test Test Test Test"; /* 24 letters, 26 chars including \n\r */
+    int lineEndingCount = 2; /* \n\r */
+    char workMem_p[4096 * 10];
+
+    if (!GenerateSeekLog(fileName, repetitionPattern, numOfRows, lineEndingCount)) {
+        TRACEX_E("GenerateSeekLog Failed")
+        return;
+    }
+
+    int64_t offset_EOL;
+    QFile LogFile(fileName);
+
+    if (!LogFile.open(QIODevice::ReadWrite)) {
+        TRACEX_QFILE(LOG_LEVEL_ERROR, "TestSeek Failed - Log couldn't be open", &LogFile)
+        return;
+    }
+
+    int64_t fileSize = LogFile.size();
+
+    if (fileSize != (repetitionPattern.size() + lineEndingCount) * numOfRows) {
+        TRACEX_E("TestSeek Failed - Generated Log wrong size")
+        return;
+    }
+
+    const auto repPatLength = repetitionPattern.size();
+    const auto lineLength = repPatLength + lineEndingCount;
+
+    for (int row = 0; row < numOfRows; ++row) {
+        int64_t fileStartIndex = row * lineLength + row % lineLength; /* continously shift start position */
+        extern int Seek_EOL(QFile * qFile_p, char *workMem_p, int64_t fileStartIndex, int64_t fileSize,
+                            int64_t * offset_EOL_p /*In/out*/);
+
+        if (Seek_EOL(&LogFile, workMem_p, fileStartIndex, fileSize, &offset_EOL /*In/out*/) == SEEK_EOL_ERROR) {
+            TRACEX_E("TestSeek Failed - Seek_EOL failed")
+            return;
+        }
+
+        if (((fileStartIndex + offset_EOL) != (row + 1) * lineLength - 1)) {
+            TRACEX_E("TestSeek Failed - Seek_EOL found wrong line ending")
+            return;
+        }
+    }
+}
 /***********************************************************************************************************************
 *   VerifyTIA
 ***********************************************************************************************************************/

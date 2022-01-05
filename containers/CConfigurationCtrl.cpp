@@ -223,7 +223,7 @@ void CFGCTRL_RemoveDuplicateUrls(QList<QUrl>& urlList)
 ***********************************************************************************************************************/
 QString CFGCTRL_GetWorkingDir()
 {
-    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
     return locations.first();
 }
 
@@ -232,7 +232,7 @@ QString CFGCTRL_GetWorkingDir()
 ***********************************************************************************************************************/
 QString CFGCTRL_GetDefaultWorkspaceFilePath()
 {
-    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
     return QDir(locations.first()).filePath(g_cfg_p->m_defaultWorkspace);
 }
 

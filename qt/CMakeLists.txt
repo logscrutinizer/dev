@@ -362,16 +362,14 @@ add_executable(${PROJECT_NAME}
 #-------------------------------------------------------------------------------
 
 if (USE_WEB_ENGINE)
-    set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt5::WebEngine Qt5::WebEngineWidgets)
+	set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt6::WebEngine Qt6::WebEngineWidgets)
 endif(USE_WEB_ENGINE)
 
 if (USE_QT_SOUND)
-    set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt5::Multimedia)
+	set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt6::Multimedia)
 endif(USE_QT_SOUND)
 
 if (WIN32)
-    set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt5::WinExtras)
-
     set (SPECIAL_LINK_DEP ${SPECIAL_LINK_DEP}
         $<$<CONFIG:Debug>:${HS_PATH}/lib/hs.lib>
         $<$<CONFIG:Release>:${HS_PATH}/lib/hs.lib>)
@@ -393,7 +391,7 @@ endif (WIN32)
 # Add properties and dependencies to executable
 #-------------------------------------------------------------------------------
 
-set (ADDITIONAL_LINK_DEP Qt5::Widgets Qt5::Gui Qt5::Core ${ADDITIONAL_LINK_DEP})
+set (ADDITIONAL_LINK_DEP Qt6::Widgets Qt6::Gui Qt6::Core ${ADDITIONAL_LINK_DEP})
 
 target_link_libraries(${PROJECT_NAME} ${moduleList} ${ADDITIONAL_LINK_DEP} ${SPECIAL_LINK_DEP})
 

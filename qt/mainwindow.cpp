@@ -24,7 +24,6 @@
 #include "CWorkspace.h"
 #include <QSettings>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QScrollBar>
@@ -37,9 +36,6 @@
 #include <QUrl>
 #ifdef USE_SOUND
  #include <QSound>
-#endif
-#ifdef _WIN32
- #include <QWinTaskbarButton>
 #endif
 
 #include "ui_searchform.h"
@@ -554,7 +550,7 @@ void MainWindow::addPlotPane(void)
         m_plotPane_p = new CPlotPane(m_tabWidget_p);
     }
 
-    const QIcon icon	 = QIcon(":plugin_32x32.png");
+    const QIcon icon = QIcon(":plugin_32x32.png");
     m_tabWidget_p->addTab(m_plotPane_p, icon, "Plugin plots");
 }
 
@@ -2107,7 +2103,6 @@ bool MainWindow::handleSearch(bool forward)
                  .arg(cursorPosition.row).arg(cursorPosition.startCol).arg(startRow))
 
 #ifdef QT_TODO
-
     /* Having the setFocus here will force the last edit in the combo box to be saved, and get be
      * fetched with GetEditString(...) */
     view_p->SetFocus();

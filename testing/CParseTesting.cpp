@@ -4,6 +4,7 @@
 ***********************************************************************************************************************/
 
 #include "CParseTesting.h"
+#include <string>
 
 /***********************************************************************************************************************
 *   BaseReset
@@ -37,17 +38,13 @@ void CParseTesting::ParseTest(void)
 
     CParseTest_Float floatTest;
 
-    floatTest.Reset("1.23399997", 1.23399997);
+    floatTest.Reset("0.001953125", 0.001953125);
     floatTest.Execute();
-    floatTest.Reset("0.000123399997", 0.000123399997);
+    floatTest.Reset("   0.001953125", 0.001953125);
     floatTest.Execute();
-    floatTest.Reset("123.399997", 123.399997);
+    floatTest.Reset("   0.001953125   ", 0.001953125);
     floatTest.Execute();
-    floatTest.Reset("   123.399997", 123.399997);
-    floatTest.Execute();
-    floatTest.Reset(" 123.399997   ", 123.399997);
-    floatTest.Execute();
-    floatTest.Reset(" -123.399997   ", -123.399997);
+    floatTest.Reset("   -0.001953125   ", -0.001953125);
     floatTest.Execute();
 
     CParseTest_x64 x64Test;

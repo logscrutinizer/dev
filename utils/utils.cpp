@@ -27,8 +27,8 @@ void initUpperChar(void)
 ScreenPoint_t MakeScreenPoint(QMouseEvent *event, int dx, int dy)
 {
     ScreenPoint_t screenPoint;
-    screenPoint.mouse = QPoint(event->x(), event->y());
-    screenPoint.ClientToScreen = QPoint(event->globalX(), event->globalY());
+    screenPoint.mouse = QPoint(event->position().x(), event->position().y());
+    screenPoint.ClientToScreen = QPoint(event->globalPosition().x(), event->globalPosition().y());
 
     screenPoint.DCBMP.setX(screenPoint.mouse.x() + dx);
     screenPoint.DCBMP.setY(screenPoint.mouse.y() + dy);
@@ -42,8 +42,8 @@ ScreenPoint_t MakeScreenPoint(QMouseEvent *event, int dx, int dy)
 ScreenPoint_t MakeScreenPoint(QWheelEvent *event, int dx, int dy)
 {
     ScreenPoint_t screenPoint;
-    screenPoint.mouse = QPoint(event->x(), event->y());
-    screenPoint.ClientToScreen = QPoint(event->globalX(), event->globalY());
+    screenPoint.mouse = QPoint(event->position().x(), event->position().y());
+    screenPoint.ClientToScreen = QPoint(event->globalPosition().x(), event->globalPosition().y());
 
     screenPoint.DCBMP.setX(screenPoint.mouse.x() + dx);
     screenPoint.DCBMP.setY(screenPoint.mouse.y() + dy);

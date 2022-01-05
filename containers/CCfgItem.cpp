@@ -1875,8 +1875,20 @@ bool CCfgItem_FilterItem::WriteToFile(QTextStream& fileStream, CfgItemSaveOption
 
     g_cfgItem_tempString[destIndex] = 0;
 
-    QString tag;
-    tag.sprintf(
+    QString tag = 
+        QString("    <filter enabled=\"%1\" excluding=\"%2\" color=\"%3\"  bg_color=\"%4\" type=\"matches_text\" case_sensitive=\"%5\" regex=\"%6\" adaptive_clip=\"%7\" text=\"%8\" />\n")
+        .arg(m_filterItem_ref_p->m_enabled == true ? 'y' : 'n')
+        .arg(m_filterItem_ref_p->m_exclude == true ? 'y' : 'n')
+        .arg(m_filterItem_ref_p->m_color, 4, 16)
+        .arg(m_filterItem_ref_p->m_bg_color, 4, 16)
+        .arg(m_filterItem_ref_p->m_caseSensitive == true ? 'y' : 'n')
+        .arg(m_filterItem_ref_p->m_regexpr == true ? 'y' : 'n')
+        .arg(m_filterItem_ref_p->m_adaptiveClipEnabled == true ? 'y' : 'n')
+        .arg(g_cfgItem_tempString);
+
+        
+    /*
+    tag.asprintf(
         "    <filter enabled=\"%c\" excluding=\"%c\" color=\"%.4x\"  bg_color=\"%.4x\" type=\"matches_text\" case_sensitive=\"%c\" regex=\"%c\" adaptive_clip=\"%c\" text=\"%s\" />\n",
         m_filterItem_ref_p->m_enabled == true ? 'y' : 'n',
         m_filterItem_ref_p->m_exclude == true ? 'y' : 'n',
@@ -1886,6 +1898,7 @@ bool CCfgItem_FilterItem::WriteToFile(QTextStream& fileStream, CfgItemSaveOption
         m_filterItem_ref_p->m_regexpr == true ? 'y' : 'n',
         m_filterItem_ref_p->m_adaptiveClipEnabled == true ? 'y' : 'n',
         g_cfgItem_tempString);
+        */
 
     return WriteTagToFile(fileStream, tag);
 }

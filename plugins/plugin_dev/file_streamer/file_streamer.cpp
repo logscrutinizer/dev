@@ -3,21 +3,20 @@
 ** Contact: https://www.logscrutinizer.com
 ***********************************************************************************************************************/
 
+#include <QRandomGenerator>
 #include <QtCore/QCoreApplication>
-
+#include <chrono>
 #include <stdio.h>
 
 #include "plugin_api.h"
 #include "plugin_base.h"
 
-#include <QString>
-#include <QLibrary>
+#include <QByteArray>
 #include <QDebug>
 #include <QFile>
 #include <QFileInfo>
-#include <QThread>
-#include <QByteArray>
-#include <QTime>
+#include <QLibrary>
+#include <QString>
 #include <QThread>
 
 #define ARGC_COUNT 2
@@ -35,9 +34,9 @@
 /* "Line:0 Time:0 Value:1",
  * "Line:0 Time:1 Value:4", */
 
-/*---------------------------------------------------------------------------------------------------------------------- */
-int main(int argc, char *argv[])
-{
+/*----------------------------------------------------------------------------------------------------------------------
+ */
+int main(int argc, char *argv[]) {
     QCoreApplication a(argc, argv);
     bool doReopen = false;
     QString data_filePath;
@@ -48,14 +47,16 @@ int main(int argc, char *argv[])
     }
 
     QFile data_file(data_filePath);
-    QTime timer;
-    timer.start();
-
+    auto start = std::chrono::steady_clock::now();
     bool doWrap = true;
 
     while (true) {
-        if (timer.elapsed() > 5 * 1000) {
-            timer.restart();
+        auto now = std::chrono::steady_clock::now();
+        auto delta =
+            std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
+
+        if (delta > 5) {
+            now = std::chrono::steady_clock::now();
             doWrap = doReopen;
         }
 
@@ -65,21 +66,25 @@ int main(int argc, char *argv[])
         }
 
         if (!data_file.isOpen()) {
-            QFileInfo dataFileInfo(data_filePath);
             if (!data_file.open(QIODevice::WriteOnly)) {
-                qInfo() << "Input parameter error\n" <<
-                    QString("The file %1 cannot be created").arg(data_filePath);
+                qInfo() << "Input parameter error\n"
+                        << QString("The file %1 cannot be created").arg(data_filePath);
                 return -1;
             }
             QThread::sleep(4);
         }
+
+        auto fi = QFileInfo(data_file);
+        qInfo() << "File streamed to : " << fi.absoluteFilePath();
 
         try {
             int time = 0;
             for (int loop = 0; loop < 10; loop++) {
                 QString data;
                 for (int index = 0; index < 100; index++) {
-                    data.append(QString("Line:0 Time:%1 Value:%2\n").arg(time).arg(qrand()));
+                    quint32 v = QRandomGenerator::global()->bounded(256);
+
+                    data.append(QString("Line:0 Time:%1 Value:%2\n").arg(time).arg(v));
                     time++;
                 }
                 data_file.write(data.toLatin1().constData(), data.size());

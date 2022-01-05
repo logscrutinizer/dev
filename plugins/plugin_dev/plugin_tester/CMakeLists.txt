@@ -29,14 +29,10 @@ add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_sources} ${CMAKE_SOURCE_DIR}/CM
 
 set (ADDITIONAL_LINK_DEP plugin_framework)
 
-if (WIN32)
-    set (ADDITIONAL_LINK_DEP ${ADDITIONAL_LINK_DEP} Qt5::WinExtras)
-endif (WIN32)
-
 #---------------------------------------------------------
 # Add properties and dependencies to executable
 #---------------------------------------------------------
-target_link_libraries(${PROJECT_NAME} Qt5::Core ${ADDITIONAL_LINK_DEP})
+target_link_libraries(${PROJECT_NAME} Qt6::Core ${ADDITIONAL_LINK_DEP})
 add_dependencies(${PROJECT_NAME} plugin_example_1)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "plugin_tester")

@@ -16,10 +16,6 @@
 static int g_totalNumOfThreads; /* Used for caluclating progress */
 static int64_t g_totalFileSize; /* Used for caluclating progress */
 
-#define   SEEK_EOL_SUCCESS      1
-#define   SEEK_EOL_ERROR       -1
-#define   SEEK_EOL_FILE_END    -2
-
 /***********************************************************************************************************************
 *   MemRef_To_FileIndex
 ***********************************************************************************************************************/
@@ -170,8 +166,7 @@ void CTIA_Thread::run()
 /***********************************************************************************************************************
 *   Seek_EOL
 ***********************************************************************************************************************/
-static int Seek_EOL(QFile *qFile_p, char *workMem_p, int64_t fileStartIndex, int64_t fileSize,
-                    int64_t *offset_EOL_p /*In/out*/)
+int Seek_EOL(QFile *qFile_p, char *workMem_p, int64_t fileStartIndex, int64_t fileSize, int64_t *offset_EOL_p /*In/out*/)
 {
     /* File end is the index from file start */
     int64_t readBytes;
@@ -1046,120 +1041,6 @@ bool CTIA_FileStorage::Store_CTIA(QFile& qfile)
     }
 
     qfile.flush();
-
-    return true;
-}
-
-/***********************************************************************************************************************
-*   TestFileCtrl
-***********************************************************************************************************************/
-void TestFileCtrl(void)
-{
-    CFileCtrl fileCtrl;
-    char *mem_p = static_cast<char *>(VirtualMem::Alloc(1024 * 1000));
-    QFile logFile("D:\\Projects\\LogScrutinizer\\logs\\long_lines.txt");
-    char tia_name[] = ("D:\\Projects\\LogScrutinizer\\logs\\long_lines_tia.txt");
-    int rows;
-
-    if (!logFile.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "Failed to open test log", &logFile)
-    }
-
-    fileCtrl.Search_TIA(&logFile, tia_name, mem_p, 1024 * 1000, &rows);
-
-    VirtualMem::Free(mem_p);
-}
-
-bool GenerateSeekLog(const QString& fileName, const QString& repetitionPattern,
-                     int totalNumOfRows, int lineEndingCount);
-
-/***********************************************************************************************************************
-*   TestSeek
-***********************************************************************************************************************/
-void TestSeek()
-{
-    int numOfRows = 1000;
-    QString fileName = "seektest.txt";
-    QString repetitionPattern = "Test Test Test Test Test"; /* 24 letters, 26 chars including \n\r */
-    int lineEndingCount = 2; /* \n\r */
-    char workMem_p[4096 * 10];
-
-    if (!GenerateSeekLog(fileName, repetitionPattern, numOfRows, lineEndingCount)) {
-        TRACEX_E("GenerateSeekLog Failed")
-        return;
-    }
-
-    int64_t offset_EOL;
-    QFile LogFile(fileName);
-
-    if (!LogFile.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "TestSeek Failed - Log couldn't be open", &LogFile)
-        return;
-    }
-
-    int64_t fileSize = LogFile.size();
-
-    if (fileSize != (repetitionPattern.size() + lineEndingCount) * numOfRows) {
-        TRACEX_E("TestSeek Failed - Generated Log wrong size")
-        return;
-    }
-
-    const auto repPatLength = repetitionPattern.size();
-    const auto lineLength = repPatLength + lineEndingCount;
-
-    for (int row = 0; row < numOfRows; ++row) {
-        int64_t fileStartIndex = row * lineLength + row % lineLength; /* continously shift start position */
-
-        if (Seek_EOL(&LogFile, workMem_p, fileStartIndex, fileSize, &offset_EOL /*In/out*/) == SEEK_EOL_ERROR) {
-            TRACEX_E("TestSeek Failed - Seek_EOL failed")
-            return;
-        }
-
-        if (((fileStartIndex + offset_EOL) != (row + 1) * lineLength - 1)) {
-            TRACEX_E("TestSeek Failed - Seek_EOL found wrong line ending")
-            return;
-        }
-    }
-}
-
-/***********************************************************************************************************************
-*   GenerateSeekLog
-***********************************************************************************************************************/
-bool GenerateSeekLog(const QString& fileName, const QString& repetitionPattern, int totalNumOfRows, int lineEndingCount)
-{
-    QFile LogFile(fileName);
-
-    if (LogFile.exists()) {
-        if (!LogFile.remove()) {
-            TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be removed", &LogFile)
-            return false;
-        }
-    }
-
-    if (!LogFile.open(QIODevice::ReadWrite)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR, "GenerateSeekLog Failed - Log couldn't be open", &LogFile)
-        return false;
-    }
-
-    QTextStream outStream(&LogFile);
-
-    try {
-        for (int index = 0; index < totalNumOfRows; ++index) {
-            if (lineEndingCount == 2) {
-                outStream << repetitionPattern << "\r\n";
-            } else {
-                outStream << repetitionPattern << "\n";
-            }
-        } /* for */
-    } catch (std::exception &e) {
-        TRACEX_E(QString("GenerateTestLog Failed - ASSERT %1 ").arg(e.what()))
-        qFatal("  ");
-    } catch (...) {
-        TRACEX_E("GenerateTestLog Failed - ASSERT")
-        qFatal("  ");
-    }
-
-    LogFile.close();
 
     return true;
 }

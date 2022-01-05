@@ -13,7 +13,7 @@ __Key features__
   *  Line graphs
   *  Sequence charts
   *  Timing diagrams
-* Based on Qt 5.10, runs on Linux and Windows platforms
+* Based on Qt 6.2.2, runs on Linux and Windows platforms
 * Uses the super-fast [hyperscan.io](https://www.hyperscan.io/) engine for regular expressions
 * Handles large sized text-files, filters GB-sized logs within seconds
 
@@ -36,8 +36,8 @@ This section contains build instructions for Linux and Windows. There are two ex
 ## Build instructions - Linux (Ubuntu 18.10 and Debian9) <a name="build_instructions_linux_ubuntu_debian">
 The two distributions Ubuntu 18.10 and Debian 9 have almost an identical step-by-step procedure for installation.
 ### Prerequisites
-* Qt 5.10
-  * Install requirements for [Development Host](http://doc.qt.io/qt-5/linux.html)
+* Qt 6.2.2
+  * Install requirements for [Development Host](http://doc.qt.io/qt-6/linux.html)
   * Download Qt from [Qt download page](https://www.qt.io/download)
     * You may choose the open-source alternative, as LogScrutinizer is open-source
     * The Qt Company requires that you have an account
@@ -45,10 +45,10 @@ The two distributions Ubuntu 18.10 and Debian 9 have almost an identical step-by
 * Git, CMake, Python and some more...
   * `sudo apt-get install git cmake python pkg-config  libhyperscan-dev freeglut3 freeglut3-dev libgtk2.0-dev`
 * gcc/g++ with c++17 support
-  * Ubuntu 18.10 has gcc version 8, which is great as you need support for c++17. However, even though Debian 9 is on gcc v6.3 that version also supports all the c++17 features currently used by LogScrutinizer. Still, it might be possible that Debian 9 users will have to get a newer version in the future (not necessary now). If you want a newer gcc compiler you may check these [added gcc build instructions](build_install_gcc) (section Centos7 but same for Debians)
+  * If your Linux dist has an older gcc without support for c++17 you need to update. If you want a newer gcc compiler you may check [added gcc build instructions](build_install_gcc) (section Centos7 but same for Debians)
 
 ### Build hyperscan library from source (optional)
-This step is optional for Ubuntu 18.10 and Debian 9, as hyperscan is available using apt (as libhyperscan-dev above). But, if you desire to use the latest version of hyperscan the same [instructions as for Centos 7 can be used](#hyperscan_build).
+This step is optional for new dists such as Ubuntu 18.10 and Debian 9, as hyperscan is available using apt (as libhyperscan-dev above). But, if you desire to use the latest version of hyperscan the same [instructions as for Centos 7 can be used](#hyperscan_build).
 
 ### Build LogScrutinizer
 * Fetch LogScrutinizer from GitHub
@@ -56,9 +56,9 @@ This step is optional for Ubuntu 18.10 and Debian 9, as hyperscan is available u
 * Create file __local.cmake__ in LogScrutinizer top-level folder
   * Add the following lines to __local.cmake__ (make sure that the paths are updated to your system setup/paths. For Debian 9 users you should change the OS_VARIANT).
   ```
-  set(CMAKE_PREFIX_PATH "/home/user/Qt/5.10.0/gcc_64")
+  set(CMAKE_PREFIX_PATH "/home/user/Qt/6.2.2/gcc_64")
   set(LOCAL_PKG_CONFIG_PATH "/usr/lib/pkgconfig")
-  set(OS_VARIANT "Ubuntu18")
+  set(OS_VARIANT "Ubuntu20")
   set(CPACK_DEBIAN 1)
   ```
 
@@ -88,7 +88,7 @@ running the binary from the build folder, LogScrutinizer will look for Qt binari
 This build instruction example represent a Linux distribution with tools older than desired. You will find instructions how to build your own gcc compiler, cmake, and hyperscan.
 
 ### Prerequisites
-* Qt 5.10
+* Qt 6.2.2
   * Install requirements for [Development Host](http://doc.qt.io/qt-5/linux.html)
     ```
     sudo yum groups mark convert
@@ -165,12 +165,12 @@ sudo make install
 
 ### Build LogScrutinizer
 * Fetch LogScrutinizer from GitHub
-  * `git clone https://github.com/logscrutinizer/dev.git`
+  * `git clone git@github.com:logscrutinizer/dev.git`
 * Create __local.cmake__ in LogScrutinizer root folder (dev). 
   * Note: the local.cmake is not part of the repository since its content is dependent on your install directories
 * Add the following lines to __local.cmake__ (make sure that the paths are updated to your system setup/paths).
   ```
-  set(CMAKE_PREFIX_PATH "/home/user/Qt/5.10.0/gcc_64")
+  set(CMAKE_PREFIX_PATH "/home/user/Qt/6.2.2/gcc_64")
   set(LOCAL_PKG_CONFIG_PATH "/usr/local/lib64/pkgconfig")
   set(OS_VARIANT "Centos7")
   set(CPACK_RPM 1)
@@ -191,25 +191,25 @@ sudo make install
 ## Build instructions - Windows <a name="build_instructions_windows">
 
 ### Prerequisites
-* __Qt (5.10.0) for Windows__
+* __Qt (6.2.2) for Windows__
   * Download from [https://www.qt.io/download](https://www.qt.io/download)
     * You may choose the open-source alternative, as LogScrutinizer is open-source
     * The Qt Company requires that you have an account
-    * You only need to enable the 2015/2017 VisualStudio 64-bit build variants under 5.10.0 (to minimize the HDD impact)
-    * > Add the Qt binary path as Win10 environment variable (PATH). To find the Qt dlls when running locally __(C:\Qt\5.10.0\msvc2017_64\bin)__
-* __Visual Studio 2017 or 2019__
+    * You only need to enable the 2019 VisualStudio 64-bit build variant under 6.2.2 (to minimize the HDD impact)
+    * > Add the Qt binary path as Win10 environment variable (PATH). To find the Qt dlls when running locally __(C:\Qt\6.2.2\msvc2019_64\bin)__
+* __Visual Studio 2019__
   * Download from [https://visualstudio.microsoft.com/vs/community](https://visualstudio.microsoft.com/vs/community)
     * Check/Use "Desktop development with C++"
-    * Note: When you select your Visual Studio version ensure that the Qt5 download has support for your version. E.g. newer releases of Qt hasn't option for pre-build binaries for  doesn't support 17
+    * Note: When you select your Visual Studio version ensure that the Qt6 download has support for your version. VS19 match Qt6.2.2
 * __Git__
-  * Download from [https://github.com/git-for-windows/git/releases/download/v2.20.1.windows.1/Git-2.20.1-64-bit.exe](https://github.com/git-for-windows/git/releases/download/v2.20.1.windows.1/Git-2.20.1-64-bit.exe)
+  * Download from [git 2.34](https://github.com/git-for-windows/git/releases/download/v2.34.1.windows.1/Git-2.34.1-64-bit.exe)
 * __CMake (cmake-gui)__
-  * Download from [https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-win64-x64.msi](https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-win64-x64.msi)
+  * Download from [cmake 3.22](https://github.com/Kitware/CMake/releases/download/v3.22.1/cmake-3.22.1-windows-x86_64.msi)
 * __Python__
-  * Download from [https://www.python.org/ftp/python/3.7.2/python-3.7.2-webinstall.exe](https://www.python.org/ftp/python/3.7.2/python-3.7.2-webinstall.exe)
+  * Download from [3.7.2](https://www.python.org/ftp/python/3.7.2/python-3.7.2-webinstall.exe)
   * After installation, ensure that you can run python from console window, otherwise you need to add a system PATH to the python.exe
 * __NSIS - Installer__ (Note: Only if you intend to build installer packages)
-  * Download from [http://prdownloads.sourceforge.net/nsis/nsis-3.04-setup.exe?download](http://prdownloads.sourceforge.net/nsis/nsis-3.04-setup.exe?download)
+  * Download from [nsis-3.04](http://prdownloads.sourceforge.net/nsis/nsis-3.04-setup.exe?download)
 
 ### Build hyperscan library
 There is no pre-built download for this component, hence you need to build it yourself. However, to build it you need some other components first, Boost and Ragel.
@@ -233,7 +233,7 @@ There is no pre-built download for this component, hence you need to build it yo
   * Press __Generate__ to create the hyperscan.sln project into the CMake output/build directory
 
 * Build HyperScan from Visual Studio
-  * Start Visual Studio 2017
+  * Start Visual Studio 2019
   * Open the hyperscan.sln solution file from Visual Studio (in the cmake-gui output directory)
   * Select Release x64 build variant
   * From Build menu select "Build Solution" ... wait.... this takes a while...
@@ -246,7 +246,7 @@ There is no pre-built download for this component, hence you need to build it yo
   * `git clone https://github.com/logscrutinizer/dev.git`
 * In the "dev" directory create/add file __local.cmake__ with the following lines (_Change the paths to your local installation_)
     ```
-    set(CMAKE_PREFIX_PATH "C:/Qt/5.10.0/msvc2017_64")
+    set(CMAKE_PREFIX_PATH "C:/Qt/6.2.2/msvc2017_64")
     set(OS_VARIANT "Win32 64-bit")
     set(CPACK_NSIS 1)
     set(VC_REDIST "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/14.16.27012")
@@ -267,16 +267,16 @@ There is no pre-built download for this component, hence you need to build it yo
     * Build solution
     
   * Run LogScrutinizer from Visual Studio
-    * LogScrutinizer is based on Qt5 and during startup loads several of Qt5 dlls. When running LogScrutinizer from VisualStudio these Qt5 dlls needs to the be located in the same folder as LogScrutinizer.exe. You typically find the Dlls in your Qt5 install directory under e.g.
+    * LogScrutinizer is based on Qt6 and during startup loads several of Qt6 dlls. When running LogScrutinizer from VisualStudio these Qt6 dlls needs to the be located in the same folder as LogScrutinizer.exe. You typically find the Dlls in your Qt6 install directory under e.g.
 
     ```
-    C:\Qt\5.13.0\msvc2017_64\bin
+    C:\Qt\6.2.2\msvc2019_64\bin
 
     ```
-     * However, you also needs to create a __qt.conf__ file and locate it in the same folder as the exe and the dlls. The qt.conf file is used by the Qt5 dlls to locate other required binaries. Create the qt.conf file containing the following
+     * However, you also needs to create a __qt.conf__ file and locate it in the same folder as the exe and the dlls. The qt.conf file is used by the Qt6 dlls to locate other required binaries. Create the qt.conf file containing the following
      ``` 
       [Paths]
-      Prefix = C:/Qt/5.14.2/msvc2017_64
+      Prefix = C:/Qt/6.2.2/msvc2019_64
     ```
    
     * Press Ctrl-F5 to run (run Release version).
@@ -292,7 +292,7 @@ _Notes:_
 * You need to create the qt.conf file yourself and locate it there, it should contain the same lines as for the qt.conf used for starting the LogScrutinizer application
    ```
    [Paths]
-   Prefix = C:/Qt/5.14.2/msvc2017_64
+   Prefix = C:/Qt/6.2.2/msvc2019_64
    ```
 
 #### Make an installation package
@@ -315,7 +315,7 @@ Note, if the version gets wrong in the installation package its because the file
 # Contribute <a name="contribute">
 
 ## Coding style guide <a name="coding_style_guide">
-The coding style guide is similar to the Qt style-guide, but not spot on. Use the uncrustify.cfg file for basic formatting, and <u>common sense for those parts not covered by it</u>. Make the code explain itself, do not format it to death, and most of all let your c++ inspiration flow. The version supported by the uncrustify.cfg file is __0.68-2__, but possible other versions are working as well (its about supporting the tags in the cfg-file).
+The coding style guide is similar to the Qt style-guide, but not spot on. Use the uncrustify.cfg file for basic formatting, and <u>common sense for those parts not covered by it</u>. Make the code explain itself, do not format it to death, and most of all let your c++ inspiration flow. The version supported by the uncrustify.cfg file is __0.70.1__, but possible other versions are working as well (its about supporting the tags in the cfg-file).
 
 ### Linux
 To use the uncrustify.cfg to format the code you need to download and build the uncrustify program. Then you configure QtCreator to enable the uncrustify as a beautifyer, start from help and plugins.

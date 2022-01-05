@@ -135,7 +135,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
                             /* Check if the sec based anchor is inside millisec range */
 
                             xconfig.anchorTime.tm_sec = x_min_tm.tm_sec;
-                            anchor_dt.setTime_t(std::mktime(&xconfig.anchorTime));
+                            anchor_dt.setSecsSinceEpoch(std::mktime(&xconfig.anchorTime));
                             anchor_ms = anchor_dt.toMSecsSinceEpoch();
 
                             auto anchor_ms_p1 = anchor_ms + 1000; /* could be that anchor is not part of tm_sec but plus
@@ -143,7 +143,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
 
                             if ((anchor_ms_p1 > x_min_msec) && (anchor_ms_p1 < x_max_msec)) {
                                 xconfig.anchorTime.tm_sec = x_min_tm.tm_sec + 1;
-                                anchor_dt.setTime_t(std::mktime(&xconfig.anchorTime));
+                                anchor_dt.setSecsSinceEpoch(std::mktime(&xconfig.anchorTime));
                                 anchor_ms = anchor_dt.toMSecsSinceEpoch();
                             } else if ((anchor_ms < x_min_msec) || (anchor_ms > x_max_msec)) {
                                 /* Now special special... to support milli-second granularity
@@ -170,7 +170,7 @@ bool CSubPlotSurface::Draw_X_Axis_UnixTime(void)
 
     /* seconds since epoc */
     if (anchor_ms == 0) {
-        anchor_dt.setTime_t(std::mktime(&xconfig.anchorTime));
+        anchor_dt.setSecsSinceEpoch(std::mktime(&xconfig.anchorTime));
         anchor_ms = anchor_dt.toMSecsSinceEpoch();
     } else {
         anchor_dt = anchor_dt.fromMSecsSinceEpoch(anchor_ms);

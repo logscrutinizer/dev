@@ -167,12 +167,12 @@ const int64_t SEC_PER_WEEK = SEC_PER_DAY * 7;
 const int64_t SEC_PER_MONTH = SEC_PER_WEEK * 4;
 const int64_t SEC_PER_YEAR = SEC_PER_MONTH * 12;
 
-typedef struct {
+typedef struct sc1 {
     int recSkips[10] = {1};
     int length = 1;
 }skipConfig_t;
 
-typedef struct {
+typedef struct sc2b {
     double msecInPeriod = -1;
     TimePeriod period;
     int idx;

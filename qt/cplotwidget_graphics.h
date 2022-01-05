@@ -9,6 +9,7 @@
 #include <QGraphicsView>
 #include <QSplitter>
 #include <QVBoxLayout>
+#include <QTransform>
 
 #include "csubplotsurface.h"
 #include "plugin_api.h"
@@ -46,12 +47,10 @@ public:
     void OptimumScale(void)
     {
         auto windowRect = m_view.rect();
-        QMatrix matrix;
         auto x_scale = (windowRect.width() * 0.95) / m_boundingRect.width();
         auto y_scale = (windowRect.height() * 0.95) / m_boundingRect.height();
         auto best_scale = std::min(x_scale, y_scale);
-        matrix.scale(best_scale, best_scale);
-        m_view.setMatrix(matrix);
+        m_view.scale(best_scale, best_scale);
     }
 
     void Populate(void);

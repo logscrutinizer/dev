@@ -60,14 +60,24 @@ set(CMAKE_AUTORCC ON)
 cmake_policy(SET CMP0072 NEW)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(QT_USE_QTOPENGL TRUE)
+#set(QT_USE_QTOPENGL TRUE)
 
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Multimedia REQUIRED)
-find_package(Qt5OpenGL REQUIRED)
+
+#find_package(Qt5Widgets REQUIRED)
+#find_package(Qt5Core REQUIRED)
+#find_package(Qt5Gui REQUIRED)
+#find_package(Qt5Multimedia REQUIRED)
+#find_package(Qt5OpenGL REQUIRED)
+#find_package(OpenGL REQUIRED)
+
+
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Gui REQUIRED)
+#find_package(Qt6 COMPONENTS Multimedia REQUIRED)
+find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(OpenGL REQUIRED)
+
 
 if (USE_WEB_ENGINE)
     find_package(Qt5WebEngine REQUIRED)
@@ -75,7 +85,7 @@ if (USE_WEB_ENGINE)
 endif (USE_WEB_ENGINE)
 
 if(WIN32)
-    find_package(Qt5WinExtras)
+    #find_package(Qt6 COMPONENTS WinExtras REQUIRED)
     set(HS_INCLUDEDIR ${HS_PATH}/include)
 else (WIN32)
     find_package(PkgConfig REQUIRED)
@@ -91,30 +101,31 @@ else (WIN32)
         HINTS ${HARFBUZZ_DIR}/lib)
 endif(WIN32)
 
-get_target_property(QtCore_location Qt5::Core LOCATION)
+get_target_property(QtCore_location Qt6::Core LOCATION)
 
 #------------------------------------------------------
 #--- Setup general include directories for all modules
 #------------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/utils)
 include_directories(${CMAKE_SOURCE_DIR}/settings)
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-include_directories(${Qt5Multimedia_INCLUDE_DIRS})
+include_directories(${Qt6Widgets_INCLUDE_DIRS})
+include_directories(${Qt6OpenGLWidgets_INCLUDE_DIRS})
+include_directories(${Qt6Multimedia_INCLUDE_DIRS})
 include_directories(${HS_INCLUDEDIR})
 
 if (USE_WEB_ENGINE)
-    include_directories(${Qt5WebEngine_INCLUDE_DIRS})
-    include_directories(${Qt5WebEngineWidgets_INCLUDE_DIRS})
+    include_directories(${Qt6WebEngine_INCLUDE_DIRS})
+    include_directories(${Qt6WebEngineWidgets_INCLUDE_DIRS})
 endif (USE_WEB_ENGINE)
 
 if(WIN32)
-    include_directories(${Qt5WinExtras_INCLUDE_DIRS})
+    include_directories(${Qt6WinExtras_INCLUDE_DIRS})
 endif(WIN32)
 
 #------------------------------------------------------
 #--- Set compiler flags
 #------------------------------------------------------
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
@@ -145,6 +156,8 @@ if(WIN32)      #---- Windows, Visual Studio
         /Gm- # (- disables) Enables minimal rebuild, which determines whether C++ source files that include
              # changed C++ class definitions (stored in header (.h) files) need to be recompiled.
         /Zi # Generates complete debugging information.
+        /std:c++17  # Ensure support for c++17
+        /Zc:__cplusplus # Ensure support for c++17 https://docs.microsoft.com/en-us/cpp/build/reference/zc-cplusplus?view=msvc-170
         )
 
     set(DEFAULT_DEBUG_COMPILE_OPTIONS ${DEFAULT_COMPILE_OPTIONS}
@@ -306,10 +319,11 @@ message ("USE_WEB_ENGINE: ${USE_WEB_ENGINE}")
 message ("SHARED_QT_LIBS: ${SHARED_QT_LIBS}")
 
 message ("utilsDIR ${CMAKE_SOURCE_DIR}/utils")
-message ("Qt5Widgets_INCLUDE_DIRS ${Qt5Widgets_INCLUDE_DIRS}")
-message ("Qt5Multimedia_INCLUDE_DIRS ${Qt5Multimedia_INCLUDE_DIRS}")
-message ("Qt5WebEngine_INCLUDE_DIRS ${Qt5WebEngine_INCLUDE_DIRS}")
-message ("Qt5WebEngineWidgets_INCLUDE_DIRS ${Qt5WebEngineWidgets_INCLUDE_DIRS}")
+message ("Qt6Widgets_INCLUDE_DIRS ${Qt6Widgets_INCLUDE_DIRS}")
+message ("Qt6OpenGLWidgets_INCLUDE_DIRS ${Qt6OpenGLWidgets_INCLUDE_DIRS}")
+message ("Qt6Multimedia_INCLUDE_DIRS ${Qt6Multimedia_INCLUDE_DIRS}")
+message ("Qt56ebEngine_INCLUDE_DIRS ${Qt6WebEngine_INCLUDE_DIRS}")
+message ("Qt6WebEngineWidgets_INCLUDE_DIRS ${Qt6WebEngineWidgets_INCLUDE_DIRS}")
 
 message ("GLIB2 ${GLIB2_LIBRARIES}")
 message ("PulseAudio: ${PULSEAUDIO_LIBRARY}")
