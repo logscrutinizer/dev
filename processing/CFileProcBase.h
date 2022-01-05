@@ -288,20 +288,6 @@ class CFileProcBase : public QObject
 public:
     CFileProcBase() : m_readySem_p(nullptr), m_holdupSem_p(nullptr)
     {
-        m_qfile_p = nullptr;
-        m_fileSize_LDW = 0;
-        m_fileSize_HDW = 0;
-        m_workMem_p = nullptr;
-        m_workMemSize = 0;
-        m_TIA_p = nullptr;
-        m_priority = 0;
-        m_startRow = 0;
-        m_endRow = 0;
-        m_backward = false;
-        m_threadTI_Split = true;
-        m_execTime = 0.0;
-        m_progress = 0.0;
-
         g_processingCtrl_p->m_abort = false;
 
         for (int index = 0; index < g_cfg_p->m_numOfThreads; index++) {
@@ -382,38 +368,35 @@ public:
     QList<CThreadConfiguration *> m_configurationList;
 
 protected:
-    QFile *m_qfile_p;
-    int64_t m_fileSize;
-    int64_t m_fileEndIndex; /* Where the chunk load will end */
-    uint32_t m_fileSize_LDW;
-    uint32_t m_fileSize_HDW;
-    char *m_workMem_p;
-    int64_t m_workMemSize;
-    TIA_t *m_TIA_p;
-    int m_priority;
-    int m_totalNumOfRows; /* start - end row */
-    int m_startRow; /* Zooming... restricting lines */
-    int m_endRow; /* Zooming... restricting lines */
-    bool m_backward; /* In case reading file backwards this flag is set */
+    QFile *m_qfile_p = nullptr;
+    int64_t m_fileEndIndex = 0; /* Where the chunk load will end */
+    char *m_workMem_p = nullptr;
+    int64_t m_workMemSize = 0;
+    TIA_t *m_TIA_p = nullptr;
+    int m_priority = 0;
+    int m_totalNumOfRows = 0; /* start - end row */
+    int m_startRow = 0; /* Zooming... restricting lines */
+    int m_endRow = 0; /* Zooming... restricting lines */
+    bool m_backward = false; /* In case reading file backwards this flag is set */
 
     /* WORK DATA */
     CFileProcThreadBase *m_threadInstances[MAX_NUM_OF_THREADS]; /* Work data for the threads */
     QSemaphore *m_startSem_pp[MAX_NUM_OF_THREADS]; /* Used to trigger when thread shall start */
-    QSemaphore *m_readySem_p; /* Used to indicate to ctrl when thread is ready to run again */
+    QSemaphore *m_readySem_p = nullptr; /* Used to indicate to ctrl when thread is ready to run again */
 
     /* Extra semaphore point to make all threads rally, used for extra safety in-case some of the threads pass
      * processing fast */
-    QSemaphore *m_holdupSem_p;
+    QSemaphore *m_holdupSem_p = nullptr;
     CTimeMeas m_timeExec; /* It's life time measure the total execution time */
-    double m_execTime;
-    double m_progress;
+    double m_execTime = 0.0;
+    double m_progress = 0.0;
     Chunk_Description_t m_chunkDescr;
-    int32_t m_linesPerThread;
-    int32_t m_linesExtra;
-    int32_t m_numberOfChunkThreads;
+    int32_t m_linesPerThread = 0;
+    int32_t m_linesExtra = 0;
+    int32_t m_numberOfChunkThreads = 0;
 
     /* In-case the thread processing should be on each line, not splitting the work (plugin typically). Each thread
      * has its own unique task */
-    bool m_threadTI_Split;
+    bool m_threadTI_Split = false;
     char m_tempString[CFG_TEMP_STRING_MAX_SIZE];
 };

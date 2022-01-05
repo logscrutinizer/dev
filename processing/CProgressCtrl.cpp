@@ -34,6 +34,9 @@ void CProgressMgr_Abort(void)
 ***********************************************************************************************************************/
 void CProgressMgr::ResetProgressInfo(void)
 {
+    if (m_disabled)
+      return;
+
     m_exceptionTitle[0] = 0;
     m_exceptionInfo[0] = 0;
     InitProgressCounter();
@@ -44,6 +47,9 @@ void CProgressMgr::ResetProgressInfo(void)
 ***********************************************************************************************************************/
 void CProgressMgr::InitProgressCounter(void)
 {
+    if (m_disabled)
+      return;
+
     for (int index = 0; index < MAX_NUM_OF_THREADS; ++index) {
         m_progressCounter[index] = 0.0;
     }
@@ -55,6 +61,9 @@ void CProgressMgr::InitProgressCounter(void)
 ***********************************************************************************************************************/
 void CProgressMgr::Processing_StartReport(void)
 {
+    if (m_disabled)
+      return;
+
     SetInit();
     ++m_processingLevel;
     PRINT_PROGRESS(QString("Processing - start, level %1").arg(m_processingLevel))
@@ -65,6 +74,9 @@ void CProgressMgr::Processing_StartReport(void)
 ***********************************************************************************************************************/
 void CProgressMgr::Processing_StopReport(void)
 {
+    if (m_disabled)
+      return;
+
     if (m_processingLevel <= 1) {
         PRINT_CURSOR(QString("Restore cursor"))
         m_processingLevel = 0;
@@ -79,6 +91,11 @@ void CProgressMgr::Processing_StopReport(void)
 ***********************************************************************************************************************/
 void CProgressMgr::AddProgressInfo(const QString& info)
 {
+    if (m_disabled) {
+        TRACEX_I(info);
+        return;
+    }
+
     QMutexLocker Lock(&m_mutex); /* RAII */
     m_progressInfo.append(info);
 }
@@ -102,6 +119,9 @@ bool CProgressMgr::GetProgressInfo(QString& info)  /* return true if more to rea
 ***********************************************************************************************************************/
 void CProgressMgr::SetProgressCounter(double value)
 {
+    if (m_disabled)
+        return;
+
     const int COUNT = m_numOfProgressCounters;
 
     for (int index = 0; index < COUNT; ++index) {
@@ -114,7 +134,10 @@ void CProgressMgr::SetProgressCounter(double value)
 ***********************************************************************************************************************/
 void CProgressMgr::StepProgressCounter(int counterIndex)
 {
-    if (counterIndex >= m_numOfProgressCounters) {
+   if (m_disabled)
+      return;
+
+   if (counterIndex >= m_numOfProgressCounters) {
         TRACEX_ERROR("CProgressMgr::StepProgressCounter  Counter out of range")
         counterIndex = 0;
     }

@@ -209,8 +209,6 @@ void CFileProcBase::Start(QFile *qFile_p, char *workMem_p, int64_t workMemSize, 
         m_configurationPoolList.append(CreateConfigurationObject());
     }
 
-    m_fileSize = m_qfile_p->size();
-
     TRACEX_DISABLE_WINDOW()
 
     Process();

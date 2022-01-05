@@ -22,11 +22,31 @@ CFilterThreadConfiguration::~CFilterThreadConfiguration() {}
 /***********************************************************************************************************************
 *   thread_Process
 ***********************************************************************************************************************/
-void CFilterThread::thread_Process(CThreadConfiguration *config_p)
+
+inline void _colClipAdapt(Match_Description_t& matchDescr, packedFilterItem_t* packedFilterItem_p)
+{
+    if (!packedFilterItem_p->m_colClip_StartEnabled && !packedFilterItem_p->m_colClip_EndEnabled)
+        return;
+
+    const int colClipStart = packedFilterItem_p->m_colClip_StartEnabled ? packedFilterItem_p->m_colClip_Start : 0;
+    /*compensate for the moved start */
+    const int colClipEnd = packedFilterItem_p->m_colClip_EndEnabled ? packedFilterItem_p->m_colClip_End - colClipStart : 0;
+
+    if (colClipStart > 0) {
+        matchDescr.textLength -= colClipStart;
+        matchDescr.text_p += colClipStart;
+    }
+
+    if (colClipEnd > 0) {
+        matchDescr.textLength = colClipEnd;
+    }
+}
+
+static void _filter(CThreadConfiguration *config_p, std::atomic_bool* isStopped, int threadIndex)
 {
     CFilterThreadConfiguration *filterConfig_p = static_cast<CFilterThreadConfiguration *>(config_p);
 
-    m_isStopped = false;
+    *isStopped = false;
 
     int TIA_Index = filterConfig_p->m_start_TIA_index; /* use local variable for quicker access */
     int filterIndex;
@@ -42,11 +62,6 @@ void CFilterThread::thread_Process(CThreadConfiguration *config_p)
 
     progressCount = PROGRESS_COUNTER_STEP;
 
-    const int colClipStart = g_cfg_p->m_Log_colClip_Start > 0 ? g_cfg_p->m_Log_colClip_Start : 0;
-
-    /*compensate for the moved start */
-    const int colClipEnd = g_cfg_p->m_Log_colClip_End > 0 ? g_cfg_p->m_Log_colClip_End - colClipStart : 0;
-
     while (TIA_Index < stop_TIA_Index && !g_processingCtrl_p->m_abort) {
         matchDescr.textLength = filterConfig_p->m_TIA_p->textItemArray_p[TIA_Index].size;
         matchDescr.text_p = FileIndex_To_MemRef(&filterConfig_p->m_TIA_p->textItemArray_p[TIA_Index].fileIndex,
@@ -57,22 +72,16 @@ void CFilterThread::thread_Process(CThreadConfiguration *config_p)
 
         --progressCount;
         if (progressCount <= 0) {
-            g_processingCtrl_p->StepProgressCounter(m_threadIndex);
+            g_processingCtrl_p->StepProgressCounter(threadIndex);
             progressCount = PROGRESS_COUNTER_STEP;
-        }
-
-        if (colClipStart > 0) {
-            matchDescr.textLength -= colClipStart;
-            matchDescr.text_p += colClipStart;
-        }
-
-        if (colClipEnd > 0) {
-            matchDescr.textLength = colClipEnd;
         }
 
         while (filterIndex < numOfFilterItems && !match) {
             packedFilterItem_t *packedFilterItem_p = &filterConfig_p->m_packedFilterItems_p[filterIndex];
             const bool regExp = packedFilterItem_p->filterRef_p->m_regexpr;
+            if (filterConfig_p->m_useColClip) {
+                _colClipAdapt(matchDescr, packedFilterItem_p);
+            }
             if (regExp || (packedFilterItem_p->length <= matchDescr.textLength)) {
                 matchDescr.filter_p = packedFilterItem_p->start_p;
                 if (regExp) {
@@ -106,18 +115,32 @@ void CFilterThread::thread_Process(CThreadConfiguration *config_p)
         TIA_Index += TIA_step;
     } /* while */
 
+}
+
+
+void CFilterThread::thread_Process(CThreadConfiguration* config_p)
+{
+    _filter(config_p, &m_isStopped, m_threadIndex);
     (void)thread_ProcessingDone();
 }
 
 /***********************************************************************************************************************
-*   FilterInit
+*   init
 ***********************************************************************************************************************/
-void CFilterThreadConfiguration::FilterInit(FIR_t *FIRA_p, packedFilterItem_t *packedFilterItems_p,
-                                            int numOfFilterItems)
+void CFilterThreadConfiguration::init(FIR_t *FIRA_p, packedFilterItem_t *packedFilterItems_p, int numOfFilterItems)
 {
     m_FIRA_p = FIRA_p;
     m_packedFilterItems_p = packedFilterItems_p;
     m_numOfFilterItems = numOfFilterItems;
+
+    m_useColClip = false;
+    for (int index = 0; index < m_numOfFilterItems; ++index) {
+        auto packed_p = &m_packedFilterItems_p[index];
+        if (packed_p->m_colClip_StartEnabled || packed_p->m_colClip_EndEnabled) {
+            m_useColClip = true;
+            break;
+        }
+    }
 
     if (-1 == m_numOfRegExpFilters) {
         m_numOfRegExpFilters = 0;
@@ -139,20 +162,30 @@ void CFilterThreadConfiguration::FilterInit(FIR_t *FIRA_p, packedFilterItem_t *p
             /* Create a set of database and scratch for each filter (in each configuration objects) */
             for (int index = 0; index < m_numOfFilterItems; index++) {
                 auto packedFilter_p = &m_packedFilterItems_p[index];
+
                 if (-1 != m_packedFilterItems_p[index].m_regExpLUTIndex) {
                     hs_compile_error_t *compile_err;
                     hs_database_t *database = nullptr;
                     hs_scratch_t *scratch = nullptr;
 
-                    if (hs_compile_ext_multi(&packedFilter_p->start_p,
-                                             &REGEXP_HYPERSCAN_FLAGS,
-                                             nullptr, /*ids*/
-                                             nullptr, /*ext*/
-                                             1, /*elements*/
-                                             HS_MODE_BLOCK, /*mode*/
-                                             nullptr, /*platform*/
-                                             &database,
-                                             &compile_err) != HS_SUCCESS) {
+                    if (hs_compile(packedFilter_p->start_p,
+                                   REGEXP_HYPERSCAN_FLAGS,
+                                   HS_MODE_BLOCK,
+                                   nullptr,
+                                   &database,
+                                   &compile_err) != HS_SUCCESS) {
+#if 0
+                        if (hs_compile_ext_multi(&packedFilter_p->start_p,
+                                                 &REGEXP_HYPERSCAN_FLAGS,
+                                                 nullptr, /*ids*/
+                                                 nullptr, /*ext*/
+                                                 1, /*elements*/
+                                                 HS_MODE_BLOCK, /*mode*/
+                                                 nullptr, /*platform*/
+                                                 &database,
+                                                 &compile_err) != HS_SUCCESS) {
+#endif
+
                         TRACEX_I(QString("RegExp failed %1").arg(compile_err->message))
                         g_processingCtrl_p->AddProgressInfo(QString("Regular expression contains error: %1")
                                                                 .arg(packedFilter_p->start_p));
@@ -174,14 +207,14 @@ void CFilterThreadConfiguration::FilterInit(FIR_t *FIRA_p, packedFilterItem_t *p
 }
 
 /***********************************************************************************************************************
-*   StartProcessing
+   init
 ***********************************************************************************************************************/
-void CFilterProcCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p, FIR_t *FIRA_p,
-                                      int numOfTextItems, QList<CFilterItem *> *filterItems_p,
-                                      CFilterItem **filterItem_LUT_p, FilterExecTimes_t *execTimes_p,
-                                      int priority, int colClip_Start, int colClip_End,
-                                      int rowClip_Start, int rowClip_End, int *totalFilterMatches_p,
-                                      int *totalExcludeFilterMatches_p, QList<int> *bookmarkList_p, bool incremental)
+void CFilterProcCtrl::init(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p, FIR_t *FIRA_p,
+                           int numOfTextItems, QList<CFilterItem *> *filterItems_p,
+                           CFilterItem **filterItem_LUT_p, FilterExecTimes_t *execTimes_p,
+                           int priority, int colClip_Start, int colClip_End,
+                           int rowClip_Start, int rowClip_End, int *totalFilterMatches_p,
+                           int *totalExcludeFilterMatches_p, QList<int> *bookmarkList_p, bool incremental)
 {
     m_qfile_p = qFile_p;
     m_workMem_p = workMem_p;
@@ -225,13 +258,9 @@ void CFilterProcCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t w
         m_endRow = m_totalNumOf_DB_TextItems - 1;
     }
 
-    m_numOfRegExpFilters = -1;   /* not initialized yet */
-
-    m_fileSize = m_qfile_p->size();
-
     /* If incremental, check if the last row was filtered, since we are going to filter it again we must exclude it from
      * the present count of filter matches and excludes. */
-    if (m_incremental) {
+    if (m_incremental && (m_FIRA_p != nullptr)) {
         const auto LUT_Index = m_FIRA_p[m_startRow].LUT_index;
         if (0 != LUT_Index) {
             /* Last row (first for this filtering) was filtered, compensate... */
@@ -255,26 +284,40 @@ void CFilterProcCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t w
         memset(m_execTimes_p, 0, sizeof(*m_execTimes_p));
     }
 
+    ClearFilterRefs();
+
+    /* Might be 0 if only bookmarks */
+    if (filterItems_p->count() > 0) {
+        g_processingCtrl_p->AddProgressInfo(QString("Packing filters"));
+        PackFilters(); /* Put all filter texts together to minimize cache misses */
+    }
+}
+
+/***********************************************************************************************************************
+*   StartProcessing
+***********************************************************************************************************************/
+void CFilterProcCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p, FIR_t *FIRA_p,
+                                      int numOfTextItems, QList<CFilterItem *> *filterItems_p,
+                                      CFilterItem **filterItem_LUT_p, FilterExecTimes_t *execTimes_p,
+                                      int priority, int colClip_Start, int colClip_End,
+                                      int rowClip_Start, int rowClip_End, int *totalFilterMatches_p,
+                                      int *totalExcludeFilterMatches_p, QList<int> *bookmarkList_p, bool incremental)
+{
+    init(qFile_p, workMem_p, workMemSize, TIA_p, FIRA_p, numOfTextItems, filterItems_p, filterItem_LUT_p, execTimes_p, priority,
+        colClip_Start, colClip_End, rowClip_Start, rowClip_End, totalFilterMatches_p, totalExcludeFilterMatches_p, bookmarkList_p,
+        incremental);
+
     if ((filterItems_p->count() == 0) && m_bookmarkList_p->isEmpty()) {
-        ClearFilterRefs();
         g_processingCtrl_p->SetFail();
         g_processingCtrl_p->AddProgressInfo(QString("Filtering completed, no matches, NO filters..."));
         g_processingCtrl_p->AddProgressInfo(QString("Please add filter items before filtering"));
         return;
     }
 
-    ClearFilterRefs();
-
-    g_processingCtrl_p->AddProgressInfo(QString("Packing filters"));
-
     /* Might be 0 if only bookmarks */
     if (filterItems_p->count() > 0) {
-        PackFilters(); /* Put all filter texts together to minimize cache misses */
-
         g_processingCtrl_p->AddProgressInfo(QString("Start filtering"));
-
         m_timeExec.Restart();
-
         CFileProcBase::Start(m_qfile_p, workMem_p, workMemSize, m_TIA_p, priority, m_startRow, m_endRow, false);
     } else {
         WrapUp();
@@ -284,8 +327,100 @@ void CFilterProcCtrl::StartProcessing(QFile *qFile_p, char *workMem_p, int64_t w
     *totalExcludeFilterMatches_p = m_totalExcludeFilterMatches;
 }
 
+/* */
+void CFilterProcCtrl::SetupIncrementalFiltering(QList<CFilterItem *> *filterItems_p, CFilterItem **filterItem_LUT_p,
+                                                int colClip_Start, int colClip_End) 
+{
+    m_filterItems_p = filterItems_p;
+    m_filterItem_LUT_p = filterItem_LUT_p;
+    m_incremental = true;
+
+    if (colClip_Start >= 0) {
+        m_colClip_StartEnabled = true;
+        m_colClip_Start = colClip_Start;
+    } else {
+        m_colClip_StartEnabled = false;
+    }
+
+    if (colClip_End > 0) {
+        m_colClip_EndEnabled = true;
+        m_colClip_End = colClip_End;
+    } else {
+        m_colClip_EndEnabled = false;
+    }
+
+    if (m_incrementalThreadConfig_p != nullptr) {
+        m_incrementalThreadConfig_p->PrepareRemove();
+        delete(m_incrementalThreadConfig_p);
+        m_incrementalThreadConfig_p = nullptr;
+    }
+
+    /* Number of filters (which contains filterItems) */
+    if (filterItems_p->count() > 0) {
+        PackFilters();
+        m_incrementalThreadConfig_p = new CFilterThreadConfiguration();
+        m_incrementalThreadConfig_p->init(nullptr /*FIRA_p*/, m_packedFilterItems_p, m_numOfFilterItems);
+    }
+}
+
 /***********************************************************************************************************************
-*   StartOneLine
+   ExecuteIncrementalFiltering
+***********************************************************************************************************************/
+bool CFilterProcCtrl::ExecuteIncrementalFiltering(QFile *qFile_p,
+                                                  char *workMem_p,
+                                                  int64_t workMemSize,
+                                                  TIA_t *TIA_p,
+                                                  FIR_t *FIRA_p,
+                                                  unsigned startIndex,
+                                                  FilterExecTimes_t *execTimes_p,
+                                                  int *totalFilterMatches_p,
+                                                  int *totalExcludeFilterMatches_p)
+{
+    m_TIA_p = TIA_p;
+    m_FIRA_p = FIRA_p;
+    m_startRow = startIndex;
+    m_qfile_p = qFile_p;
+    m_endRow = TIA_p->rows - 1;
+    m_totalNumOfRows = m_startRow - m_endRow;
+    m_workMem_p = workMem_p;
+    m_workMemSize = workMemSize;
+    m_fileEndIndex = TIA_p->textItemArray_p[m_endRow].fileIndex + m_TIA_p->textItemArray_p[m_endRow].size;
+    m_totalFilterMatches = *totalFilterMatches_p;
+    m_totalExcludeFilterMatches = *totalExcludeFilterMatches_p;
+
+    memset(&m_chunkDescr, 0, sizeof(m_chunkDescr));
+    m_chunkDescr.fileIndex = TIA_p->textItemArray_p[startIndex].fileIndex;
+    m_chunkDescr.first = true;
+    m_chunkDescr.numOfRows = m_totalNumOfRows;
+    m_chunkDescr.TIA_startRow = startIndex;
+
+    if (!LoadNextChunk()) {
+        return false;
+    }
+
+    auto config_p = m_incrementalThreadConfig_p;
+    config_p->m_FIRA_p = FIRA_p;
+    config_p->m_TIA_p = TIA_p;
+    config_p->m_TIA_step = 1;
+    config_p->m_start_TIA_index = startIndex;
+    config_p->m_stop_TIA_Index = TIA_p->rows;
+    config_p->m_workMem_p = workMem_p;
+    config_p->m_chunkDescr = m_chunkDescr;
+
+    std::atomic_bool dummy = false;
+    _filter(config_p, &dummy, 0);
+
+    /* Wrap-up, will add new filter matches to the total count */
+    NumerateFIRA();
+
+    *totalFilterMatches_p = m_totalFilterMatches;
+    *totalExcludeFilterMatches_p = m_totalExcludeFilterMatches;
+
+    return true;
+ }
+
+/***********************************************************************************************************************
+*   GetFilterMatch
 ***********************************************************************************************************************/
 CFilterItem *CFilterProcCtrl::GetFilterMatch(char *text_p, int textLength,
                                              QList<CFilterItem *> *filterItems_p, CFilterItem **filterItem_LUT_p)
@@ -471,8 +606,8 @@ void CFilterProcCtrl::StartOneLine(TIA_t *TIA_p, FIR_t *FIRA_p, int row, char *t
 bool CFilterProcCtrl::ConfigureThread(CThreadConfiguration *config_p, Chunk_Description_t *chunkDescription_p,
                                       int32_t threadIndex)
 {
-    static_cast<CFilterThreadConfiguration *>(config_p)->FilterInit(m_FIRA_p, m_packedFilterItems_p,
-                                                                    m_numOfFilterItems);
+    static_cast<CFilterThreadConfiguration *>(config_p)->init(m_FIRA_p, m_packedFilterItems_p,
+                                                              m_numOfFilterItems);
 
     CFileProcBase::ConfigureThread(config_p, chunkDescription_p, threadIndex); /* Use the default initialization */
     return true;
@@ -549,12 +684,12 @@ void CFilterProcCtrl::PackFilters(void)
     QList<CFilter *>::iterator filterIter;
     QList<CFilterItem *>::iterator filterItemIter;
 
+    m_numOfFilterItems = m_filterItems_p->size();
     for (auto& filterItem_p : *m_filterItems_p) {
         TRACEX_D(QString("Filter: %1 regexp:%2 case:%3")
                      .arg(filterItem_p->m_start_p).arg(filterItem_p->m_regexpr)
                      .arg(filterItem_p->m_caseSensitive))
         totalFilterTextSize += static_cast<uint64_t>(filterItem_p->m_size) + 1;  /* +1 for zero terminating strings */
-        ++m_numOfFilterItems;
     }
 
     if (m_filterStrings_p != nullptr) {
@@ -567,8 +702,7 @@ void CFilterProcCtrl::PackFilters(void)
     }
 
     m_packedFilterItems_p =
-        static_cast<packedFilterItem_t *>(VirtualMem::Alloc(m_numOfFilterItems *
-                                                            static_cast<int>(sizeof(packedFilterItem_t))));
+        static_cast<packedFilterItem_t *>(VirtualMem::Alloc(static_cast<unsigned>(m_numOfFilterItems) * sizeof(packedFilterItem_t)));
 
     packedfilterItem_p = m_packedFilterItems_p;
     destMem_p = m_filterStrings_p;
@@ -641,12 +775,10 @@ void CFilterProcCtrl::PackFilters(void)
 ***********************************************************************************************************************/
 void CFilterProcCtrl::DecorateFIRA(void)
 {
-    FIR_t *FIRA_p = m_FIRA_p;
-    QList<int>::iterator bookmarkIter;
-
-    for (bookmarkIter = m_bookmarkList_p->begin(); bookmarkIter != m_bookmarkList_p->end(); ++bookmarkIter) {
-        int row = *bookmarkIter;
-        FIRA_p[row].LUT_index = BOOKMARK_FILTER_LUT_INDEX;  /* bookmark index */
+    if (m_bookmarkList_p != nullptr) {
+        for (auto& row : *m_bookmarkList_p) {
+            m_FIRA_p[row].LUT_index = BOOKMARK_FILTER_LUT_INDEX;  /* bookmark index */
+        }
     }
 }
 

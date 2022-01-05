@@ -60,48 +60,72 @@ int CFilterItem::Check(QString& string)
 
 namespace FilterMgr
 {
-    /* Go through the entire FIRA and move the items to the packed FIRA */
-    packed_FIR_t *GeneratePackedFIRA(TIA_t& TIA, FIRA_t& FIRA, CFilterItem **filterItem_LUT_pp)
-    {
-        int index;
-        packed_FIR_t *packedFIR_base_p;
-        packed_FIR_t *packedFIR_p;
-        const int numOfItems = TIA.rows;
+    /* PopulatePackedFIRA
+     *
+     * This function creates (or extends) the packedFIRA table. The packedFIRA table contains
+     * just information about each filter match, hence the number rows in this table is identical to
+     * the total number of filter matches.
+     *
+     * The function loops through the FIRA table and create one item in the packedFIRA for
+     * each filter match. In case of incremental filtering it extends the table.
+     *
+     * startIndex: From where in the log file, the TIA index
+     * startCount: If the packedFIR_base_p already contains items, then how many.
 
+     * When doing incremental filtering then some of the old (TIA) rows might be "re-filtered", then we need to update
+     * these entries in the packedFIR. In that case we first need to establish from where in 
+     * the packedFIR we need to start and overwrite existing information.
+     * 
+     */
+    bool PopulatePackedFIRA(TIA_t& TIA,
+                            FIRA_t& FIRA,
+                            packed_FIR_t *packedFIR_base_p,
+                            CFilterItem **filterItem_LUT_pp,
+                            unsigned startIndex,
+                            unsigned startCount)
+    {
         if (FIRA.filterMatches == 0) {
-            return nullptr;
+            return false;
         }
 
         FIR_t *FIR_Array_p = &FIRA.FIR_Array_p[0];
 
-        packedFIR_base_p =
-            reinterpret_cast<packed_FIR_t *>(VirtualMem::Alloc(static_cast<int64_t>(sizeof(packed_FIR_t)) *
-                                                               FIRA.filterMatches));
-
         if (packedFIR_base_p == nullptr) {
             TRACEX_E("CLogScrutinizerDoc::CreatePackedFIRA    packedFIRA_p nullptr, out of memory?")
             FIRA.filterMatches = 0;
-            return nullptr;
+            return false;
         }
 
-        packedFIR_p = packedFIR_base_p;
+        int packedCount = startCount;
 
-        /* Do not pack exclude filters, these are not part of the count of m_database.FIRA.filterMatches */
+        if (startCount > 0) {
+            /* There is pre-existing filter items in the packedFIR, search for first packed item that needs to be part of
+               incremental update. */
+            auto packedFIR_p = &packedFIR_base_p[startCount - 1];
+            for (unsigned index = startCount - 1; index > 0; index--) {
+                if (packedFIR_p->row < static_cast<int>(startIndex)) {
+                    packedCount = index + 1;
+                    break;
+                }
+                --packedFIR_p;
+            }
+        }
 
-        int count = 0;
-        for (index = 0; index < numOfItems; ++index) {
+        auto packedFIR_p = &packedFIR_base_p[packedCount];
+        /* Note: do not pack exclude filters, these are not part of the count of m_database.FIRA.filterMatches */
+        const int numOfItems = TIA.rows;
+        for (int index = startIndex; index < numOfItems; ++index) {
             uint8_t LUT_Index = FIR_Array_p[index].LUT_index;
-
             if ((LUT_Index != 0) && !filterItem_LUT_pp[LUT_Index]->m_exclude) {
                 packedFIR_p->LUT_index = LUT_Index;
                 packedFIR_p->row = index;
-                if (FIR_Array_p[index].index != count) {
+                if (FIR_Array_p[index].index != packedCount) {
                     TRACEX_E(
                         QString("Internal error packedFIRA and FIRA doesn't match packed:%1 matches:%2")
-                            .arg(FIR_Array_p[index].index).arg(count))
+                            .arg(FIR_Array_p[index].index).arg(packedCount))
                 }
                 ++packedFIR_p;
-                count++;
+                ++packedCount;
             }
         }
 
@@ -109,13 +133,13 @@ namespace FilterMgr
 #ifdef _DEBUG
             TRACEX_E(
                 QString("Internal error  packedFIRA and FIRA doesn't match packed:%1 matches:%2")
-                    .arg(packedFIR_p - packedFIR_base_p).arg(FIRA.filterMatches).arg(count))
+                    .arg(packedFIR_p - packedFIR_base_p).arg(FIRA.filterMatches).arg(packedCount))
 #endif
             FIRA.filterMatches = 0;
-            return nullptr;
+            return false;
         }
 
-        return packedFIR_base_p;
+        return true;
     }
 
     /****/

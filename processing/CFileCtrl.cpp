@@ -773,13 +773,6 @@ bool CFileCtrl::Search_TIA_Incremental(QFile& logFile, const QString& TIA_fileNa
     }
 
     *rows_added_p = 0;
-#if 0
-    if (logFile.seek(fileSize - 1)) {
-        TRACEX_QFILE(LOG_LEVEL_ERROR,
-                     " ?", &logFile);
-        return false;
-    }
-#endif
 
     if (!logFile.seek(startFromIndex)) {
         /* Step forward to the previous end of file */

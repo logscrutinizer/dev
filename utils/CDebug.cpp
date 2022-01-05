@@ -34,7 +34,8 @@ CDebug::CDebug(void)
 #ifdef _DEBUG
 //  m_traceCategory = LOG_TRACE_CATEGORY_SIZE | LOG_TRACE_CATEGORY_NONE;
 //  m_traceCategory = LOG_TRACE_CATEGORY_NONE | LOG_TRACE_CATEGORY_WORKSPACE_MODEL;
-    m_traceCategory = LOG_TRACE_CATEGORY_NONE;
+    m_traceCategory = LOG_TRACE_CATEGORY_FILE_TRACKING;
+    //m_traceCategory = LOG_TRACE_CATEGORY_NONE;
     m_logLevel = LOG_LEVEL_INFO;
 #else
     m_traceCategory = LOG_TRACE_CATEGORY_NONE;
@@ -269,7 +270,7 @@ void CDebug::TRACEX(int logLevel, const QString *msgString_p)
 
         extern bool MW_AppendLogMsg(const QString & message);
         if (logLevel <= m_logLevel) {
-            MW_AppendLogMsg(logString);
+           MW_AppendLogMsg(logString);
         }
 
 #ifdef _DEBUG

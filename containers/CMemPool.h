@@ -197,7 +197,6 @@ public:
     {
         if ((nullptr == poolItem_pp) || (nullptr == *poolItem_pp)) {
             TRACEX_E("CMemPool::ReturnMem   nullptr")
-            return;
         }
 
         for (int index = 0; index < m_numOfRanges; ++index) {
@@ -246,7 +245,6 @@ public:
             return nullptr;
         }
 #else
-
         /* void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset); */
         voidPtr = mmap(nullptr, static_cast<size_t>(size), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
         if ((voidPtr == MAP_FAILED) || (voidPtr == nullptr)) {
@@ -345,7 +343,6 @@ public:
     static bool GetMemoryStatus(qulonglong& free, qulonglong& total, qulonglong& avail)
     {
 #ifdef _WIN32
-
         /*
          *  typedef struct _MEMORYSTATUSEX {
          *  DWORD dwLength;
@@ -372,7 +369,6 @@ public:
             return false;
         }
 #else
-
         /* Linux and others */
         static QFile memInfo("/proc/meminfo");
         static QTextStream in (&memInfo);
@@ -439,6 +435,7 @@ public:
 typedef enum {
     WORK_MEM_OPERATION_NO = 0,
     WORK_MEM_OPERATION_COMMIT,
+    WORK_MEM_OPERATION_TINY_COMMIT,
     WORK_MEM_OPERATION_FREE
 } WorkMem_Operation_t;
 
@@ -464,4 +461,28 @@ private:
     char *m_mem_p;
     WorkMem_Operation_t m_status;
     int64_t m_size;
+};
+
+/***********************************************************************************************************************
+   CScopedWorkMem
+***********************************************************************************************************************/
+class CScopedWorkMem
+{
+public:
+    CScopedWorkMem(CWorkMem *work_mem_p, WorkMem_Operation_t operation = WORK_MEM_OPERATION_COMMIT) 
+        : m_work_mem_p(work_mem_p)
+    {
+        m_allocated = m_work_mem_p->Operation(operation);
+    }
+    ~CScopedWorkMem() 
+    { 
+        if (m_allocated) {
+            m_work_mem_p->Operation(WORK_MEM_OPERATION_FREE);
+        }
+    }
+    bool is_allocated(void) {return m_allocated;}
+
+private:
+    CWorkMem *m_work_mem_p = nullptr;
+    bool m_allocated = false;
 };

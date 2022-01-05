@@ -26,7 +26,7 @@ public:
     CFilterThreadConfiguration() : CThreadConfiguration() {}
     virtual ~CFilterThreadConfiguration() override;
 
-    void FilterInit(FIR_t *FIRA_p, packedFilterItem_t *packedFilters_p, int numOfFilterItems);
+    void init(FIR_t *FIRA_p, packedFilterItem_t *packedFilters_p, int numOfFilterItems);
 
     /****/
     virtual void PrepareRemove() override {
@@ -40,10 +40,11 @@ public:
     }
 
 public:
-    FIR_t *m_FIRA_p;
-    packedFilterItem_t *m_packedFilterItems_p;
-    int m_numOfFilterItems;
+    FIR_t *m_FIRA_p = nullptr;
+    packedFilterItem_t *m_packedFilterItems_p = nullptr;
+    int m_numOfFilterItems = 0;
     int m_numOfRegExpFilters = -1;
+    bool m_useColClip = false;
 
     /* hyperscan regexp engine */
     hs_database_t **m_regexp_database_array = nullptr;
@@ -87,6 +88,13 @@ public:
     virtual ~CFilterProcCtrl(void) override {}
 
 public:
+    void init(QFile *qFile_p, char *workMem_p, int64_t workMemSize, TIA_t *TIA_p, FIR_t *FIRA_p,
+              int numOfTextItems, QList<CFilterItem *> *filterItems_p,
+              CFilterItem **filterItem_LUT_p, FilterExecTimes_t *execTimes_p,
+              int priority, int colClip_Start, int colClip_End,
+              int rowClip_Start, int rowClip_End, int *totalFilterMatches_p,
+              int *totalExcludeFilterMatches_p, QList<int> *bookmarkList_p, bool incremental);
+
     void StartProcessing(
         QFile *qFile_p,
         char *DB_Mem_p,
@@ -121,6 +129,19 @@ public:
         QList<int> *bookmarkList_p,
         bool isBookmarkRemove);
 
+    void SetupIncrementalFiltering(QList<CFilterItem *> *filterItems_p, CFilterItem **filterItem_LUT_p,
+                                   int colClip_Start, int colClip_End);
+
+    bool ExecuteIncrementalFiltering(QFile *qFile_p,
+                                     char *workMem_p,
+                                     int64_t workMemSize,
+                                     TIA_t *TIA_p,
+                                     FIR_t *FIRA_p,
+                                     unsigned startIndex,
+                                     FilterExecTimes_t *execTimes_p,
+                                     int *totalFilterMatches_p,
+                                     int *totalExcludeFilterMatches_p);
+
     CFilterItem *GetFilterMatch(
         char *text_p,
         int textLength,
@@ -154,13 +175,13 @@ protected:
     virtual void WrapUp(void) override;
 
 private:
-    FIR_t *m_FIRA_p;
+    FIR_t *m_FIRA_p = nullptr;
     int m_totalNumOf_DB_TextItems; /* Total number of rows in database */
-    QList<CFilterItem *> *m_filterItems_p;
+    QList<CFilterItem *> *m_filterItems_p = nullptr;
 
     /* An array of references to filters 0-255 positions (contains more or less the same as m_filters_p) */
-    CFilterItem **m_filterItem_LUT_p;
-    QList<int> *m_bookmarkList_p;
+    CFilterItem **m_filterItem_LUT_p = nullptr;
+    QList<int> *m_bookmarkList_p = nullptr;
     char *m_filterStrings_p = nullptr;
     packedFilterItem_t *m_packedFilterItems_p = nullptr;
     int m_numOfFilterItems = 0;
@@ -168,9 +189,10 @@ private:
     int m_colClip_Start = false; /* Column wise clip start enabling */
     bool m_colClip_EndEnabled = false;
     int m_colClip_End = false;
-    FilterExecTimes_t *m_execTimes_p;
-    int m_numOfRegExpFilters = 0;
-    int m_totalFilterMatches = 0;
-    int m_totalExcludeFilterMatches = 0;
+    FilterExecTimes_t *m_execTimes_p = nullptr;
+    int m_numOfRegExpFilters = -1;
+    int m_totalFilterMatches = 0; /* initially contains matches from prevous filtering */
+    int m_totalExcludeFilterMatches = 0; /* initially contains matches from prevous filtering */
     bool m_incremental = false; /* If the filtering is incremental */
+    CFilterThreadConfiguration *m_incrementalThreadConfig_p = nullptr;
 };

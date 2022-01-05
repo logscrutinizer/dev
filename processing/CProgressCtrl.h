@@ -49,6 +49,7 @@ public:
         *count_p = m_numOfProgressCounters;
     }
 
+    void SetDisabled(bool disabled = true) { m_disabled = disabled; }
     void Processing_StartReport(void);
     void Processing_StopReport();
     void ResetProgressInfo(void);
@@ -71,6 +72,7 @@ public slots:
     char m_exceptionTitle[EXCEPTION_INFO_STRING_LENGTH];
     char m_exceptionInfo[EXCEPTION_INFO_STRING_LENGTH];
     bool m_fileOperationOngoing = false;
+    bool m_disabled = false; /* If progress ctrl should skip all API requests */
 
 private:
     int m_processingLevel = 0; /* Used to indicate how many that has reported them being processing */

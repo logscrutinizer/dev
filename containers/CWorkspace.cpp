@@ -1329,8 +1329,6 @@ CCfgItem_FilterItem *CWorkspace::AddFilterItem(char *filterText_p, CCfgItem_Filt
     bool filterItemCreated = false;
     auto oldTrackState = g_cfg_p->m_logFileTracking;
 
-    MW_updateLogFileTrackState(false);
-
     auto refreshEditorWindow = makeMyScopeGuard([&] () {
         MW_updateLogFileTrackState(oldTrackState);
 

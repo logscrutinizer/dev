@@ -242,7 +242,8 @@ typedef struct {
 
 namespace FilterMgr
 {
-    packed_FIR_t *GeneratePackedFIRA(TIA_t& TIA, FIRA_t& FIRA, CFilterItem **filterItem_LUT_pp);
+    // startIndex and startCount is used when incrementally populating the FIRA array
+    bool PopulatePackedFIRA(TIA_t& TIA, FIRA_t& FIRA, packed_FIR_t* packedFIR_base_p, CFilterItem** filterItem_LUT_pp, unsigned startIndex = 0, unsigned startCount = 0);
     void InitializeFilterItem_LUT(CFilterItem **filterItem_LUT_pp, CFilterItem *bookmark_p);
     void ReNumerateFIRA(FIRA_t& FIRA, TIA_t& TIA, CFilterItem **filterItem_LUT_pp);
 }

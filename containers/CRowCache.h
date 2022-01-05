@@ -108,6 +108,8 @@ public:
         }
     }
 
+    void Update(QFile* qFile_p) { m_qFile_p = qFile_p; }
+
     /****/
     void Update(QFile *qFile_p, TIA_t *TIA_p, FIRA_t *FIRA_p, CFilterItem **filterItem_LUT, CMemPool& memPool)
     {

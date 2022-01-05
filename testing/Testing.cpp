@@ -331,8 +331,11 @@ bool TestRowCacheAndAutoHighlight(void)
         {CACHE_CMEM_POOL_SIZE_SMALLEST, CACHE_CMEM_POOL_SIZE_1, CACHE_CMEM_POOL_SIZE_2, CACHE_CMEM_POOL_SIZE_3,
          CACHE_CMEM_POOL_SIZE_MAX, 0}   /* ranges */
     };
+    
     CFilterItem **filterItem_LUT = container.GetFilterLUT();
-    packed_FIR_t *LUT_FIR_p = FilterMgr::GeneratePackedFIRA(TIA, FIRA, filterItem_LUT);
+    packed_FIR_t *packed_FIRA_p = reinterpret_cast<packed_FIR_t *>(VirtualMem::Alloc(static_cast<int64_t>(sizeof(packed_FIR_t)) * FIRA.filterMatches));
+    FilterMgr::PopulatePackedFIRA(TIA, FIRA, packed_FIRA_p, filterItem_LUT);
+
     CMemPool memPool(&screenCacheMemPoolConfig);
     CRowCache rowCache(&Log_File, &TIA, &FIRA, filterItem_LUT, memPool);
     char *text_p;
@@ -364,7 +367,7 @@ bool TestRowCacheAndAutoHighlight(void)
     /* Wrapup and exit */
     CloseAndUnmap(Log_File, TIA_File, FIRA_File, TIA_mem_p, FIRA_mem_p);
 
-    VirtualMem::Free(LUT_FIR_p);
+    VirtualMem::Free(packed_FIRA_p);
     VirtualMem::Free(mem_p);
 
     return true;

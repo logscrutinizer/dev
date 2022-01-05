@@ -15,6 +15,7 @@
 #include "CCfgItem.h"
 #include "CSelection.h"
 #include "TextDecoration.h"
+#include "CFilterProcCtrl.h"
 
 #include <memory>
 #include <QDir>
@@ -64,7 +65,6 @@ typedef struct {
 } DB_t;
 
 typedef enum {
-    /* The order is important */
     RS_Skip,
     /* Reload not necessary */
     RS_Incremental,
@@ -123,6 +123,7 @@ public:
     QDir GetWorkspaceDirectory();
     void ReNumerateFIRA(void);
     void CreatePackedFIRA(void);
+    void ExtendPackedFIRA(unsigned startFromIndex, unsigned startCount);
 
     /****/
     void CleanRowCache(void) {
@@ -215,9 +216,9 @@ public:
         return false;
     }
 
-    ReloadStrategy_e decideReloadStrategy(const QFileInfo& newFileInfo);
+    ReloadStrategy_e decideReloadStrategy(size_t size, QTime lastModified);
 
-    bool loadLogIncrement(void);
+    bool loadAndFilterLogIncrement(void);
     void enableLogFileTracking(bool enable);
 
 public slots:
@@ -282,10 +283,12 @@ public:
     CWorkMem m_workMem;
     QFileSystemWatcher m_fileSysWatcher;
     QDateTime m_logFileLastChanged; /* Used as extra check if file has been modified */
-    QFileInfo m_logFileInfo;
+    size_t m_logFileSize;
     std::unique_ptr<QTimer> m_fileChangeTimer;
     bool m_logFileTrackingEnabled = false;
     ReloadStrategy_e m_savedReloadStrategy = RS_Skip;
+    CFilterProcCtrl m_incrementalFilterCtrl; // Re-used to speed up incremental filtering
+    CWorkMem m_incrementalWorkMem;
 };
 
 extern CLogScrutinizerDoc *GetTheDoc(void);

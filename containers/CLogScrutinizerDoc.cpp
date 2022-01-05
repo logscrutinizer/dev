@@ -34,7 +34,7 @@
 
 const int NUM_ROWS_TO_CHECK = 10;
 const int NUM_TAIL_ROWS_TO_CHECK = 10;
-const int NUM_TAIL_ROWS_TO_RELOAD = 1;
+const int NUM_TAIL_ROWS_TO_RELOAD = 1; /* We only reload the last line, never more, otherwise it is not incremental. */
 static CLogScrutinizerDoc *theDoc_p = nullptr;
 CLogScrutinizerDoc *GetTheDoc(void) {return theDoc_p;}
 CLogScrutinizerDoc *GetDocument(void) {return theDoc_p;}
@@ -105,36 +105,26 @@ CLogScrutinizerDoc::CLogScrutinizerDoc()
 /***********************************************************************************************************************
 *   decideReloadStrategy
 ***********************************************************************************************************************/
-ReloadStrategy_e CLogScrutinizerDoc::decideReloadStrategy(const QFileInfo& newFileInfo)
+ReloadStrategy_e CLogScrutinizerDoc::decideReloadStrategy(size_t size, QTime lastModified)
 {
-    if (m_logFileInfo.size() > newFileInfo.size()) {
-        return RS_Full;
+    if (m_logFileSize > size) {
+        PRINT_FILE_TRACKING(QString("File size shrunk %1 -> %2").arg(m_logFileSize).arg(size))
+        return RS_Full; // If the file has shrunk, full reload
     }
-    if ((m_logFileLastChanged.time() == newFileInfo.lastModified().time()) &&
-        (m_database.fileSize == newFileInfo.size())) {
+
+    if ((m_logFileLastChanged.time() == lastModified) &&
+        (m_database.fileSize == size)) {
         return RS_Skip;
-    }
-    if (m_database.TIA.rows < NUM_TAIL_ROWS_TO_RELOAD) {
-        return RS_Incremental; /* Reload entire file */
-    }
-
-    /* Close and Reopen to prevent file caching to "destroy" the file change validation. */
-    m_qFile_Log.close();
-
-    if (!m_qFile_Log.open(QIODevice::ReadOnly)) {
-        TRACEX_W(QString("Failied to reopen log file at file validation"))
-        return RS_Full;
     }
 
     char text_p[1];
     TI_t *ti_p = &m_database.TIA.textItemArray_p[0];
 
     /* Check that some of the existing rows hasn't been changed (else RS_Full)
-     * Note: NUM_TAIL_ROWS_TO_RELOAD number of rows will anyway be reloaded, hence these do not need to
-     * be unchanged for managing an incremental */
+     * Note: Only last line, NUM_TAIL_ROWS_TO_RELOAD (1), will be reloaded */
     const auto lastIndex = m_database.TIA.rows - NUM_TAIL_ROWS_TO_CHECK;
 
-    /* (1) Check tail */
+    /* (1) Check tail of (10) last rows, exluding the last that will be reloaded */
     auto index = lastIndex - NUM_TAIL_ROWS_TO_CHECK - NUM_TAIL_ROWS_TO_RELOAD;
     index = index < 0 ? 0 : index;
 
@@ -190,93 +180,121 @@ void CLogScrutinizerDoc::logFileUpdated(const QString &path, bool useSavedReload
         return;
     }
 
-    bool doFull = false;
+    /* To ensure that the we do not get re-entrant */
+    static bool updateRunning = false;
+    if (updateRunning) return;
+    auto reentranceGuard =
+        makeMyScopeGuard([&]() {updateRunning = false;});
+    updateRunning = true;
+
+    ReloadStrategy_e reloadStrategy = RS_Full;
 
     if (path == m_Log_FileName) {
-        PRINT_FILE_TRACKING(QString(">> Log file modified: %1").arg(path))
 
+        QElapsedTimer perfTimer;
+        perfTimer.start();
+        
+        /* Close and Reopen to prevent file caching to "destroy" the file change validation. */
+        m_qFile_Log.close();
+        
         QFileInfo fileInfo(m_Log_FileName);
-        fileInfo.refresh(); /* fetch new information about the file */
+        fileInfo.setCaching(false);
 
-        auto reloadStrategy = decideReloadStrategy(fileInfo);
+        if (fileInfo.exists() && m_qFile_Log.open(QIODevice::ReadOnly)) {
 
-        /* Always reload if FULL required, as it might be that the log has been shortned, and if LogScrutinizer
-         * is trying to read from the log after missing lines... things go south... */
-        if (((RS_Full != reloadStrategy) && !g_cfg_p->m_logFileTracking) || CSZ_DB_PendingUpdate) {
-            if (static_cast<int>(m_savedReloadStrategy) < static_cast<int>(reloadStrategy)) {
-                m_savedReloadStrategy = reloadStrategy;
+            m_rowCache_p->Update(&m_qFile_Log);
+
+            // Bug fix - for some reason the file size isn't updated right away when
+            // QT notifies about the update. There is something strange here, since we never
+            // spend any loops, however without the loop it doesn't work...
+            QElapsedTimer e_timer;
+            e_timer.start();
+            int i = 0;
+            while (fileInfo.size() == 0 && e_timer.nsecsElapsed() < 400 * 1000 * 1000) { // 400ms
+                QThread::msleep(10);
+                i++;
             }
-            return;
-        }
+            auto t = e_timer.nsecsElapsed();
+            PRINT_FILE_TRACKING(QString("Waited %1ms (%2 loops) for file size").arg(t/1000000.0).arg(i))
 
-        if (useSavedReloadStrategy) {
-            reloadStrategy = m_savedReloadStrategy;
-            m_savedReloadStrategy = RS_Skip;
-        }
+            reloadStrategy = decideReloadStrategy(fileInfo.size(), fileInfo.lastModified().time());
+            PRINT_FILE_TRACKING(QString("Reload strategy: %1").arg(reloadStrategy))
 
-        switch (reloadStrategy)
-        {
-            case RS_Skip:
+            /* Always reload if FULL required, as it might be that the log has been shortned, and if LogScrutinizer
+             * is trying to read from the log after missing lines... things go south... */
+            if (((RS_Full != reloadStrategy) && !g_cfg_p->m_logFileTracking) || CSZ_DB_PendingUpdate) {
+
+                if (static_cast<int>(m_savedReloadStrategy) < static_cast<int>(reloadStrategy)) {
+                    m_savedReloadStrategy = reloadStrategy; /* No reload at this time, saved as pending*/
+                }
+                PRINT_FILE_TRACKING("No reload")
+                return;
+            }
+
+            if (useSavedReloadStrategy) {
+                reloadStrategy = m_savedReloadStrategy;
+                m_savedReloadStrategy = RS_Skip;
+            }
+
+            if (reloadStrategy == RS_Skip) {
                 PRINT_FILE_TRACKING(QString("RS_Skip"))
                 if (forceUIUpdate) {
                     MW_Refresh();
                 }
                 return;
+            }
 
-            case RS_Incremental:
-                if (loadLogIncrement()) {
+            if (reloadStrategy == RS_Incremental) {
+                if (loadAndFilterLogIncrement()) {
                     PRINT_FILE_TRACKING(QString("RS_Incremental"))
-                } else {
-                    doFull = true;
-                }
-                break;
+                    m_logFileLastChanged = fileInfo.lastModified();
+                    m_logFileSize = fileInfo.size();
 
-            case RS_Full: /* fall-through */
-                doFull = true;
-                break;
+                    UpdateTitleRow();
+
+                } else {
+                    reloadStrategy = RS_Full; // fallback
+                }
+            }
+        } else {
+            TRACEX_W(QString("Failed to reopen log file at file validation"))
         }
 
-        if (doFull) {
+        if (reloadStrategy == RS_Full) {
             PRINT_FILE_TRACKING(QString("RS_Full"))
             LoadLogFile(m_Log_FileName /*Call with a copy*/, true /*reload*/);
-
             /* do not filter... since a new file might not contain any filter matches */
         }
 
-        if (RS_Full != reloadStrategy) {
-            m_logFileLastChanged = fileInfo.lastModified();
-            m_logFileInfo = fileInfo;
-        }
-
+        PRINT_FILE_TRACKING(QString("reload %1 ms").arg(perfTimer.nsecsElapsed() / 1000000.0))
+        perfTimer.restart();
         MW_Refresh(true);
+        PRINT_FILE_TRACKING(QString("refresh %1 ms").arg(perfTimer.nsecsElapsed() / 1000000.0))
     }
 }
 
 /***********************************************************************************************************************
-*   loadLogIncrement
+*   loadAndFilterLogIncrement
 ***********************************************************************************************************************/
-bool CLogScrutinizerDoc::loadLogIncrement(void)
+bool CLogScrutinizerDoc::loadAndFilterLogIncrement(void)
 {
     auto pendingUpdateScopeGuard = makeMyScopeGuard([&] () {CSZ_DB_PendingUpdate = false;});
 
     CSZ_DB_PendingUpdate = true;
 
-    if (m_workMem.Operation(WORK_MEM_OPERATION_COMMIT)) {
-        auto freeScopeGuard = makeMyScopeGuard([&] () {(void)m_workMem.Operation(WORK_MEM_OPERATION_FREE);});
+    assert(m_incrementalWorkMem.GetRef() != nullptr);
+    assert(m_incrementalWorkMem.GetSize() > 0);
+
+    if (m_incrementalWorkMem.GetRef() != nullptr) {
         CFileCtrl fileCtrl;
         int rows_added;
 
-        /* Start from the last row in the database, as this line might have been added to. */
-        auto rowsToReload = NUM_TAIL_ROWS_TO_RELOAD;
-        int32_t fromRowIndex = m_database.TIA.rows - rowsToReload;
+        /* Start from the last row in the database, as this line might have been changed as well. */
+        int32_t fromRowIndex = m_database.TIA.rows - NUM_TAIL_ROWS_TO_RELOAD;
         int64_t fromFileIndex = m_database.TIA.textItemArray_p[fromRowIndex].fileIndex;
         int64_t fileSize = 0;
         const auto oldNumRows = m_database.TIA.rows;
 
-        /* TODO
-         *  Trigger a filtering
-         *  Trigger a plotRun of the last rows. ??? Or should plotting require manual trigger?
-         */
         if (m_qFile_TIA.isOpen()) {
             if (m_database.TIA.textItemArray_p != nullptr) {
                 FileMapping::RemoveTIA_MemMapped(m_qFile_TIA, m_database.TIA.textItemArray_p, false);
@@ -294,8 +312,10 @@ bool CLogScrutinizerDoc::loadLogIncrement(void)
         }
 
         /* Incrementally add to the TIA file */
-        fileCtrl.Search_TIA_Incremental(m_qFile_Log, m_TIA_FileName, m_workMem.GetRef(), m_workMem.GetSize(),
-                                        fromFileIndex, fromRowIndex, &rows_added);
+        if (!fileCtrl.Search_TIA_Incremental(m_qFile_Log, m_TIA_FileName, m_incrementalWorkMem.GetRef(), m_incrementalWorkMem.GetSize(),
+            fromFileIndex, fromRowIndex, &rows_added)) {
+            return false;
+        }
 
         m_database.TIA.rows = 0;
 
@@ -308,26 +328,19 @@ bool CLogScrutinizerDoc::loadLogIncrement(void)
                     return false;
                 }
 
-                m_rowCache_p->Update(&m_qFile_Log, &m_database.TIA, &m_database.FIRA, m_database.filterItem_LUT,
-                                     m_memPool);
-                UpdateTitleRow();
-
+                m_rowCache_p->Update(&m_qFile_Log, &m_database.TIA, &m_database.FIRA, m_database.filterItem_LUT, m_memPool);
                 m_database.fileSize = fileSize;
+
+                ExecuteIncrementalFiltering(fromRowIndex);
+
+                CSZ_DB_PendingUpdate = false;
 
                 QFileInfo fileInfo(m_Log_FileName);
                 fileInfo.refresh();
-
-                if (CEditorWidget_isPresentationModeFiltered()) {
-                    /* Start from the previous last row */
-                    CSZ_DB_PendingUpdate = false;
-                    ExecuteIncrementalFiltering(oldNumRows > 0 ? oldNumRows - 1 : 0);
-                }
-
                 PRINT_FILE_TRACKING(QString("Incremental load, rows:%1 fileSize:%2(%3)")
                                         .arg(rows_added)
                                         .arg(m_database.fileSize)
                                         .arg(fileInfo.size()))
-
                 return true;
             }
         }
@@ -396,7 +409,8 @@ void CLogScrutinizerDoc::logFileDirUpdated(const QString &path)
                 TRACEX_W(QString("Failed to reload removed log file, closing: %1").arg(path))
                 CleanDB(false);
             } else {
-                /* Replace the log file in the file system watcher */
+                /* Replace the log file in the file system watcher, necessary since Qt detected that 
+                the file was removed, and we need to add monitoring back*/
                 replaceFileSysWatcherFile(m_Log_FileName);
             }
         }
@@ -423,8 +437,6 @@ void CLogScrutinizerDoc::onFileChangeTimer(void)
     QFileInfo fileInfo(m_Log_FileName);
     fileInfo.refresh();
 
-    PRINT_FILE_TRACKING(QString("File:%1 Size: %2").arg(fileInfo.fileName()).arg(fileInfo.size()))
-
     if (!fileInfo.exists() ||
         (m_logFileLastChanged.time() != fileInfo.lastModified().time()) ||
         (fileInfo.size() != m_database.fileSize)) {
@@ -444,14 +456,25 @@ void CLogScrutinizerDoc::enableLogFileTracking(bool enable)
     if (m_logFileTrackingEnabled != enable) {
         PRINT_FILE_TRACKING(QString("%1 Enable:%2").arg(__FUNCTION__).arg(enable))
 
-        m_logFileTrackingEnabled = enable;
         if (enable) {
+            m_incrementalWorkMem.Operation(WORK_MEM_OPERATION_TINY_COMMIT);
+            m_logFileTrackingEnabled = enable;
+
+            m_incrementalFilterCtrl.SetupIncrementalFiltering(
+                &m_allEnabledFilterItems,
+                &m_database.filterItem_LUT[0],
+                g_cfg_p->m_Log_colClip_Start, 
+                g_cfg_p->m_Log_colClip_End );
+
             /* Make this call to have an initial check if it is required to load the file or not. */
             logFileUpdated(m_Log_FileName, true /* Apply save reload strategy */, true /*force UE update */);
             m_fileChangeTimer.get()->start(FILE_CHANGE_TIMER_DURATION);
+
         } else {
             m_savedReloadStrategy = RS_Skip;
             m_fileChangeTimer.get()->stop();
+            m_incrementalWorkMem.Operation(WORK_MEM_OPERATION_FREE);
+            m_logFileTrackingEnabled = enable;
         }
     }
 }
@@ -467,9 +490,9 @@ void CLogScrutinizerDoc::CleanDB(bool reload, bool unloadFilters)
     m_database.TIA.rows = 0;
     m_database.FIRA.filterMatches = 0;
     m_database.fileSize = 0;
+    m_logFileSize = 0;
 
     m_fileChangeTimer.get()->stop();
-    m_logFileInfo = QFileInfo();
     m_logFileLastChanged = QDateTime();
 
     /* Remove the files being watched */
@@ -542,6 +565,8 @@ void CLogScrutinizerDoc::CleanDB(bool reload, bool unloadFilters)
     if (!reload) {
         MW_Refresh();
     }
+
+    MW_updateLogFileTrackState(false);
 }
 
 /***********************************************************************************************************************
@@ -773,7 +798,7 @@ void CLogScrutinizerDoc::replaceFileSysWatcherFile(QString& fileName)
     }
 
     QFileInfo fileInfo(fileName);
-    fileInfo.refresh();
+    fileInfo.setCaching(false);
 
     if (!fileInfo.exists()) {
         TRACEX_W(QString("File doesn't exist, cannot be tracked: %1").arg(fileName))
@@ -787,7 +812,7 @@ void CLogScrutinizerDoc::replaceFileSysWatcherFile(QString& fileName)
         TRACEX_W(QString("Failed to aa file tracking: %1").arg(fileInfo.absoluteFilePath()))
     }
 
-    m_logFileInfo = fileInfo;
+    m_logFileSize = fileInfo.size();
     m_logFileLastChanged = fileInfo.lastModified();
 
     /* Add the new directory watch */
@@ -834,9 +859,7 @@ void CLogScrutinizerDoc::logUpdated(int64_t fileSize)
         m_fileChangeTimer.get()->stop();
     }
 
-    /*the rowCache cannot work on filterItem lut, since that will be updated after each filter... */
     m_rowCache_p->Update(&m_qFile_Log, &m_database.TIA, &m_database.FIRA, m_database.filterItem_LUT, m_memPool);
-
     replaceFileSysWatcherFile(m_Log_FileName);
 }
 
@@ -1025,10 +1048,19 @@ void CLogScrutinizerDoc::Filter(void)
         return;
     }
 
+    auto oldTracking = m_logFileTrackingEnabled;
+    if (oldTracking) {
+        MW_updateLogFileTrackState(false);
+    }
+
     if (CheckAllFilters()) {
         UnloadFilters(); /* This will empty the list of CFilters */
         CreateFiltersFromCCfgItems();
         StartFiltering();
+    }
+
+    if (oldTracking) {
+        MW_updateLogFileTrackState(true);
     }
 }
 
@@ -1162,47 +1194,32 @@ void CLogScrutinizerDoc::ExecuteIncrementalFiltering(int startRow)
     if (m_allEnabledFilterItems.isEmpty()) {
         return;
     }
+    auto oldFilterMatches = m_database.FIRA.filterMatches;
 
-    QByteArray hash;
-    CWorkspace_GetFiltersHash(hash);
-    if (hash != m_filtersHash) {
-        TRACEX_I(QString("Filter items has changed, doing full filtering"))
-        Filter();
-        return;
+    /* Check last line, since that has been reloaded, and will be refiltered, we need to 
+       remove that from previous filter match count. */
+    const auto fira_p = &m_database.FIRA.FIR_Array_p[startRow];
+    const auto lut_index = fira_p->LUT_index;
+    if (lut_index != 0) {
+        if (m_database.filterItem_LUT[lut_index]->m_exclude) {
+            --m_database.FIRA.filterExcludeMatches;
+        } else {
+            --m_database.FIRA.filterMatches;
+        }
     }
 
-    CWorkspace_GetBookmarks(&bookmarkList);
+    m_incrementalFilterCtrl.ExecuteIncrementalFiltering(
+        &m_qFile_Log,
+        m_incrementalWorkMem.GetRef(),
+        m_incrementalWorkMem.GetSize(),
+        &m_database.TIA,
+        m_database.FIRA.FIR_Array_p,
+        startRow, &m_filterExecTimes, 
+        &m_database.FIRA.filterMatches,
+        &m_database.FIRA.filterExcludeMatches
+    );
 
-    if (nullptr == m_workMem.GetRef()) {
-        TRACEX_E(QString("%1 Internal error, WorkMem not set").arg(__FUNCTION__))
-    }
-
-    CFilterProcCtrl filterCtrl;
-
-    filterCtrl.StartProcessing(&m_qFile_Log,
-                               m_workMem.GetRef(),
-                               m_workMem.GetSize(),
-                               &m_database.TIA,
-                               m_database.FIRA.FIR_Array_p, /* FIRA Use OK */
-                               m_database.TIA.rows,
-                               &m_allEnabledFilterItems,
-                               &m_database.filterItem_LUT[0],
-                               &m_filterExecTimes,
-                               m_priority,
-                               g_cfg_p->m_Log_colClip_Start,
-                               g_cfg_p->m_Log_colClip_End,
-                               startRow,
-                               CFG_CLIP_NOT_SET,
-                               &m_database.FIRA.filterMatches,
-                               &m_database.FIRA.filterExcludeMatches,
-                               &bookmarkList,
-                               true /*incremental*/);
-
-    CreatePackedFIRA();
-
-    CSZ_DB_PendingUpdate = false;
-    CEditorWidget_Repaint();
-    CleanRowCache();
+    ExtendPackedFIRA(startRow, oldFilterMatches);
 }
 
 /***********************************************************************************************************************
@@ -1512,6 +1529,37 @@ void CLogScrutinizerDoc::ReNumerateFIRA(void)
 }
 
 /***********************************************************************************************************************
+*   ExtendPackedFIRA
+/***********************************************************************************************************************/
+void CLogScrutinizerDoc::ExtendPackedFIRA(unsigned startFrom, unsigned startCount)
+{
+    /* Go through the entire FIRA and move the items to the packed FIRA */
+    if (m_database.FIRA.filterMatches == 0) {
+        if (m_database.packedFIRA_p != nullptr) {
+            VirtualMem::Free(m_database.packedFIRA_p);
+        }
+        m_database.packedFIRA_p = nullptr;
+        return;
+    }
+
+    if (m_database.FIRA.filterMatches == startCount) {
+        // No added filter matches
+        return;
+    }
+
+    auto old_p = m_database.packedFIRA_p;
+    m_database.packedFIRA_p = reinterpret_cast<packed_FIR_t *>(VirtualMem::Alloc(static_cast<int64_t>(sizeof(packed_FIR_t)) * m_database.FIRA.filterMatches));
+    /* Copy old entries to the new memory */
+    if (old_p != nullptr && startCount > 0) {
+        memcpy(m_database.packedFIRA_p, old_p, sizeof(packed_FIR_t) * startCount);
+    }
+    if (old_p != nullptr) {
+        VirtualMem::Free(old_p);
+    }
+    FilterMgr::PopulatePackedFIRA(m_database.TIA, m_database.FIRA, m_database.packedFIRA_p, m_database.filterItem_LUT, startFrom, startCount);
+}
+
+/***********************************************************************************************************************
 *   CreatePackedFIRA
 ***********************************************************************************************************************/
 void CLogScrutinizerDoc::CreatePackedFIRA(void)
@@ -1520,14 +1568,14 @@ void CLogScrutinizerDoc::CreatePackedFIRA(void)
     if (m_database.packedFIRA_p != nullptr) {
         VirtualMem::Free(m_database.packedFIRA_p);
     }
-
     m_database.packedFIRA_p = nullptr;
 
     if (m_database.FIRA.filterMatches == 0) {
         return;
     }
 
-    m_database.packedFIRA_p = FilterMgr::GeneratePackedFIRA(m_database.TIA, m_database.FIRA, m_database.filterItem_LUT);
+    m_database.packedFIRA_p = reinterpret_cast<packed_FIR_t *>(VirtualMem::Alloc(static_cast<int64_t>(sizeof(packed_FIR_t)) * m_database.FIRA.filterMatches));
+    FilterMgr::PopulatePackedFIRA(m_database.TIA, m_database.FIRA, m_database.packedFIRA_p, m_database.filterItem_LUT);
 }
 
 /***********************************************************************************************************************
