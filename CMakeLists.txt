@@ -26,10 +26,6 @@ if (NOT DEFINED SHARED_QT_LIBS)
     set (SHARED_QT_LIBS 1)
 endif()
 
-if (NOT DEFINED USE_WEB_ENGINE)
-    set (USE_WEB_ENGINE 0)
-endif()
-
 # Setup paths to QT
 if (NOT DEFINED CMAKE_PREFIX_PATH)
     if (WIN32)
@@ -56,36 +52,17 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# cmake_policy(OpenGL_GL_PREFERENCE NEW)
 cmake_policy(SET CMP0072 NEW)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#set(QT_USE_QTOPENGL TRUE)
-
-
-#find_package(Qt5Widgets REQUIRED)
-#find_package(Qt5Core REQUIRED)
-#find_package(Qt5Gui REQUIRED)
-#find_package(Qt5Multimedia REQUIRED)
-#find_package(Qt5OpenGL REQUIRED)
-#find_package(OpenGL REQUIRED)
-
 
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Qt6 COMPONENTS Core REQUIRED)
 find_package(Qt6 COMPONENTS Gui REQUIRED)
-#find_package(Qt6 COMPONENTS Multimedia REQUIRED)
 find_package(Qt6 COMPONENTS OpenGLWidgets REQUIRED)
 find_package(OpenGL REQUIRED)
 
-
-if (USE_WEB_ENGINE)
-    find_package(Qt5WebEngine REQUIRED)
-    find_package(Qt5WebEngineWidgets REQUIRED)
-endif (USE_WEB_ENGINE)
-
 if(WIN32)
-    #find_package(Qt6 COMPONENTS WinExtras REQUIRED)
     set(HS_INCLUDEDIR ${HS_PATH}/include)
 else (WIN32)
     find_package(PkgConfig REQUIRED)
@@ -112,11 +89,6 @@ include_directories(${Qt6Widgets_INCLUDE_DIRS})
 include_directories(${Qt6OpenGLWidgets_INCLUDE_DIRS})
 include_directories(${Qt6Multimedia_INCLUDE_DIRS})
 include_directories(${HS_INCLUDEDIR})
-
-if (USE_WEB_ENGINE)
-    include_directories(${Qt6WebEngine_INCLUDE_DIRS})
-    include_directories(${Qt6WebEngineWidgets_INCLUDE_DIRS})
-endif (USE_WEB_ENGINE)
 
 if(WIN32)
     include_directories(${Qt6WinExtras_INCLUDE_DIRS})
@@ -265,10 +237,6 @@ else(WIN32)    #---- Linux
 
 endif(WIN32)
 
-if (USE_WEB_ENGINE)
-    add_definitions( -D_WEB_HELP)
-endif (USE_WEB_ENGINE)
-
 #------------------------------------------------------
 #--- Setup module lists
 #------------------------------------------------------
@@ -315,7 +283,6 @@ endif(WIN32)
 
 message ("CMAKE_PREFIX_PATH - ${CMAKE_PREFIX_PATH}")
 message ("Project modules " ${MODULE_PATH})
-message ("USE_WEB_ENGINE: ${USE_WEB_ENGINE}")
 message ("SHARED_QT_LIBS: ${SHARED_QT_LIBS}")
 
 message ("utilsDIR ${CMAKE_SOURCE_DIR}/utils")
