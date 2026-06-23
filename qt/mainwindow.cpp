@@ -2097,7 +2097,9 @@ bool MainWindow::handleSearch(bool forward)
     }
 
     /* Update startRow, endRow based on number of rows and if rowClipping is enabled. */
-    adjustSearchStart(forward, cursorPosition, startRow, endRow, numOfFastSearchRows, doFullSearch);
+    if (!adjustSearchStart(forward, cursorPosition, startRow, endRow, numOfFastSearchRows, doFullSearch)) {
+        return false;
+    }
 
     TRACEX_I(QString("Search cursor row:%1 col:%2 -> startRow:%3")
                  .arg(cursorPosition.row).arg(cursorPosition.startCol).arg(startRow))

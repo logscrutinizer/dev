@@ -372,7 +372,7 @@ void CSearchCtrl::WrapUp(void)
         FIR_Array_p = &m_FIRA_p->FIR_Array_p[0];
     }
 
-    char searchText[4096];
+    char searchText[CFG_TEMP_STRING_MAX_SIZE];
 
     SAFE_STR_MEMCPY(searchText, CFG_TEMP_STRING_MAX_SIZE, m_searchText_p->toLatin1().constData(),
                     static_cast<size_t>(m_searchText_p->size()))
@@ -432,13 +432,33 @@ void CSearchCtrl::WrapUp(void)
             matchDescr.filter_p = searchText;
 
             if (m_regExp) {
-                /* Hijack first configuraiton object to access hyperscan objects */
-                CSearchThreadConfiguration *configuration;
-                if (!m_configurationList.isEmpty()) {
-                    configuration = static_cast<CSearchThreadConfiguration *>(m_configurationList.first());
-                } else {
-                    configuration = static_cast<CSearchThreadConfiguration *>(m_configurationPoolList.first());
+                CSearchThreadConfiguration *configuration = nullptr;
+
+                for (auto& config : m_configurationList) {
+                    auto searchConfig = static_cast<CSearchThreadConfiguration *>(config);
+                    if (searchConfig->m_regexp_database != nullptr && searchConfig->m_regexp_scratch != nullptr) {
+                        configuration = searchConfig;
+                        break;
+                    }
                 }
+
+                if (configuration == nullptr) {
+                    for (auto& config : m_configurationPoolList) {
+                        auto searchConfig = static_cast<CSearchThreadConfiguration *>(config);
+                        if (searchConfig->m_regexp_database != nullptr && searchConfig->m_regexp_scratch != nullptr) {
+                            configuration = searchConfig;
+                            break;
+                        }
+                    }
+                }
+
+                if (configuration == nullptr) {
+                    TRACEX_E("CSearchCtrl::WrapUp missing regular expression configuration")
+                    g_processingCtrl_p->SetFail();
+                    g_processingCtrl_p->AddProgressInfo(QString("Search failed, regular expression state missing"));
+                    return;
+                }
+
                 matchDescr.regexp_database = configuration->m_regexp_database;
                 matchDescr.regexp_scratch = configuration->m_regexp_scratch;
             }
@@ -458,10 +478,12 @@ void CSearchCtrl::WrapUp(void)
                         matchDescr.text_p = FileIndex_To_MemRef(&m_TIA_p->textItemArray_p[TIA_Index].fileIndex,
                                                                 &m_chunkDescr.fileIndex, m_workMem_p);
 
-                        if (!m_regExp) {
-                            match = thread_Match(&matchDescr);
-                        } else {
+                        if (m_regExp) {
                             match = thread_Match_RegExp_HyperScan(&matchDescr);
+                        } else if (m_caseSensitive) {
+                            match = thread_Match_CS(&matchDescr);
+                        } else {
+                            match = thread_Match(&matchDescr);
                         }
                         if (match) {
                             m_searchSuccess = true;
@@ -485,10 +507,12 @@ void CSearchCtrl::WrapUp(void)
                         matchDescr.text_p = FileIndex_To_MemRef(&m_TIA_p->textItemArray_p[TIA_Index].fileIndex,
                                                                 &m_chunkDescr.fileIndex, m_workMem_p);
 
-                        if (!m_regExp) {
-                            match = thread_Match(&matchDescr);
-                        } else {
+                        if (m_regExp) {
                             match = thread_Match_RegExp_HyperScan(&matchDescr);
+                        } else if (m_caseSensitive) {
+                            match = thread_Match_CS(&matchDescr);
+                        } else {
+                            match = thread_Match(&matchDescr);
                         }
                     }
 

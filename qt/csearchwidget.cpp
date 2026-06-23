@@ -72,6 +72,10 @@ void CSearchWidget::on_pushButton_Back_clicked(void)
 void CSearchWidget::addCurrentToHistory(void)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
+    if (combo_p == nullptr) {
+        TRACEX_E("CSearchWidget::addCurrentToHistory missing comboBox")
+        return;
+    }
 
     if (combo_p->findText(combo_p->currentText(), Qt::MatchCaseSensitive) == -1) {
         combo_p->insertItem(0, combo_p->currentText(), QVariant());
@@ -84,6 +88,11 @@ void CSearchWidget::addCurrentToHistory(void)
 void CSearchWidget::addToHistory(const QString& searchText)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
+    if (combo_p == nullptr) {
+        TRACEX_E("CSearchWidget::addToHistory missing comboBox")
+        return;
+    }
+
     auto item = combo_p->findText(searchText, Qt::MatchCaseSensitive);
     if (item == -1) {
         combo_p->insertItem(0, searchText, QVariant());
@@ -98,7 +107,11 @@ void CSearchWidget::addToHistory(const QString& searchText)
 void CSearchWidget::updateSearchParameters(const QString& searchText, bool caseSensitive, bool regExp)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
-    combo_p->setCurrentText(searchText);
+    if (combo_p != nullptr) {
+        combo_p->setCurrentText(searchText);
+    } else {
+        TRACEX_E("CSearchWidget::updateSearchParameters missing comboBox")
+    }
 
     QCheckBox *caseOption_p = findChild<QCheckBox *>("case_option");
 
@@ -119,16 +132,24 @@ void CSearchWidget::updateSearchParameters(const QString& searchText, bool caseS
 void CSearchWidget::getSearchParameters(QString& searchString, bool *caseSensitive, bool *regExp)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
+    if (combo_p == nullptr) {
+        TRACEX_E("CSearchWidget::getSearchParameters missing comboBox")
+        searchString.clear();
+        *caseSensitive = false;
+        *regExp = false;
+        return;
+    }
+
     searchString = combo_p->currentText();
 
     Q_ASSERT(findChild<QCheckBox *>("case_option")); // simple test in debug, not really used
     Q_ASSERT(findChild<QCheckBox *>("regext_option")); // simple test in debug, not really used
 
     QCheckBox *caseOption_p = findChild<QCheckBox *>("case_option");
-    *caseSensitive = caseOption_p->isChecked();
+    *caseSensitive = caseOption_p != nullptr ? caseOption_p->isChecked() : false;
 
     QCheckBox *regextOption_p = findChild<QCheckBox *>("regext_option");
-    *regExp = regextOption_p->isChecked();
+    *regExp = regextOption_p != nullptr ? regextOption_p->isChecked() : false;
 }
 
 /***********************************************************************************************************************
@@ -146,6 +167,11 @@ void CSearchWidget::showEvent(QShowEvent *event)
 void CSearchWidget::activate(void)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
+    if (combo_p == nullptr) {
+        TRACEX_E("CSearchWidget::activate missing comboBox")
+        return;
+    }
+
     completer.setCaseSensitivity(Qt::CaseSensitive);
     combo_p->setCompleter(&completer);
     combo_p->setFocus();
@@ -157,7 +183,11 @@ void CSearchWidget::activate(void)
 void CSearchWidget::clearHistory(void)
 {
     QComboBox *combo_p = findChild<QComboBox *>("comboBox");
-    combo_p->clear();
+    if (combo_p != nullptr) {
+        combo_p->clear();
+    } else {
+        TRACEX_E("CSearchWidget::clearHistory missing comboBox")
+    }
 }
 
 /***********************************************************************************************************************

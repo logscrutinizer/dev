@@ -31,12 +31,14 @@ public:
     *   PrepareRemove
     ***********************************************************************************************************************/
     virtual void PrepareRemove() override {
-        if (nullptr != m_regexp_database) {
-            hs_free_database(m_regexp_database);
-        }
-
         if (nullptr != m_regexp_scratch) {
             hs_free_scratch(m_regexp_scratch);
+            m_regexp_scratch = nullptr;
+        }
+
+        if (nullptr != m_regexp_database) {
+            hs_free_database(m_regexp_database);
+            m_regexp_database = nullptr;
         }
 
         CThreadConfiguration::PrepareRemove();
@@ -96,6 +98,7 @@ class CSearchCtrl : public CFileProcBase
 public:
     CSearchCtrl(void)
     {
+        m_threadTI_Split = true;
         m_searchText_p = nullptr;
         m_searchStop = false;
         m_searchSuccess = false;

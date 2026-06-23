@@ -24,8 +24,6 @@ bool thread_Match_CS(Match_Description_t *desc_p)
     const char *filterStart_p = desc_p->filter_p;
     int filterLength = desc_p->filterLength;
     int filterChIndex;
-    bool loop;
-
     /*early stop */
     for (textChIndex = 0; textChIndex < textLength && (filterLength <= (textLength - textChIndex)); ++textChIndex) {
         const char *loopText_p; /* Direct reference to the character in the loop evaluation */
@@ -36,24 +34,18 @@ bool thread_Match_CS(Match_Description_t *desc_p)
 
         filterChIndex = 0;
         textChLoopIndex = textChIndex;
-        loop = true;
 
         /* Loop evaluation, from a letter in the text string see if the filter matches... loop the filter and the text
          *  together See if the filter fits well from the current char and on. */
-        while ((*loopFilter_p == *loopText_p) && loop) {
+        while ((textChLoopIndex <= textLength) && (filterChIndex <= filterLength) &&
+               (*loopFilter_p == *loopText_p)) {
             /* If we have a match for all the letters in the filter then it was success */
             if (filterChIndex == filterLength) {
                 return true;
             }
 
             ++filterChIndex;
-
-            if (textChLoopIndex == textLength) {
-                loop = false;
-            }
-
             ++textChLoopIndex;
-
             ++loopFilter_p;
             ++loopText_p;
         }
@@ -76,8 +68,6 @@ bool thread_Match(Match_Description_t *desc_p)
 
     Q_ASSERT(g_upperChar_LUT_init == true);
 
-    bool loop;
-
     /*early stop */
     for (textChIndex = 0; textChIndex < textLength && (filterLength <= (textLength - textChIndex)); ++textChIndex) {
         const uint8_t *loopText_p; /* Direct reference to the character in the loop evaluation */
@@ -91,24 +81,18 @@ bool thread_Match(Match_Description_t *desc_p)
 
         filterChIndex = 0;
         textChLoopIndex = textChIndex;
-        loop = true;
 
         /* Loop evaluation, from a letter in the text string see if the filter matches... loop the filter and the text
          * together See if the filter fits well from the current char and on */
-        while ((g_upperChar_LUT[*loopFilter_p] == g_upperChar_LUT[*loopText_p]) && loop) {
+        while ((textChLoopIndex <= textLength) && (filterChIndex <= filterLength) &&
+               (g_upperChar_LUT[*loopFilter_p] == g_upperChar_LUT[*loopText_p])) {
             /* If we have a match for all the letters in the filter then it was success */
             if (filterChIndex == filterLength) {
                 return true;
             }
 
             ++filterChIndex;
-
-            if (textChLoopIndex == textLength) {
-                loop = false;
-            }
-
             ++textChLoopIndex;
-
             ++loopFilter_p;
             ++loopText_p;
         }
